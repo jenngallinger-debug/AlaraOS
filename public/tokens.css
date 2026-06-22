@@ -1,0 +1,165 @@
+/* ============================================================================
+   ALARA DESIGN SYSTEM — tokens.css
+   CALIBRATED TO THE REAL BRAND (Squarespace Site Styles, owner-provided):
+   palette is a soft, warm-neutral "Mediterranean" system — NOT gold/cream.
+   The warmth + luxury come from the ARCHITECTURAL PHOTOGRAPHY (travertine
+   arches walkway, brass door), which we preserve. UI color stays quiet and
+   neutral so the imagery carries the richness.
+
+   Real palette swatches:  #FBFBFB · #E8E8E8 · #D9D8D3 · #817A7A · #342E2E
+   References: Uber (conversion discipline) · Ferrari/Porsche (premium restraint
+   + motion discipline) · Apple (space + type) · Mayo/Cleveland (clinical trust).
+   ============================================================================ */
+
+:root {
+  /* --- Color tokens (warm-neutral; values map to the owner's 5 swatches) --- */
+  --c-ink: #342E2E;          /* darkest swatch — primary text + dark sections */
+  --c-espresso: #342E2E;     /* body text on paper */
+  --c-muted: #645E5C;        /* secondary text (darkened taupe for AA on paper) */
+  --c-faint: #817A7A;        /* taupe swatch — large/decorative text, dividers */
+  --c-beige: #D9D8D3;        /* greige swatch — the "Mediterranean" surface tone */
+  --c-mist: #E8E8E8;         /* light-gray swatch — alternate section tint */
+  --c-cream: #FBFBFB;        /* lightest swatch — page background (paper) */
+  --c-surface: #FFFFFF;      /* raised card surface on paper */
+  --c-hairline: #E2E0DC;     /* soft warm hairline (between mist + greige) */
+  --c-on-dark: #FBFBFB;      /* text on espresso sections */
+  --c-on-dark-muted: #C9C4C1;/* secondary text on espresso */
+
+  /* --- Accent: NEUTRAL, from the agreed five-color palette. NO gold in the UI —
+         warmth comes from the photography (travertine arches, brass door), not from
+         interface color. This is the look we decided together; it supersedes the older
+         "Black and Gold" idea. Links + eyebrow text use espresso; keylines use taupe. --- */
+  --c-gold: #817A7A;         /* taupe — decorative keyline only */
+  --c-brass: #817A7A;        /* taupe — keylines, hover */
+  --c-deep-brass: #342E2E;   /* espresso — links + eyebrow text (links underlined) */
+  --c-focus: #342E2E;        /* focus ring */
+
+  /* Semantic, kept inside the warm-neutral world (used rarely) */
+  --c-success: #5C6B3A;      /* muted olive, never medical green */
+  --c-attention: #817A7A;    /* taupe, for callouts only */
+
+  /* --- Typography ---
+     display/label = geometric sans echoing the thin, wide-tracked ALARA wordmark;
+     text = humanist sans for legible, senior-friendly reading. No serif (the real
+     brand is sans). Editorial feel comes from space + photography, not a serif. */
+  --font-display: "Jost", "Century Gothic", "Futura", system-ui, sans-serif;
+  --font-text: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fw-regular: 400; --fw-medium: 500; --fw-semibold: 600;
+
+  /* Modular scale (1.25), senior-friendly 17px base */
+  --fs-display: 3.0rem; --fs-h1: 2.0rem; --fs-h2: 1.375rem; --fs-h3: 1.125rem;
+  --fs-body-lg: 1.1875rem; --fs-body: 1.0625rem; --fs-small: 0.9375rem;
+  --fs-caption: 0.8125rem; --fs-eyebrow: 0.6875rem;
+  --lh-tight: 1.12; --lh-snug: 1.35; --lh-body: 1.7;
+  --ls-eyebrow: 0.22em; --ls-wordmark: 0.34em; --measure: 68ch;
+
+  /* --- Spacing (8pt, generous) --- */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px;
+  --sp-6: 32px; --sp-7: 48px; --sp-8: 64px; --sp-9: 96px; --sp-10: 128px;
+  --section-y: clamp(72px, 9vw, 144px); --gutter: clamp(24px, 6vw, 80px);
+  --maxw: 1200px; --maxw-read: 760px;
+
+  /* --- Shape --- */
+  --radius-sharp: 2px; --radius-card: 4px; --radius-arch: 140px;
+  --border-hair: 1px solid var(--c-hairline);
+  --border-brass: 1px solid var(--c-brass);
+
+  /* --- Elevation: NONE (restraint = hairlines, not shadows) --- */
+  --shadow-none: none;
+
+  /* --- Motion (Porsche discipline) --- */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur-fast: 140ms; --dur: 220ms; --dur-slow: 360ms;
+}
+
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* ===========================================================================
+   BASE
+   =========================================================================== */
+body {
+  margin: 0; background: var(--c-cream); color: var(--c-espresso);
+  font-family: var(--font-text); font-size: var(--fs-body); line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+h1, h2, h3 { font-family: var(--font-text); font-weight: var(--fw-medium); color: var(--c-ink); line-height: var(--lh-snug); }
+h1 { font-size: var(--fs-h1); line-height: var(--lh-tight); letter-spacing: -0.01em; }
+h2 { font-size: var(--fs-h2); }
+h3 { font-size: var(--fs-h3); }
+a { color: var(--c-deep-brass); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 2px; }
+
+/* Display + wordmark + eyebrow use the geometric brand font */
+.display { font-family: var(--font-text); font-size: var(--fs-display); font-weight: var(--fw-semibold); line-height: var(--lh-tight); letter-spacing: -0.015em; color: var(--c-ink); }
+.wordmark { font-family: var(--font-display); font-weight: var(--fw-regular); letter-spacing: var(--ls-wordmark); }
+.eyebrow { font-family: var(--font-display); font-size: var(--fs-eyebrow); font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--c-deep-brass); }
+.lead { font-size: var(--fs-body-lg); color: var(--c-muted); max-width: 46ch; }
+.measure { max-width: var(--maxw-read); }
+.container { max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gutter); }
+.section { padding-block: var(--section-y); }
+.section--dark { background: var(--c-ink); color: var(--c-on-dark); }
+.section--beige { background: var(--c-beige); }
+.section--mist { background: var(--c-mist); }
+
+/* ===========================================================================
+   BUTTON SYSTEM
+   =========================================================================== */
+.btn { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-text);
+  font-size: var(--fs-caption); font-weight: var(--fw-medium); padding: 13px 22px;
+  border-radius: var(--radius-sharp); border: 1px solid transparent; cursor: pointer;
+  text-decoration: none; transition: background var(--dur) var(--ease), color var(--dur) var(--ease); }
+.btn--primary { background: var(--c-ink); color: var(--c-on-dark); border-color: var(--c-ink); }
+.btn--primary:hover { background: #443D3C; }
+.btn--secondary { background: transparent; color: var(--c-ink); border-color: var(--c-faint); }
+.btn--secondary:hover { border-color: var(--c-ink); }
+.btn--tertiary { background: transparent; color: var(--c-deep-brass); padding-inline: 0; }
+.btn--call { background: var(--c-beige); color: var(--c-ink); border-color: var(--c-brass); }
+.btn--on-image { background: transparent; color: var(--c-on-dark); border-color: rgba(251,251,251,.6); } /* over photography */
+.btn--on-dark { background: var(--c-cream); color: var(--c-ink); border-color: var(--c-cream); }
+
+/* ===========================================================================
+   CARD SYSTEM
+   =========================================================================== */
+.card { background: var(--c-surface); border: var(--border-hair); border-radius: var(--radius-card); }
+.card__body { padding: var(--sp-4) var(--sp-4) var(--sp-5); }
+.card__arch { border-radius: var(--radius-arch) var(--radius-arch) 0 0; background: var(--c-beige);
+  border-bottom: var(--border-hair); height: 64px; display: flex; align-items: flex-end; justify-content: center; }
+.card__title { font-family: var(--font-text); font-size: var(--fs-h3); font-weight: var(--fw-medium); color: var(--c-ink); }
+
+/* ===========================================================================
+   PAGE HEADER / CONTENT BLOCK / FAQ / GLOSSARY / CONVERSION / TRUST
+   (selectors unchanged; now driven by the real palette)
+   =========================================================================== */
+.page-header { padding-block: var(--sp-8) var(--sp-6); border-bottom: var(--border-hair); }
+.page-header .eyebrow { margin-bottom: var(--sp-3); }
+.page-header h1 { max-width: 18ch; }
+.page-header__meta { color: var(--c-muted); font-size: var(--fs-caption); margin-top: var(--sp-4); }
+
+.prose { max-width: var(--maxw-read); font-size: var(--fs-body-lg); color: var(--c-espresso); }
+.prose > * + * { margin-top: var(--sp-5); }
+.prose h2 { margin-top: var(--sp-7); }
+.prose blockquote { border-left: 2px solid var(--c-brass); padding-left: var(--sp-4); font-style: italic; color: var(--c-ink); }
+.prose .callout { background: var(--c-surface); border: var(--border-hair); border-left: 2px solid var(--c-brass); border-radius: 0 var(--radius-card) var(--radius-card) 0; padding: var(--sp-4) var(--sp-5); font-size: var(--fs-body); }
+
+.faq { border-top: var(--border-hair); }
+.faq__item { border-bottom: var(--border-hair); padding-block: var(--sp-4); }
+.faq__q { display: flex; justify-content: space-between; gap: var(--sp-4); align-items: baseline; font-size: var(--fs-h3); color: var(--c-ink); cursor: pointer; }
+.faq__a { margin-top: var(--sp-3); color: var(--c-espresso); max-width: var(--measure); }
+
+.glossary-term { border-left: 2px solid var(--c-brass); border-radius: 0 var(--radius-card) var(--radius-card) 0; background: var(--c-surface); padding: var(--sp-5) var(--sp-6); }
+.glossary-term .eyebrow { margin-bottom: var(--sp-2); }
+.glossary-term__definition { font-family: var(--font-text); font-size: var(--fs-h2); font-weight: var(--fw-medium); color: var(--c-ink); line-height: var(--lh-snug); }
+.glossary-term__meta { margin-top: var(--sp-5); padding-top: var(--sp-4); border-top: var(--border-hair); font-size: var(--fs-caption); color: var(--c-muted); }
+
+.convert { background: var(--c-ink); color: var(--c-on-dark); border-radius: var(--radius-card); padding: var(--sp-6); }
+.convert .eyebrow { color: var(--c-brass); }
+.convert__title { font-family: var(--font-text); font-weight: var(--fw-medium); font-size: var(--fs-h2); color: var(--c-on-dark); margin: var(--sp-2) 0 var(--sp-3); }
+.convert__sub { color: var(--c-on-dark-muted); font-size: var(--fs-small); margin-bottom: var(--sp-4); }
+.convert--quiet { background: var(--c-beige); color: var(--c-espresso); }
+.convert--quiet .eyebrow { color: var(--c-deep-brass); }
+.convert--quiet .convert__title { color: var(--c-ink); }
+.convert--quiet .convert__sub { color: var(--c-muted); }
+
+.trust-strip { background: var(--c-ink); color: var(--c-on-dark); font-size: var(--fs-caption); letter-spacing: 0.03em; display: flex; flex-wrap: wrap; gap: var(--sp-2) var(--sp-5); padding: var(--sp-4) var(--gutter); }
+.trust-strip .accent { color: var(--c-brass); }

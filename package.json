@@ -1,0 +1,12 @@
+{
+  "name": "alaraos",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AlaraOS — Federal Benefits Intelligence Platform (MVP). Zero-dependency Node server: knowledge graph, glossary with JSON-LD, Benefit Navigator, trust infrastructure, analytics.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": { "node": ">=18" }
+}

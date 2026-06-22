@@ -1,0 +1,75 @@
+[
+  {
+    "id": "eeoicpa",
+    "name": "EEOICPA",
+    "fullName": "Energy Employees Occupational Illness Compensation Program Act",
+    "administeredBy": "U.S. Department of Labor — DEEOIC",
+    "sourceUrls": [
+      "https://www.dol.gov/agencies/owcp/energy"
+    ],
+    "shortDefinition": "A federal program that provides covered medical care — including home health — at no out-of-pocket cost to approved Department of Energy and Nevada Test Site workers who became ill from their work.",
+    "coveredServices": {
+      "skilled-nursing": true,
+      "wound-care": true,
+      "infusion-therapy": true,
+      "physical-therapy": true,
+      "occupational-therapy": true,
+      "home-health-aide": true,
+      "medical-social-work": true,
+      "care-coordination": true,
+      "hospice": "verify",
+      "hospital-at-home": "verify"
+    },
+    "eligibilitySummary": "Nevada Test Site workers and DOE facility employees with an accepted condition (or consequential condition approved by the Department of Labor).",
+    "keyEntities": ["white-card", "consequential-condition", "special-exposure-cohort", "deeoic"],
+    "reviewedBy": "TODO: named RN / benefits SME",
+    "lastReviewed": "2026-06-22"
+  },
+  {
+    "id": "owcp",
+    "name": "OWCP / FECA",
+    "fullName": "Office of Workers' Compensation Programs (Federal Employees' Compensation Act)",
+    "administeredBy": "U.S. Department of Labor — OWCP",
+    "sourceUrls": [
+      "https://www.dol.gov/agencies/owcp/FECA"
+    ],
+    "shortDefinition": "Federal workers' compensation that may cover physician-prescribed home health services at no out-of-pocket cost when an injury or illness is accepted and care is authorized.",
+    "coveredServices": {
+      "skilled-nursing": true,
+      "wound-care": true,
+      "infusion-therapy": "verify",
+      "physical-therapy": true,
+      "occupational-therapy": true,
+      "home-health-aide": true,
+      "medical-social-work": true,
+      "care-coordination": true,
+      "hospice": "verify",
+      "hospital-at-home": "verify"
+    },
+    "eligibilitySummary": "Federal employees and postal (USPS) workers with an OWCP-accepted, work-related injury or illness, with services prescribed by a physician and authorized by OWCP.",
+    "eligibleCategories": ["USPS", "VA employees", "federal law enforcement", "TSA", "DoD civilians", "federal administrative staff", "other FECA-covered workers"],
+    "keyEntities": ["feca", "owcp", "white-card"],
+    "reviewedBy": "TODO",
+    "lastReviewed": "2026-06-22"
+  },
+  {
+    "id": "veterans",
+    "name": "Veterans / VA Community Care",
+    "fullName": "VA Community Care Network (CCN)",
+    "administeredBy": "U.S. Department of Veterans Affairs",
+    "sourceUrls": ["https://www.va.gov/communitycare/"],
+    "shortDefinition": "A VA program that authorizes eligible veterans to receive home health services from approved community providers when VA facilities cannot readily provide the care.",
+    "coveredServices": {
+      "skilled-nursing": true,
+      "wound-care": true,
+      "physical-therapy": true,
+      "occupational-therapy": true,
+      "home-health-aide": true,
+      "infusion-therapy": "verify"
+    },
+    "eligibilitySummary": "VA-enrolled veterans with a referral/authorization and a provider order; ~240,000 veterans in the VA Southern Nevada Healthcare System.",
+    "keyEntities": ["community-care-network"],
+    "reviewedBy": "TODO",
+    "lastReviewed": "2026-06-22"
+  }
+]

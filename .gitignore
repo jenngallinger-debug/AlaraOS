@@ -1,0 +1,9 @@
+# runtime
+data/analytics.log
+# python
+__pycache__/
+*.pyc
+# os/editor
+.DS_Store
+# node (app is zero-dep; nothing should be installed, but just in case)
+node_modules/
