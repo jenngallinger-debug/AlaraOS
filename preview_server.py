@@ -183,13 +183,20 @@ STEPS = [
 ]
 
 def view_home(site):
-    doors = "".join(
-        '<a class="door' + (' door--invert' if inv else '') + '" href="' + href + '"><span class="door__arch" aria-hidden="true"></span>'
-        '<span class="door__body"><span class="door__title">' + label + '</span>'
-        '<span class="door__desc">' + desc + '</span>'
-        '<span class="door__foot"><span class="door__go">Explore <i aria-hidden="true">&rarr;</i></span>'
-        + (('<span class="door__tag">' + tag + '</span>') if tag else '') + '</span></span></a>'
-        for (label, desc, href, tag, inv) in AUDIENCE_DOORS)
+    pathways = [
+        ("I have a White Card", "Nevada Test Site &amp; DOE workers, and their families.", "/programs/eeoicpa"),
+        ("I&rsquo;m a federal or postal worker", "Injured or made ill on the job, with an OWCP / FECA claim.", "/programs/owcp"),
+        ("I&rsquo;m a veteran, or caring for one", "VA Community Care through TriWest &mdash; no Medicare needed.", "/programs/veterans"),
+    ]
+    paths_html = "".join('<a class="pathway" href="' + h + '"><h3 class="pathway__t">' + t + '</h3>'
+                         '<p class="pathway__d">' + d + '</p><span class="pathway__go">This way <i aria-hidden="true">&rarr;</i></span></a>'
+                         for (t, d, h) in pathways)
+    handle_ticks = ["We confirm exactly what you&rsquo;re owed", "We handle the DOL, OWCP &amp; VA paperwork",
+                    "We coordinate every provider and payer", "We bring skilled care to your door"]
+    handle_html = "".join('<li>' + x + '</li>' for x in handle_ticks)
+    care_items = ["Skilled nursing", "Complex wound care", "IV &amp; infusion therapy", "Physical &amp; occupational therapy",
+                  "A paid family caregiver", "Medication management", "Care coordination across providers", "Hospital-avoidance monitoring"]
+    care_html = "".join('<span class="care-item">' + x + '</span>' for x in care_items)
     progs = ""
     for (eyb, head, lede, facts, src, href) in PROGRAMS:
         progs += ('<a class="program" href="' + href + '">'
@@ -201,86 +208,96 @@ def view_home(site):
     steps = "".join('<div class="step"><span class="step__n">' + str(i + 1).zfill(2) + '</span><h3>' + t + '</h3><p>' + d + '</p></div>' for i, (t, d) in enumerate(STEPS))
     body = (
       '<section class="hero">'
-        '<div class="hero__text"><div class="hero__copy">'
-          '<p class="hero__eyebrow">For families navigating White Card, OWCP &amp; VA benefits</p>'
-          '<h1 class="hero__title">Understanding federal benefits.<br>Delivering care at home.</h1>'
-          '<p class="hero__lead">Nurse-led skilled care at home for White Card, federal-worker, and veteran families across Southern Nevada.</p>'
+        '<div class="hero__head">'
+          '<p class="hero__eyebrow">Locally owned &middot; Nurse-led &middot; Las Vegas, Nevada</p>'
+          '<h1 class="hero__title">Specialized skilled home health for complex patients on federal programs.</h1>'
+          '<p class="hero__lead">We care for patients who need more coordination, more advocacy, and more clinical expertise than a traditional home health agency is built to provide.</p>'
           '<div class="hero__cta">'
             '<a class="btn btn--ink" href="/navigator">Find out if you qualify</a>'
-            '<a class="btn btn--line" href="/navigator?node=by-who">Refer a patient</a>'
+            '<a class="btn btn--line" href="tel:+17028149630">Talk to a nurse</a>'
           '</div>'
-        '</div></div>'
-        '<div class="hero__media"><img class="hero__img" src="/public/hero-arches.webp" alt="A grand travertine archway framing a brass door at the top of a wide staircase" loading="eager"></div>'
+        '</div>'
+        '<div class="hero__media"><img class="hero__img" src="/public/hero-arches.webp" alt="A travertine archway framing a brass door at the top of a wide staircase" loading="eager"></div>'
       '</section>'
 
-      '<section class="band" id="serve">'
-        '<p class="eyebrow center">Who we serve</p>'
-        '<h2 class="center">Care built for who you are</h2>'
-        '<div class="door-grid">' + doors + '</div>'
-      '</section>'
-
-      '<section class="band band--tint" id="understand">'
-        '<div class="guide">'
-          '<p class="eyebrow center">You don&rsquo;t need to become an expert</p>'
-          '<h2 class="center editorial">We already understand this system.<br>Let us guide you through it.</h2>'
-          '<p class="guide__lead center">White Card, OWCP, FECA, VA Community Care &mdash; we work inside these programs every day. You don&rsquo;t have to learn them, track the paperwork, or figure out what you&rsquo;re owed. That is our job. Yours is simply to call.</p>'
-          '<p class="guide__link center"><a href="#programs">Or see what each program covers first &rarr;</a></p>'
+      '<section class="band" id="complex">'
+        '<div class="statement">'
+          '<p class="eyebrow center">Built for complex care</p>'
+          '<h2 class="center editorial">Most agencies are built for routine cases. We are built for the ones that are not.</h2>'
+          '<p class="sub center mx">Patients on federal programs often carry more than one condition, more than one payer, and more than one agency that gets it wrong. We coordinate the whole picture &mdash; clinically and on paper &mdash; so nothing falls through.</p>'
         '</div>'
       '</section>'
 
-      '<section class="band band--tint" id="programs">'
+      '<section class="band band--tint" id="serve">'
+        '<p class="eyebrow center">Where do you fit?</p>'
+        '<h2 class="center editorial">Start with your situation.</h2>'
+        '<div class="pathways">' + paths_html + '</div>'
+      '</section>'
+
+      '<section class="band" id="handle">'
+        '<div class="handle">'
+          '<div class="handle__lead">'
+            '<p class="eyebrow">We handle the hard part</p>'
+            '<h2 class="editorial">You don&rsquo;t fill out a single form.</h2>'
+            '<p class="sub">You don&rsquo;t fight for approval. You don&rsquo;t learn the system. That is the part we take off your hands.</p>'
+          '</div>'
+          '<ul class="ticks handle__ticks">' + handle_html + '</ul>'
+        '</div>'
+      '</section>'
+
+      '<section class="band band--tint" id="care">'
+        '<p class="eyebrow center">Care that comes to you</p>'
+        '<h2 class="center editorial">Skilled care for the whole patient &mdash; often at no cost to your family.</h2>'
+        '<p class="sub center mx">We watch for what actually determines whether treatment works, and act before a small problem becomes a hospitalization.</p>'
+        '<div class="care-grid">' + care_html + '</div>'
+      '</section>'
+
+      '<section class="band" id="programs">'
         '<p class="eyebrow center">The programs we know best</p>'
         '<h2 class="center editorial">See what each program covers.</h2>'
-        '<p class="sub center mx">Short, plain-language overviews &mdash; for when you want the details. We will still walk you through all of it.</p>'
+        '<p class="sub center mx">Short overviews, for when you want the details. We will still walk you through all of it.</p>'
         '<div class="programs">' + progs + '</div>'
       '</section>'
 
-      '<div class="authority-strip"><span>Nevada-licensed home health</span><span class="bar" aria-hidden="true"></span><span>VA Community Care Network provider</span><span class="bar" aria-hidden="true"></span><span>DOL Las Vegas Resource Center partner</span></div>'
-
-      '<section class="band" id="why">'
-        '<p class="eyebrow center">Why Alara</p>'
-        '<h2 class="center">What makes the care different</h2>'
+      '<section class="band band--tint" id="why">'
+        '<p class="eyebrow center">Why patients and physicians choose Alara</p>'
+        '<h2 class="center editorial">What makes the care different.</h2>'
         '<div class="why-grid">' + whys + '</div>'
       '</section>'
 
-      '<section class="band band--tint" id="about">'
+      '<section class="band" id="about">'
         '<div class="founder">'
-          '<div class="founder__photo"><span class="founder__ph">Real portrait<br>Jenn Gallinger, DON</span></div>'
+          '<div class="founder__photo"><span class="founder__ph">Portrait<br>Jenn Gallinger, DON</span></div>'
           '<div class="founder__copy">'
             '<p class="eyebrow">The nurse who runs Alara</p>'
             '<div class="founder__name">Jenn Gallinger</div>'
             '<div class="founder__title">Director of Nursing &amp; Founder</div>'
-            '<blockquote class="founder__quote">&ldquo;When we walk through someone&rsquo;s door, they are letting us in at the hardest moment of their lives. That is a responsibility I do not take lightly &mdash; and neither does anyone on this team.&rdquo;</blockquote>'
+            '<blockquote class="founder__quote">&ldquo;Every plan of care crosses my desk before it begins. That is not standard in this industry. It is standard here.&rdquo;</blockquote>'
             '<p class="founder__cred">RN, DON &middot; 20+ years in healthcare &middot; reviews every start of care herself</p>'
           '</div>'
         '</div>'
       '</section>'
 
-      '<section class="band" id="how">'
-        '<p class="eyebrow center">How it works</p>'
-        '<h2 class="center">Three steps, and we handle the rest</h2>'
-        '<div class="steps">' + steps + '</div>'
-      '</section>'
-
       '<section class="referral" id="physicians">'
         '<div class="referral__inner">'
-          '<div class="referral__lead"><p class="eyebrow eyebrow--light">For physicians &amp; partners</p>'
-            '<div class="referral__h">Your patients. Our paperwork.</div>'
-            '<div class="referral__props"><span>In-home assessment within 48 hours</span><span>Documentation, ready to review</span><span>Every referral answered in one hour</span></div></div>'
+          '<div class="referral__lead"><p class="eyebrow eyebrow--light">For physicians &amp; case managers</p>'
+            '<div class="referral__h">Refer in two minutes.</div>'
+            '<div class="referral__props"><span>In-home assessment within 48 hours</span><span>Documentation, ready to review</span><span>Every referral answered within the hour</span></div></div>'
           '<div class="referral__cta"><a class="btn btn--paper" href="tel:+17028149630">Refer a patient</a>'
             '<a class="btn btn--on-image" href="tel:+17252108285">Fax &middot; (725) 210-8285</a></div>'
         '</div>'
       '</section>'
 
-      '<section class="band">'
-        '<p class="proof center">Alara works alongside the DOL Las Vegas Resource Center and the VA Southern Nevada Healthcare System.</p>'
-        '<div class="final"><h2 class="center">Talk to a nurse.</h2>'
+      '<section class="band" id="talk">'
+        '<p class="eyebrow center">What happens when you call</p>'
+        '<div class="steps">' + steps + '</div>'
+        '<div class="final"><h2 class="center editorial">Talk to a nurse.</h2>'
         '<p class="sub center mx">A confidential conversation with a nurse who knows these programs. We will tell you honestly whether Alara is the right fit.</p>'
         '<div class="final__cta"><a class="btn btn--ink" href="tel:+17028149630">(702) 814-9630</a><a class="btn btn--line" href="/navigator">Find out if you qualify</a></div></div>'
       '</section>'
     )
-    return page("Federal Benefits, Understood. Care at Home.",
-                "Nurse-led home health in Las Vegas for EEOICPA White Card holders, federal and postal workers, and veterans, with a clear, source-cited federal benefits library.",
+    return page("Specialized Skilled Home Health for Complex Patients on Federal Programs",
+                "Nurse-led home health in Las Vegas for complex patients on federal programs &mdash; EEOICPA White Card, OWCP / FECA federal workers, and VA Community Care veterans. We handle the coordination, advocacy, and paperwork.",
                 body, "/", basic_graph("Alara Home Care", "/", [("Home", "/")]), site=site, path="/", wide=True)
 
 # ---- other views -------------------------------------------------------------
