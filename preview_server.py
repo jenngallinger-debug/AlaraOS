@@ -161,7 +161,6 @@ def view_home(site):
             '<a class="btn btn--paper" href="/navigator">Find out if you qualify</a>'
             '<a class="btn btn--on-image" href="/navigator?node=by-who">Refer a patient</a>'
           '</div>'
-          '<p class="hero__note">Free, about ten minutes, no obligation</p>'
         '</div></div>'
       '</section>'
 
@@ -199,7 +198,7 @@ def view_home(site):
 
       '<section class="convert-band">'
         '<div class="convert-band__inner">'
-          '<div><h2>Talk to a nurse.</h2><p>Free, about ten minutes, no obligation. We will tell you honestly whether Alara is the right fit.</p></div>'
+          '<div><h2>Talk to a nurse.</h2><p>A confidential conversation with a nurse who knows these programs. We will tell you honestly whether Alara is the right fit.</p></div>'
           '<div class="convert-band__cta">'
             '<a class="btn btn--paper" href="tel:+17028149630">(702) 814-9630</a>'
             '<a class="btn btn--on-image" href="/navigator">Find out if you qualify</a>'
