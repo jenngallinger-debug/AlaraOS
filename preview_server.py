@@ -132,7 +132,7 @@ def page(title, desc, body, active, jsonld=None, crumbs=None, site=None, path="/
 # ---- homepage ----------------------------------------------------------------
 AUDIENCE_DOORS = [
     ("White Card / EEOICPA", "Former Nevada Test Site &amp; DOE workers. Covered skilled care at home, at no cost to you.", "/navigator?node=eeoicpa-need", "$0 out-of-pocket", False),
-    ("Federal Workers / OWCP", "Federal and postal employees with an accepted work injury or illness.", "/navigator?node=owcp-need", "", False),
+    ("Federal Workers Compensation", "Federal and postal employees with an OWCP/FECA-accepted work injury or illness.", "/navigator?node=owcp-need", "", False),
     ("Veterans / VA Community Care", "Eligible veterans through TriWest, Region 4. You do not need Medicare.", "/navigator?node=va-need", "", False),
     ("Physicians &amp; Referral Partners", "Refer a patient. In-home assessment within 48 hours. One-hour response.", "#physicians", "Referral partners", True),
 ]
@@ -160,22 +160,14 @@ PROGRAMS = [
      "If you worked at the Nevada Test Site or a Department of Energy site and later got sick, the White Card pays for skilled care at home &mdash; nursing, wound care, therapy, even a paid family caregiver &mdash; at no cost to you.",
      ["Part B &mdash; $150,000 + lifetime medical", "Part E &mdash; up to $250,000, wage loss &amp; impairment", "Forms EE-1 (worker) &middot; EE-2 (survivor)", "Consequential conditions &mdash; covered after DOL acceptance"],
      "U.S. Department of Labor, DEEOIC", "/glossary/eeoicpa"),
-    ("02 &mdash; OWCP / FECA", "Injured on the job as a federal or postal worker? Your care can come home.",
+    ("02 &mdash; Federal Workers Compensation (OWCP / FECA)", "Injured on the job as a federal or postal worker? Your care can come home.",
      "When OWCP accepts your claim and your physician orders it, federal workers&rsquo; compensation can cover skilled nursing, therapy, and home health aide care &mdash; and we handle the authorization so you do not have to.",
      ["Covers federal &amp; postal employees", "FECA, administered by OWCP", "Physician order + OWCP authorization", "No out-of-pocket cost when authorized"],
      "U.S. Department of Labor, OWCP", "/glossary/owcp"),
-    ("03 &mdash; DCMWC (Black Lung)", "Coal miners and their families have a benefit most agencies cannot bill.",
-     "The federal Black Lung program covers miners with pneumoconiosis and their survivors. When a claim is approved, covered medical care &mdash; including skilled care at home &mdash; comes at no cost. We know the DCMWC process.",
-     ["Black Lung Benefits Act", "Administered by DOL / DCMWC", "Covers pneumoconiosis &amp; survivors", "Monthly benefits + medical coverage"],
-     "U.S. Department of Labor, DCMWC", "/glossary/dcmwc"),
-    ("04 &mdash; VA Community Care", "Veterans can get home health through the VA &mdash; without the wait, and without Medicare.",
+    ("03 &mdash; Veterans / VA Community Care", "Veterans can get home health through the VA &mdash; without the wait, and without Medicare.",
      "When the VA cannot deliver care directly, eligible veterans receive skilled home health through the Community Care Network. Alara is a TriWest provider for Region 4.",
      ["VA Community Care Network", "TriWest, Region 4", "Referral + authorization from the VA", "You do not need Medicare"],
      "U.S. Department of Veterans Affairs", "/glossary/community-care"),
-    ("05 &mdash; Medicare", "Medicare home health, coordinated with every other benefit you hold.",
-     "Many of our patients carry more than one form of coverage. We accept Medicare Part A for skilled nursing and therapy, and our clinical team coordinates billing across every payer so families never have to.",
-     ["Medicare Part A &mdash; skilled nursing &amp; therapy", "Physician-ordered, homebound criteria", "Coordinated with White Card, OWCP &amp; VA", "No surprise billing"],
-     "Centers for Medicare &amp; Medicaid Services", "/glossary/medicare-home-health"),
 ]
 WHY_PILLARS = [
     ("A Director of Nursing reviews every case", "Every start-of-care assessment is reviewed before it is submitted. That is not standard in this industry. It is standard here."),
@@ -246,7 +238,7 @@ def view_home(site):
         '<p class="eyebrow center">The knowledge behind the care</p>'
         '<h2 class="center editorial">Understand the benefits you have already earned.</h2>'
         '<p class="sub center mx">Most families are never told the full scope of what they are owed. We make it clear &mdash; in plain language, with sources &mdash; so you are not figuring it out alone.</p>'
-        '<p class="rigor"><span class="rigor__progs">EEOICPA <i>&middot;</i> OWCP <i>&middot;</i> FECA <i>&middot;</i> DCMWC <i>&middot;</i> VA Community Care <i>&middot;</i> Medicare</span> &mdash; clinician-reviewed, and cited to the DOL, VA, and CMS.</p>'
+        '<p class="rigor"><span class="rigor__progs">EEOICPA / White Card <i>&middot;</i> Federal Workers Compensation (OWCP / FECA) <i>&middot;</i> Veterans / VA Community Care</span> &mdash; every program clinician-reviewed, and cited to the DOL and VA.</p>'
         '<div class="instruments">' + insts + '</div>'
         '<p class="rigor-foot">Reviewed by our Director of Nursing &middot; cited to primary federal sources &middot; updated as the rules change.</p>'
       '</section>'
