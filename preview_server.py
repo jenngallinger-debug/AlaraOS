@@ -48,8 +48,8 @@ SITE = "https://www.alarahomecare.com"
 
 def esc(s): return H.escape("" if s is None else str(s))
 
-NAVBAR = [("/", "Home"), ("/navigator", "Benefit Navigator"),
-          ("/glossary", "Federal Benefits Library"), ("/trust", "Trust & Sources")]
+NAVBAR = [("/#programs", "Programs"), ("/glossary", "Resources"),
+          ("/#physicians", "For Physicians"), ("/trust", "About")]
 
 # Public URLs included in the production sitemap.
 def public_paths():
@@ -120,35 +120,90 @@ def page(title, desc, body, active, jsonld=None, crumbs=None, site=None, path="/
         "<header class=\"site\"><a class=\"brand\" href=\"/\">"
         "<svg viewBox=\"0 0 100 92\" width=\"26\" height=\"24\" aria-hidden=\"true\"><path fill=\"currentColor\" fill-rule=\"evenodd\" d=\"M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z\"/></svg>"
         "<span style=\"display:flex;flex-direction:column;gap:3px;line-height:1\"><strong>ALARA</strong><span>HOME CARE</span></span></a>"
-        "<nav class=\"mainnav\" aria-label=\"Primary\">" + nav + "</nav></header>"
+        "<nav class=\"mainnav\" aria-label=\"Primary\">" + nav + "</nav>"
+        "<div class=\"headcta\"><a class=\"head-phone\" href=\"tel:+17028149630\">(702)&nbsp;814-9630</a>"
+        "<a class=\"btn btn--ink btn--sm\" href=\"/navigator\">Find out if you qualify</a></div></header>"
         + main_open + crumbs_html(crumbs) + body + "</main>"
         "<footer class=\"site\"><p><strong>Alara Home Care</strong> &middot; Nurse-led home health &middot; Las Vegas / Clark County / Southern Nevada &middot; (702) 814-9630</p>"
+        "<p class=\"footer-cred\">Nevada Licensed Home Health Agency &middot; License&nbsp;#&nbsp;[pending] &middot; Medicare CCN&nbsp;#&nbsp;[pending] &middot; NPI&nbsp;[pending] &middot; VA Community Care &mdash; TriWest Region 4</p>"
         "<p class=\"muted\">Educational information, not a benefits determination. We help you work with your Resource Center, physician, and the VA &mdash; we do not replace them.</p></footer>"
         "</body></html>")
 
 # ---- homepage ----------------------------------------------------------------
-ENTRY_POINTS = [
-    ("EEOICPA / White Card", "Former Nevada Test Site &amp; DOE workers. Covered home health at no cost to you.", "/navigator?node=eeoicpa-need"),
-    ("Federal Workers / OWCP", "Federal and postal employees with an accepted work injury or illness.", "/navigator?node=owcp-need"),
-    ("Veterans / VA Community Care", "Skilled home health through the VA Community Care Network, Region 4.", "/navigator?node=va-need"),
-    ("Physicians &amp; Referral Partners", "Refer a patient. A nurse assesses within 48 hours. One-hour response.", "/navigator?node=by-who"),
+AUDIENCE_DOORS = [
+    ("White Card / EEOICPA", "Former Nevada Test Site &amp; DOE workers. Covered skilled care at home, at no cost to you.", "/navigator?node=eeoicpa-need", "$0 out-of-pocket", False),
+    ("Federal Workers / OWCP", "Federal and postal employees with an accepted work injury or illness.", "/navigator?node=owcp-need", "", False),
+    ("Veterans / VA Community Care", "Eligible veterans through TriWest, Region 4. You do not need Medicare.", "/navigator?node=va-need", "", False),
+    ("Physicians &amp; Referral Partners", "Refer a patient. In-home assessment within 48 hours. One-hour response.", "#physicians", "Referral partners", True),
 ]
-TRUST_POINTS = [
-    ("Resource Centers", "We know the EEOICPA authorization process and the consequential-condition pathway, and we work alongside the DOL Las Vegas Resource Center."),
-    ("Physicians", "A Director of Nursing reviews every case. Documentation is accurate, coding is clean, and you reach our clinical team within one hour."),
-    ("Families", "Most patients pay nothing out of pocket. We handle the paperwork and explain every step in plain language."),
-    ("Patients", "Nurse-led, locally owned care across Clark County, built around your goals, not just your diagnosis."),
+QUESTION_GROUPS = [
+    ("White Card / EEOICPA", [
+        ("Does the White Card cover home health?", "/glossary/white-card"),
+        ("Can I get paid to care for my family member?", "/navigator?node=ans-paid-caregiver"),
+        ("Can I have the White Card and Medicare?", "/navigator?node=ans-white-card-medicare"),
+    ]),
+    ("OWCP / Federal workers", [
+        ("Does OWCP pay for home health?", "/navigator?node=ans-owcp-hh"),
+        ("How do federal workers qualify?", "/navigator?node=owcp-need"),
+    ]),
+    ("Veterans / VA", [
+        ("Am I eligible for VA home care without Medicare?", "/navigator?node=ans-va-hh"),
+        ("Does the VA cover home wound care?", "/navigator?node=ans-va-wound"),
+    ]),
+    ("Consequential conditions", [
+        ("What is a consequential condition, and is it covered?", "/glossary/consequential-condition"),
+        ("How fast can home health start?", "/navigator?node=ans-eeoicpa-hh"),
+    ]),
+]
+PROGRAMS = [
+    ("01 &mdash; EEOICPA", "The White Card covers more than most families are told.",
+     "If you worked at the Nevada Test Site or a Department of Energy site and later got sick, the White Card pays for skilled care at home &mdash; nursing, wound care, therapy, even a paid family caregiver &mdash; at no cost to you.",
+     ["Part B &mdash; $150,000 + lifetime medical", "Part E &mdash; up to $250,000, wage loss &amp; impairment", "Forms EE-1 (worker) &middot; EE-2 (survivor)", "Consequential conditions &mdash; covered after DOL acceptance"],
+     "U.S. Department of Labor, DEEOIC", "/glossary/eeoicpa"),
+    ("02 &mdash; OWCP / FECA", "Injured on the job as a federal or postal worker? Your care can come home.",
+     "When OWCP accepts your claim and your physician orders it, federal workers&rsquo; compensation can cover skilled nursing, therapy, and home health aide care &mdash; and we handle the authorization so you do not have to.",
+     ["Covers federal &amp; postal employees", "FECA, administered by OWCP", "Physician order + OWCP authorization", "No out-of-pocket cost when authorized"],
+     "U.S. Department of Labor, OWCP", "/glossary/owcp"),
+    ("03 &mdash; VA Community Care", "Veterans can get home health through the VA &mdash; without the wait, and without Medicare.",
+     "When the VA cannot deliver care directly, eligible veterans receive skilled home health through the Community Care Network. Alara is a TriWest provider for Region 4.",
+     ["VA Community Care Network", "TriWest, Region 4", "Referral + authorization from the VA", "You do not need Medicare"],
+     "U.S. Department of Veterans Affairs", "/glossary/community-care"),
+]
+WHY_PILLARS = [
+    ("A Director of Nursing reviews every case", "Every start-of-care assessment is reviewed before it is submitted. That is not standard in this industry. It is standard here."),
+    ("We know the White Card program", "The authorization path, the consequential-condition pathway, and how to get claims paid in 15 to 28 days."),
+    ("One hour, every referral", "When you call, you reach our clinical team within one hour, and authorization gaps are blocked before they happen."),
+    ("Whole-person, hospital-avoidance care", "We screen for what determines whether treatment actually works, and act before a small problem becomes a hospitalization."),
+]
+STEPS = [
+    ("Call", "Tell us your situation. A nurse listens &mdash; no script, no pressure."),
+    ("We verify &amp; authorize", "We confirm your benefit and handle the paperwork with the DOL, OWCP, or VA."),
+    ("Care begins", "Skilled care at home, usually within days."),
 ]
 
 def view_home(site):
-    entry = "".join(
-        '<a class="ep-card" href="' + href + '"><span class="ep-card__arch" aria-hidden="true"></span>'
-        '<span class="ep-card__body"><span class="ep-card__title">' + label + '</span>'
-        '<span class="ep-card__desc">' + desc + '</span>'
-        '<span class="ep-card__go">Explore <i aria-hidden="true">&rarr;</i></span></span></a>'
-        for (label, desc, href) in ENTRY_POINTS)
-    trust = "".join(
-        '<div class="trust-card"><h3>' + t + '</h3><p>' + d + '</p></div>' for (t, d) in TRUST_POINTS)
+    doors = "".join(
+        '<a class="door' + (' door--invert' if inv else '') + '" href="' + href + '"><span class="door__arch" aria-hidden="true"></span>'
+        '<span class="door__body"><span class="door__title">' + label + '</span>'
+        '<span class="door__desc">' + desc + '</span>'
+        '<span class="door__foot"><span class="door__go">Explore <i aria-hidden="true">&rarr;</i></span>'
+        + (('<span class="door__tag">' + tag + '</span>') if tag else '') + '</span></span></a>'
+        for (label, desc, href, tag, inv) in AUDIENCE_DOORS)
+    qcols = ""
+    for (grp, qs) in QUESTION_GROUPS:
+        rows = "".join('<a class="q-row" href="' + h + '"><span class="q-txt">' + q + '</span><span class="q-arrow" aria-hidden="true">&rarr;</span></a>' for (q, h) in qs)
+        qcols += '<div class="q-group"><p class="q-grp">' + grp + '</p>' + rows + '</div>'
+    progs = ""
+    for (eyb, head, lede, facts, src, href) in PROGRAMS:
+        fl = "".join('<li>' + f + '</li>' for f in facts)
+        progs += ('<article class="program"><div class="program__main">'
+                  '<p class="program__eyb">Federal program &middot; ' + eyb + '</p>'
+                  '<h3 class="program__title">' + head + '</h3><p class="program__lede">' + lede + '</p>'
+                  '<p class="program__foot"><a class="program__cta" href="' + href + '">Read the brief &rarr;</a>'
+                  '<span class="program__src">Source &mdash; ' + src + '</span></p></div>'
+                  '<aside class="program__facts"><p class="facts__label">At a glance</p><ul>' + fl + '</ul></aside></article>')
+    whys = "".join('<div class="why"><h3>' + t + '</h3><p>' + d + '</p></div>' for (t, d) in WHY_PILLARS)
+    steps = "".join('<div class="step"><span class="step__n">' + str(i + 1).zfill(2) + '</span><h3>' + t + '</h3><p>' + d + '</p></div>' for i, (t, d) in enumerate(STEPS))
     body = (
       '<section class="hero">'
         '<div class="hero__text"><div class="hero__copy">'
@@ -163,47 +218,81 @@ def view_home(site):
         '<div class="hero__media"><img class="hero__img" src="/public/hero-arches.webp" alt="A grand travertine archway framing a brass door at the top of a wide staircase" loading="eager"></div>'
       '</section>'
 
-      '<section class="band">'
-        '<p class="eyebrow center">Start where you are</p>'
-        '<h2 class="center">Four ways in</h2>'
-        '<div class="ep-grid">' + entry + '</div>'
+      '<section class="band" id="serve">'
+        '<p class="eyebrow center">Who we serve</p>'
+        '<h2 class="center">Care built for who you are</h2>'
+        '<div class="door-grid">' + doors + '</div>'
       '</section>'
 
-      '<section class="band band--tint feature">'
-        '<div class="feature__row">'
-          '<div class="feature__text"><p class="eyebrow">Benefit Navigator</p>'
-            '<h2>Not sure where you fit?</h2>'
-            '<p class="sub">Answer a few plain questions and reach a clear, sourced answer about your coverage and your next step. It does not replace your Resource Center or physician. It helps you work with them.</p>'
-            '<a class="btn btn--ink" href="/navigator">Open the Benefit Navigator</a>'
-            '<p class="feature__note">Free, about ten minutes, no obligation.</p></div>'
-          '<div class="feature__mark"><span class="big-arch" aria-hidden="true"></span></div>'
+      '<section class="band band--tint" id="understand">'
+        '<p class="eyebrow center">Start with answers</p>'
+        '<h2 class="center editorial">Understand the benefits you have already earned.</h2>'
+        '<p class="sub center mx">Most families are never told the full scope of what their White Card, OWCP, or VA benefits cover. We make it clear &mdash; in plain language, with sources.</p>'
+        '<div class="engine-grid">'
+          '<a class="engine-tile" href="/navigator"><span class="engine-out">Find out what&rsquo;s covered</span>'
+          '<span class="engine-sub">Answer a few questions and reach a clear, sourced answer about your coverage and your next step.</span>'
+          '<span class="engine-tool">Through the Benefit Navigator &rarr;</span></a>'
+          '<a class="engine-tile" href="/glossary"><span class="engine-out">Read it in plain language</span>'
+          '<span class="engine-sub">Clinician-reviewed, source-cited explanations of every program and the care it covers.</span>'
+          '<span class="engine-tool">In the Federal Benefits Library &rarr;</span></a>'
         '</div>'
       '</section>'
 
-      '<section class="band feature">'
-        '<div class="feature__row reverse">'
-          '<div class="feature__text"><p class="eyebrow">Federal Benefits Library</p>'
-            '<h2>The benefits, in plain language.</h2>'
-            '<p class="sub">Clinician-reviewed, source-cited explanations of the White Card, EEOICPA, OWCP, VA Community Care, and the care they cover. Written to be understood, and built to be cited.</p>'
-            '<a class="btn btn--ink" href="/glossary">Open the Library</a></div>'
-          '<div class="feature__mark"><span class="big-arch" aria-hidden="true"></span></div>'
-        '</div>'
+      '<section class="band" id="questions">'
+        '<p class="eyebrow center">Questions we answer every day</p>'
+        '<h2 class="center editorial">The questions everyone asks &mdash; answered, with sources.</h2>'
+        '<div class="q-index">' + qcols + '</div>'
+        '<p class="q-foot center">Every answer is clinician-reviewed and cites the DOL, VA, or CMS. <a href="/glossary">Browse the library &rarr;</a></p>'
       '</section>'
 
-      '<section class="band">'
-        '<p class="eyebrow center">Quiet authority</p>'
-        '<h2 class="center">Why Resource Centers, physicians, families, and patients use Alara</h2>'
-        '<div class="trust-grid">' + trust + '</div>'
+      '<section class="band band--tint" id="programs">'
+        '<p class="eyebrow center">Federal programs we serve</p>'
+        '<h2 class="center editorial">What each program covers, and how to reach it.</h2>'
+        '<div class="programs">' + progs + '</div>'
       '</section>'
 
-      '<section class="convert-band">'
-        '<div class="convert-band__inner">'
-          '<div><h2>Talk to a nurse.</h2><p>A confidential conversation with a nurse who knows these programs. We will tell you honestly whether Alara is the right fit.</p></div>'
-          '<div class="convert-band__cta">'
-            '<a class="btn btn--paper" href="tel:+17028149630">(702) 814-9630</a>'
-            '<a class="btn btn--on-image" href="/navigator">Find out if you qualify</a>'
+      '<div class="authority-strip"><span>Nevada Licensed Home Health</span><span class="bar" aria-hidden="true"></span><span>VA Community Care Network</span><span class="bar" aria-hidden="true"></span><span>EEOICPA White Card Expertise</span><span class="bar" aria-hidden="true"></span><span>Federal Workers &amp; Veterans</span></div>'
+
+      '<section class="band" id="why">'
+        '<p class="eyebrow center">Why Alara</p>'
+        '<h2 class="center">What makes the care different</h2>'
+        '<div class="why-grid">' + whys + '</div>'
+      '</section>'
+
+      '<section class="band band--tint" id="about">'
+        '<div class="founder">'
+          '<div class="founder__photo"><span class="founder__ph">Real portrait<br>Jenn Gallinger, DON</span></div>'
+          '<div class="founder__copy">'
+            '<p class="eyebrow">The nurse who runs Alara</p>'
+            '<div class="founder__name">Jenn Gallinger</div>'
+            '<div class="founder__title">Director of Nursing &amp; Founder</div>'
+            '<blockquote class="founder__quote">&ldquo;When we walk through someone&rsquo;s door, they are letting us in at the hardest moment of their lives. That is a responsibility I do not take lightly &mdash; and neither does anyone on this team.&rdquo;</blockquote>'
+            '<p class="founder__cred">RN, DON &middot; 20+ years in healthcare &middot; reviews every start of care herself</p>'
           '</div>'
         '</div>'
+      '</section>'
+
+      '<section class="band" id="how">'
+        '<p class="eyebrow center">How it works</p>'
+        '<h2 class="center">Three steps, and we handle the rest</h2>'
+        '<div class="steps">' + steps + '</div>'
+      '</section>'
+
+      '<section class="referral" id="physicians">'
+        '<div class="referral__inner">'
+          '<div class="referral__lead"><p class="eyebrow eyebrow--light">For physicians &amp; partners</p>'
+            '<div class="referral__h">Your patients. Our paperwork.</div>'
+            '<div class="referral__props"><span>In-home assessment within 48 hours</span><span>Documentation, ready to review</span><span>Every referral answered in one hour</span></div></div>'
+          '<div class="referral__cta"><a class="btn btn--paper" href="tel:+17028149630">Refer a patient</a>'
+            '<a class="btn btn--on-image" href="tel:+17252108285">Fax &middot; (725) 210-8285</a></div>'
+        '</div>'
+      '</section>'
+
+      '<section class="band">'
+        '<p class="proof center">Alara works alongside the DOL Las Vegas Resource Center and the VA Southern Nevada Healthcare System.</p>'
+        '<div class="final"><h2 class="center">Talk to a nurse.</h2>'
+        '<p class="sub center mx">A confidential conversation with a nurse who knows these programs. We will tell you honestly whether Alara is the right fit.</p>'
+        '<div class="final__cta"><a class="btn btn--ink" href="tel:+17028149630">(702) 814-9630</a><a class="btn btn--line" href="/navigator">Find out if you qualify</a></div></div>'
       '</section>'
     )
     return page("Federal Benefits, Understood. Care at Home.",
