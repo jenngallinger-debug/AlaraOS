@@ -132,14 +132,19 @@ main.wide{max-width:none;padding:0}
 .hero__lead{color:#EDE9E5;font-size:clamp(15px,1.5vw,19px);line-height:1.7;max-width:38ch;margin:22px 0 30px;text-shadow:0 1px 16px rgba(20,18,16,.5)}
 .hero__cta{display:flex;gap:12px;flex-wrap:wrap}
 .hero__note{color:#D8D2CC;font-size:13px;margin-top:14px;letter-spacing:.02em}
-@media(max-width:860px){
-  .hero{min-height:clamp(560px,82vh,820px);align-items:flex-end}
-  .hero__photo{background-position:50% 50%}
+@media(max-width:900px){
+  /* Mobile/tablet: photo and copy SEPARATED so copy never covers the door or the
+     stair path. Photo is full-bleed at its true 1660:2500 ratio (zero crop); copy
+     sits on an espresso band below where the existing light-on-dark copy still works. */
+  .hero{display:block;min-height:0;background:var(--c-ink)}
+  .hero__photo{position:static;width:100%;aspect-ratio:1660/2500;max-height:82vh;
+    background-size:contain;background-position:center;background-color:#C9C4BC}
   .hero::before{display:none}
-  .hero__scrim{background:linear-gradient(180deg,rgba(22,19,16,.30) 0%,rgba(22,19,16,0) 24%,rgba(22,19,16,.12) 52%,rgba(22,19,16,.82) 100%)}
-  .hero__inner{padding-bottom:38px}
+  .hero__scrim{display:none}
+  .hero__inner{position:static;background:var(--c-ink);padding:36px var(--gutter) 44px}
   .hero__copy{max-width:none}
-  .hero__lead{max-width:46ch}
+  .hero__title{text-shadow:none}
+  .hero__lead{text-shadow:none;max-width:54ch}
 }
 
 .btn--paper{background:var(--c-cream);color:var(--c-ink);border-color:var(--c-cream)}

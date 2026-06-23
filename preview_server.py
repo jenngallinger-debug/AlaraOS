@@ -16,6 +16,7 @@ from urllib.parse import urlparse
 HERE = os.path.dirname(os.path.abspath(__file__))
 PLATFORM = os.path.dirname(HERE)
 PORT = int(os.environ.get("PORT", "3000"))
+ASSET_VER = str(int(datetime.datetime.now().timestamp()))  # cache-bust static assets per server start
 
 # ---- SITE MODE / indexing ----------------------------------------------------
 SITE_MODE = os.environ.get("SITE_MODE", "production" if os.environ.get("PUBLIC_SITE") == "true" else "staging")
@@ -113,7 +114,7 @@ def page(title, desc, body, active, jsonld=None, crumbs=None, site=None, path="/
         "<title>" + esc(title) + " &mdash; Alara Home Care</title>"
         "<meta name=\"description\" content=\"" + esc(desc) + "\">"
         + robots_meta + canonical +
-        "<link rel=\"stylesheet\" href=\"/public/app.css\">" + ld + "</head><body>"
+        "<link rel=\"stylesheet\" href=\"/public/app.css?v=" + ASSET_VER + "\">" + ld + "</head><body>"
         "<a class=\"skip\" href=\"#main\">Skip to content</a>"
         + staging_ribbon +
         "<header class=\"site\"><a class=\"brand\" href=\"/\">"
@@ -338,8 +339,9 @@ class Handler(BaseHTTPRequestHandler):
                 if not fn.startswith(os.path.join(HERE, "public")): return self._send(403, "text/plain", "Forbidden")
                 if not os.path.exists(fn): return self._send(404, "text/plain", "Not found")
                 with open(fn, "rb") as f: data = f.read()
-                cache = {"Cache-Control": "public, max-age=3600"}
-                return self._send(200, MIME.get(os.path.splitext(fn)[1], "application/octet-stream"), data, cache)
+                ext = os.path.splitext(fn)[1]
+                cache = {"Cache-Control": "no-store"} if ext in (".css", ".js") else {"Cache-Control": "public, max-age=3600"}
+                return self._send(200, MIME.get(ext, "application/octet-stream"), data, cache)
             if p == "/api/navigator": return self._send(200, "application/json", json.dumps(NAV))
             if p == "/api/graph": return self._send(200, "application/json", json.dumps(GRAPH))
             if p == "/": return self._send(200, "text/html; charset=utf-8", view_home(site))
