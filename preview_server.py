@@ -156,7 +156,7 @@ def view_home(site):
         '<div class="hero__inner"><div class="hero__copy">'
           '<p class="hero__eyebrow">The federal-benefits home-care authority</p>'
           '<h1 class="hero__title">Understanding federal benefits.<br>Delivering care at home.</h1>'
-          '<p class="hero__lead">Nurse-led home health in Southern Nevada for EEOICPA White Card holders, federal and postal workers, and veterans. Plus a clear, source-cited library to understand the benefits you have already earned.</p>'
+          '<p class="hero__lead">Nurse-led skilled care at home for White Card, federal-worker, and veteran families across Southern Nevada.</p>'
           '<div class="hero__cta">'
             '<a class="btn btn--paper" href="/navigator">Find out if you qualify</a>'
             '<a class="btn btn--on-image" href="/navigator?node=by-who">Refer a patient</a>'

@@ -111,40 +111,53 @@ code{background:var(--c-beige);padding:1px 6px;border-radius:4px;font-size:.85em
   letter-spacing:.04em;padding:6px 12px}
 main.wide{max-width:none;padding:0}
 
-/* The photograph IS the hero. Sized by HEIGHT so the full vertical composition
-   (arch -> brass door -> entire staircase) is ALWAYS shown and the stairs never crop.
-   The travertine field matches the photo's wall and bleeds to the edges, so the sides
-   read as continuous wall rather than letterbox bars. */
-.hero{position:relative;min-height:clamp(660px,90vh,960px);display:flex;align-items:center;
-  overflow:hidden;background:#C9C4BC}
+/* The photograph IS the brand and owns the frame. Centered, sized by HEIGHT so the full
+   composition (arch -> brass door -> entire staircase) always shows and never crops; the
+   travertine field bleeds to both edges so the wall fills the full width. NO dark overlay.
+   The copy is a small, quiet inscription over the bright upper wall — it supports the
+   photograph, it does not compete with it. */
+.hero{position:relative;min-height:clamp(700px,96vh,1100px);display:flex;align-items:flex-start;
+  justify-content:center;overflow:hidden;background:#C9C4BC}
 .hero__photo{position:absolute;inset:0;background-image:url(/public/hero-arches.webp);
-  background-repeat:no-repeat;background-position:72% 50%;background-size:auto 100%;background-color:#C9C4BC}
+  background-repeat:no-repeat;background-position:center 50%;background-size:auto 100%;background-color:#C9C4BC}
 .hero::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:linear-gradient(90deg,#C9C4BC 0%,rgba(201,196,188,0) 13%,rgba(201,196,188,0) 87%,#C9C4BC 100%)}
-.hero__scrim{position:absolute;inset:0;z-index:2;
-  background:linear-gradient(90deg,rgba(22,19,16,.66) 0%,rgba(22,19,16,.44) 30%,rgba(22,19,16,.14) 52%,rgba(22,19,16,0) 70%)}
-.hero__inner{position:relative;z-index:3;width:100%;max-width:var(--maxw);margin-inline:auto;padding:var(--gutter)}
-.hero__copy{max-width:33rem}
-.hero__eyebrow{font-family:var(--font-display);font-size:var(--fs-eyebrow);letter-spacing:.24em;
-  text-transform:uppercase;color:#E5DFD8;margin:0 0 18px}
-.hero__title{font-family:var(--font-text);font-weight:600;color:#FBFBFB;font-size:clamp(32px,4.6vw,56px);
-  line-height:1.08;letter-spacing:-.015em;margin:0;text-shadow:0 1px 22px rgba(20,18,16,.5)}
-.hero__lead{color:#EDE9E5;font-size:clamp(15px,1.5vw,19px);line-height:1.7;max-width:38ch;margin:22px 0 30px;text-shadow:0 1px 16px rgba(20,18,16,.5)}
-.hero__cta{display:flex;gap:12px;flex-wrap:wrap}
-.hero__note{color:#D8D2CC;font-size:13px;margin-top:14px;letter-spacing:.02em}
+  background:linear-gradient(90deg,#C9C4BC 0%,rgba(201,196,188,0) 9%,rgba(201,196,188,0) 91%,#C9C4BC 100%)}
+/* a barely-there CREAM wash at the very top only, to lift the small dark copy off the
+   wall. Light and airy — never a gray overlay. */
+.hero__scrim{position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:radial-gradient(64% 42% at 50% 15%,rgba(247,243,236,.74) 0%,rgba(247,243,236,.3) 44%,rgba(247,243,236,0) 72%)}
+.hero__inner{position:relative;z-index:3;width:100%;max-width:var(--maxw);margin-inline:auto;
+  padding:clamp(34px,5.5vh,64px) var(--gutter) 0;text-align:center}
+.hero__copy{max-width:38rem;margin-inline:auto}
+.hero__eyebrow{font-family:var(--font-display);font-size:var(--fs-eyebrow);letter-spacing:.3em;
+  text-transform:uppercase;color:var(--c-ink);opacity:.8;margin:0 0 16px;text-shadow:none}
+.hero__title{font-family:var(--font-text);font-weight:500;color:var(--c-ink);font-size:clamp(25px,3.2vw,40px);
+  line-height:1.14;letter-spacing:-.01em;margin:0;text-shadow:none}
+.hero__lead{color:var(--c-espresso);opacity:.8;font-size:clamp(14px,1.15vw,16px);line-height:1.65;
+  max-width:42ch;margin:15px auto 22px;text-shadow:none}
+.hero__cta{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.hero__cta .btn--paper{background:var(--c-ink);color:var(--c-cream);border-color:var(--c-ink)}
+.hero__cta .btn--paper:hover{background:var(--c-espresso)}
+.hero__cta .btn--on-image{background:transparent;color:var(--c-ink);border-color:var(--c-faint)}
+.hero__cta .btn--on-image:hover{border-color:var(--c-ink)}
+.hero__note{color:var(--c-espresso);opacity:.58;font-size:13px;margin-top:13px;letter-spacing:.02em}
 @media(max-width:900px){
-  /* Mobile/tablet: photo and copy SEPARATED so copy never covers the door or the
-     stair path. Photo is full-bleed at its true 1660:2500 ratio (zero crop); copy
-     sits on an espresso band below where the existing light-on-dark copy still works. */
-  .hero{display:block;min-height:0;background:var(--c-ink)}
+  /* Mobile/tablet: photo and copy SEPARATED. Full-bleed photo at the true 1660:2500
+     ratio (contain, capped 82vh on tablet, zero crop); copy on an espresso band below. */
+  .hero{display:block;min-height:0;background:var(--c-ink);align-items:stretch}
   .hero__photo{position:static;width:100%;aspect-ratio:1660/2500;max-height:82vh;
     background-size:contain;background-position:center;background-color:#C9C4BC}
   .hero::before{display:none}
   .hero__scrim{display:none}
-  .hero__inner{position:static;background:var(--c-ink);padding:36px var(--gutter) 44px}
-  .hero__copy{max-width:none}
-  .hero__title{text-shadow:none}
-  .hero__lead{text-shadow:none;max-width:54ch}
+  .hero__inner{position:static;background:var(--c-ink);padding:34px var(--gutter) 42px;text-align:left}
+  .hero__copy{max-width:none;margin-inline:0}
+  .hero__eyebrow{color:#E5DFD8;opacity:1}
+  .hero__title{color:#FBFBFB}
+  .hero__lead{color:#EDE9E5;opacity:1;max-width:54ch}
+  .hero__note{color:#D8D2CC;opacity:1}
+  .hero__cta{justify-content:flex-start}
+  .hero__cta .btn--paper{background:var(--c-cream);color:var(--c-ink);border-color:var(--c-cream)}
+  .hero__cta .btn--on-image{background:transparent;color:var(--c-cream);border-color:rgba(251,251,251,.6)}
 }
 
 .btn--paper{background:var(--c-cream);color:var(--c-ink);border-color:var(--c-cream)}
