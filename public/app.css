@@ -111,18 +111,36 @@ code{background:var(--c-beige);padding:1px 6px;border-radius:4px;font-size:.85em
   letter-spacing:.04em;padding:6px 12px}
 main.wide{max-width:none;padding:0}
 
-.hero{position:relative;min-height:clamp(440px,74vh,660px);display:flex;align-items:center;
-  overflow:hidden;background:var(--c-beige)}
-.hero__bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 38%}
-.hero__scrim{position:absolute;inset:0;background:linear-gradient(90deg,rgba(26,23,20,.66),rgba(26,23,20,.44) 44%,rgba(26,23,20,.16))}
-.hero__inner{position:relative;width:100%;max-width:var(--maxw);margin-inline:auto;padding:56px var(--gutter)}
+/* The photograph IS the hero. Sized by HEIGHT so the full vertical composition
+   (arch -> brass door -> entire staircase) is ALWAYS shown and the stairs never crop.
+   The travertine field matches the photo's wall and bleeds to the edges, so the sides
+   read as continuous wall rather than letterbox bars. */
+.hero{position:relative;min-height:clamp(660px,90vh,960px);display:flex;align-items:center;
+  overflow:hidden;background:#C9C4BC}
+.hero__photo{position:absolute;inset:0;background-image:url(/public/hero-arches.webp);
+  background-repeat:no-repeat;background-position:72% 50%;background-size:auto 100%;background-color:#C9C4BC}
+.hero::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(90deg,#C9C4BC 0%,rgba(201,196,188,0) 13%,rgba(201,196,188,0) 87%,#C9C4BC 100%)}
+.hero__scrim{position:absolute;inset:0;z-index:2;
+  background:linear-gradient(90deg,rgba(22,19,16,.66) 0%,rgba(22,19,16,.44) 30%,rgba(22,19,16,.14) 52%,rgba(22,19,16,0) 70%)}
+.hero__inner{position:relative;z-index:3;width:100%;max-width:var(--maxw);margin-inline:auto;padding:var(--gutter)}
+.hero__copy{max-width:33rem}
 .hero__eyebrow{font-family:var(--font-display);font-size:var(--fs-eyebrow);letter-spacing:.24em;
-  text-transform:uppercase;color:#D9D3CD;margin:0 0 16px}
-.hero__title{font-family:var(--font-text);font-weight:600;color:#FBFBFB;font-size:clamp(30px,5vw,52px);
-  line-height:1.1;letter-spacing:-.01em;margin:0;max-width:18ch}
-.hero__lead{color:#ECE8E4;font-size:clamp(15px,1.6vw,19px);line-height:1.7;max-width:54ch;margin:20px 0 28px}
+  text-transform:uppercase;color:#E5DFD8;margin:0 0 18px}
+.hero__title{font-family:var(--font-text);font-weight:600;color:#FBFBFB;font-size:clamp(32px,4.6vw,56px);
+  line-height:1.08;letter-spacing:-.015em;margin:0;text-shadow:0 1px 22px rgba(20,18,16,.5)}
+.hero__lead{color:#EDE9E5;font-size:clamp(15px,1.5vw,19px);line-height:1.7;max-width:38ch;margin:22px 0 30px;text-shadow:0 1px 16px rgba(20,18,16,.5)}
 .hero__cta{display:flex;gap:12px;flex-wrap:wrap}
-.hero__note{color:#CFC9C4;font-size:13px;margin-top:13px;letter-spacing:.02em}
+.hero__note{color:#D8D2CC;font-size:13px;margin-top:14px;letter-spacing:.02em}
+@media(max-width:860px){
+  .hero{min-height:clamp(560px,82vh,820px);align-items:flex-end}
+  .hero__photo{background-position:50% 50%}
+  .hero::before{display:none}
+  .hero__scrim{background:linear-gradient(180deg,rgba(22,19,16,.30) 0%,rgba(22,19,16,0) 24%,rgba(22,19,16,.12) 52%,rgba(22,19,16,.82) 100%)}
+  .hero__inner{padding-bottom:38px}
+  .hero__copy{max-width:none}
+  .hero__lead{max-width:46ch}
+}
 
 .btn--paper{background:var(--c-cream);color:var(--c-ink);border-color:var(--c-cream)}
 .btn--paper:hover{background:#fff}

@@ -150,9 +150,9 @@ def view_home(site):
         '<div class="trust-card"><h3>' + t + '</h3><p>' + d + '</p></div>' for (t, d) in TRUST_POINTS)
     body = (
       '<section class="hero">'
-        '<img class="hero__bg" src="/public/hero-arches.webp" alt="A calm arched stone entrance with steps leading up to a doorway" onerror="this.style.display=\'none\'">'
+        '<div class="hero__photo" role="img" aria-label="A grand travertine archway framing a brass door at the top of a wide staircase, drawing the eye upward toward the entrance"></div>'
         '<div class="hero__scrim"></div>'
-        '<div class="hero__inner">'
+        '<div class="hero__inner"><div class="hero__copy">'
           '<p class="hero__eyebrow">The federal-benefits home-care authority</p>'
           '<h1 class="hero__title">Understanding federal benefits.<br>Delivering care at home.</h1>'
           '<p class="hero__lead">Nurse-led home health in Southern Nevada for EEOICPA White Card holders, federal and postal workers, and veterans. Plus a clear, source-cited library to understand the benefits you have already earned.</p>'
@@ -161,7 +161,7 @@ def view_home(site):
             '<a class="btn btn--on-image" href="/navigator?node=by-who">Refer a patient</a>'
           '</div>'
           '<p class="hero__note">Free, about ten minutes, no obligation</p>'
-        '</div>'
+        '</div></div>'
       '</section>'
 
       '<section class="band">'
