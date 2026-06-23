@@ -164,10 +164,18 @@ PROGRAMS = [
      "When OWCP accepts your claim and your physician orders it, federal workers&rsquo; compensation can cover skilled nursing, therapy, and home health aide care &mdash; and we handle the authorization so you do not have to.",
      ["Covers federal &amp; postal employees", "FECA, administered by OWCP", "Physician order + OWCP authorization", "No out-of-pocket cost when authorized"],
      "U.S. Department of Labor, OWCP", "/glossary/owcp"),
-    ("03 &mdash; VA Community Care", "Veterans can get home health through the VA &mdash; without the wait, and without Medicare.",
+    ("03 &mdash; DCMWC (Black Lung)", "Coal miners and their families have a benefit most agencies cannot bill.",
+     "The federal Black Lung program covers miners with pneumoconiosis and their survivors. When a claim is approved, covered medical care &mdash; including skilled care at home &mdash; comes at no cost. We know the DCMWC process.",
+     ["Black Lung Benefits Act", "Administered by DOL / DCMWC", "Covers pneumoconiosis &amp; survivors", "Monthly benefits + medical coverage"],
+     "U.S. Department of Labor, DCMWC", "/glossary/dcmwc"),
+    ("04 &mdash; VA Community Care", "Veterans can get home health through the VA &mdash; without the wait, and without Medicare.",
      "When the VA cannot deliver care directly, eligible veterans receive skilled home health through the Community Care Network. Alara is a TriWest provider for Region 4.",
      ["VA Community Care Network", "TriWest, Region 4", "Referral + authorization from the VA", "You do not need Medicare"],
      "U.S. Department of Veterans Affairs", "/glossary/community-care"),
+    ("05 &mdash; Medicare", "Medicare home health, coordinated with every other benefit you hold.",
+     "Many of our patients carry more than one form of coverage. We accept Medicare Part A for skilled nursing and therapy, and our clinical team coordinates billing across every payer so families never have to.",
+     ["Medicare Part A &mdash; skilled nursing &amp; therapy", "Physician-ordered, homebound criteria", "Coordinated with White Card, OWCP &amp; VA", "No surprise billing"],
+     "Centers for Medicare &amp; Medicaid Services", "/glossary/medicare-home-health"),
 ]
 WHY_PILLARS = [
     ("A Director of Nursing reviews every case", "Every start-of-care assessment is reviewed before it is submitted. That is not standard in this industry. It is standard here."),
@@ -204,6 +212,16 @@ def view_home(site):
                   '<aside class="program__facts"><p class="facts__label">At a glance</p><ul>' + fl + '</ul></aside></article>')
     whys = "".join('<div class="why"><h3>' + t + '</h3><p>' + d + '</p></div>' for (t, d) in WHY_PILLARS)
     steps = "".join('<div class="step"><span class="step__n">' + str(i + 1).zfill(2) + '</span><h3>' + t + '</h3><p>' + d + '</p></div>' for i, (t, d) in enumerate(STEPS))
+    lib_n = len(GLOSSARY)
+    nav_n = sum(1 for n in NAV.values() if isinstance(n, dict) and n.get("type") == "answer")
+    prog_n = len(PROGRAMS)
+    instruments = [
+        ("Federal Benefits Library", str(lib_n) + " terms, reviewed", "Source-cited explanations of every program, benefit, and term.", "/glossary"),
+        ("Benefit Navigator", str(nav_n) + " sourced answers", "Answer a few questions, reach a cited answer about your coverage.", "/navigator"),
+        ("Questions Engine", "indexed for search", "The questions families and partners ask, answered with sources.", "#questions"),
+        ("Program Research Briefs", str(prog_n) + " federal programs", "What each program covers at home, and how to access it.", "#programs"),
+    ]
+    insts = "".join('<a class="inst" href="' + h + '"><span class="inst__name">' + n + '</span><span class="inst__met">' + mt + '</span><span class="inst__desc">' + d + '</span></a>' for (n, mt, d, h) in instruments)
     body = (
       '<section class="hero">'
         '<div class="hero__text"><div class="hero__copy">'
@@ -225,17 +243,12 @@ def view_home(site):
       '</section>'
 
       '<section class="band band--tint" id="understand">'
-        '<p class="eyebrow center">Start with answers</p>'
+        '<p class="eyebrow center">The knowledge behind the care</p>'
         '<h2 class="center editorial">Understand the benefits you have already earned.</h2>'
-        '<p class="sub center mx">Most families are never told the full scope of what their White Card, OWCP, or VA benefits cover. We make it clear &mdash; in plain language, with sources.</p>'
-        '<div class="engine-grid">'
-          '<a class="engine-tile" href="/navigator"><span class="engine-out">Find out what&rsquo;s covered</span>'
-          '<span class="engine-sub">Answer a few questions and reach a clear, sourced answer about your coverage and your next step.</span>'
-          '<span class="engine-tool">Through the Benefit Navigator &rarr;</span></a>'
-          '<a class="engine-tile" href="/glossary"><span class="engine-out">Read it in plain language</span>'
-          '<span class="engine-sub">Clinician-reviewed, source-cited explanations of every program and the care it covers.</span>'
-          '<span class="engine-tool">In the Federal Benefits Library &rarr;</span></a>'
-        '</div>'
+        '<p class="sub center mx">Most families are never told the full scope of what they are owed. We make it clear &mdash; in plain language, with sources &mdash; so you are not figuring it out alone.</p>'
+        '<p class="rigor"><span class="rigor__progs">EEOICPA <i>&middot;</i> OWCP <i>&middot;</i> FECA <i>&middot;</i> DCMWC <i>&middot;</i> VA Community Care <i>&middot;</i> Medicare</span> &mdash; clinician-reviewed, and cited to the DOL, VA, and CMS.</p>'
+        '<div class="instruments">' + insts + '</div>'
+        '<p class="rigor-foot">Reviewed by our Director of Nursing &middot; cited to primary federal sources &middot; updated as the rules change.</p>'
       '</section>'
 
       '<section class="band" id="questions">'

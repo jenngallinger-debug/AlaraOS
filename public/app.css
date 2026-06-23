@@ -313,3 +313,16 @@ section[id]{scroll-margin-top:96px}
   .referral__inner{align-items:flex-start}
 }
 @media(max-width:480px){.door-grid{grid-template-columns:1fr}}
+
+/* §02 knowledge-system authority block */
+.rigor{text-align:center;max-width:66ch;margin:20px auto 0;font-size:14px;line-height:1.75;color:var(--c-muted)}
+.rigor__progs{color:var(--c-ink);font-weight:500}
+.rigor i{font-style:normal;color:var(--c-faint);margin:0 3px}
+.instruments{display:grid;grid-template-columns:1fr 1fr;gap:0 44px;max-width:880px;margin:26px auto 0}
+.inst{display:grid;grid-template-columns:1fr auto;gap:3px 14px;padding:18px 0;border-top:1px solid var(--c-hairline);text-decoration:none;color:var(--c-ink)}
+.inst:hover .inst__name{text-decoration:underline;text-underline-offset:3px}
+.inst__name{font-family:var(--font-serif);font-weight:500;font-size:17px;color:var(--c-ink);line-height:1.2}
+.inst__met{font-family:var(--font-display);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--c-faint);white-space:nowrap;align-self:center}
+.inst__desc{grid-column:1 / -1;font-size:12.5px;color:var(--c-muted);line-height:1.55;margin-top:2px}
+.rigor-foot{text-align:center;font-size:11.5px;color:var(--c-muted);max-width:880px;margin:20px auto 0;padding-top:15px;border-top:2px solid var(--c-ink)}
+@media(max-width:860px){.instruments{grid-template-columns:1fr}}

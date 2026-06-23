@@ -154,5 +154,31 @@
     "lastReviewed": "2026-06-22",
     "version": "1.0.0",
     "status": "draft"
+  },
+  {
+    "slug": "dcmwc",
+    "term": "DCMWC (Black Lung)",
+    "shortDefinition": "The Division of Coal Mine Workers' Compensation administers the federal Black Lung Benefits Act, which provides monthly payments and covered medical care — including skilled care at home — to coal miners with pneumoconiosis and their survivors.",
+    "plain": "If you mined coal and developed black lung disease (pneumoconiosis), the federal Black Lung program can pay monthly benefits and cover your medical care, including home health. Survivors may also qualify. Alara knows the DCMWC process.",
+    "whoItAffects": ["Coal miners", "Survivors of coal miners"],
+    "related": ["owcp", "home-health", "skilled-nursing"],
+    "sources": [{ "label": "U.S. Department of Labor — DCMWC", "url": "https://www.dol.gov/agencies/owcp/dcmwc" }],
+    "reviewer": { "name": "TODO Reviewer, RN", "role": "Director of Nursing" },
+    "lastReviewed": "2026-06-22",
+    "version": "1.0.0",
+    "status": "draft"
+  },
+  {
+    "slug": "medicare-home-health",
+    "term": "Medicare Home Health",
+    "shortDefinition": "Medicare Part A covers physician-ordered home health — skilled nursing, therapy, and home health aide services — for homebound beneficiaries who meet eligibility criteria, often alongside other federal benefits.",
+    "plain": "Medicare can pay for skilled care at home when a doctor orders it and you meet the homebound criteria. Many patients carry Medicare plus another benefit; Alara coordinates billing across all of them so families never have to.",
+    "whoItAffects": ["Seniors", "Medicare beneficiaries"],
+    "related": ["home-health", "skilled-nursing", "white-card"],
+    "sources": [{ "label": "Centers for Medicare & Medicaid Services", "url": "https://www.cms.gov/" }],
+    "reviewer": { "name": "TODO Reviewer, RN", "role": "Director of Nursing" },
+    "lastReviewed": "2026-06-22",
+    "version": "1.0.0",
+    "status": "draft"
   }
 ]
