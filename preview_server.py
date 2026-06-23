@@ -190,27 +190,15 @@ def view_home(site):
         '<span class="door__foot"><span class="door__go">Explore <i aria-hidden="true">&rarr;</i></span>'
         + (('<span class="door__tag">' + tag + '</span>') if tag else '') + '</span></span></a>'
         for (label, desc, href, tag, inv) in AUDIENCE_DOORS)
-    qcols = ""
-    for (grp, qs) in QUESTION_GROUPS:
-        rows = "".join('<a class="q-row" href="' + h + '"><span class="q-txt">' + q + '</span><span class="q-arrow" aria-hidden="true">&rarr;</span></a>' for (q, h) in qs)
-        qcols += '<div class="q-group"><p class="q-grp">' + grp + '</p>' + rows + '</div>'
     progs = ""
     for (eyb, head, lede, facts, src, href) in PROGRAMS:
-        fl = "".join('<li>' + f + '</li>' for f in facts)
-        progs += ('<article class="program"><div class="program__main">'
+        progs += ('<a class="program" href="' + href + '">'
                   '<p class="program__eyb">' + eyb + '</p>'
-                  '<h3 class="program__title">' + head + '</h3><p class="program__lede">' + lede + '</p>'
-                  '<p class="program__foot"><a class="program__cta" href="' + href + '">See what&rsquo;s covered &rarr;</a>'
-                  '<span class="program__src">Source &mdash; ' + src + '</span></p></div>'
-                  '<aside class="program__facts"><p class="facts__label">At a glance</p><ul>' + fl + '</ul></aside></article>')
+                  '<h3 class="program__title">' + head + '</h3>'
+                  '<p class="program__lede">' + lede + '</p>'
+                  '<span class="program__cta">See what&rsquo;s covered &rarr;</span></a>')
     whys = "".join('<div class="why"><h3>' + t + '</h3><p>' + d + '</p></div>' for (t, d) in WHY_PILLARS)
     steps = "".join('<div class="step"><span class="step__n">' + str(i + 1).zfill(2) + '</span><h3>' + t + '</h3><p>' + d + '</p></div>' for i, (t, d) in enumerate(STEPS))
-    paths = [
-        ("Understand what you&rsquo;ve earned", "Plain-language explanations of each federal benefit and what it covers at home.", "Start here", "/glossary"),
-        ("Get answers to the questions families ask most", "The real questions we hear every day &mdash; answered clearly, with the facts behind them.", "See the answers", "#questions"),
-        ("See what each program actually covers", "White Card, OWCP / FECA, and VA Community Care &mdash; what&rsquo;s covered, and who qualifies.", "Explore the programs", "#programs"),
-    ]
-    paths_html = "".join('<a class="path" href="' + h + '"><h3 class="path__h">' + n + '</h3><p class="path__p">' + d + '</p><span class="path__go">' + cta + ' <i aria-hidden="true">&rarr;</i></span></a>' for (n, d, cta, h) in paths)
     body = (
       '<section class="hero">'
         '<div class="hero__text"><div class="hero__copy">'
@@ -232,23 +220,18 @@ def view_home(site):
       '</section>'
 
       '<section class="band band--tint" id="understand">'
-        '<p class="eyebrow center">You don&rsquo;t have to figure this out alone</p>'
-        '<h2 class="center editorial">Understand the benefits you&rsquo;ve already earned.</h2>'
-        '<p class="sub center mx">Most families are never told the full scope of what they&rsquo;re owed. We explain it in plain language &mdash; and we handle the parts that are hard.</p>'
-        '<div class="paths">' + paths_html + '</div>'
-        '<p class="understand__foot center">Every explanation is written in plain language and reviewed by our Director of Nursing.</p>'
-      '</section>'
-
-      '<section class="band" id="questions">'
-        '<p class="eyebrow center">Real questions, clear answers</p>'
-        '<h2 class="center editorial">The questions families ask us most.</h2>'
-        '<div class="q-index">' + qcols + '</div>'
-        '<p class="q-foot center">Answered in plain language by our Director of Nursing. <a href="/glossary">Browse all answers &rarr;</a></p>'
+        '<div class="guide">'
+          '<p class="eyebrow center">You don&rsquo;t need to become an expert</p>'
+          '<h2 class="center editorial">We already understand this system.<br>Let us guide you through it.</h2>'
+          '<p class="guide__lead center">White Card, OWCP, FECA, VA Community Care &mdash; we work inside these programs every day. You don&rsquo;t have to learn them, track the paperwork, or figure out what you&rsquo;re owed. That is our job. Yours is simply to call.</p>'
+          '<p class="guide__link center"><a href="#programs">Or see what each program covers first &rarr;</a></p>'
+        '</div>'
       '</section>'
 
       '<section class="band band--tint" id="programs">'
         '<p class="eyebrow center">The programs we know best</p>'
-        '<h2 class="center editorial">See what each program actually covers.</h2>'
+        '<h2 class="center editorial">See what each program covers.</h2>'
+        '<p class="sub center mx">Short, plain-language overviews &mdash; for when you want the details. We will still walk you through all of it.</p>'
         '<div class="programs">' + progs + '</div>'
       '</section>'
 
