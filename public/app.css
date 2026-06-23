@@ -13,7 +13,7 @@ a{color:var(--c-deep-brass)}
 
 /* Header / wordmark */
 header.site{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
-  padding:16px var(--gutter);background:var(--c-cream);border-bottom:var(--border-hair)}
+  padding:22px var(--gutter);background:var(--c-cream)}
 .brand{text-decoration:none;color:var(--c-ink);display:flex;align-items:center;gap:11px}
 .brand strong{font-family:var(--font-display);font-weight:300;font-size:1.15rem;letter-spacing:.3em}
 .brand span span,.brand>span span{color:var(--c-faint);font-size:.55rem;letter-spacing:.32em;text-transform:uppercase}
@@ -111,53 +111,32 @@ code{background:var(--c-beige);padding:1px 6px;border-radius:4px;font-size:.85em
   letter-spacing:.04em;padding:6px 12px}
 main.wide{max-width:none;padding:0}
 
-/* The photograph IS the brand and owns the frame. Centered, sized by HEIGHT so the full
-   composition (arch -> brass door -> entire staircase) always shows and never crops; the
-   travertine field bleeds to both edges so the wall fills the full width. NO dark overlay.
-   The copy is a small, quiet inscription over the bright upper wall — it supports the
-   photograph, it does not compete with it. */
-.hero{position:relative;min-height:clamp(700px,96vh,1100px);display:flex;align-items:flex-start;
-  justify-content:center;overflow:hidden;background:#C9C4BC}
-.hero__photo{position:absolute;inset:0;background-image:url(/public/hero-arches.webp);
-  background-repeat:no-repeat;background-position:center 50%;background-size:auto 100%;background-color:#C9C4BC}
-.hero::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:linear-gradient(90deg,#C9C4BC 0%,rgba(201,196,188,0) 9%,rgba(201,196,188,0) 91%,#C9C4BC 100%)}
-/* a barely-there CREAM wash at the very top only, to lift the small dark copy off the
-   wall. Light and airy — never a gray overlay. */
-.hero__scrim{position:absolute;inset:0;z-index:2;pointer-events:none;
-  background:radial-gradient(64% 42% at 50% 15%,rgba(247,243,236,.74) 0%,rgba(247,243,236,.3) 44%,rgba(247,243,236,0) 72%)}
-.hero__inner{position:relative;z-index:3;width:100%;max-width:var(--maxw);margin-inline:auto;
-  padding:clamp(34px,5.5vh,64px) var(--gutter) 0;text-align:center}
-.hero__copy{max-width:38rem;margin-inline:auto}
-.hero__eyebrow{font-family:var(--font-display);font-size:var(--fs-eyebrow);letter-spacing:.3em;
-  text-transform:uppercase;color:var(--c-ink);opacity:.8;margin:0 0 16px;text-shadow:none}
-.hero__title{font-family:var(--font-text);font-weight:500;color:var(--c-ink);font-size:clamp(25px,3.2vw,40px);
-  line-height:1.14;letter-spacing:-.01em;margin:0;text-shadow:none}
-.hero__lead{color:var(--c-espresso);opacity:.8;font-size:clamp(14px,1.15vw,16px);line-height:1.65;
-  max-width:42ch;margin:15px auto 22px;text-shadow:none}
-.hero__cta{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
-.hero__cta .btn--paper{background:var(--c-ink);color:var(--c-cream);border-color:var(--c-ink)}
-.hero__cta .btn--paper:hover{background:var(--c-espresso)}
-.hero__cta .btn--on-image{background:transparent;color:var(--c-ink);border-color:var(--c-faint)}
-.hero__cta .btn--on-image:hover{border-color:var(--c-ink)}
-.hero__note{color:var(--c-espresso);opacity:.58;font-size:13px;margin-top:13px;letter-spacing:.02em}
-@media(max-width:900px){
-  /* Mobile/tablet: photo and copy SEPARATED. Full-bleed photo at the true 1660:2500
-     ratio (contain, capped 82vh on tablet, zero crop); copy on an espresso band below. */
-  .hero{display:block;min-height:0;background:var(--c-ink);align-items:stretch}
-  .hero__photo{position:static;width:100%;aspect-ratio:1660/2500;max-height:82vh;
-    background-size:contain;background-position:center;background-color:#C9C4BC}
-  .hero::before{display:none}
-  .hero__scrim{display:none}
-  .hero__inner{position:static;background:var(--c-ink);padding:34px var(--gutter) 42px;text-align:left}
-  .hero__copy{max-width:none;margin-inline:0}
-  .hero__eyebrow{color:#E5DFD8;opacity:1}
-  .hero__title{color:#FBFBFB}
-  .hero__lead{color:#EDE9E5;opacity:1;max-width:54ch}
-  .hero__note{color:#D8D2CC;opacity:1}
-  .hero__cta{justify-content:flex-start}
-  .hero__cta .btn--paper{background:var(--c-cream);color:var(--c-ink);border-color:var(--c-cream)}
-  .hero__cta .btn--on-image{background:transparent;color:var(--c-cream);border-color:rgba(251,251,251,.6)}
+/* Editorial split hero: calm copy on clean neutral (left), the arch as a tall architectural
+   image filling the right column. Image is cover + bottom-anchored so the full staircase and
+   brass door always show; only the plain top wall is trimmed. No overlay, no dead-space bars,
+   headline never sits on the image. */
+.hero{display:grid;grid-template-columns:45% 55%;min-height:clamp(560px,90vh,1000px);background:var(--c-cream)}
+.hero__text{display:flex;align-items:center;padding:clamp(40px,6vw,96px);background:var(--c-cream)}
+.hero__copy{max-width:30rem}
+.hero__eyebrow{font-family:var(--font-display);font-size:var(--fs-eyebrow);letter-spacing:.28em;
+  text-transform:uppercase;color:var(--c-muted);margin:0 0 22px}
+.hero__title{font-family:var(--font-text);font-weight:500;color:var(--c-ink);font-size:clamp(27px,3vw,42px);
+  line-height:1.14;letter-spacing:-.012em;margin:0}
+.hero__lead{color:var(--c-muted);font-size:clamp(15px,1.15vw,18px);line-height:1.7;max-width:34ch;margin:22px 0 32px}
+.hero__cta{display:flex;gap:14px;flex-wrap:wrap}
+.hero__media{position:relative;overflow:hidden;background:#C9C4BC}
+.hero__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 100%;display:block}
+.btn--line{background:transparent;color:var(--c-ink);border-color:var(--c-faint)}
+.btn--line:hover{border-color:var(--c-ink)}
+.feature__note{color:var(--c-muted);font-size:13px;margin:14px 0 0;letter-spacing:.01em}
+@media(max-width:860px){
+  /* Mobile: image first (full composition, no crop), copy below on a clean background. */
+  .hero{display:flex;flex-direction:column;min-height:0}
+  .hero__media{order:-1;background:var(--c-cream)}
+  .hero__img{position:static;height:auto;object-fit:contain;object-position:center}
+  .hero__text{padding:34px var(--gutter) 10px}
+  .hero__copy{max-width:none}
+  .hero__lead{max-width:48ch}
 }
 
 .btn--paper{background:var(--c-cream);color:var(--c-ink);border-color:var(--c-cream)}
