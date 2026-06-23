@@ -198,27 +198,23 @@ def view_home(site):
     for (eyb, head, lede, facts, src, href) in PROGRAMS:
         fl = "".join('<li>' + f + '</li>' for f in facts)
         progs += ('<article class="program"><div class="program__main">'
-                  '<p class="program__eyb">Federal program &middot; ' + eyb + '</p>'
+                  '<p class="program__eyb">' + eyb + '</p>'
                   '<h3 class="program__title">' + head + '</h3><p class="program__lede">' + lede + '</p>'
-                  '<p class="program__foot"><a class="program__cta" href="' + href + '">Read the brief &rarr;</a>'
+                  '<p class="program__foot"><a class="program__cta" href="' + href + '">See what&rsquo;s covered &rarr;</a>'
                   '<span class="program__src">Source &mdash; ' + src + '</span></p></div>'
                   '<aside class="program__facts"><p class="facts__label">At a glance</p><ul>' + fl + '</ul></aside></article>')
     whys = "".join('<div class="why"><h3>' + t + '</h3><p>' + d + '</p></div>' for (t, d) in WHY_PILLARS)
     steps = "".join('<div class="step"><span class="step__n">' + str(i + 1).zfill(2) + '</span><h3>' + t + '</h3><p>' + d + '</p></div>' for i, (t, d) in enumerate(STEPS))
-    lib_n = len(GLOSSARY)
-    nav_n = sum(1 for n in NAV.values() if isinstance(n, dict) and n.get("type") == "answer")
-    prog_n = len(PROGRAMS)
-    instruments = [
-        ("Federal Benefits Library", str(lib_n) + " terms, reviewed", "Source-cited explanations of every program, benefit, and term.", "/glossary"),
-        ("Benefit Navigator", str(nav_n) + " sourced answers", "Answer a few questions, reach a cited answer about your coverage.", "/navigator"),
-        ("Questions Engine", "indexed for search", "The questions families and partners ask, answered with sources.", "#questions"),
-        ("Program Research Briefs", str(prog_n) + " federal programs", "What each program covers at home, and how to access it.", "#programs"),
+    paths = [
+        ("Understand what you&rsquo;ve earned", "Plain-language explanations of each federal benefit and what it covers at home.", "Start here", "/glossary"),
+        ("Get answers to the questions families ask most", "The real questions we hear every day &mdash; answered clearly, with the facts behind them.", "See the answers", "#questions"),
+        ("See what each program actually covers", "White Card, OWCP / FECA, and VA Community Care &mdash; what&rsquo;s covered, and who qualifies.", "Explore the programs", "#programs"),
     ]
-    insts = "".join('<a class="inst" href="' + h + '"><span class="inst__name">' + n + '</span><span class="inst__met">' + mt + '</span><span class="inst__desc">' + d + '</span></a>' for (n, mt, d, h) in instruments)
+    paths_html = "".join('<a class="path" href="' + h + '"><h3 class="path__h">' + n + '</h3><p class="path__p">' + d + '</p><span class="path__go">' + cta + ' <i aria-hidden="true">&rarr;</i></span></a>' for (n, d, cta, h) in paths)
     body = (
       '<section class="hero">'
         '<div class="hero__text"><div class="hero__copy">'
-          '<p class="hero__eyebrow">The federal-benefits home-care authority</p>'
+          '<p class="hero__eyebrow">For families navigating White Card, OWCP &amp; VA benefits</p>'
           '<h1 class="hero__title">Understanding federal benefits.<br>Delivering care at home.</h1>'
           '<p class="hero__lead">Nurse-led skilled care at home for White Card, federal-worker, and veteran families across Southern Nevada.</p>'
           '<div class="hero__cta">'
@@ -236,28 +232,27 @@ def view_home(site):
       '</section>'
 
       '<section class="band band--tint" id="understand">'
-        '<p class="eyebrow center">The knowledge behind the care</p>'
-        '<h2 class="center editorial">Understand the benefits you have already earned.</h2>'
-        '<p class="sub center mx">Most families are never told the full scope of what they are owed. We make it clear &mdash; in plain language, with sources &mdash; so you are not figuring it out alone.</p>'
-        '<p class="rigor"><span class="rigor__progs">EEOICPA / White Card <i>&middot;</i> Federal Workers Compensation (OWCP / FECA) <i>&middot;</i> Veterans / VA Community Care</span> &mdash; every program clinician-reviewed, and cited to the DOL and VA.</p>'
-        '<div class="instruments">' + insts + '</div>'
-        '<p class="rigor-foot">Reviewed by our Director of Nursing &middot; cited to primary federal sources &middot; updated as the rules change.</p>'
+        '<p class="eyebrow center">You don&rsquo;t have to figure this out alone</p>'
+        '<h2 class="center editorial">Understand the benefits you&rsquo;ve already earned.</h2>'
+        '<p class="sub center mx">Most families are never told the full scope of what they&rsquo;re owed. We explain it in plain language &mdash; and we handle the parts that are hard.</p>'
+        '<div class="paths">' + paths_html + '</div>'
+        '<p class="understand__foot center">Every explanation is written in plain language and reviewed by our Director of Nursing.</p>'
       '</section>'
 
       '<section class="band" id="questions">'
-        '<p class="eyebrow center">Questions we answer every day</p>'
-        '<h2 class="center editorial">The questions everyone asks &mdash; answered, with sources.</h2>'
+        '<p class="eyebrow center">Real questions, clear answers</p>'
+        '<h2 class="center editorial">The questions families ask us most.</h2>'
         '<div class="q-index">' + qcols + '</div>'
-        '<p class="q-foot center">Every answer is clinician-reviewed and cites the DOL, VA, or CMS. <a href="/glossary">Browse the library &rarr;</a></p>'
+        '<p class="q-foot center">Answered in plain language by our Director of Nursing. <a href="/glossary">Browse all answers &rarr;</a></p>'
       '</section>'
 
       '<section class="band band--tint" id="programs">'
-        '<p class="eyebrow center">Federal programs we serve</p>'
-        '<h2 class="center editorial">What each program covers, and how to reach it.</h2>'
+        '<p class="eyebrow center">The programs we know best</p>'
+        '<h2 class="center editorial">See what each program actually covers.</h2>'
         '<div class="programs">' + progs + '</div>'
       '</section>'
 
-      '<div class="authority-strip"><span>Nevada Licensed Home Health</span><span class="bar" aria-hidden="true"></span><span>VA Community Care Network</span><span class="bar" aria-hidden="true"></span><span>EEOICPA White Card Expertise</span><span class="bar" aria-hidden="true"></span><span>Federal Workers &amp; Veterans</span></div>'
+      '<div class="authority-strip"><span>Nevada-licensed home health</span><span class="bar" aria-hidden="true"></span><span>VA Community Care Network provider</span><span class="bar" aria-hidden="true"></span><span>DOL Las Vegas Resource Center partner</span></div>'
 
       '<section class="band" id="why">'
         '<p class="eyebrow center">Why Alara</p>'
