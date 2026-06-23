@@ -54,6 +54,7 @@ NAVBAR = [("/#programs", "Programs"), ("/glossary", "Resources"),
 # Public URLs included in the production sitemap.
 def public_paths():
     paths = ["/", "/navigator", "/glossary", "/trust"]
+    paths += ["/programs/" + s for s in PILLARS]
     paths += ["/glossary/" + t["slug"] for t in GLOSSARY]
     return paths
 
@@ -131,9 +132,9 @@ def page(title, desc, body, active, jsonld=None, crumbs=None, site=None, path="/
 
 # ---- homepage ----------------------------------------------------------------
 AUDIENCE_DOORS = [
-    ("White Card / EEOICPA", "Former Nevada Test Site &amp; DOE workers. Covered skilled care at home, at no cost to you.", "/navigator?node=eeoicpa-need", "$0 out-of-pocket", False),
-    ("Federal Workers Compensation", "Federal and postal employees with an OWCP/FECA-accepted work injury or illness.", "/navigator?node=owcp-need", "", False),
-    ("Veterans / VA Community Care", "Eligible veterans through TriWest, Region 4. You do not need Medicare.", "/navigator?node=va-need", "", False),
+    ("White Card / EEOICPA", "Former Nevada Test Site &amp; DOE workers. Covered skilled care at home, at no cost to you.", "/programs/eeoicpa", "$0 out-of-pocket", False),
+    ("Federal Workers Compensation", "Federal and postal employees with an OWCP/FECA-accepted work injury or illness.", "/programs/owcp", "", False),
+    ("Veterans / VA Community Care", "Eligible veterans through TriWest, Region 4. You do not need Medicare.", "/programs/veterans", "", False),
     ("Physicians &amp; Referral Partners", "Refer a patient. In-home assessment within 48 hours. One-hour response.", "#physicians", "Referral partners", True),
 ]
 QUESTION_GROUPS = [
@@ -159,15 +160,15 @@ PROGRAMS = [
     ("01 &mdash; EEOICPA", "The White Card covers more than most families are told.",
      "If you worked at the Nevada Test Site or a Department of Energy site and later got sick, the White Card pays for skilled care at home &mdash; nursing, wound care, therapy, even a paid family caregiver &mdash; at no cost to you.",
      ["Part B &mdash; $150,000 + lifetime medical", "Part E &mdash; up to $250,000, wage loss &amp; impairment", "Forms EE-1 (worker) &middot; EE-2 (survivor)", "Consequential conditions &mdash; covered after DOL acceptance"],
-     "U.S. Department of Labor, DEEOIC", "/glossary/eeoicpa"),
+     "U.S. Department of Labor, DEEOIC", "/programs/eeoicpa"),
     ("02 &mdash; Federal Workers Compensation (OWCP / FECA)", "Injured on the job as a federal or postal worker? Your care can come home.",
      "When OWCP accepts your claim and your physician orders it, federal workers&rsquo; compensation can cover skilled nursing, therapy, and home health aide care &mdash; and we handle the authorization so you do not have to.",
      ["Covers federal &amp; postal employees", "FECA, administered by OWCP", "Physician order + OWCP authorization", "No out-of-pocket cost when authorized"],
-     "U.S. Department of Labor, OWCP", "/glossary/owcp"),
+     "U.S. Department of Labor, OWCP", "/programs/owcp"),
     ("03 &mdash; Veterans / VA Community Care", "Veterans can get home health through the VA &mdash; without the wait, and without Medicare.",
      "When the VA cannot deliver care directly, eligible veterans receive skilled home health through the Community Care Network. Alara is a TriWest provider for Region 4.",
      ["VA Community Care Network", "TriWest, Region 4", "Referral + authorization from the VA", "You do not need Medicare"],
-     "U.S. Department of Veterans Affairs", "/glossary/community-care"),
+     "U.S. Department of Veterans Affairs", "/programs/veterans"),
 ]
 WHY_PILLARS = [
     ("A Director of Nursing reviews every case", "Every start-of-care assessment is reviewed before it is submitted. That is not standard in this industry. It is standard here."),
@@ -361,6 +362,132 @@ def view_trust(site):
                 basic_graph("Trust & Sources", "/trust", [("Home", "/"), ("Trust & Sources", "/trust")]),
                 crumbs=[("Home", "/"), ("Trust & Sources", "/trust")], site=site, path="/trust")
 
+# ---- the three pillars (definitive program reference pages) ------------------
+PILLARS = {
+  "eeoicpa": {
+    "num": "01", "nav": "EEOICPA / White Card", "title": "EEOICPA & the White Card",
+    "h1": "EEOICPA and the White Card, explained.",
+    "meta": "What the EEOICPA White Card covers at home, who qualifies, and how to use it — a plain-language, source-cited reference for DOE and Nevada Test Site workers and their families.",
+    "lede": "The Energy Employees Occupational Illness Compensation Program Act &mdash; EEOICPA &mdash; provides compensation and lifetime medical benefits to Department of Energy and Nevada Test Site workers who became ill from their work. When a condition is accepted, the worker receives a White Card and covered care, including skilled care at home, at no out-of-pocket cost.",
+    "glance": [("Administered by", "U.S. DOL &mdash; DEEOIC"), ("Part B", "$150,000 + lifetime medical"), ("Part E", "Up to $250,000"), ("The White Card", "Medical-benefits ID for accepted conditions"), ("Out-of-pocket cost", "None, for covered care")],
+    "overview": [
+      "<p>EEOICPA was enacted in 2000 to compensate the men and women who built and maintained the nation&rsquo;s nuclear-weapons complex and later developed serious illnesses. It is administered by the U.S. Department of Labor through the Division of Energy Employees Occupational Illness Compensation (DEEOIC).</p>",
+      "<p>The program has two parts. <strong>Part B</strong> covers radiation-induced cancers, chronic beryllium disease, and silicosis, paying a lump sum of $150,000 plus lifetime medical benefits. <strong>Part E</strong> covers a broader range of illnesses caused by toxic exposure at DOE facilities, and can pay up to $250,000 for wage loss and impairment in addition to medical coverage.</p>",
+      "<p>When a condition is accepted, the worker &mdash; or an eligible survivor &mdash; receives a <strong>White Card</strong>, a medical-benefits identification card used like an insurance card to obtain covered care for the accepted condition. There are no premiums, copays, or deductibles for that care.</p>"],
+    "eligibility_intro": "EEOICPA covers workers across the DOE nuclear-weapons complex, including:",
+    "eligibility": ["Department of Energy employees and their contractors and subcontractors", "Atomic Weapons Employer (AWE) workers", "Nevada Test Site and Tonopah Test Range workers", "Members of the Special Exposure Cohort (SEC), who qualify with fewer requirements", "Eligible survivors, who may file using Form EE-2"],
+    "covered_intro": "Once a condition is accepted, the White Card covers physician-ordered care at home, including:",
+    "covered": ["Skilled nursing &mdash; wound care, IV / infusion therapy, medication management", "Physical and occupational therapy", "Home health aide services", "Medical social work and benefits navigation", "Caregiver training, and in many cases a paid family caregiver", "Durable medical equipment and home-safety modifications", "Travel reimbursement for covered care"],
+    "misunderstandings": [
+      ("&ldquo;I have Medicare, so I can&rsquo;t use the White Card.&rdquo;", "You can have both. The White Card and Medicare operate independently &mdash; neither cancels the other, and the White Card pays for your accepted condition."),
+      ("&ldquo;It only covers my original diagnosis.&rdquo;", "A <em>consequential condition</em> &mdash; a new problem caused by your accepted condition or its treatment &mdash; can also be covered once the Department of Labor accepts it."),
+      ("&ldquo;Home health isn&rsquo;t covered, only doctor visits.&rdquo;", "Skilled home health is covered. Many White Card holders are never told the full scope of what they are entitled to."),
+      ("&ldquo;There will be bills.&rdquo;", "For covered care tied to an accepted condition, there is no out-of-pocket cost.")],
+    "faqs": [
+      ("Does the White Card cover home health care?", "Yes. Physician-ordered home health &mdash; skilled nursing, wound care, therapy, and home health aide services &mdash; is covered at no out-of-pocket cost for approved beneficiaries."),
+      ("Can I get paid to care for my family member?", "Under EEOICPA in-home care benefits, a family member who already provides daily care may be able to be employed and paid to provide it, with RN supervision, when authorized."),
+      ("Can I use the White Card and Medicare at the same time?", "Yes. They operate independently and do not cancel each other."),
+      ("What is a consequential condition?", "A new illness or injury that results from an already-accepted condition or its treatment, which may also become covered after Department of Labor approval."),
+      ("How do I get a White Card?", "File an EEOICPA claim &mdash; Form EE-1 as a worker, or EE-2 as a survivor &mdash; with the Department of Labor. The DOL Las Vegas Resource Center can help. When a condition is accepted, the White Card is issued.")],
+    "glossary": ["white-card", "eeoicpa", "eeoicpa-part-b", "eeoicpa-part-e", "consequential-condition", "impairment-evaluation"],
+    "questions": [("Does the White Card cover home health?", "/navigator?node=ans-eeoicpa-hh"), ("Can I get paid to care for my family member?", "/navigator?node=ans-paid-caregiver"), ("Can I have the White Card and Medicare?", "/navigator?node=ans-white-card-medicare")],
+    "sources": [("U.S. Department of Labor &mdash; EEOICP", "https://www.dol.gov/agencies/owcp/energy")],
+  },
+  "owcp": {
+    "num": "02", "nav": "Federal Workers Compensation", "title": "Federal Workers Compensation (OWCP / FECA)",
+    "h1": "Federal Workers Compensation, explained.",
+    "meta": "How Federal Workers Compensation (OWCP / FECA) covers home health for federal and postal employees — eligibility, covered services, and how to access it. A source-cited reference.",
+    "lede": "The Federal Employees&rsquo; Compensation Act (FECA), administered by the Department of Labor&rsquo;s Office of Workers&rsquo; Compensation Programs (OWCP), provides medical care and wage replacement to federal and postal employees with work-related injuries or illnesses. When a claim is accepted and a physician orders it, OWCP can authorize skilled care at home at no out-of-pocket cost.",
+    "glance": [("Administered by", "U.S. DOL &mdash; OWCP (DFEC)"), ("The law", "Federal Employees&rsquo; Compensation Act"), ("Who", "Federal &amp; postal employees"), ("To access", "Physician order + OWCP authorization"), ("Out-of-pocket cost", "None, when authorized")],
+    "overview": [
+      "<p>OWCP &mdash; the Office of Workers&rsquo; Compensation Programs &mdash; administers federal workers&rsquo; compensation. For federal and postal employees, the governing law is the Federal Employees&rsquo; Compensation Act (FECA), handled by OWCP&rsquo;s Division of Federal Employees&rsquo;, Longshore and Harbor Workers&rsquo; Compensation (DFEC).</p>",
+      "<p>When a federal or postal worker is injured or made ill on the job and the claim is accepted, FECA covers the medical care required to treat the accepted condition. With a physician&rsquo;s order and OWCP authorization, that care can include skilled home health &mdash; at no out-of-pocket cost.</p>",
+      "<p>Alara handles the authorization process with OWCP, so patients and families do not have to navigate it alone.</p>"],
+    "eligibility_intro": "FECA covers civilian federal and postal employees, including:",
+    "eligibility": ["United States Postal Service (USPS) employees", "Department of Veterans Affairs and other agency civilian staff", "Federal law enforcement and TSA personnel", "Department of Defense civilian employees", "Other federal employees with an accepted, work-related condition"],
+    "covered_intro": "When OWCP authorizes care, FECA can cover physician-ordered home health, including:",
+    "covered": ["Skilled nursing &mdash; wound care, medication management, post-surgical care", "Physical and occupational therapy", "Home health aide services", "Care coordination across providers"],
+    "misunderstandings": [
+      ("&ldquo;OWCP doesn&rsquo;t cover care at home.&rdquo;", "It can. When a physician orders home health for an accepted condition and OWCP authorizes it, the care is covered."),
+      ("&ldquo;I&rsquo;ll have to fight for the authorization myself.&rdquo;", "We handle the authorization with OWCP, and our scheduling blocks visits without a valid authorization number."),
+      ("&ldquo;Postal workers aren&rsquo;t federal employees for this.&rdquo;", "USPS employees are covered by FECA the same way as other federal employees.")],
+    "faqs": [
+      ("Does OWCP cover home health care?", "Yes. When a claim is accepted, a physician orders it, and OWCP authorizes it, home health is covered at no out-of-pocket cost."),
+      ("How do federal workers qualify?", "Your work-related injury or illness must be accepted by OWCP, and a physician must order the home health care."),
+      ("Who pays for the care?", "OWCP pays for authorized care tied to your accepted condition; there is no out-of-pocket cost to you."),
+      ("Are postal workers covered?", "Yes. USPS employees are covered under FECA like other federal employees.")],
+    "glossary": ["owcp", "feca", "home-health", "wound-care"],
+    "questions": [("Does OWCP pay for home health?", "/navigator?node=ans-owcp-hh"), ("How do federal workers qualify?", "/navigator?node=owcp-need")],
+    "sources": [("U.S. Department of Labor &mdash; OWCP / FECA", "https://www.dol.gov/agencies/owcp/FECA")],
+  },
+  "veterans": {
+    "num": "03", "nav": "Veterans / VA Community Care", "title": "Veterans & VA Community Care",
+    "h1": "VA Community Care for veterans, explained.",
+    "meta": "How eligible veterans get home health through VA Community Care (TriWest, Region 4) — eligibility, covered services, and the referral process. No Medicare required.",
+    "lede": "When the VA cannot readily provide care directly, eligible veterans can receive skilled home health from approved community providers through the VA Community Care Network (CCN). Alara is a CCN provider for Region 4 through TriWest Healthcare Alliance &mdash; no Medicare required.",
+    "glance": [("Administered by", "U.S. Department of Veterans Affairs"), ("Network", "VA Community Care Network"), ("Region 4", "TriWest Healthcare Alliance"), ("To access", "VA referral + authorization"), ("Medicare", "Not required")],
+    "overview": [
+      "<p>VA Community Care lets the VA authorize care from approved community providers when it cannot deliver that care directly &mdash; for example, when demand exceeds capacity or specialized home care is needed.</p>",
+      "<p>In the western United States, including Nevada (Region 4), the network is administered by TriWest Healthcare Alliance. Alara is a CCN provider, so a veteran referred through Community Care can receive skilled home health from our nurses.</p>",
+      "<p>Veterans do not need Medicare to use VA Community Care, and the PACT Act has expanded coverage for veterans exposed to burn pits, contaminated water, and other hazards.</p>"],
+    "eligibility_intro": "Eligibility for VA Community Care home health generally requires:",
+    "eligibility": ["Enrollment in VA health care", "A VA referral and authorization for community care", "A provider order for skilled home health", "PACT Act toxic-exposure conditions may expand what the VA covers"],
+    "covered_intro": "Through Community Care, eligible veterans can receive physician-ordered home health, including:",
+    "covered": ["Skilled nursing &mdash; wound care, medication management, chronic-disease management", "Physical and occupational therapy", "Home health aide services", "Post-hospitalization and hospital-avoidance care"],
+    "misunderstandings": [
+      ("&ldquo;I need Medicare to get VA home health.&rdquo;", "You do not. VA Community Care does not require Medicare."),
+      ("&ldquo;Community Care means the VA wait still applies.&rdquo;", "Community Care exists precisely to provide access when the VA cannot deliver care directly &mdash; often faster."),
+      ("&ldquo;Only the VA hospital can provide my home care.&rdquo;", "Approved community providers in the network, like Alara, deliver authorized home health.")],
+    "faqs": [
+      ("Am I eligible for VA home care without Medicare?", "Yes. VA Community Care does not require Medicare. Eligibility is based on VA enrollment and a referral and authorization."),
+      ("How does VA Community Care work?", "When the VA cannot deliver care directly, it authorizes a community provider in its network (TriWest, Region 4) to provide it."),
+      ("Does the VA cover home wound care?", "Yes. Eligible veterans can receive skilled home wound care through Community Care when referred and authorized.")],
+    "glossary": ["community-care", "triwest", "home-health", "wound-care"],
+    "questions": [("Am I eligible for VA home care without Medicare?", "/navigator?node=ans-va-hh"), ("Does the VA cover home wound care?", "/navigator?node=ans-va-wound")],
+    "sources": [("U.S. Department of Veterans Affairs &mdash; Community Care", "https://www.va.gov/communitycare/")],
+  },
+}
+
+def view_pillar(site, slug):
+    p = PILLARS.get(slug)
+    if not p: return None
+    glance = "".join('<div class="glance__row"><span class="glance__k">' + k + '</span><span class="glance__v">' + v + '</span></div>' for (k, v) in p["glance"])
+    elig = "".join('<li>' + i + '</li>' for i in p["eligibility"])
+    cov = "".join('<li>' + i + '</li>' for i in p["covered"])
+    myth = "".join('<div class="myth"><p class="myth__m">' + m + '</p><p class="myth__r">' + r + '</p></div>' for (m, r) in p["misunderstandings"])
+    faqs_html = "".join('<div class="faq__item"><div class="faq__q">' + q + '</div><div class="faq__a">' + a + '</div></div>' for (q, a) in p["faqs"])
+    gloss = "".join(('<a class="chip" href="/glossary/' + g + '">' + esc(GBY[g]["term"]) + '</a>') if g in GBY else ('<span class="chip">' + esc(g) + '</span>') for g in p["glossary"])
+    qs = "".join('<li><a href="' + h + '">' + q + '</a></li>' for (q, h) in p["questions"])
+    srcs = "".join('<li><a href="' + u + '" rel="nofollow noopener" target="_blank">' + l + '</a></li>' for (l, u) in p["sources"])
+    crumbs = [("Home", "/"), ("Programs", "/#programs"), (p["nav"], "/programs/" + slug)]
+    g = basic_graph(p["title"], "/programs/" + slug, crumbs)
+    g["@graph"].append({"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for (q, a) in p["faqs"]]})
+    body = (
+      '<article class="pillar">'
+        '<p class="eyebrow">Federal program reference &middot; ' + p["num"] + '</p>'
+        '<h1 class="pillar__h1">' + p["h1"] + '</h1>'
+        '<p class="pillar__lede">' + p["lede"] + '</p>'
+        '<div class="pillar__body"><div class="pillar__main">'
+          '<section class="pillar__sec"><h2>Program overview</h2>' + "".join(p["overview"]) + '</section>'
+          '<section class="pillar__sec"><h2>Who qualifies</h2><p>' + p["eligibility_intro"] + '</p><ul class="ticks">' + elig + '</ul></section>'
+          '<section class="pillar__sec"><h2>What&rsquo;s covered at home</h2><p>' + p["covered_intro"] + '</p><ul class="ticks">' + cov + '</ul></section>'
+          '<section class="pillar__sec"><h2>Common misunderstandings</h2>' + myth + '</section>'
+          '<section class="pillar__sec"><h2>Frequently asked questions</h2><div class="faq">' + faqs_html + '</div></section>'
+          '<section class="pillar__sec"><h2>Keep reading</h2>'
+            '<p class="related__lab">Related glossary terms</p><div class="chips">' + gloss + '</div>'
+            '<p class="related__lab">Related questions</p><ul class="qlinks">' + qs + '</ul></section>'
+          '<section class="pillar__sec sources"><p class="sources__lab">Sources</p><ul>' + srcs + '</ul>'
+            '<p class="reviewer">Reviewed by [Director of Nursing, RN] &middot; last reviewed [pending] &middot; updated as the rules change.</p></section>'
+        '</div><aside class="pillar__rail">'
+          '<div class="glance"><p class="glance__lab">At a glance</p>' + glance + '</div>'
+          '<div class="pillar__cta"><p class="pillar__cta-h">Questions about your benefits?</p>'
+            '<p class="pillar__cta-p">A nurse who knows this program will walk you through it.</p>'
+            '<a class="btn btn--ink" href="tel:+17028149630">Talk to a nurse</a>'
+            '<a class="btn btn--line" href="/navigator">See if you qualify</a></div>'
+        '</aside></div>'
+      '</article>')
+    return page(p["title"], p["meta"], body, "/#programs", g, crumbs=crumbs, site=site, path="/programs/" + slug)
+
 # ---- robots / sitemap --------------------------------------------------------
 def robots_txt(site):
     if not site["indexable"]:
@@ -445,6 +572,11 @@ class Handler(BaseHTTPRequestHandler):
                 out = view_glossary_term(site, parts[2] if len(parts) > 2 else "")
                 return self._send(200 if out else 404, "text/html; charset=utf-8",
                                   out or page("Not found", "", "<h1>Term not found</h1><p><a href='/glossary'>Back</a></p>", "/glossary", site=site, path=p))
+            if p.startswith("/programs/"):
+                parts = p.split("/")
+                out = view_pillar(site, parts[2] if len(parts) > 2 else "")
+                return self._send(200 if out else 404, "text/html; charset=utf-8",
+                                  out or page("Not found", "", "<h1>Program not found</h1><p><a href='/#programs'>Back to programs</a></p>", "/", site=site, path=p))
             if p == "/graph":
                 # internal-only view; always noindex (covered by staging, and excluded from sitemap)
                 byt = {}
