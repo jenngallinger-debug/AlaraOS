@@ -49,7 +49,7 @@ SITE = "https://www.alarahomecare.com"
 def esc(s): return H.escape("" if s is None else str(s))
 
 NAVBAR = [("/#programs", "Programs"), ("/glossary", "Resources"),
-          ("/#physicians", "For Physicians"), ("/trust", "About")]
+          ("/#physicians", "Physicians"), ("/trust", "About")]
 
 # Public URLs included in the production sitemap.
 def public_paths():
