@@ -17,20 +17,19 @@
   --c-espresso: #342E2E;     /* body text on paper */
   --c-muted: #645E5C;        /* secondary text (darkened taupe for AA on paper) */
   --c-faint: #817A7A;        /* taupe swatch — large/decorative text, dividers */
-  --c-beige: #D9D8D3;        /* greige swatch — the "Mediterranean" surface tone */
-  --c-mist: #E8E8E8;         /* light-gray swatch — alternate section tint */
-  --c-cream: #FBFBFB;        /* lightest swatch — page background (paper) */
-  --c-surface: #FFFFFF;      /* raised card surface on paper */
-  --c-hairline: #E2E0DC;     /* soft warm hairline (between mist + greige) */
-  --c-on-dark: #FBFBFB;      /* text on espresso sections */
+  --c-beige: #D9D1C3;        /* greige stone — warm band tone */
+  --c-mist: #E9E2D5;         /* warm light stone — alternate section band */
+  --c-cream: #F4EFE6;        /* warm cream — page background (no pure white) */
+  --c-surface: #FBF8F2;      /* warm off-white card surface (never pure white) */
+  --c-hairline: #E3DCCF;     /* warm hairline */
+  --c-on-dark: #F4EFE6;      /* warm cream text on espresso sections */
   --c-on-dark-muted: #C9C4C1;/* secondary text on espresso */
 
-  /* --- Accent: NEUTRAL, from the agreed five-color palette. NO gold in the UI —
-         warmth comes from the photography (travertine arches, brass door), not from
-         interface color. This is the look we decided together; it supersedes the older
-         "Black and Gold" idea. Links + eyebrow text use espresso; keylines use taupe. --- */
-  --c-gold: #817A7A;         /* taupe — decorative keyline only */
-  --c-brass: #817A7A;        /* taupe — keylines, hover */
+  /* --- Accent: warm GOLD, used sparingly (Aman / RH brass-accent restraint) — small
+         marks, arrows, the wordmark tagline, hairline accents. Ties to the brass door in
+         the arch photography. Not for body text; espresso still carries links/headings. --- */
+  --c-gold: #A8852C;         /* gold — refined metallic accent, used sparingly */
+  --c-brass: #A8852C;        /* gold — keylines, hover */
   --c-deep-brass: #342E2E;   /* espresso — links + eyebrow text (links underlined) */
   --c-focus: #342E2E;        /* focus ring */
 

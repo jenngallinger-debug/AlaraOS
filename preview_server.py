@@ -228,7 +228,7 @@ def view_home(site):
 
       '<section class="bridge"><p class="bridge__line">For many families, the hardest part isn&rsquo;t the care. It&rsquo;s knowing what comes next.</p></section>'
 
-      '<section class="band" id="process">'
+      '<section class="band band--tint" id="process">'
         '<h2 class="sec-h">We take it from there.</h2>'
         '<div class="steps">' + steps_html + '</div>'
       '</section>'
