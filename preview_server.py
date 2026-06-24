@@ -120,7 +120,7 @@ def page(title, desc, body, active, jsonld=None, crumbs=None, site=None, path="/
         + staging_ribbon +
         "<header class=\"site\"><a class=\"brand\" href=\"/\">"
         "<svg viewBox=\"0 0 100 92\" width=\"26\" height=\"24\" aria-hidden=\"true\"><path fill=\"currentColor\" fill-rule=\"evenodd\" d=\"M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z\"/></svg>"
-        "<span style=\"display:flex;flex-direction:column;gap:3px;line-height:1\"><strong>ALARA</strong><span class=\"brand__tag\">Clarity when things get complicated</span></span></a>"
+        "<span style=\"display:flex;flex-direction:column;gap:3px;line-height:1\"><strong>ALARA</strong><span>HOME CARE</span></span></a>"
         "<nav class=\"mainnav\" aria-label=\"Primary\">" + nav + "</nav>"
         "<div class=\"headcta\"><a class=\"head-phone\" href=\"tel:+17028149630\">(702)&nbsp;814-9630</a>"
         "<a class=\"btn btn--ink btn--sm\" href=\"/navigator\">See if we can help</a></div></header>"
@@ -203,9 +203,8 @@ def view_home(site):
     body = (
       '<section class="hero">'
         '<div class="hero__head">'
-          '<p class="hero__eyebrow">White Card &middot; OWCP / FECA &middot; VA Community Care &middot; Southern Nevada</p>'
-          '<h1 class="hero__title">You were probably told home care isn&rsquo;t covered.</h1>'
-          '<p class="hero__lead">Usually, that&rsquo;s wrong &mdash; and we&rsquo;ll show you exactly what you qualify for.</p>'
+          '<h1 class="hero__title">Skilled care at home, through the federal benefits you&rsquo;ve already earned.</h1>'
+          '<p class="hero__lead">White Card, OWCP / FECA, and VA Community Care throughout Southern Nevada.</p>'
           '<div class="hero__cta">'
             '<a class="btn btn--ink" href="/navigator">See if we can help</a>'
             '<a class="btn btn--line" href="tel:+17028149630">Talk to a nurse</a>'
