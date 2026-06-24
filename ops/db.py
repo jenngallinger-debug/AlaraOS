@@ -19,7 +19,7 @@ OPS_DIR = os.path.dirname(os.path.abspath(__file__))
 ALARA_DIR = os.path.dirname(OPS_DIR)
 DATA_DIR = os.path.join(ALARA_DIR, "data")
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 # --- enum value sets (kept in one place so core.py / services can validate) ----
 ENUMS = {
@@ -51,12 +51,37 @@ ENUMS = {
     "task_status": ("open", "assigned", "in_progress", "completed", "escalated", "cancelled"),
     "document_type": ("sop", "authorization_submission", "order", "consent", "other"),
     "notification_status": ("queued", "sent", "failed"),
+    # --- v2: stakeholder trust engine ---
+    "stakeholder_type": ("patient", "family", "physician", "case_manager",
+                         "discharge_planner", "dol_resource_center", "attorney",
+                         "authorized_rep", "owcp_nurse_cm", "employer_feca",
+                         "care_guide", "auth_specialist", "don"),
+    "channel": ("email", "sms", "phone", "fax", "portal", "inapp", "none"),
+    "cadence": ("realtime", "daily_digest", "weekly", "on_milestone", "none"),
+    "consent_status": ("unknown", "granted", "restricted", "revoked"),
+    "comm_status": ("drafted", "queued", "sent", "failed", "skipped", "suppressed"),
+    "delivery_status": ("pending", "delivered", "bounced", "unknown"),
+    "delivery_mode": ("auto", "review", "task", "manual"),
+    "comm_category": ("clinical", "benefits", "status", "scheduling", "all"),
+    "digest_status": ("queued", "sent", "failed"),
+    "tone": ("operational", "reassuring", "benefit_execution", "neutral_compliant",
+             "task_action"),
+    "referral_kind": ("clinical_referral", "website_lead", "internal"),
+    "referral_stage": ("received", "under_review", "need_information", "accepted",
+                       "authorization_pending", "staffing", "soc_scheduled",
+                       "active_care", "closed_declined"),
 }
 
 
 def _check(col, key):
     vals = ",".join("'%s'" % v for v in ENUMS[key])
     return "%s TEXT NOT NULL CHECK(%s IN (%s))" % (col, col, vals)
+
+
+def _ncheck(col, key):
+    """Nullable enum column."""
+    vals = ",".join("'%s'" % v for v in ENUMS[key])
+    return "%s TEXT CHECK(%s IS NULL OR %s IN (%s))" % (col, col, col, vals)
 
 
 # Common audit columns appended to every business table.
@@ -326,6 +351,155 @@ CREATE INDEX IF NOT EXISTS ix_audit_object ON audit_log(object_type, object_id, 
 )
 
 
+# ============================================================================
+# v2 — Stakeholder Trust Engine
+# ============================================================================
+STAKEHOLDER_SQL = """
+CREATE TABLE IF NOT EXISTS stakeholder (
+  id TEXT PRIMARY KEY,
+  patient_id TEXT NOT NULL REFERENCES patient(id),
+  {sh_type},
+  name TEXT,
+  org TEXT,
+  email TEXT,
+  phone TEXT,
+  fax TEXT,
+  {pref_channel},
+  {cadence},
+  {consent_status},
+  consent_scope TEXT NOT NULL DEFAULT 'status',
+  is_internal INTEGER NOT NULL DEFAULT 0,
+  user_id TEXT REFERENCES app_user(id),
+  active INTEGER NOT NULL DEFAULT 1,
+  notes TEXT,
+  {audit}
+);
+
+CREATE TABLE IF NOT EXISTS stakeholder_profile (
+  id TEXT PRIMARY KEY,
+  stakeholder_id TEXT NOT NULL UNIQUE REFERENCES stakeholder(id),
+  job_to_be_done TEXT,
+  responsibility_transferred TEXT,
+  success_definition TEXT,
+  anxiety_risk TEXT,
+  communication_promise TEXT,
+  update_triggers TEXT,
+  {audit}
+);
+
+CREATE TABLE IF NOT EXISTS communication_rule (
+  id TEXT PRIMARY KEY,
+  event_type TEXT NOT NULL,
+  {rule_sh_type},
+  {rule_category},
+  {rule_delivery_mode},
+  template_key TEXT,
+  {rule_channel},
+  follow_up INTEGER NOT NULL DEFAULT 0,
+  sla_hours INTEGER NOT NULL DEFAULT 24,
+  active INTEGER NOT NULL DEFAULT 1,
+  {audit},
+  UNIQUE(event_type, stakeholder_type)
+);
+
+CREATE TABLE IF NOT EXISTS message_template (
+  id TEXT PRIMARY KEY,
+  key TEXT NOT NULL UNIQUE,
+  event_type TEXT NOT NULL,
+  {tmpl_sh_type},
+  {tmpl_tone},
+  {tmpl_channel},
+  subject TEXT,
+  body TEXT NOT NULL,
+  {audit}
+);
+
+CREATE TABLE IF NOT EXISTS communication_log (
+  id TEXT PRIMARY KEY,
+  patient_id TEXT NOT NULL REFERENCES patient(id),
+  stakeholder_id TEXT REFERENCES stakeholder(id),
+  {log_recipient_type},
+  event_id TEXT,
+  event_type TEXT NOT NULL,
+  template_key TEXT,
+  {log_channel},
+  recipient_name TEXT,
+  recipient_address TEXT,
+  subject TEXT,
+  body TEXT,
+  {log_status},
+  {log_delivery_status},
+  follow_up_required INTEGER NOT NULL DEFAULT 0,
+  follow_up_task_id TEXT REFERENCES task(id),
+  owner_id TEXT REFERENCES app_user(id),
+  sla_due TEXT,
+  sent_at TEXT,
+  {audit}
+);
+
+CREATE TABLE IF NOT EXISTS communication_preference (
+  id TEXT PRIMARY KEY,
+  stakeholder_id TEXT NOT NULL REFERENCES stakeholder(id),
+  {pref_category},
+  {pref2_channel},
+  {pref_cadence},
+  opt_in INTEGER NOT NULL DEFAULT 1,
+  {audit},
+  UNIQUE(stakeholder_id, category)
+);
+
+CREATE TABLE IF NOT EXISTS daily_digest (
+  id TEXT PRIMARY KEY,
+  recipient_user_id TEXT REFERENCES app_user(id),
+  recipient_stakeholder_id TEXT REFERENCES stakeholder(id),
+  {digest_recipient_type},
+  digest_date TEXT NOT NULL,
+  {digest_channel},
+  body TEXT,
+  case_count INTEGER NOT NULL DEFAULT 0,
+  {digest_status},
+  sent_at TEXT,
+  {audit}
+);
+
+CREATE INDEX IF NOT EXISTS ix_stakeholder_patient ON stakeholder(patient_id, type);
+CREATE INDEX IF NOT EXISTS ix_commlog_patient ON communication_log(patient_id, created_at);
+CREATE INDEX IF NOT EXISTS ix_commlog_status ON communication_log(status);
+CREATE INDEX IF NOT EXISTS ix_commlog_stakeholder ON communication_log(stakeholder_id);
+CREATE INDEX IF NOT EXISTS ix_commrule_event ON communication_rule(event_type);
+CREATE INDEX IF NOT EXISTS ix_tmpl_event_type ON message_template(event_type, stakeholder_type);
+CREATE INDEX IF NOT EXISTS ix_digest_user ON daily_digest(recipient_user_id, digest_date);
+""".format(
+    sh_type=_check("type", "stakeholder_type"),
+    pref_channel=_check("preferred_channel", "channel").replace(
+        "NOT NULL CHECK", "NOT NULL DEFAULT 'email' CHECK"),
+    cadence=_check("cadence", "cadence").replace(
+        "NOT NULL CHECK", "NOT NULL DEFAULT 'on_milestone' CHECK"),
+    consent_status=_check("consent_status", "consent_status").replace(
+        "NOT NULL CHECK", "NOT NULL DEFAULT 'unknown' CHECK"),
+    rule_sh_type=_check("stakeholder_type", "stakeholder_type"),
+    rule_category=_check("category", "comm_category"),
+    rule_delivery_mode=_check("delivery_mode", "delivery_mode"),
+    rule_channel=_ncheck("channel", "channel"),
+    tmpl_sh_type=_check("stakeholder_type", "stakeholder_type"),
+    tmpl_tone=_check("tone", "tone"),
+    tmpl_channel=_ncheck("channel", "channel"),
+    log_recipient_type=_check("recipient_type", "stakeholder_type"),
+    log_channel=_check("channel", "channel"),
+    log_status=_check("status", "comm_status"),
+    log_delivery_status=_check("delivery_status", "delivery_status").replace(
+        "NOT NULL CHECK", "NOT NULL DEFAULT 'pending' CHECK"),
+    pref_category=_check("category", "comm_category"),
+    pref2_channel=_check("channel", "channel"),
+    pref_cadence=_check("cadence", "cadence"),
+    digest_recipient_type=_check("recipient_type", "stakeholder_type"),
+    digest_channel=_check("channel", "channel"),
+    digest_status=_check("status", "digest_status").replace(
+        "NOT NULL CHECK", "NOT NULL DEFAULT 'queued' CHECK"),
+    audit=_AUDIT_COLS,
+)
+
+
 def db_path():
     return os.environ.get("OPS_DB_PATH") or os.path.join(DATA_DIR, "ops.db")
 
@@ -343,17 +517,48 @@ def get_conn():
     return conn
 
 
+def _add_col(conn, table, col, decl):
+    """Idempotently add a column (SQLite errors if it already exists)."""
+    have = [r["name"] for r in conn.execute("PRAGMA table_info(%s)" % table)]
+    if col not in have:
+        conn.execute("ALTER TABLE %s ADD COLUMN %s %s" % (table, col, decl))
+
+
+def _migrate_v1(conn):
+    conn.executescript(SCHEMA_SQL)
+
+
+def _migrate_v2(conn):
+    """Stakeholder Trust Engine: new tables + referral kind/stage columns.
+
+    referral.kind distinguishes website leads from clinical referrals (which
+    belong to Automynd); referral.stage is the referrer-facing case status.
+    """
+    conn.executescript(STAKEHOLDER_SQL)
+    _add_col(conn, "referral", "kind", "TEXT")     # referral_kind (validated in service layer)
+    _add_col(conn, "referral", "stage", "TEXT")    # referral_stage
+
+
+MIGRATIONS = [(1, _migrate_v1), (2, _migrate_v2)]
+
+
 def migrate():
-    """Idempotent: apply the schema and record the version."""
+    """Idempotent: apply any pending versioned migrations and record them."""
     conn = get_conn()
     try:
-        conn.executescript(SCHEMA_SQL)
-        row = conn.execute("SELECT MAX(version) AS v FROM schema_migrations").fetchone()
-        if not row or row["v"] is None or row["v"] < SCHEMA_VERSION:
+        conn.execute(
+            "CREATE TABLE IF NOT EXISTS schema_migrations "
+            "(version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL)"
+        )
+        applied = {r["version"] for r in conn.execute("SELECT version FROM schema_migrations")}
+        for version, fn in MIGRATIONS:
+            if version in applied:
+                continue
+            fn(conn)
             conn.execute(
                 "INSERT OR IGNORE INTO schema_migrations(version, applied_at) "
                 "VALUES (?, strftime('%Y-%m-%dT%H:%M:%SZ','now'))",
-                (SCHEMA_VERSION,),
+                (version,),
             )
         conn.commit()
     finally:

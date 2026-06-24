@@ -52,9 +52,45 @@ def run():
                 "INSERT INTO reauth_config(id, threshold_days, lead_min_days) VALUES (?,?,?)",
                 (new_id(), "[30,21,14]", 14),
             )
+        _seed_comms(conn)
         conn.commit()
     finally:
         conn.close()
+
+
+def _seed_comms(conn):
+    """Seed message templates + the event/stakeholder communication-rule contract."""
+    from . import comms_data as CD
+    sysrow = conn.execute("SELECT id FROM app_user WHERE role='system' LIMIT 1").fetchone()
+    sysid = sysrow["id"] if sysrow else None
+
+    for key, (subject, body) in CD.TEMPLATES.items():
+        if conn.execute("SELECT 1 FROM message_template WHERE key=?", (key,)).fetchone():
+            continue
+        event_type, sh_type = key.split(".", 1)
+        conn.execute(
+            "INSERT INTO message_template(id, key, event_type, stakeholder_type, tone, subject, body, created_at, created_by) "
+            "VALUES (?,?,?,?,?,?,?,?,?)",
+            (new_id(), key, event_type, sh_type, CD.TONE_BY_TYPE.get(sh_type, "operational"),
+             subject, body, now_iso(), sysid),
+        )
+
+    for event_type, rules in CD.RULES.items():
+        for (sh_type, mode, category, follow_up, sla_hours) in rules:
+            if conn.execute(
+                "SELECT 1 FROM communication_rule WHERE event_type=? AND stakeholder_type=?",
+                (event_type, sh_type),
+            ).fetchone():
+                continue
+            tkey = event_type + "." + sh_type
+            tmpl = tkey if tkey in CD.TEMPLATES else None
+            conn.execute(
+                "INSERT INTO communication_rule(id, event_type, stakeholder_type, category, "
+                "delivery_mode, template_key, follow_up, sla_hours, active, created_at, created_by) "
+                "VALUES (?,?,?,?,?,?,?,?,1,?,?)",
+                (new_id(), event_type, sh_type, category, mode, tmpl, follow_up, sla_hours,
+                 now_iso(), sysid),
+            )
 
 
 # --- lookups used by services / automations -----------------------------------

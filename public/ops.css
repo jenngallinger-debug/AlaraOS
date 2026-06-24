@@ -45,6 +45,11 @@ input, select { display: block; width: 100%; padding: 8px 10px; margin-top: 4px;
   border: 1px solid var(--c-hairline, #E2E0DC); border-radius: 3px; font: inherit; background: #fff; color: var(--c-ink, #342E2E); }
 .inline { display: flex; gap: 8px; align-items: center; }
 .inline select { width: auto; margin-top: 0; }
+.inline button { margin-top: 0; }
+.addsh { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px;
+  padding-top: 12px; border-top: 1px solid var(--c-hairline, #E2E0DC); }
+.addsh input, .addsh select { width: auto; margin-top: 0; flex: 1 1 130px; min-width: 110px; }
+.addsh button { margin-top: 0; flex: 0 0 auto; }
 .actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0; }
 .actions form { margin: 0; }
 
