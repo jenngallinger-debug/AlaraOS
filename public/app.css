@@ -144,7 +144,7 @@ main.wide{max-width:none;padding:0}
 
 .band{padding:var(--section-y) var(--gutter)}
 .band>*{max-width:var(--maxw);margin-inline:auto;width:100%}
-.band--tint{background:var(--c-mist)}
+.band--tint{background:var(--c-beige)}
 .center{text-align:center}
 
 .ep-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:30px}
@@ -438,7 +438,7 @@ h2.editorial{font-size:clamp(25px,3.1vw,40px);line-height:1.14;letter-spacing:-.
 /* bands */
 .band{padding:clamp(48px,6vw,88px) clamp(28px,5vw,72px)}
 .band>*{max-width:var(--maxw);margin-inline:auto;width:100%}
-.band--tint{background:var(--c-mist)}
+.band--tint{background:var(--c-beige)}
 .band--ink{background:var(--c-ink)}
 .sec-h{font-family:var(--font-grotesk);font-weight:600;font-size:clamp(26px,3.2vw,38px);line-height:1.05;letter-spacing:-.022em;color:var(--c-ink);margin:0 0 36px;max-width:22ch}
 .sec-h--light{color:var(--c-cream)}
@@ -456,8 +456,8 @@ h2.editorial{font-size:clamp(25px,3.1vw,40px);line-height:1.14;letter-spacing:-.
 /* confusion — the moat */
 .confusion{max-width:var(--maxw);margin-inline:auto}
 .confusion__h{font-family:var(--font-grotesk);font-weight:600;font-size:clamp(26px,3.4vw,40px);line-height:1.04;letter-spacing:-.026em;color:var(--c-ink);margin:0 0 32px;max-width:16ch}
-.confusion__list{max-width:560px;border-top:0.5px solid #DAD7D0}
-.told{font-family:var(--font-text);font-weight:400;font-size:clamp(16px,1.6vw,19px);color:var(--c-faint);margin:0;padding:15px 0;border-bottom:0.5px solid #DAD7D0}
+.confusion__list{max-width:560px;border-top:0.5px solid rgba(52,46,46,.12)}
+.told{font-family:var(--font-text);font-weight:400;font-size:clamp(16px,1.6vw,19px);color:var(--c-faint);margin:0;padding:15px 0;border-bottom:0.5px solid rgba(52,46,46,.12)}
 .confusion__turn{font-family:var(--font-grotesk);font-weight:600;font-size:clamp(19px,2.1vw,24px);line-height:1.3;letter-spacing:-.01em;color:var(--c-ink);margin:30px 0 0;max-width:30ch}
 
 /* bridge — one sentence, generous air */
@@ -474,8 +474,8 @@ h2.editorial{font-size:clamp(25px,3.1vw,40px);line-height:1.14;letter-spacing:-.
 /* care — the one espresso moment */
 .care{max-width:var(--maxw);margin-inline:auto}
 .care .sec-h{max-width:24ch}
-.care__body{font-family:var(--font-text);font-size:clamp(15px,1.5vw,18px);line-height:1.65;color:#C2BBB0;margin:0 0 24px;max-width:54ch}
-.care__note{font-family:var(--font-text);font-size:13.5px;line-height:1.6;color:#8F877B;margin:0;max-width:54ch;border-top:0.5px solid #463F39;padding-top:18px}
+.care__body{font-family:var(--font-text);font-size:clamp(15px,1.5vw,18px);line-height:1.65;color:var(--c-on-dark-muted);margin:0 0 24px;max-width:54ch}
+.care__note{font-family:var(--font-text);font-size:13.5px;line-height:1.6;color:rgba(251,251,251,.5);margin:0;max-width:54ch;border-top:0.5px solid rgba(251,251,251,.16);padding-top:18px}
 
 /* physician — discreet side entrance */
 .physband{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:20px clamp(28px,5vw,72px);background:var(--c-beige);border-top:0.5px solid var(--c-hairline);border-bottom:0.5px solid var(--c-hairline)}

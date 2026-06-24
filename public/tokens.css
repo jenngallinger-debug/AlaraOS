@@ -17,12 +17,12 @@
   --c-espresso: #342E2E;     /* body text on paper */
   --c-muted: #645E5C;        /* secondary text (darkened taupe for AA on paper) */
   --c-faint: #817A7A;        /* taupe swatch — large/decorative text, dividers */
-  --c-beige: #D9D1C3;        /* greige stone — warm band tone */
-  --c-mist: #E9E2D5;         /* warm light stone — alternate section band */
-  --c-cream: #F4EFE6;        /* warm cream — page background (no pure white) */
-  --c-surface: #FBF8F2;      /* warm off-white card surface (never pure white) */
-  --c-hairline: #E3DCCF;     /* warm hairline */
-  --c-on-dark: #F4EFE6;      /* warm cream text on espresso sections */
+  --c-beige: #D9D8D3;        /* APPROVED greige swatch — band tone */
+  --c-mist: #E8E8E8;         /* APPROVED light-gray swatch — alternate band */
+  --c-cream: #FBFBFB;        /* APPROVED paper swatch — page background (no pure-white #FFF) */
+  --c-surface: #FBFBFB;      /* paper swatch — card surface (never pure white) */
+  --c-hairline: #E2E0DC;     /* soft warm hairline */
+  --c-on-dark: #FBFBFB;      /* paper text on espresso sections */
   --c-on-dark-muted: #C9C4C1;/* secondary text on espresso */
 
   /* --- Accent: warm GOLD, used sparingly (Aman / RH brass-accent restraint) — small
