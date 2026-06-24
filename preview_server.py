@@ -203,8 +203,9 @@ def view_home(site):
     body = (
       '<section class="hero">'
         '<div class="hero__head">'
-          '<h1 class="hero__title">Skilled care at home, through the federal benefits you&rsquo;ve already earned.</h1>'
-          '<p class="hero__lead">White Card, OWCP / FECA, and VA Community Care throughout Southern Nevada.</p>'
+          '<p class="hero__eyebrow">White Card &middot; OWCP / FECA &middot; VA Community Care &middot; Southern Nevada</p>'
+          '<h1 class="hero__title">You were probably told home care isn&rsquo;t covered.</h1>'
+          '<p class="hero__lead">Usually, that&rsquo;s wrong &mdash; and we&rsquo;ll show you exactly what you qualify for.</p>'
           '<div class="hero__cta">'
             '<a class="btn btn--ink" href="/navigator">See if we can help</a>'
             '<a class="btn btn--line" href="tel:+17028149630">Talk to a nurse</a>'
