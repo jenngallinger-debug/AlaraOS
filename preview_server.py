@@ -9,13 +9,28 @@ Staging safety (see SITE_MODE below): unless SITE_MODE=production AND the reques
 real production domain, every page is noindex,nofollow, robots.txt disallows all, and the
 sitemap is disabled. This keeps the staging build (alarahc.com, *.onrender.com) out of search.
 """
-import json, os, html as H, datetime
+import json, os, sys, html as H, datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PLATFORM = os.path.dirname(HERE)
 PORT = int(os.environ.get("PORT", "3000"))
+
+# ---- Alara OS v0 (internal ops console) --------------------------------------
+# Wraps the bought EHR; structured, migration-ready operational substrate (T1-T3).
+# Served under /ops*; marketing routes below are untouched. Import is guarded so a
+# failure here can never take down the public site.
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
+try:
+    from ops.web import handle as ops_handle
+except Exception:  # pragma: no cover - never break the public site
+    import traceback; traceback.print_exc()
+    ops_handle = lambda *a, **k: None
+
+def _is_ops_path(p):
+    return p == "/ops" or p.startswith("/ops/") or p == "/internal/jobs/sla-monitor"
 ASSET_VER = str(int(datetime.datetime.now().timestamp()))  # cache-bust static assets per server start
 
 # ---- SITE MODE / indexing ----------------------------------------------------
@@ -442,7 +457,7 @@ def view_pillar(site, slug):
 def robots_txt(site):
     if not site["indexable"]:
         return "User-agent: *\nDisallow: /\n"
-    lines = ["User-agent: *", "Allow: /", "Disallow: /api/", ""]
+    lines = ["User-agent: *", "Allow: /", "Disallow: /api/", "Disallow: /ops/", "Disallow: /internal/", ""]
     for bot in ["ClaudeBot", "anthropic-ai", "GPTBot", "OAI-SearchBot", "PerplexityBot", "Google-Extended", "Applebot-Extended"]:
         lines += ["User-agent: " + bot, "Allow: /", ""]
     lines += ["Sitemap: " + PROD_CANONICAL + "/sitemap.xml", ""]
@@ -478,6 +493,14 @@ class Handler(BaseHTTPRequestHandler):
         return site_context(self.headers.get("Host", ""))
 
     def do_POST(self):
+        u = urlparse(self.path); p = u.path
+        if _is_ops_path(p):
+            ln = int(self.headers.get("Content-Length", 0) or 0)
+            body = self.rfile.read(ln) if ln else b""
+            resp = ops_handle("POST", p, u.query, self.headers, body)
+            if resp is not None:
+                code, ctype, b, extra = resp
+                return self._send(code, ctype, b, extra or None)
         if urlparse(self.path).path == "/api/event":
             ln = int(self.headers.get("Content-Length", 0) or 0)
             raw = self.rfile.read(ln) if ln else b"{}"
@@ -494,6 +517,11 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         site = self.site()
         u = urlparse(self.path); p = u.path
+        if _is_ops_path(p):
+            resp = ops_handle("GET", p, u.query, self.headers, None)
+            if resp is not None:
+                code, ctype, b, extra = resp
+                return self._send(code, ctype, b, extra or None)
         try:
             if p == "/healthz": return self._send(200, "text/plain", "ok")
             # Indexing control (mode + host aware)
@@ -540,6 +568,29 @@ class Handler(BaseHTTPRequestHandler):
             import traceback; traceback.print_exc()
             return self._send(500, "text/html; charset=utf-8", page("Error", "", "<h1>Something went wrong</h1>", "/", site=site, path=p))
 
+def _start_sla_monitor():
+    """In-process T3-J1 SLA monitor: escalate overdue tasks every 5 minutes.
+    Disable with OPS_SLA_MONITOR=0 (e.g. when an external cron hits the endpoint)."""
+    if os.environ.get("OPS_SLA_MONITOR", "1") != "1":
+        return
+    import threading, time
+    try:
+        from ops.web import ensure_initialized
+        from ops.tasks import run_sla_monitor
+    except Exception:
+        return
+    ensure_initialized()
+    def loop():
+        while True:
+            time.sleep(300)
+            try:
+                run_sla_monitor()
+            except Exception:
+                import traceback; traceback.print_exc()
+    threading.Thread(target=loop, daemon=True, name="sla-monitor").start()
+    print("AlaraOS: in-process SLA monitor started (every 300s)")
+
 if __name__ == "__main__":
     print("AlaraOS on http://localhost:%d  (SITE_MODE=%s)" % (PORT, SITE_MODE))
+    _start_sla_monitor()
     ThreadingHTTPServer(("0.0.0.0", PORT), Handler).serve_forever()

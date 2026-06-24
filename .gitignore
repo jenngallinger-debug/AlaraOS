@@ -1,5 +1,9 @@
 # runtime
 data/analytics.log
+# alara os v0 sqlite store (local; use a persistent disk in prod)
+data/ops.db
+data/ops.db-wal
+data/ops.db-shm
 # python
 __pycache__/
 *.pyc
