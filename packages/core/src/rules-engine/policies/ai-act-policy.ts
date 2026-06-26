@@ -44,7 +44,10 @@ const PERMITTED_AUTONOMOUS: Set<AIActionClass> = new Set([
   'flag',
 ]);
 
-const RULE_SETS = ['*']; // applies to every rule set
+const RULE_SETS = [
+  '*',                              // applies to every rule set
+  'ruleset.stakeholder.dispatch',  // M12: Communication Dispatch
+];
 
 export const AIActConstraintPolicyModule: PolicyModule = {
   id: 'policy.ai-act-constraint',
