@@ -116,3 +116,81 @@ ReferralReceived → Patient → Rules → Workflow → Task → Promise → Com
 **Migration 005**: communications table with RLS
 
 **Tests: +32 → 232 total**
+
+---
+
+## v0.4-merge-ready — 2026-06-26
+
+**Release lock: v0.4 — Core Platform Spine + M10.5 Journey Engine.**
+Locked at commit `f554441`, tag `v0.4-merge-ready`.
+
+### M10.5 — Journey Engine (ratified)
+
+Journey is a first-class **coordinating** object. It owns only its
+organizational intent, lifecycle, coordination state, and event stream.
+Everything else is referenced — never absorbed.
+
+- Lifecycle state machine: arrival → orientation → working → dormant →
+  reactivated → completed → archived, with an explicit transition table
+- Coordination state (active / suspended / handoff) is orthogonal to lifecycle;
+  suspend/resume never mutates lifecycle
+- Anonymous journey creation + scoped capability tokens
+- Intent inference · goal / obstacle / question progression · work started
+- Identity resolution **by reference only** — a Journey never creates a Person
+- Link Person / Episode / Workforce Member by reference; merge; split
+- Event-sourced; engine-local append-only `journey_events` log; reconstruction
+
+### Journey Invariant (ratified doctrine)
+
+> Journey references first-class Objects. It never absorbs their
+> responsibilities. Journey must never become a God Object.
+
+Structurally enforced: the engine has no method that creates Person, Episode,
+Workforce Member, Promise, Task, Communication, Knowledge, Observation, or
+Reasoning object. Recorded in Part XI → Object Doctrine.
+
+### ADR-016 preserved — exactly 8 canonical ProjectionTypes
+
+Journey state is **authoritative operational state**, not a Computed Projection
+(discarding it would lose truth). The canonical `ProjectionType` union remains
+exactly the eight ratified types: Timeline · DigitalCareTwin ·
+ReferralSourceStrength · RelationshipHealth · KnowledgeSummary ·
+OrganizationalHealth · ReasoningSummary · WorkforceHealth.
+
+- **`JourneyState` rejected** as a canonical ProjectionType (category error)
+- The engine's own `journey_projections` read model (`projection_type`
+  literal `'journey_state'`) is engine-local state, not the canonical store
+- Forward boundary: a future *derived, cross-engine* Journey read model
+  consumed through the canonical projection system would require a ratified
+  ADR-016 addendum — not settled by this lock
+
+### Migration 011 — additive Journey-only
+
+Creates `journeys` · `journey_references` · `journey_events` ·
+`journey_projections` · `journey_capability_tokens` (RLS + tenant isolation).
+Does not alter the canonical `projections` table or `proj_type_valid`, and
+adds no `JourneyState` type.
+
+### Cleanup — legacy Python ops removed
+
+The `feat/alara-os-v0-t1-t3` merge had dragged a legacy Python "ops" app into
+the TypeScript platform. Removed: `ops/` (11 modules), `tests/test_comms.py`,
+`tests/test_ops.py`, `requirements.txt`, `public/ops.css`; `preview_server.py`
+ops-console wiring reverted to its pre-merge state. Pre-existing legacy
+`preview_server.py` and `scripts/validate_data.py` retained. Platform is
+TypeScript-only again.
+
+### Provenance
+
+- `27620a2` kept as the canonical M10.5 implementation
+- Alternate local build `ff5a575` **not** reconciled (no silent merge)
+
+### Validation at lock
+
+- TypeScript strict: clean (core + api)
+- Jest: **529 core + 29 API = 558 passing**. No pytest.
+- Canonical Notion ratification merged (Part XI, Appendix C, Appendix D)
+
+### M11
+
+Not started.
