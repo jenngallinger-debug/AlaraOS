@@ -32,7 +32,6 @@ const RULE_SETS = [
   'ruleset.external.sync',
   'ruleset.visit.completed',
   'ruleset.promise.tracking',
-  'ruleset.stakeholder.dispatch',  // M12: Communication Dispatch
 ];
 
 // ─── Module ───────────────────────────────────────────────────────────────────

@@ -19,7 +19,7 @@ import { AlaraId } from '../shared/types';
 
 // ─── Communication channel + recipient type ────────────────────────────────────
 
-export type CommunicationAudience =
+export type CommunicationChannel =
   | 'internal'       // within Alara OS (care team notification)
   | 'patient'        // to the patient directly
   | 'family'         // to a family member / authorized representative
@@ -47,14 +47,14 @@ export type CommunicationPurpose =
 export interface Communication {
   readonly id: AlaraId;
   readonly tenantId: string;
-  readonly channel: CommunicationAudience;
+  readonly channel: CommunicationChannel;
   readonly purpose: CommunicationPurpose;
   /** Alara UUID of the Patient this communication is about */
   readonly subjectId: AlaraId;
   /** Alara UUID of the Workflow this communication serves (if any) */
   readonly workflowId: AlaraId | null;
   /** Who receives this communication */
-  readonly recipientType: CommunicationAudience;
+  readonly recipientType: CommunicationChannel;
   readonly recipientId: string;
   /** Human-readable subject line */
   readonly subject: string;
@@ -76,11 +76,11 @@ export interface Communication {
 
 export interface CreateCommunicationCommand {
   readonly tenantId: string;
-  readonly channel: CommunicationAudience;
+  readonly channel: CommunicationChannel;
   readonly purpose: CommunicationPurpose;
   readonly subjectId: AlaraId;
   readonly workflowId: AlaraId | null;
-  readonly recipientType: CommunicationAudience;
+  readonly recipientType: CommunicationChannel;
   readonly recipientId: string;
   readonly subject: string;
   readonly body: string;
@@ -120,37 +120,37 @@ export interface MarkFailedCommand {
 
 export interface CommunicationCreatedPayload {
   communicationId: string;
-  channel: CommunicationAudience;
+  channel: CommunicationChannel;
   purpose: CommunicationPurpose;
   subjectId: string;
   workflowId: string | null;
-  recipientType: CommunicationAudience;
+  recipientType: CommunicationChannel;
   recipientId: string;
   subject: string;
 }
 
 export interface CommunicationQueuedPayload {
   communicationId: string;
-  channel: CommunicationAudience;
+  channel: CommunicationChannel;
   previousVersion: number;
 }
 
 export interface CommunicationSentPayload {
   communicationId: string;
-  channel: CommunicationAudience;
+  channel: CommunicationChannel;
   adapterUsed: string;
   previousVersion: number;
 }
 
 export interface CommunicationDeliveredPayload {
   communicationId: string;
-  channel: CommunicationAudience;
+  channel: CommunicationChannel;
   previousVersion: number;
 }
 
 export interface CommunicationFailedPayload {
   communicationId: string;
-  channel: CommunicationAudience;
+  channel: CommunicationChannel;
   reason: string;
   previousVersion: number;
 }
@@ -167,7 +167,7 @@ export interface CommunicationFailedPayload {
  */
 export interface CommunicationDeliveryAdapter {
   readonly name: string;
-  readonly supportedAudiences: readonly CommunicationAudience[];
+  readonly supportedChannels: readonly CommunicationChannel[];
   deliver(communication: Communication): Promise<DeliveryResult>;
 }
 

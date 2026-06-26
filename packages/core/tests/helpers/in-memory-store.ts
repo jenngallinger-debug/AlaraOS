@@ -74,8 +74,6 @@ export class InMemoryStore {
   readonly stakeholders = new Map<string, StakeholderRow>();
   readonly stakeholderPrefs: StakeholderPreferenceRow[] = [];
   readonly stakeholderProfiles = new Map<string, StakeholderProfileRow>();
-  // ── M12: Dispatch Engine ─────────────────────────────────────────────────
-  readonly dispatchLogs: DispatchLogRow[] = [];
 
   async query<T = unknown>(text: string, values: unknown[] = []): Promise<T[]> {
     const t = text.trim().replace(/\s+/g, ' ');
@@ -1155,14 +1153,3 @@ export interface StakeholderProfileRow {
   success_definition: string | null; anxiety_risk: string | null;
   communication_promise: string | null; update_triggers: string[];
 }
-
-// ─── M12: Dispatch log row type ──────────────────────────────────────────────
-export interface DispatchLogRow {
-  id: string; tenant_id: string; patient_id: string;
-  stakeholder_id: string | null; stakeholder_type: string;
-  event_type: string; delivery_mode: string; status: string;
-  suppression_reason: string | null;
-  communication_id: string | null; task_id: string | null; follow_up_task_id: string | null;
-  template_key: string | null; created_at: string; created_by: string;
-}
-
