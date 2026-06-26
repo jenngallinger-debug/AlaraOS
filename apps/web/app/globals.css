@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500&display=swap');
+
+:root {
+  --bg:        #F8F6F2;
+  --bg-warm:   #F2EDE5;
+  --text:      #1C2536;
+  --text-mid:  #4A5568;
+  --text-soft: #8B8B8B;
+  --sage:      #4A7C6F;
+  --sage-light:#6B9E91;
+  --sage-bg:   #EBF4F1;
+  --amber:     #E8A855;
+  --amber-bg:  #FEF5E7;
+  --border:    #E2DDD6;
+  --white:     #FFFFFF;
+
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Typography */
+.display { font-family: var(--font-display); font-weight: 300; line-height: 1.15; }
+.display-italic { font-family: var(--font-display); font-style: italic; font-weight: 300; }
+
+/* Focus */
+:focus-visible { outline: 2px solid var(--sage); outline-offset: 3px; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
