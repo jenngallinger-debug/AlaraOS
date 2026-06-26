@@ -8,11 +8,11 @@
  * The CommunicationEngine never changes — only the adapter swaps.
  */
 
-import { Communication, CommunicationChannel, CommunicationDeliveryAdapter, DeliveryResult } from './types';
+import { Communication, CommunicationAudience, CommunicationDeliveryAdapter, DeliveryResult } from './types';
 
 export class StubDeliveryAdapter implements CommunicationDeliveryAdapter {
   readonly name = 'stub';
-  readonly supportedChannels: readonly CommunicationChannel[] = [
+  readonly supportedAudiences: readonly CommunicationAudience[] = [
     'internal', 'patient', 'family', 'physician', 'referral_source',
   ];
 

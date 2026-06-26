@@ -19,7 +19,7 @@ import { EventStore } from '../events/store';
 import { EventType } from '../events/types';
 import {
   Communication,
-  CommunicationChannel,
+  CommunicationAudience,
   CommunicationCreatedPayload,
   CommunicationDeliveredPayload,
   CommunicationDeliveryAdapter,
@@ -49,7 +49,7 @@ interface CommunicationRow {
 // ─── Engine ───────────────────────────────────────────────────────────────────
 
 export class CommunicationEngine {
-  private readonly adapters = new Map<CommunicationChannel, CommunicationDeliveryAdapter>();
+  private readonly adapters = new Map<CommunicationAudience, CommunicationDeliveryAdapter>();
 
   constructor(
     private readonly db: DatabaseClient,
@@ -57,7 +57,7 @@ export class CommunicationEngine {
   ) {}
 
   registerAdapter(adapter: CommunicationDeliveryAdapter): void {
-    for (const channel of adapter.supportedChannels) {
+    for (const channel of adapter.supportedAudiences) {
       this.adapters.set(channel, adapter);
     }
   }
@@ -201,7 +201,7 @@ export class CommunicationEngine {
 // ─── Event-sourced reconstruction ─────────────────────────────────────────────
 
 export interface ReconstructedCommunication {
-  id: AlaraId; status: CommunicationStatus; channel: CommunicationChannel;
+  id: AlaraId; status: CommunicationStatus; channel: CommunicationAudience;
   recipientId: string; version: number;
 }
 
@@ -212,7 +212,7 @@ export async function reconstructCommunicationFromEvents(
   if (!events.length) return null;
 
   let status: CommunicationStatus = 'created';
-  let channel: CommunicationChannel = 'internal';
+  let channel: CommunicationAudience = 'internal';
   let recipientId = '';
   let version = 0;
 
@@ -220,7 +220,7 @@ export async function reconstructCommunicationFromEvents(
     version++;
     const p = event.payload as Record<string, unknown>;
     switch (event.type) {
-      case 'CommunicationCreated': channel = p.channel as CommunicationChannel; recipientId = p.recipientId as string; break;
+      case 'CommunicationCreated': channel = p.channel as CommunicationAudience; recipientId = p.recipientId as string; break;
       case 'CommunicationQueued':  status = 'queued'; break;
       case 'CommunicationSent':    status = 'sent'; break;
       case 'CommunicationDelivered': status = 'delivered'; break;
@@ -243,11 +243,11 @@ export class StaleCommunicationError extends Error {
 function rowToComm(row: CommunicationRow): Communication {
   return {
     id: row.id as AlaraId, tenantId: row.tenant_id,
-    channel: row.channel as CommunicationChannel,
+    channel: row.channel as CommunicationAudience,
     purpose: row.purpose as Communication['purpose'],
     subjectId: row.subject_id as AlaraId,
     workflowId: row.workflow_id as AlaraId | null,
-    recipientType: row.recipient_type as CommunicationChannel,
+    recipientType: row.recipient_type as CommunicationAudience,
     recipientId: row.recipient_id,
     subject: row.subject, body: row.body,
     status: row.status as CommunicationStatus,
