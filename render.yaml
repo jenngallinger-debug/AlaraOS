@@ -1,23 +1,26 @@
 # Render Blueprint — AlaraOS STAGING (alarahc.com)
-# Place this at your Git repo root (or create the service manually in the Render dashboard
-# using the same settings). Paths below assume the repo contains ``.
-# If your repo root IS the alaraos folder, drop the `` prefixes.
+# Place this at your Git repo root. The repo root IS the alaraos folder.
 #
-# The server uses only the Python standard library (no dependencies) and binds 0.0.0.0:$PORT.
+# This service runs the Node staging site (server.js). server.js uses only the
+# Node standard library plus local ./lib/* modules (no runtime npm dependencies)
+# and binds 0.0.0.0:$PORT via http.createServer().listen(PORT).
+#
+# v0.4 removed the legacy backend "ops" material. This service is now native to
+# the Node / TypeScript platform — the build installs npm packages only.
 services:
   - type: web
     name: alaraos-staging
-    runtime: python
+    runtime: node
     plan: starter
     branch: main
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "python3 preview_server.py"
+    buildCommand: "npm ci"
+    startCommand: "node server.js"
     healthCheckPath: /healthz
     autoDeploy: true
     envVars:
       - key: SITE_MODE
         value: staging          # staging => noindex,nofollow + robots Disallow + no sitemap
-      - key: PYTHON_VERSION
-        value: "3.11.9"
+      - key: NODE_VERSION
+        value: "20"
 # At launch (production cutover) you would flip SITE_MODE to "production" AND point the
 # production domain at this service. Until then, leave SITE_MODE=staging.
