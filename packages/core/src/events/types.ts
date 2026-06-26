@@ -29,6 +29,9 @@ export const EVENT_TYPES = [
   'AutomyndPatientObserved', 'AutomyndReferralObserved', 'AutomyndVisitObserved', 'AutomyndOrderObserved',
   // M1a — Pipeline
   'TriggerFired', 'RuleEvaluated',
+  // M6 — Relationship Engine
+  'RelationshipCreated', 'RelationshipTerminated', 'RelationshipSuspended', 'RelationshipReactivated',
+  'OwnershipTransferred',
   // M4 — Communication
   'CommunicationCreated', 'CommunicationQueued', 'CommunicationSent',
   'CommunicationDelivered', 'CommunicationFailed',

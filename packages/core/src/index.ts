@@ -40,3 +40,23 @@ export * from './projection-engine';
 export * from './communication-engine';
 export { IntakeOrchestrator } from './intake-orchestrator';
 export type { ReferralReceivedInput, IntakeOrchestratorResult } from './intake-orchestrator';
+
+// M6 — Relationship Engine
+export { RelationshipRepository } from './relationship-engine/repository';
+export { RelationshipEngine, reconstructRelationshipFromEvents } from './relationship-engine/engine';
+export type { ReconstructedRelationship } from './relationship-engine/engine';
+export type {
+  Relationship, RelationshipType, RelationshipStatus,
+  ParticipationEdge,
+  ParticipationRole as RelationshipParticipationRole,
+  CareTeamMember, CareTeamView,
+  CreateRelationshipCommand, AddParticipantCommand, RemoveParticipantCommand,
+  TransferOwnershipCommand, TerminateRelationshipCommand,
+  SuspendRelationshipCommand, ReactivateRelationshipCommand,
+} from './relationship-engine/types';
+export {
+  StaleRelationshipError, InvalidParticipationRoleError,
+  CoverageExpiredError, RelationshipNotActiveError,
+} from './relationship-engine/types';
+export { RelationshipHealthProjectionV2Definition } from './projection-engine/projections/relationship-health-v2';
+export type { RelationshipHealthInputV2 } from './projection-engine/projections/relationship-health-v2';

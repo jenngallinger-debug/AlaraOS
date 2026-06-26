@@ -50,6 +50,8 @@ export class InMemoryStore {
   readonly tasks = new Map<string, TaskRow>();
   readonly promises = new Map<string, PromiseRow>();
   readonly communications = new Map<string, CommunicationRow>();
+  readonly relationships = new Map<string, RelationshipRow>();
+  readonly edges = new Map<string, EdgeRow>();
 
   async query<T = unknown>(text: string, values: unknown[] = []): Promise<T[]> {
     const t = text.trim().replace(/\s+/g, ' ');
@@ -274,12 +276,152 @@ export class InMemoryStore {
       return [{ version: row.version }] as unknown as T[];
     }
 
+    // ── relationships ────────────────────────────────────────────────────────────
+    if (t.startsWith('INSERT INTO relationships')) {
+      const [id, tid, type, subjId, desc] = values as string[];
+      const row: RelationshipRow = { id, tenant_id: tid, type, status: 'active', subject_id: subjId, description: desc, version: 1, created_at: new Date().toISOString(), updated_at: new Date().toISOString(), terminated_at: null, termination_reason: null };
+      this.relationships.set(id, row);
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM relationships WHERE id')) {
+      const [id, tid] = values as string[];
+      const row = this.relationships.get(id);
+      if (!row || row.tenant_id !== tid) return [];
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM relationships WHERE tenant_id') && t.includes('subject_id') && t.includes("status = 'active'")) {
+      const [tid, sid] = values as string[];
+      return Array.from(this.relationships.values()).filter(r => r.tenant_id === tid && r.subject_id === sid && r.status === 'active') as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM relationships WHERE tenant_id') && t.includes('subject_id')) {
+      const [tid, sid] = values as string[];
+      return Array.from(this.relationships.values()).filter(r => r.tenant_id === tid && r.subject_id === sid) as unknown as T[];
+    }
+    if (t.startsWith('UPDATE relationships SET version = version + 1')) {
+      const [id, tid, ver] = values as string[];
+      const row = this.relationships.get(id);
+      if (!row || row.tenant_id !== tid || row.version !== Number(ver)) return [] as unknown as T[];
+      row.version += 1; row.updated_at = new Date().toISOString();
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith("UPDATE relationships SET status = 'terminated'")) {
+      const [reason, id, tid, ver] = values as string[];
+      const row = this.relationships.get(id);
+      if (!row || row.tenant_id !== tid || row.version !== Number(ver)) return [] as unknown as T[];
+      row.status = 'terminated'; row.termination_reason = reason; row.terminated_at = new Date().toISOString(); row.version += 1; row.updated_at = new Date().toISOString();
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith("UPDATE relationships SET status = 'suspended'")) {
+      const [id, tid, ver] = values as string[];
+      const row = this.relationships.get(id);
+      if (!row || row.tenant_id !== tid || row.version !== Number(ver)) return [] as unknown as T[];
+      row.status = 'suspended'; row.version += 1; row.updated_at = new Date().toISOString();
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith("UPDATE relationships SET status = 'active'")) {
+      const [id, tid, ver] = values as string[];
+      const row = this.relationships.get(id);
+      if (!row || row.tenant_id !== tid || row.version !== Number(ver)) return [] as unknown as T[];
+      row.status = 'active'; row.version += 1; row.updated_at = new Date().toISOString();
+      return [row] as unknown as T[];
+    }
+
+    // ── edges ─────────────────────────────────────────────────────────────────
+    if (t.startsWith('INSERT INTO edges') && t.includes('coverage_expires_at')) {
+      const [id, tid, relId, partId, partType, role, expiresAt] = values as (string | null)[];
+      const row: EdgeRow = { id: id!, tenant_id: tid!, relationship_id: relId!, participant_id: partId!, participant_type: partType!, role: role!, active: true, started_at: new Date().toISOString(), ended_at: null, coverage_expires_at: expiresAt ?? null, version: 1 };
+      this.edges.set(id!, row);
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith('INSERT INTO edges') && !t.includes('coverage_expires_at')) {
+      // Two patterns:
+      // (a) 6 params: id, tid, relId, partId, partType, role
+      // (b) 4 params: id, tid, relId, partId (partType/role are literals in SQL e.g. 'WorkforceMember', 'Owner')
+      const vals = values as (string | null)[];
+      const id = vals[0]!; const tid = vals[1]!; const relId = vals[2]!; const partId = vals[3]!;
+      // Extract literal partType and role from the SQL if not provided as params
+      const partType = vals[4] ?? (t.includes("'WorkforceMember'") ? 'WorkforceMember' : t.includes("'Patient'") ? 'Patient' : 'ExternalOrg');
+      const role = vals[5] ?? (t.includes("'Owner'") ? 'Owner' : t.includes("'Actor'") ? 'Actor' : 'Stakeholder');
+      const row: EdgeRow = { id, tenant_id: tid, relationship_id: relId, participant_id: partId, participant_type: partType as string, role: role as string, active: true, started_at: new Date().toISOString(), ended_at: null, coverage_expires_at: null, version: 1 };
+      this.edges.set(id, row);
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM edges WHERE id')) {
+      const [id, tid] = values as string[];
+      const row = this.edges.get(id);
+      if (!row || row.tenant_id !== tid) return [];
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM edges WHERE tenant_id') && t.includes('relationship_id') && t.includes('active = true') && !t.includes('participant_id')) {
+      const [tid, relId] = values as string[];
+      return Array.from(this.edges.values()).filter(e => e.tenant_id === tid && e.relationship_id === relId && e.active) as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM edges WHERE tenant_id') && t.includes('relationship_id') && !t.includes('active')) {
+      const [tid, relId] = values as string[];
+      return Array.from(this.edges.values()).filter(e => e.tenant_id === tid && e.relationship_id === relId) as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM edges WHERE tenant_id') && t.includes('relationship_id') && t.includes('participant_id') && t.includes("role = 'Owner'") && t.includes('active = true')) {
+      const [tid, relId, partId] = values as string[];
+      return Array.from(this.edges.values()).filter(e => e.tenant_id === tid && e.relationship_id === relId && e.participant_id === partId && e.role === 'Owner' && e.active) as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM edges WHERE tenant_id') && t.includes('participant_id') && t.includes('active = true')) {
+      const [tid, partId] = values as string[];
+      return Array.from(this.edges.values()).filter(e => e.tenant_id === tid && e.participant_id === partId && e.active) as unknown as T[];
+    }
+    if (t.startsWith('SELECT e.* FROM edges e')) {
+      const [tid, relId] = values as string[];
+      return Array.from(this.edges.values()).filter(e => e.tenant_id === tid && e.relationship_id === relId && e.active) as unknown as T[];
+    }
+    if (t.startsWith("UPDATE edges SET active = false, ended_at") && !t.includes('RETURNING') && !t.includes('relationship_id')) {
+      // deactivate single edge by ID (no RETURNING, no relationship_id filter)
+      const [edgeId, tid] = values as string[];
+      const row = this.edges.get(edgeId);
+      if (row && row.tenant_id === tid) { row.active = false; row.ended_at = new Date().toISOString(); row.version += 1; }
+      return [] as unknown as T[];
+    }
+    if (t.startsWith("UPDATE edges SET active = false, ended_at") && t.includes('RETURNING')) {
+      // removeParticipant by edgeId
+      const [edgeId, tid] = values as string[];
+      const row = this.edges.get(edgeId);
+      if (!row || row.tenant_id !== tid || !row.active) return [] as unknown as T[];
+      row.active = false; row.ended_at = new Date().toISOString(); row.version += 1;
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith("UPDATE edges SET active = false, ended_at") && t.includes('participant_id') && t.includes("role = 'Owner'")) {
+      // transferOwnership — deactivate old owner
+      const [tid, relId, partId] = values as string[];
+      const matching = Array.from(this.edges.values()).filter(e => e.tenant_id === tid && e.relationship_id === relId && e.participant_id === partId && e.role === 'Owner' && e.active);
+      for (const e of matching) { e.active = false; e.ended_at = new Date().toISOString(); e.version += 1; }
+      return matching as unknown as T[];
+    }
+    if (t.startsWith("UPDATE edges SET active = false") && t.includes('relationship_id') && !t.includes('participant_id')) {
+      // terminate — deactivate all edges for relationship
+      const [relId, tid] = values as string[];
+      const matching = Array.from(this.edges.values()).filter(e => e.relationship_id === relId && e.tenant_id === tid && e.active);
+      for (const e of matching) { e.active = false; e.ended_at = new Date().toISOString(); e.version += 1; }
+      return matching as unknown as T[];
+    }
+
     return [] as unknown as T[];
   }
 
   async transaction<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> { return fn(makeTxClient(this)); }
   async queryOne<T = unknown>(text: string, values?: unknown[]): Promise<T | null> { const rows = await this.query<T>(text, values ?? []); return rows[0] ?? null; }
   async end(): Promise<void> {}
+}
+
+// ── M6: RelationshipRow and EdgeRow ──────────────────────────────────────────
+export interface RelationshipRow {
+  id: string; tenant_id: string; type: string; status: string;
+  subject_id: string; description: string; version: number;
+  created_at: string; updated_at: string;
+  terminated_at: string | null; termination_reason: string | null;
+}
+export interface EdgeRow {
+  id: string; tenant_id: string; relationship_id: string;
+  participant_id: string; participant_type: string; role: string;
+  active: boolean; started_at: string; ended_at: string | null;
+  coverage_expires_at: string | null; version: number;
 }
 
 // ── M4: CommunicationRow ──────────────────────────────────────────────────────
