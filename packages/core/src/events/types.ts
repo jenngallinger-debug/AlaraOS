@@ -29,6 +29,10 @@ export const EVENT_TYPES = [
   'AutomyndPatientObserved', 'AutomyndReferralObserved', 'AutomyndVisitObserved', 'AutomyndOrderObserved',
   // M1a — Pipeline
   'TriggerFired', 'RuleEvaluated',
+  // M8 — Organizational Brain
+  'PatternDetected', 'PatternResolved', 'PatternSuperseded',
+  'PatternConfirmed', 'PatternDismissed',
+  'OpportunitySurfaced', 'RiskSurfaced', 'TrendDetected',
   // M7 — Knowledge Engine
   'ObservationRecorded',
   'KnowledgeAsserted', 'KnowledgeSuperseded', 'KnowledgeRetracted',

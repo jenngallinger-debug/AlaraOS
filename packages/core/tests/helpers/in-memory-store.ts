@@ -50,6 +50,7 @@ export class InMemoryStore {
   readonly tasks = new Map<string, TaskRow>();
   readonly promises = new Map<string, PromiseRow>();
   readonly communications = new Map<string, CommunicationRow>();
+  readonly detectedPatterns = new Map<string, DetectedPatternRow>();
   readonly observations = new Map<string, ObservationRow>();
   readonly knowledgeEntries = new Map<string, KnowledgeEntryRow>();
   readonly relationships = new Map<string, RelationshipRow>();
@@ -488,12 +489,78 @@ export class InMemoryStore {
       return [row] as unknown as T[];
     }
 
+    // ── detected_patterns ────────────────────────────────────────────────────────
+    if (t.startsWith('INSERT INTO detected_patterns')) {
+      const [id, tid, cat, title, desc, sid, stype, evidence, conf, sev, status, detId, detVer] = values as (string | null)[];
+      const row: DetectedPatternRow = {
+        id: id!, tenant_id: tid!, category: cat!, title: title!, description: desc!,
+        subject_id: sid!, subject_type: stype!,
+        evidence: evidence ? JSON.parse(evidence) : {},
+        confidence: conf!, severity: sev!, status: status ?? 'active',
+        detector_id: detId!, detector_version: detVer!,
+        superseded_by_id: null,
+        first_detected_at: new Date().toISOString(), last_confirmed_at: new Date().toISOString(),
+        resolved_at: null, version: 1, updated_at: new Date().toISOString(),
+      };
+      this.detectedPatterns.set(id!, row);
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM detected_patterns WHERE id')) {
+      const [id, tid] = values as string[];
+      const row = this.detectedPatterns.get(id);
+      if (!row || row.tenant_id !== tid) return [];
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM detected_patterns WHERE tenant_id') && t.includes("status = 'active'") && t.includes('category') && t.includes('subject_id')) {
+      const [tid, sid, cat] = values as string[];
+      return Array.from(this.detectedPatterns.values())
+        .filter(p => p.tenant_id === tid && p.subject_id === sid && p.status === 'active' && p.category === cat) as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM detected_patterns WHERE tenant_id') && t.includes("status = 'active'") && t.includes('subject_id') && !t.includes('detector_id')) {
+      const [tid, sid] = values as string[];
+      return Array.from(this.detectedPatterns.values())
+        .filter(p => p.tenant_id === tid && p.subject_id === sid && p.status === 'active') as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM detected_patterns WHERE tenant_id') && t.includes('subject_id') && !t.includes('detector_id')) {
+      const [tid, sid] = values as string[];
+      return Array.from(this.detectedPatterns.values())
+        .filter(p => p.tenant_id === tid && p.subject_id === sid) as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM detected_patterns WHERE tenant_id') && t.includes('detector_id') && t.includes("status = 'active'")) {
+      const [tid, detId, sid] = values as string[];
+      const found = Array.from(this.detectedPatterns.values())
+        .find(p => p.tenant_id === tid && p.detector_id === detId && p.subject_id === sid && p.status === 'active');
+      return found ? [found] as unknown as T[] : [] as unknown as T[];
+    }
+    if (t.startsWith("UPDATE detected_patterns SET status = 'resolved'")) {
+      const [id, tid] = values as string[];
+      const row = this.detectedPatterns.get(id);
+      if (row && row.tenant_id === tid) { row.status = 'resolved'; row.resolved_at = new Date().toISOString(); row.version += 1; row.updated_at = new Date().toISOString(); }
+      return [] as unknown as T[];
+    }
+    if (t.startsWith("UPDATE detected_patterns SET status = 'dismissed'")) {
+      const [id, tid, ver] = values as string[];
+      const row = this.detectedPatterns.get(id);
+      if (row && row.tenant_id === tid && row.version === Number(ver)) { row.status = 'dismissed'; row.version += 1; row.updated_at = new Date().toISOString(); }
+      return [] as unknown as T[];
+    }
+
     return [] as unknown as T[];
   }
 
   async transaction<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> { return fn(makeTxClient(this)); }
   async queryOne<T = unknown>(text: string, values?: unknown[]): Promise<T | null> { const rows = await this.query<T>(text, values ?? []); return rows[0] ?? null; }
   async end(): Promise<void> {}
+}
+
+// ── M8: DetectedPatternRow ────────────────────────────────────────────────────
+export interface DetectedPatternRow {
+  id: string; tenant_id: string; category: string; title: string;
+  description: string; subject_id: string; subject_type: string;
+  evidence: unknown; confidence: string; severity: string; status: string;
+  detector_id: string; detector_version: string; superseded_by_id: string | null;
+  first_detected_at: string; last_confirmed_at: string;
+  resolved_at: string | null; version: number; updated_at: string;
 }
 
 // ── M7: ObservationRow and KnowledgeEntryRow ─────────────────────────────────

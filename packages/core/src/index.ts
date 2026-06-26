@@ -79,3 +79,19 @@ export {
 } from './knowledge-engine/types';
 export { KnowledgeSummaryProjectionDefinition } from './projection-engine/projections/knowledge-summary';
 export type { KnowledgeSummaryInput, KnowledgeSummaryValue } from './projection-engine/projections/knowledge-summary';
+
+// M8 — Organizational Brain
+export { OrganizationalBrainRepository } from './organizational-brain/repository';
+export { OrganizationalBrainEngine, reconstructPatternFromEvents } from './organizational-brain/engine';
+export type { BrainAnalysisResult, ReconstructedPattern } from './organizational-brain/engine';
+export { PatternDetectorRegistry } from './organizational-brain/pattern-detectors/registry';
+export { ALL_PATTERN_DETECTORS } from './organizational-brain/pattern-detectors/index';
+export type {
+  DetectedPattern, PatternCategory, PatternStatus, PatternSeverity,
+  PatternConfidence, PatternEvidence, PatternDetector, DetectorInput, DetectorResult,
+  RunBrainAnalysisCommand, ResolvePatternCommand, DismissPatternCommand,
+  OrganizationalHealthValue,
+} from './organizational-brain/types';
+export { StalePatternError, PatternNotFoundError } from './organizational-brain/types';
+export { OrganizationalHealthProjectionDefinition } from './projection-engine/projections/organizational-health';
+export type { OrganizationalHealthInput } from './projection-engine/projections/organizational-health';
