@@ -43,7 +43,8 @@ CREATE TABLE IF NOT EXISTS projections (
     CONSTRAINT projections_unique UNIQUE (tenant_id, projection_type, subject_id),
 
     CONSTRAINT proj_type_valid CHECK (projection_type IN (
-        'Timeline', 'DigitalCareTwin', 'ReferralSourceStrength', 'RelationshipHealth'
+        'Timeline', 'DigitalCareTwin', 'ReferralSourceStrength', 'RelationshipHealth',
+        'KnowledgeSummary', 'OrganizationalHealth', 'ReasoningSummary'
     )),
     CONSTRAINT proj_method_not_empty  CHECK (char_length(method_name) > 0),
     CONSTRAINT proj_version_not_empty CHECK (char_length(method_version) > 0)

@@ -576,7 +576,7 @@ describe('Knowledge Summary Projection (ADR-016)', () => {
     const observations = await repo.getObservationsForSubject(TENANT, String(PATIENT_ID));
     const assembler = makeSummaryAssembler(activeEntries, observations, String(PATIENT_ID));
 
-    const result = await projEngine.build(TENANT, 'Timeline', String(PATIENT_ID), assembler);
+    const result = await projEngine.build(TENANT, 'KnowledgeSummary', String(PATIENT_ID), assembler);
     expect(result.built).toBe(true);
     if (!result.built) return;
 
@@ -600,7 +600,7 @@ describe('Knowledge Summary Projection (ADR-016)', () => {
     const assembler = makeSummaryAssembler(activeEntries, observations, String(PATIENT_ID));
 
     // Build original
-    const original = await projEngine.build(TENANT, 'Timeline', String(PATIENT_ID), assembler);
+    const original = await projEngine.build(TENANT, 'KnowledgeSummary', String(PATIENT_ID), assembler);
     expect(original.built).toBe(true);
     if (!original.built) return;
     const originalValue = original.projection.value as unknown as KnowledgeSummaryValue;
@@ -609,7 +609,7 @@ describe('Knowledge Summary Projection (ADR-016)', () => {
     projStore.clear();
 
     // Rebuild
-    const rebuilt = await rebuilder.rebuild(TENANT, 'Timeline', String(PATIENT_ID), assembler);
+    const rebuilt = await rebuilder.rebuild(TENANT, 'KnowledgeSummary', String(PATIENT_ID), assembler);
     expect(rebuilt.built).toBe(true);
     if (!rebuilt.built) return;
     const rebuiltValue = rebuilt.projection.value as unknown as KnowledgeSummaryValue;
@@ -622,7 +622,7 @@ describe('Knowledge Summary Projection (ADR-016)', () => {
   test('ADR-016: methodVersion and canonicalInputs declared on summary', async () => {
     const { projEngine } = makeProjectionStack();
     const assembler = makeSummaryAssembler([], [], String(PATIENT_ID));
-    const result = await projEngine.build(TENANT, 'Timeline', String(PATIENT_ID), assembler);
+    const result = await projEngine.build(TENANT, 'KnowledgeSummary', String(PATIENT_ID), assembler);
     expect(result.built).toBe(true);
     if (!result.built) return;
     expect(result.projection.metadata.methodVersion).toBe('1.0.0');
@@ -636,7 +636,7 @@ describe('Knowledge Summary Projection (ADR-016)', () => {
 
     const activeEntries = await repo.getActiveEntriesForSubject(TENANT, String(PATIENT_ID));
     const assembler = makeSummaryAssembler(activeEntries, [], String(PATIENT_ID));
-    const result = await projEngine.build(TENANT, 'Timeline', String(PATIENT_ID), assembler);
+    const result = await projEngine.build(TENANT, 'KnowledgeSummary', String(PATIENT_ID), assembler);
     expect(result.built).toBe(true);
     if (!result.built) return;
     expect(result.projection.metadata.aiInvolved).toBe(true);

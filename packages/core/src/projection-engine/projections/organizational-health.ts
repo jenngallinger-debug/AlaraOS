@@ -39,7 +39,7 @@ export const OrganizationalHealthProjectionDefinition: ProjectionDefinition<
   OrganizationalHealthInput,
   OrganizationalHealthValue
 > = {
-  type: 'Timeline' as ProjectionType, // uses Timeline slot; M9 ratifies OrganizationalHealth type
+  type: 'OrganizationalHealth' as ProjectionType,
   methodName: 'organizational-health',
   methodVersion: '1.0.0',
 

@@ -63,7 +63,7 @@ export const KnowledgeSummaryProjectionDefinition: ProjectionDefinition<
   KnowledgeSummaryInput,
   KnowledgeSummaryValue
 > = {
-  type: 'Timeline' as import('../types').ProjectionType, // Using Timeline slot; M8 will add KnowledgeSummary type
+  type: 'KnowledgeSummary' as import('../types').ProjectionType,
   methodName: 'knowledge-summary',
   methodVersion: '1.0.0',
 

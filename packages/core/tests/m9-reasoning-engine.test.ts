@@ -477,7 +477,7 @@ describe('Reasoning Summary Projection (ADR-016)', () => {
     const missing = await engine.identifyMissingInformation({ tenantId: TENANT, subjectId: String(SUBJECT_ID), subjectType: 'Patient', context, actor: 'system' });
 
     const input: ReasoningSummaryInput = { subjectId: String(SUBJECT_ID), subjectType: 'Patient', hypotheses, recommendations: recs, missingInformation: missing };
-    const result = await projEngine.build(TENANT, 'Timeline', String(SUBJECT_ID), makeSummaryAssembler(input));
+    const result = await projEngine.build(TENANT, 'ReasoningSummary', String(SUBJECT_ID), makeSummaryAssembler(input));
 
     expect(result.built).toBe(true);
     if (!result.built) return;
@@ -494,7 +494,7 @@ describe('Reasoning Summary Projection (ADR-016)', () => {
     const context = makeContext([makePattern()]);
     const hypotheses = await engine.generateHypotheses({ tenantId: TENANT, subjectId: String(SUBJECT_ID), subjectType: 'Patient', context, actor: 'system' });
     const input: ReasoningSummaryInput = { subjectId: String(SUBJECT_ID), subjectType: 'Patient', hypotheses, recommendations: [], missingInformation: [] };
-    const result = await projEngine.build(TENANT, 'Timeline', String(SUBJECT_ID), makeSummaryAssembler(input));
+    const result = await projEngine.build(TENANT, 'ReasoningSummary', String(SUBJECT_ID), makeSummaryAssembler(input));
 
     expect(result.built).toBe(true);
     if (!result.built) return;
@@ -510,12 +510,12 @@ describe('Reasoning Summary Projection (ADR-016)', () => {
     const input: ReasoningSummaryInput = { subjectId: String(SUBJECT_ID), subjectType: 'Patient', hypotheses, recommendations: [], missingInformation: [] };
     const assembler = makeSummaryAssembler(input);
 
-    const original = await projEngine.build(TENANT, 'Timeline', String(SUBJECT_ID), assembler);
+    const original = await projEngine.build(TENANT, 'ReasoningSummary', String(SUBJECT_ID), assembler);
     expect(original.built).toBe(true);
     if (!original.built) return;
 
     projStore.clear();
-    const rebuilt = await rebuilder.rebuild(TENANT, 'Timeline', String(SUBJECT_ID), assembler);
+    const rebuilt = await rebuilder.rebuild(TENANT, 'ReasoningSummary', String(SUBJECT_ID), assembler);
     expect(rebuilt.built).toBe(true);
     if (!rebuilt.built) return;
 
@@ -529,7 +529,7 @@ describe('Reasoning Summary Projection (ADR-016)', () => {
   test('empty reasoning → zero counts, still valid projection', async () => {
     const { projEngine } = makeProjectionStack();
     const input: ReasoningSummaryInput = { subjectId: String(SUBJECT_ID), subjectType: 'Patient', hypotheses: [], recommendations: [], missingInformation: [] };
-    const result = await projEngine.build(TENANT, 'Timeline', String(SUBJECT_ID), makeSummaryAssembler(input));
+    const result = await projEngine.build(TENANT, 'ReasoningSummary', String(SUBJECT_ID), makeSummaryAssembler(input));
 
     expect(result.built).toBe(true);
     if (!result.built) return;
@@ -547,7 +547,7 @@ describe('Reasoning Summary Projection (ADR-016)', () => {
     const recs = await engine.generateRecommendations({ tenantId: TENANT, subjectId: String(SUBJECT_ID), subjectType: 'Patient', hypotheses, context, actor: 'system' });
 
     const input: ReasoningSummaryInput = { subjectId: String(SUBJECT_ID), subjectType: 'Patient', hypotheses, recommendations: recs, missingInformation: [] };
-    const result = await projEngine.build(TENANT, 'Timeline', String(SUBJECT_ID), makeSummaryAssembler(input));
+    const result = await projEngine.build(TENANT, 'ReasoningSummary', String(SUBJECT_ID), makeSummaryAssembler(input));
     if (!result.built) return;
 
     const value = result.projection.value as unknown as ReasoningSummaryValue;

@@ -55,7 +55,7 @@ export const ReasoningSummaryProjectionDefinition: ProjectionDefinition<
   ReasoningSummaryInput,
   ReasoningSummaryValue
 > = {
-  type: 'Timeline' as ProjectionType, // borrows Timeline slot; ratify ReasoningSummary in future
+  type: 'ReasoningSummary' as ProjectionType,
   methodName: 'reasoning-summary',
   methodVersion: '1.0.0',
 

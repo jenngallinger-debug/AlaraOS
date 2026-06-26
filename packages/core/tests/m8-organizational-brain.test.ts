@@ -499,7 +499,7 @@ describe('Organizational Health Projection (ADR-016)', () => {
     const analysisResult = await brainEngine.runAnalysis({ tenantId: TENANT, subjectId: String(SUBJECT_ID), subjectType: 'Patient', actor: 'brain' });
     const assembler = makeHealthAssembler(analysisResult.patternsDetected, String(SUBJECT_ID));
 
-    const result = await projEngine.build(TENANT, 'Timeline', String(SUBJECT_ID), assembler);
+    const result = await projEngine.build(TENANT, 'OrganizationalHealth', String(SUBJECT_ID), assembler);
     expect(result.built).toBe(true);
     if (!result.built) return;
 
@@ -514,7 +514,7 @@ describe('Organizational Health Projection (ADR-016)', () => {
   test('zero patterns = unknown trend, neutral health score', async () => {
     const { projEngine } = makeProjectionStack();
     const assembler = makeHealthAssembler([], String(SUBJECT_ID));
-    const result = await projEngine.build(TENANT, 'Timeline', String(SUBJECT_ID), assembler);
+    const result = await projEngine.build(TENANT, 'OrganizationalHealth', String(SUBJECT_ID), assembler);
     expect(result.built).toBe(true);
     if (!result.built) return;
     const value = result.projection.value as unknown as OrganizationalHealthValue;
@@ -529,7 +529,7 @@ describe('Organizational Health Projection (ADR-016)', () => {
 
     const analysis = await brainEngine.runAnalysis({ tenantId: TENANT, subjectId: String(SUBJECT_ID), subjectType: 'Patient', actor: 'brain' });
     const assembler = makeHealthAssembler(analysis.patternsDetected, String(SUBJECT_ID));
-    const result = await projEngine.build(TENANT, 'Timeline', String(SUBJECT_ID), assembler);
+    const result = await projEngine.build(TENANT, 'OrganizationalHealth', String(SUBJECT_ID), assembler);
     if (!result.built) return;
 
     const value = result.projection.value as unknown as OrganizationalHealthValue;
@@ -543,13 +543,13 @@ describe('Organizational Health Projection (ADR-016)', () => {
     const analysis = await brainEngine.runAnalysis({ tenantId: TENANT, subjectId: String(SUBJECT_ID), subjectType: 'Patient', actor: 'brain' });
     const assembler = makeHealthAssembler(analysis.patternsDetected, String(SUBJECT_ID));
 
-    const original = await projEngine.build(TENANT, 'Timeline', String(SUBJECT_ID), assembler);
+    const original = await projEngine.build(TENANT, 'OrganizationalHealth', String(SUBJECT_ID), assembler);
     expect(original.built).toBe(true);
     if (!original.built) return;
 
     projStore.clear();
 
-    const rebuilt = await rebuilder.rebuild(TENANT, 'Timeline', String(SUBJECT_ID), assembler);
+    const rebuilt = await rebuilder.rebuild(TENANT, 'OrganizationalHealth', String(SUBJECT_ID), assembler);
     expect(rebuilt.built).toBe(true);
     if (!rebuilt.built) return;
 
@@ -563,7 +563,7 @@ describe('Organizational Health Projection (ADR-016)', () => {
 
   test('ADR-016: methodVersion and aiInvolved=false declared', async () => {
     const { projEngine } = makeProjectionStack();
-    const result = await projEngine.build(TENANT, 'Timeline', String(SUBJECT_ID), makeHealthAssembler([], String(SUBJECT_ID)));
+    const result = await projEngine.build(TENANT, 'OrganizationalHealth', String(SUBJECT_ID), makeHealthAssembler([], String(SUBJECT_ID)));
     if (!result.built) return;
     expect(result.projection.metadata.methodVersion).toBe('1.0.0');
     expect(result.projection.metadata.aiInvolved).toBe(false);
@@ -580,7 +580,7 @@ describe('Organizational Health Projection (ADR-016)', () => {
 
     if (infoPatterns.length > 0) {
       const assembler = makeHealthAssembler(infoPatterns, String(SUBJECT_ID));
-      const result = await projEngine.build(TENANT, 'Timeline', String(SUBJECT_ID), assembler);
+      const result = await projEngine.build(TENANT, 'OrganizationalHealth', String(SUBJECT_ID), assembler);
       if (!result.built) return;
       const value = result.projection.value as unknown as OrganizationalHealthValue;
       expect(value.opportunityCount).toBe(infoPatterns.length);

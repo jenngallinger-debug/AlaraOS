@@ -27,10 +27,17 @@ import { AlaraId } from '../shared/types';
 // ─── Projection metadata (ADR-016 required fields) ────────────────────────────
 
 export type ProjectionType =
+  // M3 — original four types
   | 'Timeline'
   | 'DigitalCareTwin'
   | 'ReferralSourceStrength'
-  | 'RelationshipHealth';
+  | 'RelationshipHealth'
+  // M7 — Knowledge Engine
+  | 'KnowledgeSummary'
+  // M8 — Organizational Brain
+  | 'OrganizationalHealth'
+  // M9 — Reasoning Engine
+  | 'ReasoningSummary';
 
 export type ConfidenceLevel = 'high' | 'moderate' | 'low' | 'unknown';
 
