@@ -64,6 +64,12 @@ export class InMemoryStore {
   readonly knowledgeEntries = new Map<string, KnowledgeEntryRow>();
   readonly relationships = new Map<string, RelationshipRow>();
   readonly edges = new Map<string, EdgeRow>();
+  // ── M10.5: Journey Engine ──────────────────────────────────────────────────
+  readonly journeys = new Map<string, JourneyRow>();
+  readonly journeyRefs: JourneyRefRow[] = [];
+  readonly journeyEvents: JourneyEventRow[] = [];
+  readonly journeyProjections = new Map<string, JourneyProjectionRow>();
+  readonly journeyTokens = new Map<string, JourneyTokenRow>();
 
   async query<T = unknown>(text: string, values: unknown[] = []): Promise<T[]> {
     const t = text.trim().replace(/\s+/g, ' ');
@@ -729,6 +735,159 @@ export class InMemoryStore {
       return Array.from(this.missingInformation.values()).filter(m => m.tenant_id === tid && m.subject_id === sid && m.status === 'open') as unknown as T[];
     }
 
+    // ── M10.5: Journey Engine ───────────────────────────────────────────────
+    if (t.startsWith('INSERT INTO journeys')) {
+      const [id, tid, intent, intentAt, lifecycle, lcAt, csJson, identResolved, mergedFrom, splitFrom, createdAt, updatedAt] = values as unknown[];
+      const row: JourneyRow = {
+        id: id as string, tenant_id: tid as string,
+        intent: intent as string | null, intent_inferred_at: intentAt as string | null,
+        lifecycle: lifecycle as string, lifecycle_changed_at: lcAt as string,
+        coordination_state: typeof csJson === 'string' ? csJson : JSON.stringify(csJson),
+        identity_resolved: false,
+        merged_from: (mergedFrom as string[] | null) ?? [], split_from: splitFrom as string | null,
+        created_at: createdAt as string, updated_at: updatedAt as string,
+      };
+      this.journeys.set(id as string, row);
+      return [] as unknown as T[];
+    }
+    if (t.startsWith('UPDATE journeys') && t.includes('lifecycle=')) {
+      const [lc, lcAt, updatedAt, id] = values as string[];
+      const row = this.journeys.get(id);
+      if (row) { row.lifecycle = lc; row.lifecycle_changed_at = lcAt; row.updated_at = updatedAt; }
+      return [] as unknown as T[];
+    }
+    if (t.startsWith('UPDATE journeys') && t.includes('intent=')) {
+      const [intent, intentAt, updatedAt, id] = values as string[];
+      const row = this.journeys.get(id);
+      if (row) { row.intent = intent; row.intent_inferred_at = intentAt; row.updated_at = updatedAt; }
+      return [] as unknown as T[];
+    }
+    if (t.startsWith('UPDATE journeys') && t.includes('coordination_state=')) {
+      const [csJson, updatedAt, id] = values as string[];
+      const row = this.journeys.get(id);
+      if (row) { row.coordination_state = typeof csJson === 'string' ? csJson : JSON.stringify(csJson); row.updated_at = updatedAt; }
+      return [] as unknown as T[];
+    }
+    if (t.startsWith('UPDATE journeys') && t.includes('merged_from=')) {
+      const [mf, updatedAt, id] = values as unknown[];
+      const row = this.journeys.get(id as string);
+      if (row) { row.merged_from = mf as string[]; row.updated_at = updatedAt as string; }
+      return [] as unknown as T[];
+    }
+    if (t.startsWith('UPDATE journeys') && t.includes('identity_resolved=true')) {
+      const [updatedAt, id] = values as string[];
+      const row = this.journeys.get(id);
+      if (row) { row.identity_resolved = true; row.updated_at = updatedAt; }
+      return [] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM journeys WHERE id')) {
+      const [id, tid] = values as string[];
+      const row = this.journeys.get(id);
+      if (!row || row.tenant_id !== tid) return [] as unknown as T[];
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM journeys WHERE lifecycle')) {
+      const [lc, tid, limit] = values as [string, string, number];
+      const rows = Array.from(this.journeys.values()).filter(j => j.lifecycle === lc && j.tenant_id === tid);
+      rows.sort((a, b) => a.created_at.localeCompare(b.created_at));
+      return rows.slice(0, limit) as unknown as T[];
+    }
+    if (t.startsWith('INSERT INTO journey_references')) {
+      const [id, tid, journeyId, kind, refId, role, linkedAt, linkedBy, metaJson] = values as unknown[];
+      const ref: JourneyRefRow = {
+        id: id as string, tenant_id: tid as string, journey_id: journeyId as string,
+        kind: kind as string, ref_id: refId as string, role: role as string | null,
+        linked_at: linkedAt as string, linked_by: linkedBy as string | null,
+        meta: typeof metaJson === 'string' ? metaJson : JSON.stringify(metaJson ?? {}),
+      };
+      // ON CONFLICT DO NOTHING semantics
+      const dup = this.journeyRefs.find(r => r.tenant_id === tid && r.journey_id === journeyId && r.kind === kind && r.ref_id === refId);
+      if (!dup) this.journeyRefs.push(ref);
+      return [] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM journey_references') && t.includes('kind=$3')) {
+      const [journeyId, tid, kind] = values as string[];
+      return this.journeyRefs.filter(r => r.journey_id === journeyId && r.tenant_id === tid && r.kind === kind)
+        .sort((a, b) => a.linked_at.localeCompare(b.linked_at)) as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM journey_references') && !t.includes('kind=$1 AND ref_id=$2')) {
+      const [journeyId, tid] = values as string[];
+      return this.journeyRefs.filter(r => r.journey_id === journeyId && r.tenant_id === tid)
+        .sort((a, b) => a.linked_at.localeCompare(b.linked_at)) as unknown as T[];
+    }
+    if (t.startsWith('SELECT journey_id FROM journey_references') && t.includes('kind=$1 AND ref_id=$2')) {
+      const [kind, refId, tid] = values as string[];
+      return this.journeyRefs.filter(r => r.kind === kind && r.ref_id === refId && r.tenant_id === tid)
+        .sort((a, b) => a.linked_at.localeCompare(b.linked_at))
+        .map(r => ({ journey_id: r.journey_id })) as unknown as T[];
+    }
+    if (t.startsWith('INSERT INTO journey_events')) {
+      const [id, tid, journeyId, eventType, payloadJson, refKind, refId, occurredAt, causedBy] = values as unknown[];
+      const evt: JourneyEventRow = {
+        id: id as string, tenant_id: tid as string, journey_id: journeyId as string,
+        event_type: eventType as string,
+        payload: typeof payloadJson === 'string' ? payloadJson : JSON.stringify(payloadJson ?? {}),
+        ref_kind: refKind as string | null, ref_id: refId as string | null,
+        occurred_at: occurredAt as string, caused_by: causedBy as string | null,
+      };
+      this.journeyEvents.push(evt);
+      return [] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM journey_events') && t.includes('occurred_at >') && t.includes('SELECT occurred_at')) {
+      const [journeyId, tid, afterId] = values as string[];
+      const allEvts = this.journeyEvents.filter(e => e.journey_id === journeyId && e.tenant_id === tid)
+        .sort((a, b) => a.occurred_at.localeCompare(b.occurred_at) || a.id.localeCompare(b.id));
+      const ref = allEvts.find(e => e.id === afterId);
+      if (!ref) return [] as unknown as T[];
+      return allEvts.filter(e => e.occurred_at > ref.occurred_at) as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM journey_events') && t.includes('journey_id=$1')) {
+      const [journeyId, tid] = values as string[];
+      return this.journeyEvents.filter(e => e.journey_id === journeyId && e.tenant_id === tid)
+        .sort((a, b) => a.occurred_at.localeCompare(b.occurred_at) || a.id.localeCompare(b.id)) as unknown as T[];
+    }
+    if (t.startsWith('INSERT INTO journey_projections') || (t.startsWith('INSERT INTO journey_projections') && t.includes('ON CONFLICT'))) {
+      const [journeyId, tid, lc, intent, obstacle, actor, workJson, nsJson, hhJson, lastEvtId, projectedAt] = values as unknown[];
+      const proj: JourneyProjectionRow = {
+        journey_id: journeyId as string, tenant_id: tid as string, projection_type: 'journey_state',
+        lifecycle: lc as string, intent: intent as string | null,
+        obstacle: obstacle as string | null, actor: actor as string | null,
+        work_summary: typeof workJson === 'string' ? workJson : JSON.stringify(workJson ?? []),
+        next_step: nsJson ? (typeof nsJson === 'string' ? nsJson : JSON.stringify(nsJson)) : null,
+        human_handoff: hhJson ? (typeof hhJson === 'string' ? hhJson : JSON.stringify(hhJson)) : null,
+        last_event_id: lastEvtId as string | null, projected_at: projectedAt as string,
+      };
+      this.journeyProjections.set(journeyId as string, proj);
+      return [] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM journey_projections')) {
+      const [journeyId, tid] = values as string[];
+      const proj = this.journeyProjections.get(journeyId);
+      if (!proj || proj.tenant_id !== tid) return [] as unknown as T[];
+      return [proj] as unknown as T[];
+    }
+    if (t.startsWith('INSERT INTO journey_capability_tokens')) {
+      const [token, journeyId, tid, issuedAt, expiresAt] = values as (string | null)[];
+      const row: JourneyTokenRow = {
+        token: token!, journey_id: journeyId!, tenant_id: tid!,
+        issued_at: issuedAt!, expires_at: expiresAt ?? null, revoked: false,
+      };
+      this.journeyTokens.set(token!, row);
+      return [] as unknown as T[];
+    }
+    if (t.startsWith('SELECT journey_id FROM journey_capability_tokens')) {
+      const [token, tid] = values as string[];
+      const row = this.journeyTokens.get(token);
+      if (!row || row.tenant_id !== tid || row.revoked) return [] as unknown as T[];
+      return [{ journey_id: row.journey_id }] as unknown as T[];
+    }
+    if (t.startsWith('UPDATE journey_capability_tokens') && t.includes('revoked=true')) {
+      const [, token] = values as string[];
+      const row = this.journeyTokens.get(token);
+      if (row) row.revoked = true;
+      return [] as unknown as T[];
+    }
+
     return [] as unknown as T[];
   }
 
@@ -842,4 +1001,36 @@ export interface CommunicationRow {
   created_at: string; queued_at: string | null; sent_at: string | null;
   delivered_at: string | null; failed_at: string | null;
   failure_reason: string | null; adapter_used: string | null; version: number;
+}
+
+// ─── M10.5 Journey row types ─────────────────────────────────────────────────
+export interface JourneyRow {
+  id: string; tenant_id: string;
+  intent: string | null; intent_inferred_at: string | null;
+  lifecycle: string; lifecycle_changed_at: string;
+  coordination_state: string; // JSON
+  identity_resolved: boolean;
+  merged_from: string[]; split_from: string | null;
+  created_at: string; updated_at: string;
+}
+export interface JourneyRefRow {
+  id: string; tenant_id: string; journey_id: string;
+  kind: string; ref_id: string; role: string | null;
+  linked_at: string; linked_by: string | null; meta: string; // JSON
+}
+export interface JourneyEventRow {
+  id: string; tenant_id: string; journey_id: string;
+  event_type: string; payload: string; // JSON
+  ref_kind: string | null; ref_id: string | null;
+  occurred_at: string; caused_by: string | null;
+}
+export interface JourneyProjectionRow {
+  journey_id: string; tenant_id: string; projection_type: string;
+  lifecycle: string; intent: string | null; obstacle: string | null; actor: string | null;
+  work_summary: string; next_step: string | null; human_handoff: string | null;
+  last_event_id: string | null; projected_at: string;
+}
+export interface JourneyTokenRow {
+  token: string; journey_id: string; tenant_id: string;
+  issued_at: string; expires_at: string | null; revoked: boolean;
 }
