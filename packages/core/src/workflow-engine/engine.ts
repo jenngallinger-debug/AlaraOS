@@ -88,6 +88,8 @@ export class WorkflowEngine {
         templateId: cmd.templateId,
         forObjectId: cmd.forObjectId,
         forObjectType: cmd.forObjectType,
+        // objectType mirrors forObjectType so policy modules can inspect it uniformly
+        objectType: cmd.forObjectType,
       },
       ruleSetId: template.ruleSetId,
       objects: {},
