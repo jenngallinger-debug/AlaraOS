@@ -1,0 +1,5 @@
+-- Alara OS — Migration 003 ROLLBACK
+DROP TABLE IF EXISTS promises CASCADE;
+DROP TABLE IF EXISTS tasks CASCADE;
+DROP TABLE IF EXISTS workflows CASCADE;
+DELETE FROM schema_migrations WHERE version = '003';
