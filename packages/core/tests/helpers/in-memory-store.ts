@@ -70,6 +70,10 @@ export class InMemoryStore {
   readonly journeyEvents: JourneyEventRow[] = [];
   readonly journeyProjections = new Map<string, JourneyProjectionRow>();
   readonly journeyTokens = new Map<string, JourneyTokenRow>();
+  // ── M11: Stakeholder Object ───────────────────────────────────────────────
+  readonly stakeholders = new Map<string, StakeholderRow>();
+  readonly stakeholderPrefs: StakeholderPreferenceRow[] = [];
+  readonly stakeholderProfiles = new Map<string, StakeholderProfileRow>();
 
   async query<T = unknown>(text: string, values: unknown[] = []): Promise<T[]> {
     const t = text.trim().replace(/\s+/g, ' ');
@@ -888,6 +892,98 @@ export class InMemoryStore {
       return [] as unknown as T[];
     }
 
+    // ── M11: Stakeholder Engine ─────────────────────────────────────────────
+    if (t.startsWith('INSERT INTO stakeholders')) {
+      const [id, tid, patientId, type, isInternal, displayName, orgName, email, phone, fax,
+             consentStatus, consentScope, grantedAt, revokedAt, expiresAt, grantedBy,
+             wmRef, active, createdAt, updatedAt, version] = values as unknown[];
+      const row: StakeholderRow = {
+        id: id as string, tenant_id: tid as string, patient_id: patientId as string,
+        type: type as string, is_internal: isInternal as boolean,
+        display_name: displayName as string | null, organization_name: orgName as string | null,
+        email: email as string | null, phone: phone as string | null, fax: fax as string | null,
+        consent_status: consentStatus as string, consent_scope: consentScope as string,
+        consent_granted_at: grantedAt as string | null, consent_revoked_at: revokedAt as string | null,
+        consent_expires_at: expiresAt as string | null, consent_granted_by: grantedBy as string | null,
+        workforce_member_ref: wmRef as string | null,
+        active: active as boolean, created_at: createdAt as string,
+        updated_at: updatedAt as string, version: version as number,
+      };
+      this.stakeholders.set(id as string, row);
+      return [] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM stakeholders WHERE id=$1')) {
+      const [id, tid] = values as string[];
+      const row = this.stakeholders.get(id);
+      if (!row || row.tenant_id !== tid) return [] as unknown as T[];
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM stakeholders WHERE id=$1') || (t.includes('FROM stakeholders') && t.includes('patient_id=$1'))) {
+      const [patientId, tid] = values as string[];
+      return Array.from(this.stakeholders.values())
+        .filter(s => s.patient_id === patientId && s.tenant_id === tid && s.active)
+        .sort((a, b) => (b.is_internal ? 1 : 0) - (a.is_internal ? 1 : 0) || a.type.localeCompare(b.type)) as unknown as T[];
+    }
+    if (t.startsWith('SELECT id, consent_status') && t.includes('FROM stakeholders')) {
+      const [id, tid] = values as string[];
+      const row = this.stakeholders.get(id);
+      if (!row || row.tenant_id !== tid) return [] as unknown as T[];
+      return [{ id: row.id, consent_status: row.consent_status, consent_scope: row.consent_scope,
+                consent_granted_at: row.consent_granted_at, consent_revoked_at: row.consent_revoked_at,
+                consent_expires_at: row.consent_expires_at }] as unknown as T[];
+    }
+    if (t.startsWith('UPDATE stakeholders') && t.includes('consent_status')) {
+      const [status, scope, grantedAt, revokedAt, expiresAt, grantedBy, updatedAt, id, tid, expectedVersion] = values as unknown[];
+      const row = this.stakeholders.get(id as string);
+      if (!row || row.tenant_id !== tid || row.version !== expectedVersion) return [] as unknown as T[];
+      row.consent_status = status as string; row.consent_scope = scope as string;
+      row.consent_granted_at = grantedAt as string | null; row.consent_revoked_at = revokedAt as string | null;
+      row.consent_expires_at = expiresAt as string | null; row.consent_granted_by = grantedBy as string | null;
+      row.updated_at = updatedAt as string; row.version += 1;
+      return [{ id: row.id }] as unknown as T[];
+    }
+    if (t.startsWith('UPDATE stakeholders') && t.includes('active=')) {
+      const [active, updatedAt, id, tid] = values as unknown[];
+      const row = this.stakeholders.get(id as string);
+      if (row && row.tenant_id === tid) { row.active = active as boolean; row.updated_at = updatedAt as string; row.version += 1; }
+      return [] as unknown as T[];
+    }
+    if (t.startsWith('INSERT INTO stakeholder_preferences') || t.includes('stakeholder_preferences')) {
+      if (t.startsWith('INSERT')) {
+        const [sid, tid, category, channel, cadence, optIn] = values as unknown[];
+        const existing = this.stakeholderPrefs.findIndex(p => p.stakeholder_id === sid && p.category === category);
+        const pref: StakeholderPreferenceRow = { stakeholder_id: sid as string, tenant_id: tid as string,
+          category: category as string, channel: channel as string, cadence: cadence as string, opt_in: optIn as boolean };
+        if (existing >= 0) this.stakeholderPrefs[existing] = pref;
+        else this.stakeholderPrefs.push(pref);
+        return [] as unknown as T[];
+      }
+      const [sid, tid] = values as string[];
+      return this.stakeholderPrefs.filter(p => p.stakeholder_id === sid && p.tenant_id === tid)
+        .sort((a, b) => a.category.localeCompare(b.category)) as unknown as T[];
+    }
+    if (t.startsWith('INSERT INTO stakeholder_promise_profiles') || (t.includes('stakeholder_promise_profiles') && t.includes('WHERE'))) {
+      if (t.startsWith('INSERT')) {
+        const [sid, tid, job, resp, success, anxiety, promise, triggers] = values as unknown[];
+        const profile: StakeholderProfileRow = { stakeholder_id: sid as string, tenant_id: tid as string,
+          job_to_be_done: job as string | null, responsibility_transferred: resp as string | null,
+          success_definition: success as string | null, anxiety_risk: anxiety as string | null,
+          communication_promise: promise as string | null, update_triggers: (triggers as string[]) ?? [] };
+        this.stakeholderProfiles.set(sid as string, profile);
+        return [] as unknown as T[];
+      }
+      const [sid, tid] = values as string[];
+      const profile = this.stakeholderProfiles.get(sid);
+      if (!profile || profile.tenant_id !== tid) return [] as unknown as T[];
+      return [profile] as unknown as T[];
+    }
+    if (t.includes('FROM stakeholders s') && t.includes('patient_id=$1')) {
+      const [patientId, tid] = values as string[];
+      return Array.from(this.stakeholders.values())
+        .filter(s => s.patient_id === patientId && s.tenant_id === tid && s.active)
+        .sort((a, b) => (b.is_internal ? 1 : 0) - (a.is_internal ? 1 : 0) || a.type.localeCompare(b.type)) as unknown as T[];
+    }
+
     return [] as unknown as T[];
   }
 
@@ -1033,4 +1129,27 @@ export interface JourneyProjectionRow {
 export interface JourneyTokenRow {
   token: string; journey_id: string; tenant_id: string;
   issued_at: string; expires_at: string | null; revoked: boolean;
+}
+
+// ─── M11: Stakeholder row types ──────────────────────────────────────────────
+export interface StakeholderRow {
+  id: string; tenant_id: string; patient_id: string;
+  type: string; is_internal: boolean;
+  display_name: string | null; organization_name: string | null;
+  email: string | null; phone: string | null; fax: string | null;
+  consent_status: string; consent_scope: string;
+  consent_granted_at: string | null; consent_revoked_at: string | null;
+  consent_expires_at: string | null; consent_granted_by: string | null;
+  workforce_member_ref: string | null;
+  active: boolean; created_at: string; updated_at: string; version: number;
+}
+export interface StakeholderPreferenceRow {
+  stakeholder_id: string; tenant_id: string;
+  category: string; channel: string; cadence: string; opt_in: boolean;
+}
+export interface StakeholderProfileRow {
+  stakeholder_id: string; tenant_id: string;
+  job_to_be_done: string | null; responsibility_transferred: string | null;
+  success_definition: string | null; anxiety_risk: string | null;
+  communication_promise: string | null; update_triggers: string[];
 }
