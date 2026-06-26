@@ -673,9 +673,8 @@ describe('Reference idempotency', () => {
 describe('Journey Invariant', () => {
   test('reference kinds are the exhaustive ADR-015 list', () => {
     const expected = new Set([
-      'person', 'episode', 'relationship', 'workforce_member',
-      'stakeholder',  // M11: Stakeholder is a first-class Object (Architect ratified)
-      'promise', 'task', 'communication', 'knowledge_entry', 'observation', 'reasoning',
+      'person', 'episode', 'relationship', 'workforce_member', 'promise',
+      'task', 'communication', 'knowledge_entry', 'observation', 'reasoning',
     ]);
     const actual = new Set(JOURNEY_REFERENCE_KINDS);
     expect(actual).toEqual(expected);
