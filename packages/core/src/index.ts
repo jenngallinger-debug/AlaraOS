@@ -139,3 +139,6 @@ export {
 } from './workforce-engine/types';
 export { WorkforceHealthProjectionDefinition } from './projection-engine/projections/workforce-health';
 export type { WorkforceHealthInput, WorkforceHealthValue, MemberLoadSummary } from './projection-engine/projections/workforce-health';
+
+// M11 — Retrieval & Query Engine (read-only View under ADR-016; adds no ProjectionType)
+export * from './retrieval-engine';
