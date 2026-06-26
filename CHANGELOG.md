@@ -86,3 +86,33 @@ Five replaceable policy modules implementing the PolicyModule interface:
 ## Next: M4 — First Vertical Slice (UI-visible referral loop)
 
 End-to-end: referral arrives → intake workflow → task → promise → timeline projection → Digital Care Twin assembled → visible in workspace.
+
+---
+
+## v0.4-m4-vertical-slice — 2026-06-25
+
+### M4 — First Vertical Slice
+
+Complete end-to-end operating pipeline:
+ReferralReceived → Patient → Rules → Workflow → Task → Promise → Communication → Timeline → Digital Care Twin
+
+**Communication Engine**
+- Full lifecycle: CommunicationCreated → CommunicationQueued → CommunicationSent → CommunicationDelivered / CommunicationFailed
+- All 5 channels: internal, patient, family, physician, referral_source
+- StubDeliveryAdapter (no external services); adapter interface ready for Email/SMS/Fax
+- Stale-version rejection; full event-sourced reconstruction
+- ADR-015: adapter enforces that communications are human-authorized
+
+**Intake Orchestrator**
+- Sequences all engines; owns zero business rules
+- Rules Engine checked before any workflow/task/promise mutation
+- Denial path: patient created, all else blocked, explanation returned
+
+**Projection upgrades**
+- Timeline and Digital Care Twin both rebuilt as final step of every intake flow
+- ADR-016 metadata verified: methodVersion, confidence, sourceEventIds, aiInvolved
+- Replay test proves both projections rebuild identically from event stream
+
+**Migration 005**: communications table with RLS
+
+**Tests: +32 → 232 total**

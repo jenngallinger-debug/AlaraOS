@@ -49,6 +49,7 @@ export class InMemoryStore {
   readonly workflows = new Map<string, WorkflowRow>();
   readonly tasks = new Map<string, TaskRow>();
   readonly promises = new Map<string, PromiseRow>();
+  readonly communications = new Map<string, CommunicationRow>();
 
   async query<T = unknown>(text: string, values: unknown[] = []): Promise<T[]> {
     const t = text.trim().replace(/\s+/g, ' ');
@@ -224,10 +225,70 @@ export class InMemoryStore {
       return [{ version: row.version }] as unknown as T[];
     }
 
+    // ── communications ─────────────────────────────────────────────────────────
+    if (t.startsWith('INSERT INTO communications')) {
+      const [id, tid, channel, purpose, subjId, wfId, recipType, recipId, subj, body] = values as (string | null)[];
+      const row: CommunicationRow = {
+        id: id!, tenant_id: tid!, channel: channel!, purpose: purpose!,
+        subject_id: subjId!, workflow_id: wfId ?? null,
+        recipient_type: recipType!, recipient_id: recipId!,
+        subject: subj!, body: body ?? '', status: 'created',
+        created_at: new Date().toISOString(), queued_at: null, sent_at: null,
+        delivered_at: null, failed_at: null, failure_reason: null, adapter_used: null, version: 1,
+      };
+      this.communications.set(id!, row);
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM communications')) {
+      const [id, tid] = values as string[];
+      const row = this.communications.get(id);
+      if (!row || row.tenant_id !== tid) return [];
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith("UPDATE communications SET status='queued'")) {
+      const [id, tid, ver] = values as string[];
+      const row = this.communications.get(id);
+      if (!row || row.tenant_id !== tid || row.version !== Number(ver)) return [] as unknown as T[];
+      row.status = 'queued'; row.queued_at = new Date().toISOString(); row.version += 1;
+      return [{ version: row.version }] as unknown as T[];
+    }
+    if (t.startsWith("UPDATE communications SET status='sent'")) {
+      const [adapterName, id, tid, ver] = values as string[];
+      const row = this.communications.get(id);
+      if (!row || row.tenant_id !== tid || row.version !== Number(ver)) return [] as unknown as T[];
+      row.status = 'sent'; row.sent_at = new Date().toISOString(); row.adapter_used = adapterName; row.version += 1;
+      return [{ version: row.version }] as unknown as T[];
+    }
+    if (t.startsWith("UPDATE communications SET status='delivered'")) {
+      const [id, tid, ver] = values as string[];
+      const row = this.communications.get(id);
+      if (!row || row.tenant_id !== tid || row.version !== Number(ver)) return [] as unknown as T[];
+      row.status = 'delivered'; row.delivered_at = new Date().toISOString(); row.version += 1;
+      return [{ version: row.version }] as unknown as T[];
+    }
+    if (t.startsWith("UPDATE communications SET status='failed'")) {
+      const [reason, id, tid, ver] = values as string[];
+      const row = this.communications.get(id);
+      if (!row || row.tenant_id !== tid || row.version !== Number(ver)) return [] as unknown as T[];
+      row.status = 'failed'; row.failed_at = new Date().toISOString(); row.failure_reason = reason; row.version += 1;
+      return [{ version: row.version }] as unknown as T[];
+    }
+
     return [] as unknown as T[];
   }
 
   async transaction<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> { return fn(makeTxClient(this)); }
   async queryOne<T = unknown>(text: string, values?: unknown[]): Promise<T | null> { const rows = await this.query<T>(text, values ?? []); return rows[0] ?? null; }
   async end(): Promise<void> {}
+}
+
+// ── M4: CommunicationRow ──────────────────────────────────────────────────────
+export interface CommunicationRow {
+  id: string; tenant_id: string; channel: string; purpose: string;
+  subject_id: string; workflow_id: string | null;
+  recipient_type: string; recipient_id: string;
+  subject: string; body: string; status: string;
+  created_at: string; queued_at: string | null; sent_at: string | null;
+  delivered_at: string | null; failed_at: string | null;
+  failure_reason: string | null; adapter_used: string | null; version: number;
 }

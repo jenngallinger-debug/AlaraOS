@@ -35,3 +35,8 @@ export * from './promise-engine';
 
 // M3 — Projection Engine
 export * from './projection-engine';
+
+// M4 — Communication Engine + Intake Orchestrator
+export * from './communication-engine';
+export { IntakeOrchestrator } from './intake-orchestrator';
+export type { ReferralReceivedInput, IntakeOrchestratorResult } from './intake-orchestrator';
