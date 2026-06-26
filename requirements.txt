@@ -1,2 +1,0 @@
-# AlaraOS staging server uses only the Python standard library — no dependencies.
-# This file exists so Render detects the Python runtime; `pip install -r` is a no-op.
