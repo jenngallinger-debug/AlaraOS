@@ -66,7 +66,6 @@ export type JourneyReferenceKind =
   | 'episode'
   | 'relationship'
   | 'workforce_member'
-  | 'stakeholder'           // M11: Stakeholder is a first-class Object (Architect ratified)
   | 'promise'
   | 'task'
   | 'communication'
@@ -76,8 +75,8 @@ export type JourneyReferenceKind =
 
 /** The complete exhaustive set. Adding a value is an architectural decision. */
 export const JOURNEY_REFERENCE_KINDS: readonly JourneyReferenceKind[] = [
-  'person', 'episode', 'relationship', 'workforce_member', 'stakeholder',
-  'promise', 'task', 'communication', 'knowledge_entry', 'observation', 'reasoning',
+  'person', 'episode', 'relationship', 'workforce_member', 'promise',
+  'task', 'communication', 'knowledge_entry', 'observation', 'reasoning',
 ];
 
 // ─── Event types ─────────────────────────────────────────────────────────────
