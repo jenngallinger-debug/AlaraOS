@@ -1,0 +1,267 @@
+{
+  "_comment": "Benefit Navigator decision tree. Each node is keyed by id. type 'branch' = question with options (each option.next points to another node id). type 'answer' = terminal answer card. This single tree powers Objective 3 (navigation from program/condition/benefit/question/service/geography) and Objective 4 (the Benefit Navigator tool).",
+  "start": {
+    "id": "start",
+    "type": "branch",
+    "question": "Where would you like to start?",
+    "help": "AlaraOS helps you understand and reach benefits you may already be entitled to. It does not replace your Resource Center, physician, attorney, authorized representative, or any federal agency — it helps you work with them.",
+    "options": [
+      { "label": "My program (EEOICPA, OWCP, VA…)", "next": "by-program" },
+      { "label": "Who I am / my job", "next": "by-who" },
+      { "label": "A health condition", "next": "by-condition" },
+      { "label": "A benefit or service", "next": "by-service" },
+      { "label": "A specific question", "next": "by-question" },
+      { "label": "My location", "next": "by-geo" }
+    ]
+  },
+  "by-program": {
+    "id": "by-program", "type": "branch", "question": "Which program are you under?",
+    "options": [
+      { "label": "EEOICPA / White Card", "next": "eeoicpa-need" },
+      { "label": "OWCP / FECA (federal or postal worker)", "next": "owcp-need" },
+      { "label": "VA / Veteran", "next": "va-need" },
+      { "label": "I'm not sure yet", "next": "by-who" }
+    ]
+  },
+  "by-who": {
+    "id": "by-who", "type": "branch", "question": "Which best describes you?",
+    "options": [
+      { "label": "Nevada Test Site / DOE worker", "next": "ans-nts" },
+      { "label": "Atomic Weapons Employer worker", "next": "ans-nts" },
+      { "label": "Federal or postal worker", "next": "owcp-need" },
+      { "label": "Veteran", "next": "va-need" },
+      { "label": "Family member or survivor", "next": "ans-survivor" }
+    ]
+  },
+  "by-condition": {
+    "id": "by-condition", "type": "branch", "question": "What kind of care is needed?",
+    "options": [
+      { "label": "A wound that won't heal", "next": "cond-program-wound" },
+      { "label": "IV / infusion therapy", "next": "cond-program-infusion" },
+      { "label": "Skilled nursing / chronic disease", "next": "cond-program-nursing" }
+    ]
+  },
+  "by-service": {
+    "id": "by-service", "type": "branch", "question": "Which service do you want to understand?",
+    "options": [
+      { "label": "Home health (overview)", "next": "ans-home-health" },
+      { "label": "Wound care at home", "next": "cond-program-wound" },
+      { "label": "Infusion therapy at home", "next": "cond-program-infusion" }
+    ]
+  },
+  "by-question": {
+    "id": "by-question", "type": "branch", "question": "Pick the question closest to yours",
+    "options": [
+      { "label": "Does my White Card cover home health?", "next": "ans-eeoicpa-hh" },
+      { "label": "Can I get paid to care for a family member?", "next": "ans-paid-caregiver" },
+      { "label": "Can I have the White Card and Medicare?", "next": "ans-white-card-medicare" },
+      { "label": "Does OWCP cover home health?", "next": "ans-owcp-hh" },
+      { "label": "Does the VA cover home health?", "next": "ans-va-hh" }
+    ]
+  },
+  "by-geo": {
+    "id": "by-geo", "type": "branch", "question": "Where are you located?",
+    "options": [
+      { "label": "Las Vegas / Clark County / Southern Nevada", "next": "ans-local" },
+      { "label": "Somewhere else", "next": "ans-local" }
+    ]
+  },
+  "eeoicpa-need": {
+    "id": "eeoicpa-need", "type": "branch", "question": "What do you need help with?",
+    "options": [
+      { "label": "Getting a White Card / eligibility", "next": "ans-get-white-card" },
+      { "label": "Home health coverage", "next": "ans-eeoicpa-hh" },
+      { "label": "Wound care", "next": "ans-eeoicpa-wound" },
+      { "label": "A condition caused by my accepted condition", "next": "ans-consequential" },
+      { "label": "Getting paid to care for a family member", "next": "ans-paid-caregiver" }
+    ]
+  },
+  "owcp-need": {
+    "id": "owcp-need", "type": "branch", "question": "What do you need help with?",
+    "options": [
+      { "label": "Home health coverage", "next": "ans-owcp-hh" },
+      { "label": "Skilled nursing or wound care", "next": "ans-owcp-nursing" }
+    ]
+  },
+  "va-need": {
+    "id": "va-need", "type": "branch", "question": "What do you need help with?",
+    "options": [
+      { "label": "Home health eligibility", "next": "ans-va-hh" },
+      { "label": "Wound care at home", "next": "ans-va-wound" }
+    ]
+  },
+  "cond-program-wound": {
+    "id": "cond-program-wound", "type": "branch", "question": "Which program covers you?",
+    "options": [
+      { "label": "EEOICPA / White Card", "next": "ans-eeoicpa-wound" },
+      { "label": "OWCP / FECA", "next": "ans-owcp-nursing" },
+      { "label": "VA / Veteran", "next": "ans-va-wound" }
+    ]
+  },
+  "cond-program-infusion": {
+    "id": "cond-program-infusion", "type": "branch", "question": "Which program covers you?",
+    "options": [
+      { "label": "EEOICPA / White Card", "next": "ans-eeoicpa-infusion" },
+      { "label": "OWCP / FECA", "next": "ans-owcp-nursing" }
+    ]
+  },
+  "cond-program-nursing": {
+    "id": "cond-program-nursing", "type": "branch", "question": "Which program covers you?",
+    "options": [
+      { "label": "EEOICPA / White Card", "next": "ans-eeoicpa-hh" },
+      { "label": "OWCP / FECA", "next": "ans-owcp-nursing" },
+      { "label": "VA / Veteran", "next": "ans-va-hh" }
+    ]
+  },
+
+  "ans-eeoicpa-hh": {
+    "id": "ans-eeoicpa-hh", "type": "answer",
+    "title": "Yes — the White Card generally covers home health",
+    "answer": "If you have an accepted EEOICPA condition and a physician orders home health, your White Card generally covers skilled nursing, wound care, therapy, and home health aide services for that condition at no out-of-pocket cost.",
+    "covered": ["Skilled nursing", "Wound care", "Physical & occupational therapy", "Home health aide", "Caregiver training"],
+    "term": "white-card",
+    "source": { "label": "U.S. Department of Labor — EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" },
+    "nextStep": "Bring your accepted condition(s) and your physician's order. A nurse can verify your authorization and explain what's covered.",
+    "trust": "This is general information, not a coverage determination. Your DOL Resource Center and physician confirm what applies to your claim."
+  },
+  "ans-eeoicpa-wound": {
+    "id": "ans-eeoicpa-wound", "type": "answer",
+    "title": "Yes — home wound care is generally covered",
+    "answer": "For approved EEOICPA beneficiaries, skilled home wound care ordered by a physician is generally covered at no out-of-pocket cost — including assessment, dressing changes, infection monitoring, and advanced wound therapy.",
+    "covered": ["Wound assessment & staging", "Sterile dressing changes", "Infection monitoring", "Advanced/negative-pressure therapy when ordered"],
+    "term": "wound-care",
+    "source": { "label": "U.S. Department of Labor — EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" },
+    "nextStep": "If the wound results from a consequential condition, it may need DOL acceptance first — a nurse can help document it.",
+    "trust": "General information only. Your Resource Center and physician confirm coverage for your accepted condition."
+  },
+  "ans-eeoicpa-infusion": {
+    "id": "ans-eeoicpa-infusion", "type": "answer",
+    "title": "Home infusion therapy is generally covered",
+    "answer": "When ordered by a physician for an accepted EEOICPA condition, home infusion / IV therapy is generally covered at no out-of-pocket cost, with a nurse managing the line and treatment in your home.",
+    "covered": ["IV antibiotics", "Hydration & nutrition support", "PICC/line management", "Nurse-administered infusions"],
+    "term": "home-health",
+    "source": { "label": "U.S. Department of Labor — EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" },
+    "nextStep": "Have your physician's order and accepted condition ready for verification.",
+    "trust": "General information only — confirm specifics with your Resource Center and physician."
+  },
+  "ans-consequential": {
+    "id": "ans-consequential", "type": "answer",
+    "title": "A consequential condition may also be covered",
+    "answer": "A consequential condition is a new problem caused by your already-accepted EEOICPA condition or its treatment. Once the Department of Labor accepts it as consequential, related care — including home health — may also be covered.",
+    "covered": ["Documentation support", "Physician coordination", "Home health for the accepted consequential condition"],
+    "term": "consequential-condition",
+    "source": { "label": "U.S. Department of Labor — EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" },
+    "nextStep": "Documentation is key — a clinician can help link the new condition to your accepted one for DOL review.",
+    "trust": "Acceptance is determined by the Department of Labor, not by AlaraOS."
+  },
+  "ans-paid-caregiver": {
+    "id": "ans-paid-caregiver", "type": "answer",
+    "title": "You may be able to be paid to care for your family member",
+    "answer": "Under EEOICPA in-home care benefits, a family member who already provides daily care may be able to be employed and paid (as a W-2 employee) to provide that care, with RN supervision, when authorized.",
+    "covered": ["W-2 employment", "RN supervision", "Training", "Workers' comp coverage"],
+    "term": "white-card",
+    "source": { "label": "U.S. Department of Labor — EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" },
+    "nextStep": "Eligibility depends on the authorized level of in-home care. A nurse can walk you through requirements.",
+    "trust": "General information only; authorization is determined through your claim."
+  },
+  "ans-white-card-medicare": {
+    "id": "ans-white-card-medicare", "type": "answer",
+    "title": "Yes — you can have the White Card and Medicare",
+    "answer": "The White Card and Medicare operate independently. Having one does not cancel the other. For care tied to your accepted EEOICPA condition, the White Card generally pays with no out-of-pocket cost.",
+    "covered": ["No loss of Medicare", "No premiums/copays for covered EEOICPA care"],
+    "term": "white-card",
+    "source": { "label": "U.S. Department of Labor — EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" },
+    "nextStep": "Keep both — they cover different things and can work together.",
+    "trust": "General information only — confirm coordination details with your Resource Center."
+  },
+  "ans-get-white-card": {
+    "id": "ans-get-white-card", "type": "answer",
+    "title": "How to get a White Card (EEOICPA)",
+    "answer": "You file an EEOICPA claim (Form EE-1 as a worker, or EE-2 as a survivor) with the Department of Labor. When a condition is accepted, you receive a White Card for covered medical care. The DOL Las Vegas Resource Center can help you file.",
+    "covered": ["Eligibility screening", "Help understanding EE-1 / EE-2", "Resource Center referral"],
+    "term": "eeoicpa",
+    "source": { "label": "U.S. Department of Labor — EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" },
+    "nextStep": "Contact the DOL Resource Center to file. AlaraOS can help you understand the steps and what care follows acceptance.",
+    "trust": "AlaraOS does not file claims or determine eligibility — the Department of Labor does."
+  },
+  "ans-nts": {
+    "id": "ans-nts", "type": "answer",
+    "title": "Nevada Test Site & DOE workers may qualify for EEOICPA",
+    "answer": "Workers at the Nevada Test Site / Nevada National Security Site, the Tonopah Test Range, and Atomic Weapons Employer facilities may qualify for EEOICPA benefits — including a White Card and covered home health — depending on their work history and condition.",
+    "covered": ["Eligibility overview", "Covered conditions", "What the White Card covers"],
+    "term": "eeoicpa",
+    "source": { "label": "U.S. Department of Labor — EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" },
+    "nextStep": "The DOL Resource Center can review your specific facility and dates of employment.",
+    "trust": "Eligibility is determined by the Department of Labor."
+  },
+  "ans-survivor": {
+    "id": "ans-survivor", "type": "answer",
+    "title": "Survivors may qualify for EEOICPA benefits",
+    "answer": "Eligible survivors of a worker who would have qualified under EEOICPA may file a claim (Form EE-2) and may receive compensation. A representative or the DOL Resource Center can help determine eligibility.",
+    "covered": ["Survivor eligibility overview", "Form EE-2 guidance"],
+    "term": "eeoicpa",
+    "source": { "label": "U.S. Department of Labor — EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" },
+    "nextStep": "Gather the worker's employment and medical history; contact the Resource Center to file.",
+    "trust": "AlaraOS provides information; the Department of Labor determines survivor eligibility."
+  },
+  "ans-owcp-hh": {
+    "id": "ans-owcp-hh", "type": "answer",
+    "title": "Yes — OWCP can cover home health when authorized",
+    "answer": "If you are a federal or postal worker with an OWCP-accepted injury or illness, and a physician orders home health, OWCP can authorize it at no out-of-pocket cost.",
+    "covered": ["Skilled nursing", "Wound care", "Physical & occupational therapy", "Home health aide"],
+    "term": "owcp",
+    "source": { "label": "U.S. Department of Labor — OWCP/FECA", "url": "https://www.dol.gov/agencies/owcp/FECA" },
+    "nextStep": "Your physician's order plus OWCP authorization start care. A nurse can help track the authorization.",
+    "trust": "Coverage depends on OWCP acceptance and authorization for your claim."
+  },
+  "ans-owcp-nursing": {
+    "id": "ans-owcp-nursing", "type": "answer",
+    "title": "Skilled nursing & wound care under OWCP",
+    "answer": "OWCP can authorize skilled nursing and home wound care for an accepted federal/postal work injury when a physician orders it. Postal (USPS) workers are covered the same way as other federal employees.",
+    "covered": ["RN skilled nursing", "Wound care", "Medication management", "Post-surgical care"],
+    "term": "feca",
+    "source": { "label": "U.S. Department of Labor — OWCP/FECA", "url": "https://www.dol.gov/agencies/owcp/FECA" },
+    "nextStep": "Confirm your accepted conditions and obtain a physician order; AlaraOS can explain the authorization path.",
+    "trust": "Authorization is determined by OWCP."
+  },
+  "ans-va-hh": {
+    "id": "ans-va-hh", "type": "answer",
+    "title": "The VA can cover home health for eligible veterans",
+    "answer": "Enrolled veterans can receive home health through VA Community Care when the VA cannot readily provide it. A VA referral/authorization and a provider order are required. In Region 4 (including Nevada), the network is administered by TriWest.",
+    "covered": ["Skilled nursing", "Wound care", "Therapy", "Home health aide"],
+    "term": "community-care",
+    "source": { "label": "U.S. Department of Veterans Affairs — Community Care", "url": "https://www.va.gov/communitycare/" },
+    "nextStep": "Ask your VA care team for a community-care referral; a provider can begin once authorized.",
+    "trust": "Eligibility and referrals are determined by the VA."
+  },
+  "ans-va-wound": {
+    "id": "ans-va-wound", "type": "answer",
+    "title": "Home wound care for veterans through VA Community Care",
+    "answer": "Eligible veterans can receive skilled home wound care through VA Community Care when referred and authorized by the VA, delivered by an approved community provider.",
+    "covered": ["Wound assessment", "Dressing changes", "Infection monitoring", "Advanced wound therapy"],
+    "term": "wound-care",
+    "source": { "label": "U.S. Department of Veterans Affairs — Community Care", "url": "https://www.va.gov/communitycare/" },
+    "nextStep": "Request a community-care referral from your VA care team.",
+    "trust": "Referral and eligibility are determined by the VA."
+  },
+  "ans-home-health": {
+    "id": "ans-home-health", "type": "answer",
+    "title": "What home health is",
+    "answer": "Home health is skilled, physician-ordered medical care delivered in your home — nursing, wound care, infusion, and rehabilitation. It is different from non-medical home care, and federal programs (EEOICPA, OWCP, VA) can cover it.",
+    "covered": ["Skilled nursing", "Wound care", "Infusion therapy", "Therapy", "Care coordination"],
+    "term": "home-health",
+    "source": { "label": "Centers for Medicare & Medicaid Services", "url": "https://www.cms.gov/" },
+    "nextStep": "Tell us your program and we'll show what's covered and how to start.",
+    "trust": "General information only."
+  },
+  "ans-local": {
+    "id": "ans-local", "type": "answer",
+    "title": "Federal-benefits home health in Southern Nevada",
+    "answer": "In Las Vegas, Clark County, and Southern Nevada, EEOICPA White Card holders, OWCP-covered federal/postal workers, and VA Community Care veterans can receive covered home health. Local resources include the DOL Las Vegas Resource Center and the VA Southern Nevada Healthcare System.",
+    "covered": ["Local eligibility overview", "Resource Center & VA pointers", "Covered services"],
+    "term": "home-health",
+    "source": { "label": "U.S. Department of Labor — EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" },
+    "nextStep": "We can connect your program to local, covered care and the right Resource Center.",
+    "trust": "AlaraOS complements — it does not replace — your Resource Center, physician, or the VA."
+  }
+}

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 92" role="img" aria-label="Alara Home Care">
+  <title>Alara Home Care</title>
+  <desc>House mark whose doorway is an arch; small circle near the peak.</desc>
+  <path fill="currentColor" fill-rule="evenodd"
+        d="M22,88 V34 L50,8 L78,34 V88 Z
+           M37,88 V66 A13,13 0 0 1 63,66 V88 Z
+           M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+</svg>

@@ -1,0 +1,52 @@
+{
+  "_comment": "Example APPROVED intersection-page data row (Program × Service). The renderer turns this into HTML + layered JSON-LD. New pages are new rows like this — gated by SME review — not hand-built files.",
+  "id": "eeoicpa-wound-care",
+  "type": "program-service",
+  "url": "/programs-services/eeoicpa-wound-care/",
+  "program": "eeoicpa",
+  "service": "wound-care",
+  "status": "review",
+  "h1": "Does EEOICPA Cover Wound Care at Home?",
+  "title": "Does EEOICPA Cover Home Wound Care? White Card Wound Care in Las Vegas | Alara",
+  "metaDescription": "Yes — EEOICPA White Card benefits can cover skilled home wound care at no out-of-pocket cost for approved DOE and Nevada Test Site workers. Here's what's covered and how to start.",
+  "leadAnswer": "Yes. For approved EEOICPA beneficiaries, skilled wound care delivered at home is generally covered under White Card medical benefits at no out-of-pocket cost when ordered by a physician. This includes wound assessment, dressing changes, infection monitoring, and nurse-led treatment of chronic or non-healing wounds.",
+  "leadAnswerSource": "https://www.dol.gov/agencies/owcp/energy",
+  "whatsCovered": [
+    "Skilled nursing wound assessment and staging",
+    "Sterile dressing changes and wound-bed management",
+    "Infection monitoring and physician coordination",
+    "Negative-pressure / advanced wound therapy where ordered",
+    "Caregiver education on wound care between visits"
+  ],
+  "howItWorks": "A physician orders home wound care; Alara verifies White Card eligibility and the accepted/consequential condition, secures authorization, and begins nurse-led visits. Beneficiaries typically pay nothing out of pocket.",
+  "alaraRole": "Nurse-led skilled wound care across Clark County, with a Director of Nursing reviewing every case and zero tolerance for authorization gaps.",
+  "faqs": [
+    {
+      "q": "Do I pay anything for White Card wound care at home?",
+      "a": "Approved EEOICPA beneficiaries generally pay nothing out of pocket for covered, physician-ordered home wound care."
+    },
+    {
+      "q": "Does EEOICPA cover wound care for a consequential condition?",
+      "a": "If a wound results from a Department of Labor–accepted consequential condition, related wound care may be covered. Alara helps document and verify this."
+    }
+  ],
+  "relatedLinks": {
+    "program": "/programs/eeoicpa/",
+    "service": "/services/wound-care/",
+    "questions": ["/questions/does-eeoicpa-cover-wound-care/"],
+    "siblings": ["/programs-services/eeoicpa-infusion-therapy/", "/programs-services/owcp-skilled-nursing/"]
+  },
+  "sources": [
+    "https://www.dol.gov/agencies/owcp/energy"
+  ],
+  "reviewedBy": "TODO: named RN / DON credential",
+  "lastReviewed": "2026-06-22",
+  "uniqueBodyWordCount": 0,
+  "gateChecklist": {
+    "truthfulness": "pending SME confirm vs DOL source",
+    "uniqueness": "pending — fill clinical detail",
+    "expertReview": "pending",
+    "value": "yes — real referrer/patient question",
+    "schemaValid": "to verify in CI"
+  }
+}

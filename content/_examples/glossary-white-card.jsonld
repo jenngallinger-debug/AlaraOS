@@ -1,0 +1,70 @@
+{
+  "_comment": "Complete, copy-pasteable layered JSON-LD for the /glossary/white-card/ page. DefinedTerm is the AEO citation workhorse; FAQPage adds extractable Q&A; BreadcrumbList aids crawl; all reference the global #organization node. Validate in Google Rich Results Test before shipping.",
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "DefinedTerm",
+      "@id": "https://www.alarahomecare.com/glossary/white-card/#term",
+      "name": "White Card",
+      "termCode": "EEOICPA White Card",
+      "description": "A White Card is the medical benefits identification card issued under the Energy Employees Occupational Illness Compensation Program Act (EEOICPA) that allows approved Department of Energy and Nevada Test Site workers to receive covered medical care — including home health — at no out-of-pocket cost.",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "@id": "https://www.alarahomecare.com/glossary/#set",
+        "name": "Alara Home Care Federal Benefits & Home Health Glossary"
+      },
+      "subjectOf": { "@id": "https://www.alarahomecare.com/glossary/white-card/#webpage" }
+    },
+    {
+      "@type": ["MedicalWebPage", "FAQPage"],
+      "@id": "https://www.alarahomecare.com/glossary/white-card/#webpage",
+      "url": "https://www.alarahomecare.com/glossary/white-card/",
+      "name": "What Is a White Card? (EEOICPA) — Definition & Coverage",
+      "lastReviewed": "2026-06-22",
+      "reviewedBy": { "@type": "Person", "name": "TODO Named Reviewer, RN", "jobTitle": "Director of Nursing" },
+      "publisher": { "@id": "https://www.alarahomecare.com/#organization" },
+      "about": { "@id": "https://www.alarahomecare.com/glossary/white-card/#term" },
+      "citation": "https://www.dol.gov/agencies/owcp/energy",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Does the White Card cover home health care?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. The White Card covers physician-ordered home health services — including skilled nursing, wound care, therapy, and home health aide services — at no out-of-pocket cost for approved EEOICPA beneficiaries."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I pay anything for White Card home health services?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Approved beneficiaries generally pay nothing out of pocket for covered, physician-ordered home health services."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.alarahomecare.com/" },
+        { "@type": "ListItem", "position": 2, "name": "Glossary", "item": "https://www.alarahomecare.com/glossary/" },
+        { "@type": "ListItem", "position": 3, "name": "White Card", "item": "https://www.alarahomecare.com/glossary/white-card/" }
+      ]
+    },
+    {
+      "@type": ["MedicalOrganization", "HomeHealthCare", "LocalBusiness"],
+      "@id": "https://www.alarahomecare.com/#organization",
+      "name": "Alara Home Care",
+      "telephone": "+1-702-814-9630",
+      "email": "info@alarahomecare.com",
+      "areaServed": ["Las Vegas NV", "Henderson NV", "North Las Vegas NV", "Clark County NV"],
+      "medicalSpecialty": ["Wound Care", "Infusion Therapy", "Skilled Nursing", "Physical Therapy"],
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
+        "opens": "08:00", "closes": "17:00"
+      }
+    }
+  ]
+}
