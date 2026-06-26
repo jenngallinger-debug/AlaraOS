@@ -50,6 +50,10 @@ export class InMemoryStore {
   readonly tasks = new Map<string, TaskRow>();
   readonly promises = new Map<string, PromiseRow>();
   readonly communications = new Map<string, CommunicationRow>();
+  readonly hypotheses = new Map<string, HypothesisRow>();
+  readonly recommendations = new Map<string, RecommendationRow>();
+  readonly narratives = new Map<string, NarrativeRow>();
+  readonly missingInformation = new Map<string, MissingInformationRow>();
   readonly detectedPatterns = new Map<string, DetectedPatternRow>();
   readonly observations = new Map<string, ObservationRow>();
   readonly knowledgeEntries = new Map<string, KnowledgeEntryRow>();
@@ -545,12 +549,82 @@ export class InMemoryStore {
       return [] as unknown as T[];
     }
 
+    // ── M9: reasoning engine tables ─────────────────────────────────────────────
+    if (t.startsWith('INSERT INTO hypotheses')) {
+      const [id, tid, sid, stype, stmt, rationale, evidence, confidence, altExp, category, modelId] = values as (string | null)[];
+      const row: HypothesisRow = { id: id!, tenant_id: tid!, subject_id: sid!, subject_type: stype!, statement: stmt!, rationale: rationale!, evidence: evidence ? JSON.parse(evidence) : {}, confidence: confidence ? JSON.parse(confidence) : {}, alternative_explanations: altExp ? JSON.parse(altExp) : [], category: category!, status: 'active', generated_at: new Date().toISOString(), model_identifier: modelId!, version: 1 };
+      this.hypotheses.set(id!, row);
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM hypotheses WHERE tenant_id')) {
+      const [tid, sid] = values as string[];
+      return Array.from(this.hypotheses.values()).filter(h => h.tenant_id === tid && h.subject_id === sid) as unknown as T[];
+    }
+    if (t.startsWith('INSERT INTO recommendations')) {
+      const [id, tid, sid, stype, title, rationale, actionType, action, evidence, confidence, priority, modelId] = values as (string | null)[];
+      const row: RecommendationRow = { id: id!, tenant_id: tid!, subject_id: sid!, subject_type: stype!, title: title!, rationale: rationale!, action_type: actionType!, action: action ? JSON.parse(action) : {}, evidence: evidence ? JSON.parse(evidence) : {}, confidence: confidence ? JSON.parse(confidence) : {}, priority: priority!, status: 'pending', rules_engine_approved: null, rules_engine_explanation: null, generated_at: new Date().toISOString(), model_identifier: modelId!, version: 1, updated_at: new Date().toISOString() };
+      this.recommendations.set(id!, row);
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith('UPDATE recommendations SET rules_engine_approved')) {
+      const [approved, explanation, status, id, tid] = values as (string | null)[];
+      const row = this.recommendations.get(id!);
+      if (row && row.tenant_id === tid) { row.rules_engine_approved = approved === 'true' || approved === true as unknown as string; row.rules_engine_explanation = explanation ?? null; row.status = status!; row.version += 1; row.updated_at = new Date().toISOString(); }
+      return [] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM recommendations WHERE tenant_id')) {
+      const [tid, sid] = values as string[];
+      return Array.from(this.recommendations.values()).filter(r => r.tenant_id === tid && r.subject_id === sid) as unknown as T[];
+    }
+    if (t.startsWith('INSERT INTO narratives')) {
+      const [id, tid, sid, stype, ntype, sections, evidence, confidence, modelId] = values as (string | null)[];
+      const row: NarrativeRow = { id: id!, tenant_id: tid!, subject_id: sid!, subject_type: stype!, narrative_type: ntype!, sections: sections ? JSON.parse(sections) : [], evidence: evidence ? JSON.parse(evidence) : {}, confidence: confidence ? JSON.parse(confidence) : {}, generated_at: new Date().toISOString(), model_identifier: modelId!, version: 1 };
+      this.narratives.set(id!, row);
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith('INSERT INTO missing_information')) {
+      const [id, tid, sid, stype, question, importance, category, whyNeeded, howToObtain, evidence, modelId] = values as (string | null)[];
+      const row: MissingInformationRow = { id: id!, tenant_id: tid!, subject_id: sid!, subject_type: stype!, question: question!, importance: importance!, category: category!, why_needed: whyNeeded!, how_to_obtain: howToObtain!, evidence: evidence ? JSON.parse(evidence) : {}, status: 'open', generated_at: new Date().toISOString(), model_identifier: modelId!, version: 1 };
+      this.missingInformation.set(id!, row);
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM missing_information WHERE tenant_id') && t.includes("status = 'open'")) {
+      const [tid, sid] = values as string[];
+      return Array.from(this.missingInformation.values()).filter(m => m.tenant_id === tid && m.subject_id === sid && m.status === 'open') as unknown as T[];
+    }
+
     return [] as unknown as T[];
   }
 
   async transaction<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> { return fn(makeTxClient(this)); }
   async queryOne<T = unknown>(text: string, values?: unknown[]): Promise<T | null> { const rows = await this.query<T>(text, values ?? []); return rows[0] ?? null; }
   async end(): Promise<void> {}
+}
+
+// ── M9: Reasoning Engine rows ────────────────────────────────────────────────
+export interface HypothesisRow {
+  id: string; tenant_id: string; subject_id: string; subject_type: string;
+  statement: string; rationale: string; evidence: unknown; confidence: unknown;
+  alternative_explanations: string[]; category: string; status: string;
+  generated_at: string; model_identifier: string; version: number;
+}
+export interface RecommendationRow {
+  id: string; tenant_id: string; subject_id: string; subject_type: string;
+  title: string; rationale: string; action_type: string; action: unknown;
+  evidence: unknown; confidence: unknown; priority: string; status: string;
+  rules_engine_approved: boolean | null; rules_engine_explanation: string | null;
+  generated_at: string; model_identifier: string; version: number; updated_at: string;
+}
+export interface NarrativeRow {
+  id: string; tenant_id: string; subject_id: string; subject_type: string;
+  narrative_type: string; sections: unknown; evidence: unknown;
+  confidence: unknown; generated_at: string; model_identifier: string; version: number;
+}
+export interface MissingInformationRow {
+  id: string; tenant_id: string; subject_id: string; subject_type: string;
+  question: string; importance: string; category: string;
+  why_needed: string; how_to_obtain: string; evidence: unknown;
+  status: string; generated_at: string; model_identifier: string; version: number;
 }
 
 // ── M8: DetectedPatternRow ────────────────────────────────────────────────────

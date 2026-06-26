@@ -95,3 +95,22 @@ export type {
 export { StalePatternError, PatternNotFoundError } from './organizational-brain/types';
 export { OrganizationalHealthProjectionDefinition } from './projection-engine/projections/organizational-health';
 export type { OrganizationalHealthInput } from './projection-engine/projections/organizational-health';
+
+// M9 — Reasoning Engine
+export { ReasoningEngine, ReasoningRepository } from './reasoning-engine/engine';
+export type { ReasoningResult } from './reasoning-engine/engine';
+export { StubReasoningProvider, OpenAIProvider, AnthropicProvider } from './reasoning-engine/providers';
+export type { ReasoningProvider } from './reasoning-engine/providers';
+export { assembleContext, buildEvidenceChain } from './reasoning-engine/prompt-assembler';
+export type { AssemblerInput } from './reasoning-engine/prompt-assembler';
+export type {
+  Hypothesis, HypothesisStatus, Recommendation, RecommendationStatus,
+  RecommendationPriority, RecommendationActionType, MissingInformation,
+  Narrative, NarrativeType, NarrativeSection, EvidenceChain,
+  ConfidenceAssessment, ReasoningConfidence, ReasoningContext,
+  GenerateHypothesesCommand, GenerateRecommendationsCommand,
+  GenerateNarrativeCommand, IdentifyMissingInformationCommand,
+} from './reasoning-engine/types';
+export { InsufficientEvidenceError, ReasoningProviderError } from './reasoning-engine/types';
+export { ReasoningSummaryProjectionDefinition } from './projection-engine/projections/reasoning-summary';
+export type { ReasoningSummaryInput, ReasoningSummaryValue } from './projection-engine/projections/reasoning-summary';
