@@ -60,3 +60,22 @@ export {
 } from './relationship-engine/types';
 export { RelationshipHealthProjectionV2Definition } from './projection-engine/projections/relationship-health-v2';
 export type { RelationshipHealthInputV2 } from './projection-engine/projections/relationship-health-v2';
+
+// M7 — Knowledge Engine
+export { KnowledgeRepository } from './knowledge-engine/repository';
+export { KnowledgeEngine, reconstructKnowledgeEntryFromEvents, reconstructObservationFromEvents } from './knowledge-engine/engine';
+export type { ReconstructedKnowledgeEntry } from './knowledge-engine/engine';
+export type {
+  Observation, ObservationTopic, ObservationSource, ObservationConfidence,
+  KnowledgeEntry, KnowledgeEntryKind, KnowledgeEntryStatus,
+  KnowledgeQuery, KnowledgeQueryResult,
+  RecordObservationCommand, AssertKnowledgeCommand,
+  SupersedeKnowledgeCommand, RetractKnowledgeCommand,
+  CONFIDENCE_RANK,
+} from './knowledge-engine/types';
+export {
+  StaleKnowledgeEntryError, KnowledgeEntryNotFoundError,
+  ObservationNotFoundError, ClinicalContentViolationError,
+} from './knowledge-engine/types';
+export { KnowledgeSummaryProjectionDefinition } from './projection-engine/projections/knowledge-summary';
+export type { KnowledgeSummaryInput, KnowledgeSummaryValue } from './projection-engine/projections/knowledge-summary';

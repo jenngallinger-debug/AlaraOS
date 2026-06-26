@@ -29,6 +29,9 @@ export const EVENT_TYPES = [
   'AutomyndPatientObserved', 'AutomyndReferralObserved', 'AutomyndVisitObserved', 'AutomyndOrderObserved',
   // M1a — Pipeline
   'TriggerFired', 'RuleEvaluated',
+  // M7 — Knowledge Engine
+  'ObservationRecorded',
+  'KnowledgeAsserted', 'KnowledgeSuperseded', 'KnowledgeRetracted',
   // M6 — Relationship Engine
   'RelationshipCreated', 'RelationshipTerminated', 'RelationshipSuspended', 'RelationshipReactivated',
   'OwnershipTransferred',

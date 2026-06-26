@@ -50,6 +50,8 @@ export class InMemoryStore {
   readonly tasks = new Map<string, TaskRow>();
   readonly promises = new Map<string, PromiseRow>();
   readonly communications = new Map<string, CommunicationRow>();
+  readonly observations = new Map<string, ObservationRow>();
+  readonly knowledgeEntries = new Map<string, KnowledgeEntryRow>();
   readonly relationships = new Map<string, RelationshipRow>();
   readonly edges = new Map<string, EdgeRow>();
 
@@ -402,12 +404,114 @@ export class InMemoryStore {
       return matching as unknown as T[];
     }
 
+    // ── observations ─────────────────────────────────────────────────────────────
+    if (t.startsWith('INSERT INTO observations')) {
+      const [id, tid, sid, stype, topic, stmt, facts, source, conf, ai, srcEvts, srcObs, actor] = values as (string | null)[];
+      const row: ObservationRow = {
+        id: id!, tenant_id: tid!, subject_id: sid!, subject_type: stype!,
+        topic: topic!, statement: stmt!, facts: facts ? JSON.parse(facts) : {},
+        source: source!, confidence: conf ?? 'possible', ai_involved: ai === 'true' || ai === true as unknown as string,
+        source_event_ids: srcEvts ? JSON.parse(srcEvts) : [],
+        source_observation_ids: srcObs ? JSON.parse(srcObs) : [],
+        actor: actor!, version: 1, observed_at: new Date().toISOString(),
+      };
+      this.observations.set(id!, row);
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM observations WHERE id')) {
+      const [id, tid] = values as string[];
+      const row = this.observations.get(id);
+      if (!row || row.tenant_id !== tid) return [];
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM observations WHERE tenant_id') && t.includes('topic') && t.includes('subject_id')) {
+      const [tid, sid, topic] = values as string[];
+      return Array.from(this.observations.values())
+        .filter(o => o.tenant_id === tid && o.subject_id === sid && o.topic === topic) as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM observations WHERE tenant_id') && t.includes('subject_id')) {
+      const [tid, sid] = values as string[];
+      return Array.from(this.observations.values())
+        .filter(o => o.tenant_id === tid && o.subject_id === sid) as unknown as T[];
+    }
+
+    // ── knowledge_entries ─────────────────────────────────────────────────────
+    if (t.startsWith('INSERT INTO knowledge_entries')) {
+      const [id, tid, sid, stype, topic, kind, stmt, content, conf, ai, suppObs, actor, expiresAt] = values as (string | null)[];
+      const row: KnowledgeEntryRow = {
+        id: id!, tenant_id: tid!, subject_id: sid!, subject_type: stype!,
+        topic: topic!, kind: kind!, status: 'active', statement: stmt!,
+        content: content ? JSON.parse(content) : {},
+        confidence: conf ?? 'possible',
+        ai_involved: ai === 'true' || ai === true as unknown as string,
+        supporting_observation_ids: suppObs ? JSON.parse(suppObs) : [],
+        superseded_by_id: null, asserted_at: new Date().toISOString(),
+        asserted_by: actor!, expires_at: expiresAt ?? null,
+        version: 1, updated_at: new Date().toISOString(),
+      };
+      this.knowledgeEntries.set(id!, row);
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM knowledge_entries WHERE id')) {
+      const [id, tid] = values as string[];
+      const row = this.knowledgeEntries.get(id);
+      if (!row || row.tenant_id !== tid) return [];
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM knowledge_entries WHERE tenant_id') && t.includes("status = 'active'") && t.includes('topic') && t.includes('subject_id')) {
+      const [tid, sid, topic] = values as string[];
+      return Array.from(this.knowledgeEntries.values())
+        .filter(e => e.tenant_id === tid && e.subject_id === sid && e.topic === topic && e.status === 'active') as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM knowledge_entries WHERE tenant_id') && t.includes("status = 'active'") && t.includes('subject_id')) {
+      const [tid, sid] = values as string[];
+      return Array.from(this.knowledgeEntries.values())
+        .filter(e => e.tenant_id === tid && e.subject_id === sid && e.status === 'active') as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM knowledge_entries WHERE tenant_id') && t.includes('subject_id')) {
+      const [tid, sid] = values as string[];
+      return Array.from(this.knowledgeEntries.values())
+        .filter(e => e.tenant_id === tid && e.subject_id === sid) as unknown as T[];
+    }
+    if (t.startsWith("UPDATE knowledge_entries SET status = 'superseded'")) {
+      const [newId, id, tid, ver] = values as string[];
+      const row = this.knowledgeEntries.get(id);
+      if (!row || row.tenant_id !== tid || row.version !== Number(ver)) return [] as unknown as T[];
+      row.status = 'superseded'; row.superseded_by_id = newId; row.version += 1; row.updated_at = new Date().toISOString();
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith("UPDATE knowledge_entries SET status = 'retracted'")) {
+      const [id, tid, ver] = values as string[];
+      const row = this.knowledgeEntries.get(id);
+      if (!row || row.tenant_id !== tid || row.version !== Number(ver)) return [] as unknown as T[];
+      row.status = 'retracted'; row.version += 1; row.updated_at = new Date().toISOString();
+      return [row] as unknown as T[];
+    }
+
     return [] as unknown as T[];
   }
 
   async transaction<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> { return fn(makeTxClient(this)); }
   async queryOne<T = unknown>(text: string, values?: unknown[]): Promise<T | null> { const rows = await this.query<T>(text, values ?? []); return rows[0] ?? null; }
   async end(): Promise<void> {}
+}
+
+// ── M7: ObservationRow and KnowledgeEntryRow ─────────────────────────────────
+export interface ObservationRow {
+  id: string; tenant_id: string; subject_id: string; subject_type: string;
+  topic: string; statement: string; facts: unknown; source: string;
+  confidence: string; ai_involved: boolean;
+  source_event_ids: string[]; source_observation_ids: string[];
+  actor: string; version: number; observed_at: string;
+}
+export interface KnowledgeEntryRow {
+  id: string; tenant_id: string; subject_id: string; subject_type: string;
+  topic: string; kind: string; status: string; statement: string;
+  content: unknown; confidence: string; ai_involved: boolean;
+  supporting_observation_ids: string[];
+  superseded_by_id: string | null;
+  asserted_at: string; asserted_by: string; expires_at: string | null;
+  version: number; updated_at: string;
 }
 
 // ── M6: RelationshipRow and EdgeRow ──────────────────────────────────────────
