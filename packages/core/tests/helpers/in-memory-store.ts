@@ -50,6 +50,11 @@ export class InMemoryStore {
   readonly tasks = new Map<string, TaskRow>();
   readonly promises = new Map<string, PromiseRow>();
   readonly communications = new Map<string, CommunicationRow>();
+  readonly workforceMembers = new Map<string, WorkforceMemberRow>();
+  readonly workforceAvailability = new Map<string, WorkforceAvailabilityRow>();
+  readonly assignments = new Map<string, AssignmentRow>();
+  readonly capacitySnapshots = new Map<string, CapacitySnapshotRow>();
+  readonly workforceTeams = new Map<string, { id: string; tenant_id: string; name: string; description: string; lead_id: string | null; member_ids: string[]; specializations: string[]; created_at: string; version: number }>();
   readonly hypotheses = new Map<string, HypothesisRow>();
   readonly recommendations = new Map<string, RecommendationRow>();
   readonly narratives = new Map<string, NarrativeRow>();
@@ -549,6 +554,137 @@ export class InMemoryStore {
       return [] as unknown as T[];
     }
 
+    // ── M10: workforce engine tables ─────────────────────────────────────────────
+    if (t.startsWith('INSERT INTO workforce_members')) {
+      const [id, tid, name, role, teamId, supId, hrId, skills, coverage, esPath] = values as (string | null)[];
+      const row: WorkforceMemberRow = { id: id!, tenant_id: tid!, display_name: name!, role: role!, status: 'active', team_id: teamId ?? null, supervisor_id: supId ?? null, external_hr_id: hrId ?? null, skill_profile: skills ? JSON.parse(skills) : {}, coverage_area: coverage ? JSON.parse(coverage) : {}, escalation_path_id: esPath ?? null, version: 1, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
+      this.workforceMembers.set(id!, row);
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM workforce_members WHERE id')) {
+      const [id, tid] = values as string[];
+      const row = this.workforceMembers.get(id);
+      if (!row || row.tenant_id !== tid) return [];
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM workforce_members WHERE tenant_id') && t.includes("status = 'active'") && t.includes('role')) {
+      const [tid, role] = values as string[];
+      return Array.from(this.workforceMembers.values()).filter(m => m.tenant_id === tid && m.status === 'active' && m.role === role) as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM workforce_members WHERE tenant_id') && t.includes("status = 'active'")) {
+      const [tid] = values as string[];
+      return Array.from(this.workforceMembers.values()).filter(m => m.tenant_id === tid && m.status === 'active') as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM workforce_members WHERE tenant_id')) {
+      const [tid] = values as string[];
+      return Array.from(this.workforceMembers.values()).filter(m => m.tenant_id === tid) as unknown as T[];
+    }
+    if (t.startsWith('INSERT INTO workforce_availability') && t.includes('DO UPDATE')) {
+      // updateAvailability: values = [memberId, tenantId, status, unavailableUntil]
+      const [mid, tid, status, unavail] = values as (string | null)[];
+      const key = `${mid}::${tid}`;
+      const existing = this.workforceAvailability.get(key);
+      this.workforceAvailability.set(key, {
+        member_id: mid!, tenant_id: tid!,
+        status: status ?? 'available',
+        current_load: existing?.current_load ?? 0,
+        max_load: existing?.max_load ?? 10,
+        next_available_at: null,
+        unavailable_until: unavail ?? null,
+        snapshot_at: new Date().toISOString(),
+      });
+      return [] as unknown as T[];
+    }
+    if (t.startsWith('INSERT INTO workforce_availability') && t.includes('DO NOTHING')) {
+      // registerMember: values = [id, tenantId, now]
+      const [id, tid] = values as string[];
+      const key = `${id}::${tid}`;
+      if (!this.workforceAvailability.has(key)) {
+        this.workforceAvailability.set(key, { member_id: id!, tenant_id: tid!, status: 'available', current_load: 0, max_load: 10, next_available_at: null, unavailable_until: null, snapshot_at: new Date().toISOString() });
+      }
+      return [] as unknown as T[];
+    }
+
+    if (t.startsWith('SELECT * FROM workforce_availability WHERE member_id')) {
+      const [mid, tid] = values as string[];
+      const key = `${mid}::${tid}`;
+      const row = this.workforceAvailability.get(key);
+      return row ? [row] as unknown as T[] : [] as unknown as T[];
+    }
+    if (t.startsWith('UPDATE workforce_availability SET current_load = current_load + 1')) {
+      const [mid, tid] = values as string[];
+      const key = `${mid}::${tid}`;
+      const row = this.workforceAvailability.get(key);
+      if (row) { row.current_load += 1; row.snapshot_at = new Date().toISOString(); }
+      return [] as unknown as T[];
+    }
+    if (t.startsWith('UPDATE workforce_availability SET current_load = GREATEST(0, current_load - 1)')) {
+      const [mid, tid] = values as string[];
+      const key = `${mid}::${tid}`;
+      const row = this.workforceAvailability.get(key);
+      if (row) { row.current_load = Math.max(0, row.current_load - 1); row.snapshot_at = new Date().toISOString(); }
+      return [] as unknown as T[];
+    }
+    if (t.startsWith('INSERT INTO assignments')) {
+      const [id, tid, sid, stype, aid, aname, pri, reason, evidence, conf, dueAt] = values as (string | null)[];
+      const row: AssignmentRow = { id: id!, tenant_id: tid!, subject_id: sid!, subject_type: stype!, assignee_id: aid!, assignee_name: aname!, priority: pri!, status: 'recommended', reason: reason!, evidence: evidence ? JSON.parse(evidence) : {}, confidence: conf!, transferred_from_id: null, rules_engine_approved: null, rules_engine_explanation: null, due_at: dueAt ?? null, accepted_at: null, completed_at: null, created_at: new Date().toISOString(), version: 1, updated_at: new Date().toISOString() };
+      this.assignments.set(id!, row);
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith('UPDATE assignments SET rules_engine_approved')) {
+      const [approved, explanation, status, id, tid] = values as (string | null)[];
+      const row = this.assignments.get(id!);
+      if (row && row.tenant_id === tid) { row.rules_engine_approved = approved === 'true' || approved === true as unknown as string; row.rules_engine_explanation = explanation ?? null; row.status = status!; row.version += 1; row.updated_at = new Date().toISOString(); }
+      return [] as unknown as T[];
+    }
+    if (t.startsWith("UPDATE assignments SET status = 'accepted'")) {
+      const [id, tid, ver] = values as string[];
+      const row = this.assignments.get(id);
+      if (row && row.tenant_id === tid && row.version === Number(ver)) { row.status = 'accepted'; row.accepted_at = new Date().toISOString(); row.version += 1; row.updated_at = new Date().toISOString(); }
+      return [] as unknown as T[];
+    }
+    if (t.startsWith("UPDATE assignments SET status = 'declined'")) {
+      const [id, tid, ver] = values as string[];
+      const row = this.assignments.get(id);
+      if (row && row.tenant_id === tid && row.version === Number(ver)) { row.status = 'declined'; row.version += 1; row.updated_at = new Date().toISOString(); }
+      return [] as unknown as T[];
+    }
+    if (t.startsWith('UPDATE assignments SET assignee_id')) {
+      const [newAid, aname, fromId, id, tid, ver] = values as string[];
+      const row = this.assignments.get(id);
+      if (row && row.tenant_id === tid && row.version === Number(ver)) { row.assignee_id = newAid; row.assignee_name = aname; row.status = 'approved'; row.transferred_from_id = fromId; row.version += 1; row.updated_at = new Date().toISOString(); }
+      return [] as unknown as T[];
+    }
+    if (t.startsWith("UPDATE assignments SET status = 'completed'")) {
+      const [id, tid, ver] = values as string[];
+      const row = this.assignments.get(id);
+      if (row && row.tenant_id === tid && row.version === Number(ver)) { row.status = 'completed'; row.completed_at = new Date().toISOString(); row.version += 1; row.updated_at = new Date().toISOString(); }
+      return [] as unknown as T[];
+    }
+    if (t.startsWith("UPDATE assignments SET status = 'escalated'")) {
+      const [id, tid, ver] = values as string[];
+      const row = this.assignments.get(id);
+      if (row && row.tenant_id === tid && row.version === Number(ver)) { row.status = 'escalated'; row.version += 1; row.updated_at = new Date().toISOString(); }
+      return [] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM assignments WHERE id')) {
+      const [id, tid] = values as string[];
+      const row = this.assignments.get(id);
+      if (!row || row.tenant_id !== tid) return [];
+      return [row] as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM assignments WHERE tenant_id') && t.includes('subject_id')) {
+      const [tid, sid] = values as string[];
+      return Array.from(this.assignments.values()).filter(a => a.tenant_id === tid && a.subject_id === sid) as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM assignments WHERE tenant_id') && t.includes('assignee_id')) {
+      const [tid, aid] = values as string[];
+      return Array.from(this.assignments.values()).filter(a => a.tenant_id === tid && a.assignee_id === aid && ['approved','accepted'].includes(a.status)) as unknown as T[];
+    }
+    if (t.startsWith('SELECT * FROM capacity_snapshots WHERE tenant_id')) {
+      return [] as unknown as T[]; // no capacity snapshots in test store
+    }
+
     // ── M9: reasoning engine tables ─────────────────────────────────────────────
     if (t.startsWith('INSERT INTO hypotheses')) {
       const [id, tid, sid, stype, stmt, rationale, evidence, confidence, altExp, category, modelId] = values as (string | null)[];
@@ -599,6 +735,34 @@ export class InMemoryStore {
   async transaction<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> { return fn(makeTxClient(this)); }
   async queryOne<T = unknown>(text: string, values?: unknown[]): Promise<T | null> { const rows = await this.query<T>(text, values ?? []); return rows[0] ?? null; }
   async end(): Promise<void> {}
+}
+
+// ── M10: Workforce Engine rows ────────────────────────────────────────────────
+export interface WorkforceMemberRow {
+  id: string; tenant_id: string; display_name: string; role: string;
+  status: string; team_id: string | null; supervisor_id: string | null;
+  external_hr_id: string | null; skill_profile: unknown; coverage_area: unknown;
+  escalation_path_id: string | null; version: number;
+  created_at: string; updated_at: string;
+}
+export interface WorkforceAvailabilityRow {
+  member_id: string; tenant_id: string; status: string;
+  current_load: number; max_load: number; next_available_at: string | null;
+  unavailable_until: string | null; snapshot_at: string;
+}
+export interface AssignmentRow {
+  id: string; tenant_id: string; subject_id: string; subject_type: string;
+  assignee_id: string; assignee_name: string; priority: string; status: string;
+  reason: string; evidence: unknown; confidence: string;
+  transferred_from_id: string | null;
+  rules_engine_approved: boolean | null; rules_engine_explanation: string | null;
+  due_at: string | null; accepted_at: string | null; completed_at: string | null;
+  created_at: string; version: number; updated_at: string;
+}
+export interface CapacitySnapshotRow {
+  id: string; tenant_id: string; member_id: string; current_load: number;
+  max_load: number; utilization_rate: number; active_assignment_ids: string[];
+  snapshot_at: string; version: number;
 }
 
 // ── M9: Reasoning Engine rows ────────────────────────────────────────────────

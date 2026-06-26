@@ -37,7 +37,9 @@ export type ProjectionType =
   // M8 — Organizational Brain
   | 'OrganizationalHealth'
   // M9 — Reasoning Engine
-  | 'ReasoningSummary';
+  | 'ReasoningSummary'
+  // M10 — Workforce Engine
+  | 'WorkforceHealth';
 
 export type ConfidenceLevel = 'high' | 'moderate' | 'low' | 'unknown';
 

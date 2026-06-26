@@ -29,6 +29,12 @@ export const EVENT_TYPES = [
   'AutomyndPatientObserved', 'AutomyndReferralObserved', 'AutomyndVisitObserved', 'AutomyndOrderObserved',
   // M1a — Pipeline
   'TriggerFired', 'RuleEvaluated',
+  // M10 — Workforce Engine
+  'WorkforceMemberRegistered',
+  'AssignmentRecommended', 'AssignmentApproved',
+  'AssignmentAccepted', 'AssignmentDeclined',
+  'AssignmentTransferred', 'AssignmentCompleted',
+  'CapacityChanged', 'EscalationTriggered', 'AvailabilityChanged',
   // M9 — Reasoning Engine
   'HypothesisGenerated', 'HypothesisConfirmed', 'HypothesisRefuted',
   'RecommendationGenerated', 'RecommendationApproved', 'RecommendationRejected',

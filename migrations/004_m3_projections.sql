@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS projections (
 
     CONSTRAINT proj_type_valid CHECK (projection_type IN (
         'Timeline', 'DigitalCareTwin', 'ReferralSourceStrength', 'RelationshipHealth',
-        'KnowledgeSummary', 'OrganizationalHealth', 'ReasoningSummary'
+        'KnowledgeSummary', 'OrganizationalHealth', 'ReasoningSummary', 'WorkforceHealth'
     )),
     CONSTRAINT proj_method_not_empty  CHECK (char_length(method_name) > 0),
     CONSTRAINT proj_version_not_empty CHECK (char_length(method_version) > 0)

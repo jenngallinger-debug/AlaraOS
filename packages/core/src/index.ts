@@ -114,3 +114,28 @@ export type {
 export { InsufficientEvidenceError, ReasoningProviderError } from './reasoning-engine/types';
 export { ReasoningSummaryProjectionDefinition } from './projection-engine/projections/reasoning-summary';
 export type { ReasoningSummaryInput, ReasoningSummaryValue } from './projection-engine/projections/reasoning-summary';
+
+// M10 — Workforce Engine
+export { WorkforceRepository } from './workforce-engine/repository';
+export { WorkforceEngine, reconstructAssignmentFromEvents } from './workforce-engine/engine';
+export type { RegisterMemberResult, RecommendAssignmentResult, AssignmentActionResult, ReconstructedAssignment } from './workforce-engine/engine';
+export { scoreMember, rankCandidates } from './workforce-engine/recommender';
+export type { ScoringInput } from './workforce-engine/recommender';
+export type {
+  WorkforceMember, WorkforceMemberStatus, WorkforceRole,
+  Team, SkillProfile, SkillEntry, SkillLevel, CoverageArea,
+  Availability, AvailabilityStatus, CapacitySnapshot,
+  EscalationPath, EscalationLevel, EscalationTrigger,
+  Assignment, AssignmentStatus, AssignmentPriority, AssignmentConfidence,
+  AssignmentEvidence, AssignmentRecommendation, CandidateScore,
+  RegisterWorkforceMemberCommand, UpdateAvailabilityCommand,
+  RecommendAssignmentCommand, AcceptAssignmentCommand,
+  DeclineAssignmentCommand, TransferAssignmentCommand,
+  CompleteAssignmentCommand, TriggerEscalationCommand,
+} from './workforce-engine/types';
+export {
+  WorkforceMemberNotFoundError, AssignmentNotFoundError,
+  StaleAssignmentError, NoEligibleAssigneeError,
+} from './workforce-engine/types';
+export { WorkforceHealthProjectionDefinition } from './projection-engine/projections/workforce-health';
+export type { WorkforceHealthInput, WorkforceHealthValue, MemberLoadSummary } from './projection-engine/projections/workforce-health';
