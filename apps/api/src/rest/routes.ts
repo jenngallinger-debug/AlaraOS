@@ -8,7 +8,10 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { EngineContainer } from '../shared/container';
 import { getAuthenticatedActor, getHeader, secretsMatch } from '../shared/auth';
-import { isSystemActor, AUTOMYND_SECRET_HEADER, getAutomyndWebhookSecret } from '../shared/config';
+import {
+  isSystemActor, AUTOMYND_SECRET_HEADER, getAutomyndWebhookSecret,
+  IDEMPOTENCY_KEY_HEADER, deterministicEventId,
+} from '../shared/config';
 import {
   AutomyndWebhookBody, AutomyndWebhookResponse,
   CreateReferralBody, CreateReferralResponse,
@@ -342,7 +345,17 @@ export async function registerRestRoutes(
         reply.status(401);
         return { received: false, message: 'unauthorized: invalid or missing webhook secret' };
       }
+
+      // Replay protection: a delivery MUST carry an idempotency key. The canonical event
+      // id is derived from (tenant, source, key) — a replay therefore maps to the same id
+      // and the Event Store dedups it (no second event). Fail closed when absent.
+      const idempotencyKey = getHeader(req, IDEMPOTENCY_KEY_HEADER);
+      if (!idempotencyKey) {
+        reply.status(400);
+        return { received: false, message: `bad request: missing ${IDEMPOTENCY_KEY_HEADER} header` };
+      }
       const { eventType, tenantId, payload } = req.body;
+      const eventId = deterministicEventId(tenantId, 'automynd', idempotencyKey);
       const adapter = new FixtureAutomyndAdapter();
 
       let adapterPayload: Record<string, unknown>;
@@ -374,7 +387,8 @@ export async function registerRestRoutes(
           return { received: false, message: `Unknown eventType: ${eventType}` };
       }
 
-      // Append the Automynd observation event to the system stream
+      // Append to the system stream with the deterministic event id. On a replay, the
+      // Event Store returns the EXISTING event without inserting a duplicate.
       const systemStreamId = makeAlaraId('00000000-0000-4000-8000-000000000000');
       const event = await container.eventStore.append({
         tenantId,
@@ -382,10 +396,34 @@ export async function registerRestRoutes(
         type: alaraEventType,
         payload: adapterPayload,
         actor: 'automynd-webhook',
+        eventId,
       });
+
+      // Conflict detection: if this key already produced a DIFFERENT event (different
+      // payload/type), the stored event will not match what we just computed. Reject
+      // rather than silently treat it as a successful (different) delivery.
+      if (stableStringify(event.payload) !== stableStringify(adapterPayload)) {
+        reply.status(409);
+        return {
+          received: false,
+          alaraEventId: event.id,
+          message: 'conflict: idempotency key already used for a different payload',
+        };
+      }
 
       reply.status(200);
       return { received: true, alaraEventId: event.id, message: `${eventType} processed` };
     },
   );
+}
+
+// ─── Helpers ───────────────────────────────────────────────────────────────────
+
+/** Deterministic JSON with sorted keys — used to compare payloads for idempotency conflicts. */
+function stableStringify(value: unknown): string {
+  if (value === null || typeof value !== 'object') return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(stableStringify).join(',')}]`;
+  const obj = value as Record<string, unknown>;
+  const keys = Object.keys(obj).sort();
+  return `{${keys.map((k) => `${JSON.stringify(k)}:${stableStringify(obj[k])}`).join(',')}}`;
 }

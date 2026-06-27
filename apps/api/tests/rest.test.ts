@@ -48,8 +48,17 @@ function postEvent(payload: Record<string, unknown>, actor: string | null = SYST
   const headers = actor ? { 'x-actor-id': actor } : {};
   return app.inject({ method: 'POST', url: '/commands/events', headers, payload });
 }
-function postWebhook(payload: Record<string, unknown>, secret: string | null = WEBHOOK_SECRET) {
-  const headers = secret ? { 'x-automynd-secret': secret } : {};
+// `null` for secret/key means "send no header". Default key is unique per call so
+// independent webhook tests never collide on idempotency.
+let webhookKeySeq = 0;
+function postWebhook(
+  payload: Record<string, unknown>,
+  secret: string | null = WEBHOOK_SECRET,
+  key: string | null = `evt-${++webhookKeySeq}`,
+) {
+  const headers: Record<string, string> = {};
+  if (secret) headers['x-automynd-secret'] = secret;
+  if (key) headers['idempotency-key'] = key;
   return app.inject({ method: 'POST', url: '/webhooks/automynd', headers, payload });
 }
 
@@ -297,6 +306,58 @@ describe('POST /webhooks/automynd — signature verification', () => {
     const res = await postWebhook(validBody, WEBHOOK_SECRET);
     expect(res.statusCode).toBe(200);
     expect(store.events.some(e => e.type === 'AutomyndPatientObserved')).toBe(true);
+  });
+});
+
+// ─── Webhook idempotency / replay protection ──────────────────────────────────
+
+describe('POST /webhooks/automynd — idempotency / replay protection', () => {
+  const body = (over: Record<string, unknown> = {}) => ({
+    eventType: 'patient.observed',
+    tenantId: TENANT,
+    payload: { automyndId: 'AM-9', firstName: 'A', lastName: 'B', dob: '1950-01-01', programType: 'EEOICPA', status: 'active', ...over },
+  });
+
+  test('missing idempotency key → 400, no event', async () => {
+    const before = store.events.length;
+    const res = await postWebhook(body(), WEBHOOK_SECRET, null); // no idempotency-key
+    expect(res.statusCode).toBe(400);
+    expect(store.events.length).toBe(before);
+  });
+
+  test('valid secret + key → 200, exactly one event appended', async () => {
+    const before = store.events.length;
+    const res = await postWebhook(body(), WEBHOOK_SECRET, 'dup-key-1');
+    expect(res.statusCode).toBe(200);
+    expect(res.json().received).toBe(true);
+    expect(store.events.length).toBe(before + 1);
+  });
+
+  test('duplicate delivery (same key + payload) → no second event, safe success', async () => {
+    const first = await postWebhook(body(), WEBHOOK_SECRET, 'dup-key-2');
+    const countAfterFirst = store.events.length;
+    const second = await postWebhook(body(), WEBHOOK_SECRET, 'dup-key-2');
+    expect(first.statusCode).toBe(200);
+    expect(second.statusCode).toBe(200);                                  // safe success on replay
+    expect(second.json().received).toBe(true);
+    expect(second.json().alaraEventId).toBe(first.json().alaraEventId);   // same canonical event
+    expect(store.events.length).toBe(countAfterFirst);                    // no second event appended
+  });
+
+  test('same key + DIFFERENT payload → 409, still no second event', async () => {
+    const first = await postWebhook(body({ status: 'active' }), WEBHOOK_SECRET, 'dup-key-3');
+    const countAfterFirst = store.events.length;
+    const conflict = await postWebhook(body({ status: 'inactive' }), WEBHOOK_SECRET, 'dup-key-3');
+    expect(first.statusCode).toBe(200);
+    expect(conflict.statusCode).toBe(409);
+    expect(store.events.length).toBe(countAfterFirst);                    // conflict appends nothing
+  });
+
+  test('different keys append separate events', async () => {
+    const before = store.events.length;
+    await postWebhook(body(), WEBHOOK_SECRET, 'key-A');
+    await postWebhook(body(), WEBHOOK_SECRET, 'key-B');
+    expect(store.events.length).toBe(before + 2);
   });
 });
 

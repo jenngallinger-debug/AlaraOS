@@ -451,3 +451,32 @@ shared-secret header, not an HMAC over the raw request body. Both are explicit M
 boundaries to be replaced by a real auth provider / signed-webhook scheme. Remaining
 risks: no real authN, no rate limiting, no replay/idempotency keys, GraphQL read surface
 unauthenticated.
+
+---
+
+## UPDATE 14 — Automynd webhook idempotency / replay protection (API Auth Phase 2)
+
+The signed webhook (UPDATE 13) could still create duplicate events on replay, because
+`EventStore.append` generated a fresh event id per call. Closed here:
+
+- **`AppendEventOptions` gains an optional `eventId`** (`events/store.ts`) — additive,
+  semantics-preserving (defaults to `newEventId()`; existing callers unchanged). This
+  wires the idempotency the append docstring already promised ("caller can pass a
+  deterministic ID"). No other Event Store change.
+- **`/webhooks/automynd` now requires an `idempotency-key` header** (400 if missing,
+  after the secret check). The canonical event id is derived deterministically from
+  (tenant, `automynd`, key) via `deterministicEventId` (`shared/config.ts`, a UUIDv5-shaped
+  digest using Node `crypto` — no new dependency). A replay maps to the same id, so the
+  Event Store's idempotency-by-id makes it a no-op (no second event).
+- **Conflict detection:** the id is derived from the KEY, not the payload, so a key reused
+  with a different payload still maps to the same id (no divergent event). The handler
+  compares the stored event's payload to the freshly-computed payload (the adapter is
+  deterministic) and returns **409** on mismatch; identical replays return **200**.
+
+Behavior: missing key → 400; invalid/missing secret → 401; same key+payload → 200, one
+event; same key+different payload → 409; different keys → separate events.
+
+MVP boundary (unchanged scope): replay protection is keyed on a client-supplied header
+and a deterministic id — it is NOT HMAC-over-raw-body and has no replay timestamp window.
+Production still needs signed bodies + a freshness window. No core Event Store semantics
+changed.

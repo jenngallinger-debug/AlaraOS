@@ -1,9 +1,11 @@
 /**
- * Alara OS API — minimal env-based config for the auth boundary
+ * Alara OS API - minimal env-based config for the auth boundary
  *
  * NOT a secrets manager. Reads `process.env`, matching the existing apps/api pattern
  * (`process.env.NODE_ENV`). These knobs back the transport-auth boundary only.
  */
+
+import { createHash } from 'crypto';
 
 /**
  * Actors permitted to use privileged command surfaces (e.g. raw event append at
@@ -22,6 +24,9 @@ export function isSystemActor(actor: string): boolean {
 /** Header carrying the Automynd webhook shared secret (MVP boundary; see auth.ts). */
 export const AUTOMYND_SECRET_HEADER = 'x-automynd-secret';
 
+/** Header carrying the webhook idempotency key (one logical delivery = one key). */
+export const IDEMPOTENCY_KEY_HEADER = 'idempotency-key';
+
 /**
  * The configured Automynd webhook secret, or `undefined` when not configured.
  * When undefined, the webhook fails closed (rejects all requests).
@@ -29,4 +34,21 @@ export const AUTOMYND_SECRET_HEADER = 'x-automynd-secret';
 export function getAutomyndWebhookSecret(): string | undefined {
   const s = (process.env.AUTOMYND_WEBHOOK_SECRET ?? '').trim();
   return s.length > 0 ? s : undefined;
+}
+
+/**
+ * Derive a stable, UUID-shaped event id from its parts (a deterministic v5-style id).
+ * Same parts produce the same id, so the Event Store's idempotency-by-id makes a
+ * replayed webhook a no-op. Uses Node `crypto` (no extra dependency). The parts are
+ * JSON-encoded before hashing so they cannot ambiguously concatenate. NOT a payload
+ * hash - the parts are tenant + source + idempotency key, so a reused key maps to one
+ * id regardless of payload (a changed payload under the same key is detected as a
+ * conflict by the caller).
+ */
+export function deterministicEventId(...parts: string[]): string {
+  const h = createHash('sha256').update(JSON.stringify(parts)).digest('hex').slice(0, 32).split('');
+  h[12] = '5';                                               // version 5
+  h[16] = ((parseInt(h[16], 16) & 0x3) | 0x8).toString(16);  // RFC4122 variant
+  const s = h.join('');
+  return `${s.slice(0, 8)}-${s.slice(8, 12)}-${s.slice(12, 16)}-${s.slice(16, 20)}-${s.slice(20, 32)}`;
 }

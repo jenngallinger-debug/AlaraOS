@@ -42,6 +42,12 @@ export interface AppendEventOptions<TPayload = Record<string, unknown>> {
   actor: string;
   causationId?: string;
   correlationId?: string;
+  /**
+   * Optional deterministic event id. When provided, append is idempotent on it:
+   * re-appending the same id returns the stored event without inserting a duplicate.
+   * Defaults to a fresh UUIDv7 — existing callers are unaffected.
+   */
+  eventId?: string;
   /** If provided, append runs inside this transaction */
   client?: PoolClient;
 }
@@ -68,7 +74,7 @@ export class EventStore {
   async append<TPayload = Record<string, unknown>>(
     opts: AppendEventOptions<TPayload>,
   ): Promise<DomainEvent<TPayload>> {
-    const eventId = newEventId();
+    const eventId = opts.eventId ?? newEventId();
 
     const insert = async (client: PoolClient): Promise<DomainEvent<TPayload>> => {
       // Serialize concurrent appends to the SAME stream. pg_advisory_xact_lock is
