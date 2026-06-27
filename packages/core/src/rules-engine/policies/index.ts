@@ -18,6 +18,9 @@ export { ParticipationPolicyModule } from './participation-policy';
 export { AIActConstraintPolicyModule } from './ai-act-policy';
 export { EMRBoundaryPolicyModule } from './emr-boundary-policy';
 export { DataIntegrityHumanReviewPolicyModule } from './data-integrity-policy';
+// Consent authority (who may grant/withdraw consent) — wired explicitly by the
+// consent authorizer for the consent-capture rule set; NOT in the M1b auto-load set.
+export { ConsentAuthorityPolicyModule, CONSENT_CAPTURE_RULESET } from './consent-authority-policy';
 
 import { RulesRegistry } from '../registry';
 import { ConsentPolicyModule } from './consent-policy';

@@ -13,3 +13,5 @@ export type {
   WithdrawConsentInput,
   WithdrawConsentResult,
 } from './capture';
+export { ConsentAuthorizer, ConsentAuthorizationError } from './authorizer';
+export type { ConsentAuthorizerDeps } from './authorizer';

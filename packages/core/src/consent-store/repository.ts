@@ -51,6 +51,18 @@ export class ConsentRepository {
     }
     return facts;
   }
+
+  /** A single Consent fact by its Alara id (used to authorize withdrawal). */
+  async findById(tenantId: string, consentId: string): Promise<ConsentFact | null> {
+    const rows = await this.db.query<ConsentObjectRow>(
+      `SELECT id, tenant_id, type, state, attributes, version, created_at, updated_at
+         FROM objects WHERE id = $1 AND tenant_id = $2`,
+      [consentId, tenantId],
+    );
+    const row = rows[0];
+    if (!row || row.type !== CONSENT_TYPE) return null;
+    return rowToConsentFact(row);
+  }
 }
 
 /** Map a Consent object's attributes to the canonical ConsentFact shape. */

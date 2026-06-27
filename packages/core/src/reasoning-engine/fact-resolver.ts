@@ -69,6 +69,35 @@ const EDGE_TO_FACT_ROLE: Record<ParticipationEdge['role'], FactParticipationRole
 };
 
 /**
+ * Resolve the actor's active participation role on a subject from the relationship
+ * graph (canonical). Returns role 'None' when no active edge exists. Shared by the
+ * read fact resolver and the consent authorizer so the logic is defined once.
+ */
+export async function resolveParticipationFact(
+  relationships: RelationshipReadPort,
+  tenantId: string,
+  actor: string,
+  subjectId: string,
+): Promise<ParticipationFact> {
+  const rels = await relationships.getActiveBySubject(tenantId, subjectId);
+  for (const rel of rels) {
+    const edges = await relationships.getActiveEdgesForRelationship(tenantId, rel.id);
+    const edge = edges.find((e) => e.participantId === actor && e.active);
+    if (edge) {
+      return {
+        workforceMemberId: actor,
+        objectId: subjectId,
+        role: EDGE_TO_FACT_ROLE[edge.role] ?? 'Informed',
+        coverageExpiresAt: edge.coverageExpiresAt
+          ? new Date(edge.coverageExpiresAt).toISOString()
+          : undefined,
+      };
+    }
+  }
+  return { workforceMemberId: actor, objectId: subjectId, role: 'None' };
+}
+
+/**
  * Resolves participation from the relationship graph (canonical), AI-act from the
  * caller's intended AI use, and consent from an optional ConsentFactSource. When
  * no consent source is wired, consent resolves to undefined — which fails closed
@@ -92,28 +121,11 @@ export class GraphFactResolver implements FactResolver {
 
   /** The actor's active role on the subject; 'None' if no active edge exists. */
   private async resolveParticipation(input: FactResolveInput): Promise<ParticipationFact> {
-    const relationships = await this.deps.relationships.getActiveBySubject(
+    return resolveParticipationFact(
+      this.deps.relationships,
       input.tenantId,
+      input.actor,
       input.subjectId,
     );
-    for (const rel of relationships) {
-      const edges = await this.deps.relationships.getActiveEdgesForRelationship(
-        input.tenantId,
-        rel.id,
-      );
-      const edge = edges.find((e) => e.participantId === input.actor && e.active);
-      if (edge) {
-        return {
-          workforceMemberId: input.actor,
-          objectId: input.subjectId,
-          role: EDGE_TO_FACT_ROLE[edge.role] ?? 'Informed',
-          coverageExpiresAt: edge.coverageExpiresAt
-            ? new Date(edge.coverageExpiresAt).toISOString()
-            : undefined,
-        };
-      }
-    }
-    // No active participation edge for this actor on this subject → role 'None'.
-    return { workforceMemberId: input.actor, objectId: input.subjectId, role: 'None' };
   }
 }

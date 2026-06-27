@@ -19,6 +19,7 @@
 import { AlaraId } from '../shared/types';
 import { ConsentPermissionType } from '../rules-engine/policies/context-types';
 import { ConsentEngine } from './engine';
+import { ConsentAuthorizer } from './authorizer';
 
 export interface CaptureConsentInput {
   readonly tenantId: string;
@@ -64,7 +65,17 @@ export class ConsentCaptureValidationError extends Error {
 }
 
 export class ConsentCaptureService {
-  constructor(private readonly engine: ConsentEngine) {}
+  /**
+   * @param engine    canonical consent lifecycle (grant/revoke)
+   * @param authority optional caller-authorization (who may grant/withdraw). When
+   *   provided, capture/withdraw are authorized via the RulesEngine before any
+   *   canonical write. When omitted, behaviour is unchanged (no authz) — surfaces
+   *   that require authorization (e.g. the API) must supply it.
+   */
+  constructor(
+    private readonly engine: ConsentEngine,
+    private readonly authority?: ConsentAuthorizer,
+  ) {}
 
   /** Capture granted consent → canonical Consent object via ConsentEngine.grant. */
   async capture(input: CaptureConsentInput): Promise<CaptureConsentResult> {
@@ -75,6 +86,15 @@ export class ConsentCaptureService {
     requireField('capturedBy', input.capturedBy);
     if (!input.permissionTypes || input.permissionTypes.length === 0) {
       throw new ConsentCaptureValidationError('permissionTypes must be a non-empty list');
+    }
+
+    // Authorization decision lives in the RulesEngine/policy layer (delegated).
+    if (this.authority) {
+      await this.authority.assertMayGrant({
+        tenantId: input.tenantId,
+        actor: input.capturedBy,
+        subjectId: input.subjectId,
+      });
     }
 
     const result = await this.engine.grant({
@@ -96,6 +116,15 @@ export class ConsentCaptureService {
     requireField('tenantId', input.tenantId);
     requireField('consentId', input.consentId);
     requireField('capturedBy', input.capturedBy);
+
+    // Authorization decision lives in the RulesEngine/policy layer (delegated).
+    if (this.authority) {
+      await this.authority.assertMayWithdraw({
+        tenantId: input.tenantId,
+        actor: input.capturedBy,
+        consentId: input.consentId,
+      });
+    }
 
     const result = await this.engine.revoke({
       tenantId: input.tenantId,

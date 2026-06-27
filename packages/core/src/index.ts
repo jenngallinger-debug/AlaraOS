@@ -141,6 +141,10 @@ export { ConsentCaptureService, ConsentCaptureValidationError } from './consent-
 export type {
   CaptureConsentInput, CaptureConsentResult, WithdrawConsentInput, WithdrawConsentResult,
 } from './consent-store/capture';
+// Consent Authority — who may grant/withdraw consent (decision in RulesEngine/policy)
+export { ConsentAuthorizer, ConsentAuthorizationError } from './consent-store/authorizer';
+export type { ConsentAuthorizerDeps } from './consent-store/authorizer';
+export { resolveParticipationFact } from './reasoning-engine/fact-resolver';
 
 // M10 — Workforce Engine
 export { WorkforceRepository } from './workforce-engine/repository';

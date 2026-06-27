@@ -19,6 +19,7 @@ import {
   EventType,
   makeAlaraId,
   ConsentCaptureValidationError,
+  ConsentAuthorizationError,
   ConsentNotFoundError,
 } from '@alara-os/core';
 import type { ConsentPermissionType } from '@alara-os/core';
@@ -239,6 +240,10 @@ export async function registerRestRoutes(
           eventId:   result.eventId,
         };
       } catch (err) {
+        if (err instanceof ConsentAuthorizationError) {
+          reply.status(403);
+          return { captured: false, error: err.message };
+        }
         if (err instanceof ConsentCaptureValidationError) {
           reply.status(422);
           return { captured: false, error: err.message };
@@ -268,6 +273,10 @@ export async function registerRestRoutes(
           eventId:   result.eventId,
         };
       } catch (err) {
+        if (err instanceof ConsentAuthorizationError) {
+          reply.status(403);
+          return { withdrawn: false, error: err.message };
+        }
         if (err instanceof ConsentCaptureValidationError) {
           reply.status(422);
           return { withdrawn: false, error: err.message };

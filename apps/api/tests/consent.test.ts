@@ -34,9 +34,11 @@ const NO_RELATIONSHIPS: RelationshipReadPort = {
   async getActiveEdgesForRelationship() { return []; },
 };
 
+// capturedBy is the SUBJECT (self-grant) so the consent-authority policy authorizes
+// the caller; recipientId is the actor who will later read.
 const captureBody = (over: Record<string, unknown> = {}) => ({
   tenantId: TENANT, subjectId: SUBJECT, grantorId: 'patient', recipientId: ACTOR,
-  permissionTypes: ['read'], capturedBy: 'intake-clerk', source: 'intake', ...over,
+  permissionTypes: ['read'], capturedBy: SUBJECT, source: 'intake', ...over,
 });
 
 // A required-consent reasoning read over the SAME store the API wrote to.
@@ -108,7 +110,7 @@ describe('POST /commands/consent/withdraw', () => {
     const cap = await app.inject({ method: 'POST', url: '/commands/consent', payload: captureBody() });
     const consentId = cap.json().consentId;
 
-    const res = await app.inject({ method: 'POST', url: '/commands/consent/withdraw', payload: { tenantId: TENANT, consentId, capturedBy: 'intake-clerk' } });
+    const res = await app.inject({ method: 'POST', url: '/commands/consent/withdraw', payload: { tenantId: TENANT, consentId, capturedBy: SUBJECT } });
     expect(res.statusCode).toBe(200);
     expect(res.json().withdrawn).toBe(true);
     expect(res.json().status).toBe('revoked');
@@ -122,7 +124,25 @@ describe('POST /commands/consent/withdraw', () => {
     const cap = await app.inject({ method: 'POST', url: '/commands/consent', payload: captureBody() });
     expect(await readAllowed(container.db)).toBe(true);
 
-    await app.inject({ method: 'POST', url: '/commands/consent/withdraw', payload: { tenantId: TENANT, consentId: cap.json().consentId, capturedBy: 'intake-clerk' } });
+    await app.inject({ method: 'POST', url: '/commands/consent/withdraw', payload: { tenantId: TENANT, consentId: cap.json().consentId, capturedBy: SUBJECT } });
     expect(await readAllowed(container.db)).toBe(false);
+  });
+});
+
+describe('consent endpoint authorization (who-may-grant)', () => {
+  test('unauthorized caller cannot grant → 403, no Consent object created', async () => {
+    const res = await app.inject({ method: 'POST', url: '/commands/consent', payload: captureBody({ capturedBy: 'wm-stranger' }) });
+    expect(res.statusCode).toBe(403);
+    expect(res.json().captured).toBe(false);
+    const consents = Array.from(store.objects.values()).filter(o => o.type === 'Consent');
+    expect(consents).toHaveLength(0);
+  });
+
+  test('unauthorized caller cannot withdraw → 403, consent unchanged', async () => {
+    const cap = await app.inject({ method: 'POST', url: '/commands/consent', payload: captureBody() }); // self-granted
+    const consentId = cap.json().consentId;
+    const res = await app.inject({ method: 'POST', url: '/commands/consent/withdraw', payload: { tenantId: TENANT, consentId, capturedBy: 'wm-stranger' } });
+    expect(res.statusCode).toBe(403);
+    expect(store.objects.get(consentId)?.attributes.status).toBe('active');
   });
 });

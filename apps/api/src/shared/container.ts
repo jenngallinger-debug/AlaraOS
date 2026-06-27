@@ -29,7 +29,8 @@ import { ProjectionRegistry } from '@alara-os/core';
 import { InMemoryProjectionStore } from '@alara-os/core';
 import { registerAllProjections } from '@alara-os/core';
 import { IntakeOrchestrator } from '@alara-os/core';
-import { ConsentEngine, ConsentCaptureService } from '@alara-os/core';
+import { ConsentEngine, ConsentCaptureService, ConsentAuthorizer } from '@alara-os/core';
+import { ConsentAuthorityPolicyModule, ConsentRepository, RelationshipRepository } from '@alara-os/core';
 
 export interface EngineContainer {
   db: DatabaseClient;
@@ -90,8 +91,16 @@ export function buildContainer(db: DatabaseClient): EngineContainer {
     db, eventStore, rules, workflowEngine, taskEngine, promiseEngine, commEngine, projectionEngine,
   );
 
-  // Consent capture (intake/portal boundary → canonical ConsentEngine)
-  const consentCapture = new ConsentCaptureService(new ConsentEngine(db));
+  // Consent capture (intake/portal boundary → canonical ConsentEngine) with caller
+  // authorization (who may grant/withdraw) decided by the RulesEngine + policy.
+  const consentAuthRegistry = new RulesRegistry();
+  consentAuthRegistry.registerPolicyModule(ConsentAuthorityPolicyModule);
+  const consentAuthRules = new RulesEngine(consentAuthRegistry, new NoopAuditSink());
+  const consentAuthorizer = new ConsentAuthorizer(consentAuthRules, {
+    relationships: new RelationshipRepository(db),
+    consents: new ConsentRepository(db),
+  });
+  const consentCapture = new ConsentCaptureService(new ConsentEngine(db), consentAuthorizer);
 
   return {
     db, eventStore, objectRepo, objectHandler, rules, triggers,

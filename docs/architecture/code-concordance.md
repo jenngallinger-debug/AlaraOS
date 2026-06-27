@@ -185,8 +185,32 @@ changed here. Where the docs and code diverge, **code is the source of truth**
 > verify`** (= `test:all` + `build:all`, which run core `--workspaces` **and** apps/api),
 > with `npm run install:api` to install apps/api deps. So the endpoints are no longer
 > invisible to project-level verification. (3) the endpoint itself has no
-> caller auth (who-may-grant) — that is a separate API-auth concern; (4) no automatic
+> caller auth (who-may-grant) — **addressed in UPDATE 7**; (4) no automatic
 > expiry sweep.
+>
+> **UPDATE 7 (Who-may-grant consent authorization).** The consent capture/withdraw
+> surface now authorizes the **caller**, with the decision in the rules/policy layer —
+> `rules-engine/policies/consent-authority-policy.ts` (`ConsentAuthorityPolicyModule`,
+> rule set `ruleset.consent.capture`). `consent-store/authorizer.ts`
+> (`ConsentAuthorizer`) resolves the facts (the actor's participation role on the
+> subject via the shared `resolveParticipationFact`, and the consent's real subject for
+> withdrawal via `ConsentRepository.findById`) and **delegates the decision to the
+> RulesEngine** — it is not a policy engine. `ConsentCaptureService` gained an
+> **optional** `authority` it *calls* before any canonical write (no policy logic in
+> the service); the API container wires it, and the routes map
+> `ConsentAuthorizationError` → **403**. **Authorized actors:** (a) the subject
+> themselves (self), (b) an organizational actor with an `Owner`/`Actor` participation
+> role on the subject (from canonical relationship edges). Everything else — including
+> missing actor/subject context or an unreadable consent on withdrawal — **fails
+> closed**. The Permission Gate / RulesEngine / ConsentEngine are unchanged. Proven by
+> `consent-authorization.test.ts` (core, 6 cases: self/participation allow, stranger
+> deny, missing-context fail-closed, authorized/denied withdraw with no state change)
+> and `apps/api/tests/consent.test.ts` (endpoint 403s). **Remaining limitations:** no
+> guardian/representative model beyond participation roles (deferred until the graph
+> carries those facts); the optional authority means a direct/internal
+> `ConsentCaptureService` without an authorizer still performs no authz (by design for
+> system use — the API always supplies one); endpoint transport-level authn (who the
+> caller *is*) is still assumed upstream.
 
 **Original finding — Permission Gate existed as a combination and was PARTIALLY implemented.**
 
