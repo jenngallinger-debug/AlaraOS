@@ -130,6 +130,24 @@ changed here. Where the docs and code diverge, **code is the source of truth**
 > subject in code — a subject-indexed column/query is a later optimisation. The
 > `ConsentFact` type already carries status / revokedAt / expirationDate / permissionTypes
 > / recipientId, so **no missing consent fields** were needed.
+>
+> **UPDATE 4 (Consent issuance / lifecycle implemented).** `consent-store/engine.ts`
+> (`ConsentEngine`) is the canonical path to **grant / revoke / expire** consent as
+> `Consent` objects, reusing the existing object+event write pattern
+> (`ObjectCommandHandler` → `ObjectCreated` / `ObjectUpdated`, atomic and
+> event-sourced) and the existing `ConsentFact` fields (status / revokedAt /
+> expirationDate). No new Consent model and no new event types. The **full loop is
+> closed and proven** (`consent-lifecycle.test.ts`, 9 cases): grant → read allowed;
+> revoke → next read blocked; expired (past `expirationDate` or explicit `expire()`) →
+> blocked; missing → fail closed; wrong subject/actor/permission → blocked; and the
+> consent object's event stream (`ObjectCreated`→`ObjectUpdated`) reconstructs to
+> status `revoked` (canonical + auditable). **The Permission Gate / RulesEngine /
+> ConsentPolicyModule are unchanged** — the engine only creates/changes state; the
+> gate reads and enforces. **Remaining gaps:** (1) no automatic time-based expiry
+> sweep — `expirationDate` is enforced at read time by the policy (DENY when past) and
+> `expire()` flips status on demand, but no background job ages consents to `expired`;
+> (2) no higher-level consent-capture flow yet (intake/portal/who-may-grant) — the
+> engine is the primitive; (3) Identity Resolution remains a separate step (pin #12).
 
 **Original finding — Permission Gate existed as a combination and was PARTIALLY implemented.**
 

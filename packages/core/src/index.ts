@@ -131,6 +131,11 @@ export type {
 // Consent Store — canonical query path backing ConsentFactSource (BD-014)
 export { ConsentRepository } from './consent-store/repository';
 export { GraphConsentFactSource } from './consent-store/consent-fact-source';
+// Consent Engine — issuance / lifecycle (grant / revoke / expire)
+export { ConsentEngine, ConsentNotFoundError } from './consent-store/engine';
+export type {
+  GrantConsentCommand, ConsentChangeCommand, ConsentMutationResult,
+} from './consent-store/engine';
 
 // M10 — Workforce Engine
 export { WorkforceRepository } from './workforce-engine/repository';
