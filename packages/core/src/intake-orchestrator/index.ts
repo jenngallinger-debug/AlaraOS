@@ -23,10 +23,12 @@
  */
 
 import { DatabaseClient } from '../shared/database';
-import { AlaraId } from '../shared/types';
+import { AlaraId, AlaraObject, makeAlaraId } from '../shared/types';
 import { EventStore } from '../events/store';
 import { ObjectCommandHandler } from '../object-graph/command-handler';
 import { ObjectGraphRepository } from '../object-graph/repository';
+import { IdentityResolutionEngine } from '../identity-resolution/engine';
+import { IdentityResolutionRepository } from '../identity-resolution/repository';
 import { RulesEngine } from '../rules-engine/engine';
 import { RuleContext } from '../rules-engine/types';
 import { WorkflowEngine } from '../workflow-engine/engine';
@@ -72,6 +74,7 @@ export interface IntakeOrchestratorResult {
 export class IntakeOrchestrator {
   private readonly objectHandler: ObjectCommandHandler;
   private readonly objectRepo: ObjectGraphRepository;
+  private readonly identity: IdentityResolutionEngine;
 
   constructor(
     private readonly db: DatabaseClient,
@@ -85,32 +88,69 @@ export class IntakeOrchestrator {
   ) {
     this.objectRepo = new ObjectGraphRepository(db);
     this.objectHandler = new ObjectCommandHandler(db, this.objectRepo, eventStore);
+    this.identity = new IdentityResolutionEngine(new IdentityResolutionRepository(db));
   }
 
   async handleReferralReceived(input: ReferralReceivedInput): Promise<IntakeOrchestratorResult> {
     const eventIds: string[] = [];
 
-    // ── Step 1: Create Patient object ──────────────────────────────────────────
-    const { object: patient, eventId: createEvtId } = await this.objectHandler.createObject({
+    // ── Step 1: Resolve-or-create Patient (identity resolution, v1) ─────────────
+    // External-reference-first (spec §4.1): an exact Automynd patient_id match REUSES
+    // the existing Patient (no duplicate); no match CREATES a Patient; an ambiguous or
+    // review-required match NEVER auto-merges and NEVER creates a duplicate — it stops
+    // for human review. No merge, no destructive update of a reused Patient.
+    const automyndRef = { system: 'Automynd', extType: 'patient_id', value: input.automyndPatientId };
+    const resolution = await this.identity.resolve({
       tenantId: input.tenantId,
-      type: 'Patient',
-      actor: input.actor,
-      attributes: {
-        name: input.patientName,
-        programType: input.programType,
-        referralDate: input.referralDate,
-        intakeStatus: 'referral-received',
-      },
+      externalReferences: [automyndRef],
+      name: input.patientName,
     });
-    eventIds.push(createEvtId);
 
-    // Link Automynd external reference
-    const { eventId: extRefEvtId } = await this.objectHandler.addExternalReference(
-      input.tenantId, patient.id,
-      { system: 'Automynd', extType: 'patient_id', value: input.automyndPatientId },
-      input.actor,
-    );
-    eventIds.push(extRefEvtId);
+    let patient: AlaraObject;
+    if (resolution.outcome === 'MATCH' && resolution.matchedPatientId) {
+      // Reuse the existing Patient — no create, no duplicate, no overwrite, no merge.
+      const existing = await this.objectRepo.getById(
+        input.tenantId, makeAlaraId(resolution.matchedPatientId),
+      );
+      if (!existing) {
+        return {
+          success: false,
+          denialReason:
+            `Identity resolution matched a Patient that no longer exists: ${resolution.matchedPatientId}`,
+          eventIds,
+        };
+      }
+      patient = existing;
+    } else if (resolution.outcome === 'NO_MATCH') {
+      // Create a new Patient and link the Automynd external reference.
+      const { object: created, eventId: createEvtId } = await this.objectHandler.createObject({
+        tenantId: input.tenantId,
+        type: 'Patient',
+        actor: input.actor,
+        attributes: {
+          name: input.patientName,
+          programType: input.programType,
+          referralDate: input.referralDate,
+          intakeStatus: 'referral-received',
+        },
+      });
+      eventIds.push(createEvtId);
+      patient = created;
+
+      const { eventId: extRefEvtId } = await this.objectHandler.addExternalReference(
+        input.tenantId, patient.id, automyndRef, input.actor,
+      );
+      eventIds.push(extRefEvtId);
+    } else {
+      // POSSIBLE_MATCH_REVIEW_REQUIRED / INSUFFICIENT_EVIDENCE: never auto-merge, never
+      // create a duplicate. Stop for human review (no mutation beyond none).
+      return {
+        success: false,
+        denialReason:
+          `Identity review required (${resolution.outcome}): ${resolution.reasonCodes.join(', ')}`,
+        eventIds,
+      };
+    }
 
     // ── Step 2: Rules Engine authorization ────────────────────────────────────
     const ruleContext: RuleContext = {
