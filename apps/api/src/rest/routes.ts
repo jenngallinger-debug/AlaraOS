@@ -7,7 +7,8 @@
 
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { EngineContainer } from '../shared/container';
-import { getAuthenticatedActor } from '../shared/auth';
+import { getAuthenticatedActor, getHeader, secretsMatch } from '../shared/auth';
+import { isSystemActor, AUTOMYND_SECRET_HEADER, getAutomyndWebhookSecret } from '../shared/config';
 import {
   AutomyndWebhookBody, AutomyndWebhookResponse,
   CreateReferralBody, CreateReferralResponse,
@@ -60,13 +61,15 @@ const createReferralSchema = {
 const emitEventSchema = {
   body: {
     type: 'object',
-    required: ['tenantId', 'streamId', 'type', 'payload', 'actor'],
+    // `actor` is NOT required here: the event actor is the AUTHENTICATED principal
+    // (x-actor-id), never a body field. A body `actor` is accepted but ignored.
+    required: ['tenantId', 'streamId', 'type', 'payload'],
     properties: {
       tenantId: { type: 'string', minLength: 1 },
       streamId: { type: 'string', minLength: 1 },
       type:     { type: 'string', minLength: 1 },
       payload:  { type: 'object' },
-      actor:    { type: 'string', minLength: 1 },
+      actor:    { type: 'string' },
     },
     additionalProperties: false,
   },
@@ -131,6 +134,18 @@ export async function registerRestRoutes(
     '/commands/referrals',
     { schema: createReferralSchema },
     async (req, reply): Promise<CreateReferralResponse> => {
+      // Transport authentication: a mutating command requires an authenticated actor.
+      // The authenticated principal is the intake actor — body `actor` is not trusted.
+      const actor = getAuthenticatedActor(req);
+      if (!actor) {
+        reply.status(401);
+        return {
+          success: false,
+          projectionIds: {},
+          decisionSummary: { outcome: 'denied', explanation: 'unauthenticated' },
+          error: 'unauthenticated: missing x-actor-id',
+        };
+      }
       const body = req.body;
 
       const result = await container.orchestrator.handleReferralReceived({
@@ -141,7 +156,7 @@ export async function registerRestRoutes(
         programType:        body.programType,
         referralSource:     body.referralSource,
         referralDate:       body.referralDate,
-        actor:              body.actor ?? 'api',
+        actor, // authenticated actor — body `actor` is ignored
       });
 
       if (!result.success) {
@@ -192,7 +207,19 @@ export async function registerRestRoutes(
     '/commands/events',
     { schema: emitEventSchema },
     async (req, reply): Promise<EmitEventResponse> => {
-      const { tenantId, streamId, type, payload, actor } = req.body;
+      // Raw event append is a PRIVILEGED command (it can write any canonical event to
+      // any stream). Require an authenticated actor, and restrict it to a configured
+      // system actor — this surface is not generally available.
+      const actor = getAuthenticatedActor(req);
+      if (!actor) {
+        reply.status(401);
+        return { error: 'unauthenticated: missing x-actor-id' };
+      }
+      if (!isSystemActor(actor)) {
+        reply.status(403);
+        return { error: 'forbidden: raw event append requires a system actor' };
+      }
+      const { tenantId, streamId, type, payload } = req.body;
 
       const streamAlaraId = makeAlaraId(streamId);
       const event = await container.eventStore.append({
@@ -200,7 +227,7 @@ export async function registerRestRoutes(
         streamId: streamAlaraId,
         type: type as EventType,
         payload,
-        actor,
+        actor, // authenticated system actor — body `actor` is ignored
       });
 
       reply.status(201);
@@ -308,6 +335,13 @@ export async function registerRestRoutes(
     '/webhooks/automynd',
     { schema: automyndWebhookSchema },
     async (req, reply): Promise<AutomyndWebhookResponse> => {
+      // Webhook ingress authentication (MVP boundary): a configured shared secret must
+      // be presented in the x-automynd-secret header. Fails closed when the secret is
+      // unconfigured or absent/mismatched. (Production: HMAC over the raw request body.)
+      if (!secretsMatch(getHeader(req, AUTOMYND_SECRET_HEADER), getAutomyndWebhookSecret())) {
+        reply.status(401);
+        return { received: false, message: 'unauthorized: invalid or missing webhook secret' };
+      }
       const { eventType, tenantId, payload } = req.body;
       const adapter = new FixtureAutomyndAdapter();
 

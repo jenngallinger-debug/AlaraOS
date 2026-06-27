@@ -420,3 +420,34 @@ Added (this step):
 NOT changed: no RLS enablement, no `FORCE`, no `WITH CHECK`, no `DatabaseClient` change,
 no tenant behavior. RLS remains scaffolded defense-in-depth; app-level filtering is the
 contract and the guard is its enforcement point.
+
+---
+
+## UPDATE 13 — API auth hardening Phase 1 (mutating-command auth + webhook signature)
+
+The post-P0 review flagged the public REST mutation surface (A1–A4). Closed in this step
+(apps/api only; no core change):
+
+- **`/commands/events`** (raw canonical event append) — was unauthenticated. Now requires
+  an authenticated actor (401 if missing) AND a **privileged system actor** (403
+  otherwise); the configured allowlist is `ALARA_SYSTEM_ACTORS` (default `system`). The
+  event actor is the authenticated principal — body `actor` is ignored (removed from the
+  schema's required fields).
+- **`/commands/referrals`** — was unauthenticated. Now requires an authenticated actor
+  (401 if missing); the intake actor is the principal, not body `actor`.
+- **`/commands/consent` + `/withdraw`** — already authenticated (unchanged).
+- **`/webhooks/automynd`** — was unsigned. Now requires a valid shared secret in the
+  `x-automynd-secret` header (constant-time compare; 401 on missing/invalid/unconfigured).
+  Configured via `AUTOMYND_WEBHOOK_SECRET`; **fails closed** when unset.
+
+New helpers: `apps/api/src/shared/config.ts` (`getSystemActors`/`isSystemActor`,
+`getAutomyndWebhookSecret`, `AUTOMYND_SECRET_HEADER`) and `auth.ts` (`getHeader`,
+`secretsMatch`). GraphQL (`/graphql`) is **read-only — no `Mutation` type** — so it is out
+of scope for mutation auth (documented, not changed).
+
+**This is NOT a production auth provider.** `x-actor-id` remains a spoofable dev/test
+transport boundary (no token/session/JWT verification), and the Automynd secret is a
+shared-secret header, not an HMAC over the raw request body. Both are explicit MVP
+boundaries to be replaced by a real auth provider / signed-webhook scheme. Remaining
+risks: no real authN, no rate limiting, no replay/idempotency keys, GraphQL read surface
+unauthenticated.

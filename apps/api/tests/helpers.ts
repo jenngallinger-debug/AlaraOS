@@ -29,3 +29,11 @@ export const validReferral = {
   automyndReferralId: 'REF-001',
   actor:              'care-guide-001',
 };
+
+// ─── Transport-auth test constants ────────────────────────────────────────────
+/** Authenticated actor for referral commands (matches validReferral.actor). */
+export const REFERRAL_ACTOR = 'care-guide-001';
+/** Privileged actor for /commands/events (default ALARA_SYSTEM_ACTORS = 'system'). */
+export const SYSTEM_ACTOR = 'system';
+/** Shared secret used by webhook tests (the suite sets AUTOMYND_WEBHOOK_SECRET to this). */
+export const WEBHOOK_SECRET = 'test-automynd-secret';

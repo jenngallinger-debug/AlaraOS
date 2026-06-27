@@ -8,7 +8,7 @@
  */
 
 import { FastifyInstance } from 'fastify';
-import { buildTestApp, validReferral, TENANT } from './helpers';
+import { buildTestApp, validReferral, TENANT, REFERRAL_ACTOR } from './helpers';
 
 let app: FastifyInstance;
 let store: ReturnType<typeof buildTestApp>['store'];
@@ -39,6 +39,7 @@ async function seedReferral() {
   const res = await app.inject({
     method: 'POST',
     url: '/commands/referrals',
+    headers: { 'x-actor-id': REFERRAL_ACTOR }, // mutating command now requires auth
     payload: validReferral,
   });
   return res.json();

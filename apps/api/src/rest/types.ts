@@ -51,10 +51,11 @@ export interface EmitEventBody {
 }
 
 export interface EmitEventResponse {
-  eventId: string;
-  seq: number;
-  type: string;
-  streamId: string;
+  eventId?: string;
+  seq?: number;
+  type?: string;
+  streamId?: string;
+  error?: string;
 }
 
 // ─── POST /commands/consent (capture) and /commands/consent/withdraw ──────────
