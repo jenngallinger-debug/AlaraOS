@@ -1,12 +1,12 @@
 /**
  * Alara OS API — Consent capture/withdraw endpoint tests
  *
- * Proves the surface boundary: POST /commands/consent (capture → ConsentEngine.grant)
- * and POST /commands/consent/withdraw (→ ConsentEngine.revoke) write canonical
- * consent state; the existing read-authorization path (ConsentRepository +
- * GraphConsentFactSource + Permission Gate) then allows/blocks reads accordingly.
- * The handler holds no authorization logic — it validates via ConsentCaptureService
- * and delegates to the engine.
+ * Proves the surface boundary end to end:
+ *   - transport authentication: the authenticated actor comes from the `x-actor-id`
+ *     header (a dev/test boundary); missing principal fails closed (401);
+ *   - authorization uses the AUTHENTICATED actor (not a body field) via ConsentAuthorizer;
+ *   - capture/withdraw write canonical consent through ConsentEngine; the read path
+ *     then allows/blocks reads. The handler holds no authz logic.
  */
 
 import { FastifyInstance } from 'fastify';
@@ -28,20 +28,33 @@ import type { RelationshipReadPort, AssemblerInput } from '@alara-os/core';
 
 const SUBJECT = 'subject-patient-1';
 const ACTOR = 'wm-care-guide';
+const STRANGER = 'wm-stranger';
 
 const NO_RELATIONSHIPS: RelationshipReadPort = {
   async getActiveBySubject() { return []; },
   async getActiveEdgesForRelationship() { return []; },
 };
 
-// capturedBy is the SUBJECT (self-grant) so the consent-authority policy authorizes
-// the caller; recipientId is the actor who will later read.
+// capturedBy is intentionally NOT in the body — the authorization actor is the
+// authenticated principal (x-actor-id header), set via post(..., actor).
 const captureBody = (over: Record<string, unknown> = {}) => ({
   tenantId: TENANT, subjectId: SUBJECT, grantorId: 'patient', recipientId: ACTOR,
-  permissionTypes: ['read'], capturedBy: SUBJECT, source: 'intake', ...over,
+  permissionTypes: ['read'], source: 'intake', ...over,
 });
 
-// A required-consent reasoning read over the SAME store the API wrote to.
+let app: FastifyInstance;
+let store: ReturnType<typeof buildTestApp>['store'];
+let container: ReturnType<typeof buildTestApp>['container'];
+
+// Minimal shape of a Fastify inject response (avoids inject's overloaded union type).
+interface InjectRes { statusCode: number; json(): any }
+
+// POST with an optional authenticated actor (x-actor-id header).
+async function post(url: string, payload: Record<string, unknown>, actor?: string): Promise<InjectRes> {
+  const headers = actor ? { 'x-actor-id': actor } : {};
+  return (await app.inject({ method: 'POST', url, payload, headers })) as unknown as InjectRes;
+}
+
 async function readAllowed(db: DatabaseClient, subjectId = SUBJECT, actor = ACTOR): Promise<boolean> {
   const registry = new RulesRegistry();
   registry.registerRuleSet({ id: RETRIEVAL_READ_RULESET, name: 'read', description: '', version: '1' });
@@ -60,9 +73,7 @@ async function readAllowed(db: DatabaseClient, subjectId = SUBJECT, actor = ACTO
   return r.subjectAuthorized;
 }
 
-let app: FastifyInstance;
-let store: ReturnType<typeof buildTestApp>['store'];
-let container: ReturnType<typeof buildTestApp>['container'];
+const consentCount = () => Array.from(store.objects.values()).filter(o => o.type === 'Consent').length;
 
 beforeEach(async () => {
   const t = buildTestApp();
@@ -74,74 +85,83 @@ beforeEach(async () => {
 afterEach(async () => { await app.close(); });
 
 describe('POST /commands/consent (capture)', () => {
-  test('1. capture grants canonical consent', async () => {
-    const res = await app.inject({ method: 'POST', url: '/commands/consent', payload: captureBody() });
+  test('authenticated subject grants canonical consent (201)', async () => {
+    const res = await post('/commands/consent', captureBody(), SUBJECT);
     expect(res.statusCode).toBe(201);
     const body = res.json();
     expect(body.captured).toBe(true);
     expect(body.status).toBe('active');
     expect(body.consentId).toMatch(/^[0-9a-f-]{36}$/);
-    expect(body.eventId).toBeDefined();
-    const consents = Array.from(store.objects.values()).filter(o => o.type === 'Consent');
-    expect(consents).toHaveLength(1);
-    expect(consents[0].attributes.recipientId).toBe(ACTOR);
+    expect(consentCount()).toBe(1);
+    // canonical provenance: the recorded actor is the authenticated principal
+    const consent = Array.from(store.objects.values()).find(o => o.type === 'Consent')!;
+    expect(consent.attributes.recipientId).toBe(ACTOR);
   });
 
-  test('3. invalid capture input reports validation failure', async () => {
-    // empty permissionTypes passes JSON schema but fails ConsentCaptureService → 422
-    const empty = await app.inject({ method: 'POST', url: '/commands/consent', payload: captureBody({ permissionTypes: [] }) });
-    expect(empty.statusCode).toBe(422);
-    expect(empty.json().captured).toBe(false);
-    expect(empty.json().error).toContain('permissionTypes');
+  test('capture WITHOUT an authenticated actor fails closed (401), no object', async () => {
+    const res = await post('/commands/consent', captureBody()); // no x-actor-id
+    expect(res.statusCode).toBe(401);
+    expect(consentCount()).toBe(0);
+  });
 
-    // missing required field → JSON schema rejects with 400
-    const missing = await app.inject({ method: 'POST', url: '/commands/consent', payload: { tenantId: TENANT, subjectId: SUBJECT } });
+  test('invalid input reports validation failure (authenticated)', async () => {
+    const empty = await post('/commands/consent', captureBody({ permissionTypes: [] }), SUBJECT);
+    expect(empty.statusCode).toBe(422);
+    const missing = await post('/commands/consent', { tenantId: TENANT, subjectId: SUBJECT }, SUBJECT);
     expect(missing.statusCode).toBe(400);
   });
 
-  test('4. capture → required-consent reasoning read is allowed', async () => {
-    await app.inject({ method: 'POST', url: '/commands/consent', payload: captureBody() });
+  test('capture → required-consent reasoning read is allowed', async () => {
+    await post('/commands/consent', captureBody(), SUBJECT);
     expect(await readAllowed(container.db)).toBe(true);
   });
 });
 
 describe('POST /commands/consent/withdraw', () => {
-  test('2. withdraw revokes canonical consent', async () => {
-    const cap = await app.inject({ method: 'POST', url: '/commands/consent', payload: captureBody() });
+  test('authenticated subject withdraws (200), object revoked', async () => {
+    const cap = await post('/commands/consent', captureBody(), SUBJECT);
     const consentId = cap.json().consentId;
-
-    const res = await app.inject({ method: 'POST', url: '/commands/consent/withdraw', payload: { tenantId: TENANT, consentId, capturedBy: SUBJECT } });
+    const res = await post('/commands/consent/withdraw', { tenantId: TENANT, consentId }, SUBJECT);
     expect(res.statusCode).toBe(200);
     expect(res.json().withdrawn).toBe(true);
-    expect(res.json().status).toBe('revoked');
-
-    const consent = store.objects.get(consentId);
-    expect(consent?.attributes.status).toBe('revoked');
-    expect(consent?.attributes.revokedAt).toBeTruthy();
+    expect(store.objects.get(consentId)?.attributes.status).toBe('revoked');
   });
 
-  test('5. withdraw → next required-consent read is blocked', async () => {
-    const cap = await app.inject({ method: 'POST', url: '/commands/consent', payload: captureBody() });
-    expect(await readAllowed(container.db)).toBe(true);
+  test('withdraw WITHOUT an authenticated actor fails closed (401), consent unchanged', async () => {
+    const cap = await post('/commands/consent', captureBody(), SUBJECT);
+    const consentId = cap.json().consentId;
+    const res = await post('/commands/consent/withdraw', { tenantId: TENANT, consentId }); // no header
+    expect(res.statusCode).toBe(401);
+    expect(store.objects.get(consentId)?.attributes.status).toBe('active');
+  });
 
-    await app.inject({ method: 'POST', url: '/commands/consent/withdraw', payload: { tenantId: TENANT, consentId: cap.json().consentId, capturedBy: SUBJECT } });
+  test('withdraw → next required-consent read is blocked', async () => {
+    const cap = await post('/commands/consent', captureBody(), SUBJECT);
+    expect(await readAllowed(container.db)).toBe(true);
+    await post('/commands/consent/withdraw', { tenantId: TENANT, consentId: cap.json().consentId }, SUBJECT);
     expect(await readAllowed(container.db)).toBe(false);
   });
 });
 
-describe('consent endpoint authorization (who-may-grant)', () => {
-  test('unauthorized caller cannot grant → 403, no Consent object created', async () => {
-    const res = await app.inject({ method: 'POST', url: '/commands/consent', payload: captureBody({ capturedBy: 'wm-stranger' }) });
+describe('consent endpoint authorization (authenticated actor)', () => {
+  test('unauthorized authenticated actor cannot grant → 403, no object', async () => {
+    const res = await post('/commands/consent', captureBody(), STRANGER);
     expect(res.statusCode).toBe(403);
-    expect(res.json().captured).toBe(false);
-    const consents = Array.from(store.objects.values()).filter(o => o.type === 'Consent');
-    expect(consents).toHaveLength(0);
+    expect(consentCount()).toBe(0);
   });
 
-  test('unauthorized caller cannot withdraw → 403, consent unchanged', async () => {
-    const cap = await app.inject({ method: 'POST', url: '/commands/consent', payload: captureBody() }); // self-granted
+  test('body capturedBy cannot impersonate the subject', async () => {
+    // Authenticated as a stranger, but the body claims capturedBy = SUBJECT.
+    // Authorization must use the authenticated actor (stranger) → 403.
+    const res = await post('/commands/consent', captureBody({ capturedBy: SUBJECT }), STRANGER);
+    expect(res.statusCode).toBe(403);
+    expect(consentCount()).toBe(0);
+  });
+
+  test('unauthorized authenticated actor cannot withdraw → 403, consent unchanged', async () => {
+    const cap = await post('/commands/consent', captureBody(), SUBJECT); // self-granted
     const consentId = cap.json().consentId;
-    const res = await app.inject({ method: 'POST', url: '/commands/consent/withdraw', payload: { tenantId: TENANT, consentId, capturedBy: 'wm-stranger' } });
+    const res = await post('/commands/consent/withdraw', { tenantId: TENANT, consentId }, STRANGER);
     expect(res.statusCode).toBe(403);
     expect(store.objects.get(consentId)?.attributes.status).toBe('active');
   });

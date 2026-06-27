@@ -210,7 +210,24 @@ changed here. Where the docs and code diverge, **code is the source of truth**
 > carries those facts); the optional authority means a direct/internal
 > `ConsentCaptureService` without an authorizer still performs no authz (by design for
 > system use — the API always supplies one); endpoint transport-level authn (who the
-> caller *is*) is still assumed upstream.
+> caller *is*) is still assumed upstream — **addressed (dev boundary) in UPDATE 8**.
+>
+> **UPDATE 8 (Transport authentication boundary).** The consent endpoints now derive
+> the **authenticated actor from the request transport** and authorize *that* actor —
+> never a body field. `apps/api/src/shared/auth.ts` (`getAuthenticatedActor`) reads the
+> principal from the **`x-actor-id` header**; the capture/withdraw routes fail closed
+> with **401** when it is absent, and pass the authenticated actor into
+> `ConsentCaptureService` as the authorization actor (the body's `capturedBy` is no
+> longer trusted and cannot impersonate the subject). `ConsentAuthorizer` remains the
+> authorization decision path (403 on denial). **Current mechanism — be clear:** this
+> is a **minimal development/test transport boundary**, NOT real authentication — there
+> is no login, session, or JWT verification; the header is taken at face value. A real
+> auth provider would replace `getAuthenticatedActor` (verifying a token/session)
+> without changing the downstream authorization path. Proven by `apps/api/tests/consent.test.ts`
+> (401 when unauthenticated for capture+withdraw; body `capturedBy` cannot impersonate;
+> authorized authenticated subject succeeds; unauthorized authenticated actor → 403).
+> **Remaining:** real token/session authentication is not built; guardian/POA modeling
+> still deferred.
 
 **Original finding — Permission Gate existed as a combination and was PARTIALLY implemented.**
 

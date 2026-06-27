@@ -7,6 +7,7 @@
 
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { EngineContainer } from '../shared/container';
+import { getAuthenticatedActor } from '../shared/auth';
 import {
   AutomyndWebhookBody, AutomyndWebhookResponse,
   CreateReferralBody, CreateReferralResponse,
@@ -219,6 +220,13 @@ export async function registerRestRoutes(
     '/commands/consent',
     { schema: captureConsentSchema },
     async (req, reply): Promise<CaptureConsentResponse> => {
+      // Transport authentication: authorize the AUTHENTICATED actor, never a
+      // body-supplied field. Missing principal → fail closed (401).
+      const actor = getAuthenticatedActor(req);
+      if (!actor) {
+        reply.status(401);
+        return { captured: false, error: 'unauthenticated: missing x-actor-id' };
+      }
       const b = req.body;
       try {
         const result = await container.consentCapture.capture({
@@ -229,7 +237,7 @@ export async function registerRestRoutes(
           permissionTypes: b.permissionTypes as ConsentPermissionType[],
           effectiveDate:  b.effectiveDate,
           expirationDate: b.expirationDate,
-          capturedBy:     b.capturedBy ?? 'api',
+          capturedBy:     actor, // authenticated actor — body `capturedBy` is not trusted
           source:         b.source,
         });
         reply.status(201);
@@ -258,12 +266,17 @@ export async function registerRestRoutes(
     '/commands/consent/withdraw',
     { schema: withdrawConsentSchema },
     async (req, reply): Promise<WithdrawConsentResponse> => {
+      const actor = getAuthenticatedActor(req);
+      if (!actor) {
+        reply.status(401);
+        return { withdrawn: false, error: 'unauthenticated: missing x-actor-id' };
+      }
       const b = req.body;
       try {
         const result = await container.consentCapture.withdraw({
           tenantId:   b.tenantId,
           consentId:  makeAlaraId(b.consentId),
-          capturedBy: b.capturedBy ?? 'api',
+          capturedBy: actor, // authenticated actor — body `capturedBy` is not trusted
         });
         reply.status(200);
         return {
