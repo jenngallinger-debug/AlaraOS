@@ -32,9 +32,30 @@ export interface PromiseRow {
   void_reason: string | null; workflow_id: string | null; workflow_step_id: string | null; version: number;
 }
 
-function makeTxClient(store: InMemoryStore): PoolClient {
+function makeTxClient(
+  store: InMemoryStore,
+  onLock?: (release: () => void) => void,
+): PoolClient {
+  // Keys already held by THIS transaction. Postgres pg_advisory_xact_lock is
+  // re-entrant within a transaction (a second acquire of the same key is a no-op,
+  // released once at COMMIT/ROLLBACK), so we mirror that to avoid self-deadlock when
+  // one transaction appends more than once to the same stream.
+  const heldKeys = new Set<string>();
   return {
     query: async (text: string, values?: unknown[]) => {
+      // Intercept pg_advisory_xact_lock: acquire the per-key mutex now and register
+      // its release so transaction() frees it when the transaction settles. This is
+      // what makes concurrent same-stream appends serialize in tests.
+      if (typeof text === 'string' && text.includes('pg_advisory_xact_lock')) {
+        const key = (values ?? []).map((v) => String(v)).join('::');
+        if (heldKeys.has(key)) {
+          return { rows: [], rowCount: 0, command: '', oid: 0, fields: [] }; // re-entrant: already held
+        }
+        const release = await store.acquireAdvisoryLock(key);
+        heldKeys.add(key);
+        onLock?.(() => { heldKeys.delete(key); release(); });
+        return { rows: [], rowCount: 0, command: '', oid: 0, fields: [] };
+      }
       const rows = await store.query(text, values ?? []);
       return { rows, rowCount: rows.length, command: '', oid: 0, fields: [] };
     },
@@ -907,9 +928,33 @@ export class InMemoryStore {
     return [] as unknown as T[];
   }
 
-  async transaction<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> { return fn(makeTxClient(this)); }
+  async transaction<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> {
+    // Transaction-scoped advisory locks (taken via pg_advisory_xact_lock in SQL) are
+    // released when the transaction settles — exactly like Postgres COMMIT/ROLLBACK.
+    const releases: Array<() => void> = [];
+    const client = makeTxClient(this, (release) => releases.push(release));
+    try {
+      return await fn(client);
+    } finally {
+      for (const release of releases) release();
+    }
+  }
   async queryOne<T = unknown>(text: string, values?: unknown[]): Promise<T | null> { const rows = await this.query<T>(text, values ?? []); return rows[0] ?? null; }
   async end(): Promise<void> {}
+
+  // ── Advisory-lock simulation (Postgres pg_advisory_xact_lock) ─────────────────
+  // A per-key async mutex so the EventStore's per-stream append serialization is
+  // faithfully exercised in tests: concurrent acquirers of the SAME key run in order;
+  // different keys never block each other.
+  private readonly advisoryLockChain = new Map<string, Promise<void>>();
+  async acquireAdvisoryLock(key: string): Promise<() => void> {
+    const prev = this.advisoryLockChain.get(key) ?? Promise.resolve();
+    let release!: () => void;
+    const held = new Promise<void>((resolve) => { release = resolve; });
+    this.advisoryLockChain.set(key, prev.then(() => held));
+    await prev;
+    return release;
+  }
 }
 
 // ── M10: Workforce Engine rows ────────────────────────────────────────────────

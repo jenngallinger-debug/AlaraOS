@@ -163,6 +163,63 @@ describe('AC-5 / AC-8c: State reconstruction by event replay', () => {
   });
 });
 
+describe('Append concurrency — same-stream serialization (P0 hardening)', () => {
+  // These exercise the per-stream advisory lock added to EventStore.append. Without
+  // it, concurrent appends to one stream race on MAX(seq)+1 and produce duplicate /
+  // lost seqs — these tests fail. With it, same-stream appends serialize into a
+  // contiguous sequence while different streams proceed independently.
+  const TENANT = 'tenant-conc';
+  const stream = (n: string) => makeAlaraId(`${n}${n}${n}${n}${n}${n}${n}${n}-${n}${n}${n}${n}-4${n}${n}${n}-8${n}${n}${n}-${n}${n}${n}${n}${n}${n}${n}${n}${n}${n}${n}${n}`);
+
+  test('sequential appends produce a contiguous sequence', async () => {
+    const { eventStore } = makeHandler();
+    const s = stream('1');
+    for (let i = 0; i < 5; i++) {
+      await eventStore.append({ tenantId: TENANT, streamId: s, type: 'ObjectUpdated', payload: { i }, actor: 'system' });
+    }
+    const events = await eventStore.loadStream(TENANT, s);
+    expect(events.map(e => e.seq)).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  test('concurrent appends to the SAME stream → unique contiguous seq, none lost', async () => {
+    const { eventStore } = makeHandler();
+    const s = stream('2');
+    const N = 25;
+    await Promise.all(
+      Array.from({ length: N }, (_, i) =>
+        eventStore.append({ tenantId: TENANT, streamId: s, type: 'ObjectUpdated', payload: { i }, actor: 'system' }),
+      ),
+    );
+    const events = await eventStore.loadStream(TENANT, s);
+
+    // no append silently dropped
+    expect(events).toHaveLength(N);
+    const seqs = events.map(e => e.seq).sort((a, b) => a - b);
+    // contiguous 1..N
+    expect(seqs).toEqual(Array.from({ length: N }, (_, i) => i + 1));
+    // no duplicate sequence numbers
+    expect(new Set(seqs).size).toBe(N);
+    // every appended payload survived exactly once
+    expect(new Set(events.map(e => (e.payload as { i: number }).i)).size).toBe(N);
+  });
+
+  test('concurrent appends to DIFFERENT streams each succeed independently', async () => {
+    const { eventStore } = makeHandler();
+    const streams = [stream('3'), stream('4'), stream('5')];
+    await Promise.all(
+      streams.flatMap(s =>
+        Array.from({ length: 5 }, (_, i) =>
+          eventStore.append({ tenantId: TENANT, streamId: s, type: 'ObjectUpdated', payload: { i }, actor: 'system' }),
+        ),
+      ),
+    );
+    for (const s of streams) {
+      const events = await eventStore.loadStream(TENANT, s);
+      expect(events.map(e => e.seq).sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 5]);
+    }
+  });
+});
+
 describe('Multi-tenant isolation', () => {
   test('Events from different tenants are isolated', async () => {
     const { handler, eventStore } = makeHandler();

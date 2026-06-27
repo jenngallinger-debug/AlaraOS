@@ -300,3 +300,32 @@ and incomplete pieces. Classified per the rubric:
   architecture**.
 - It is strictly smaller and lower-risk than building Identity Resolution (which pin #12
   says needs its own spec first) or a new Reality Graph (already implemented).
+
+---
+
+## UPDATE 9 — Event Store append concurrency hardened (P0 substrate)
+
+`EventStore.append` (`events/store.ts`) previously computed `seq = MAX(seq)+1` inside a
+default-isolation transaction with **no lock and no retry** — and a docstring that
+falsely claimed an advisory lock existed. Concurrent appends to the *same* stream could
+race (duplicate/lost `seq`); the `UNIQUE(stream_id, seq)` constraint would turn the loser
+into an unhandled error.
+
+Fix (smallest robust): the append transaction now takes a transaction-scoped
+`pg_advisory_xact_lock(hashtext(tenant_id), hashtext(stream_id))` before reading the next
+seq. Same-stream appends serialize into a contiguous sequence; different streams take
+different locks and stay concurrent. The `UNIQUE(stream_id, seq)` constraint is retained
+as a backstop. The misleading comment was corrected to match the implementation.
+
+Semantics preserved: append-only, per-stream ordering, event ids, payloads, idempotency.
+No event schema, no higher-level engine, and no public signature changed.
+
+Test double: `tests/helpers/in-memory-store.ts` now simulates `pg_advisory_xact_lock` as a
+per-key async mutex that is **re-entrant within a transaction** and released when the
+transaction settles — faithfully mirroring Postgres so the new concurrency regression
+tests (`event-store.test.ts`) prove the fix (they fail when the lock is removed).
+
+Residual (not addressed here): no bounded retry-on-unique; a transaction that appends to
+multiple streams in conflicting lock order could deadlock and depend on Postgres deadlock
+detection (single-stream appends, the common case, cannot). Event-table partitioning and
+object-reconstruction snapshots remain open scale items.

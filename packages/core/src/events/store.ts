@@ -54,8 +54,13 @@ export class EventStore {
   /**
    * Append an event to a stream.
    *
-   * seq is determined by MAX(seq)+1 for the stream, atomically via
-   * the advisory lock on (tenant_id, stream_id) to prevent gaps.
+   * Concurrency: the next seq is MAX(seq)+1 for the stream. To make the
+   * read-then-insert race-free under concurrent appends to the SAME stream, the
+   * transaction first takes a transaction-scoped advisory lock keyed on
+   * (tenant_id, stream_id). The lock is held until COMMIT/ROLLBACK, so two
+   * concurrent appends to one stream are serialized and receive contiguous seqs;
+   * appends to DIFFERENT streams take different locks and proceed concurrently.
+   * The UNIQUE(stream_id, seq) constraint remains as a correctness backstop.
    *
    * Idempotency: if eventId already exists, returns the stored event
    * without inserting (caller can pass a deterministic ID for idempotency).
@@ -66,6 +71,14 @@ export class EventStore {
     const eventId = newEventId();
 
     const insert = async (client: PoolClient): Promise<DomainEvent<TPayload>> => {
+      // Serialize concurrent appends to the SAME stream. pg_advisory_xact_lock is
+      // transaction-scoped (auto-released at COMMIT/ROLLBACK); the two int4 keys are
+      // hashtext(tenant_id), hashtext(stream_id) so different streams never block here.
+      await client.query(
+        `SELECT pg_advisory_xact_lock(hashtext($1), hashtext($2))`,
+        [opts.tenantId, opts.streamId],
+      );
+
       // Idempotency check
       const existing = await client.query<EventRow>(
         `SELECT * FROM events WHERE id = $1`,
@@ -75,7 +88,7 @@ export class EventStore {
         return rowToEvent<TPayload>(existing.rows[0]);
       }
 
-      // Atomic seq increment — select next seq inside the transaction
+      // Next seq — race-free under the advisory lock held above.
       const seqResult = await client.query<{ next_seq: number }>(
         `SELECT COALESCE(MAX(seq), 0) + 1 AS next_seq
            FROM events
