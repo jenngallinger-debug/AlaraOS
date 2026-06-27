@@ -163,7 +163,9 @@ export async function registerRestRoutes(
       });
 
       if (!result.success) {
-        reply.status(422);
+        // An idempotency conflict (referral id reused with a different payload) is 409;
+        // any other non-success (denial / review-required / validation) is 422.
+        reply.status(result.conflict ? 409 : 422);
         return {
           success: false,
           projectionIds: {},

@@ -172,6 +172,30 @@ describe('Mutating command authentication', () => {
   });
 });
 
+// ─── Referral command idempotency (API surface) ───────────────────────────────
+
+describe('POST /commands/referrals — idempotency by external referral id', () => {
+  test('retry of the same referral returns the same result and creates no duplicate workflow', async () => {
+    const first = await postReferral();
+    const second = await postReferral(); // same validReferral (same automyndReferralId + payload)
+    expect(first.statusCode).toBe(201);
+    expect(second.statusCode).toBe(201);
+    expect(second.json().patientId).toBe(first.json().patientId);
+    expect(second.json().workflowId).toBe(first.json().workflowId);
+    expect(store.workflows.size).toBe(1);   // no duplicate intake
+    expect(store.tasks.size).toBe(1);
+    expect(store.promises.size).toBe(1);
+  });
+
+  test('retry with the same referral id but a different payload → 409, no duplicate', async () => {
+    const first = await postReferral();
+    const conflict = await postReferral({ ...validReferral, patientName: 'Changed Name' });
+    expect(first.statusCode).toBe(201);
+    expect(conflict.statusCode).toBe(409);
+    expect(store.workflows.size).toBe(1);
+  });
+});
+
 // ─── AC-2: Denied referral — no side effects ──────────────────────────────────
 
 describe('POST /commands/referrals — denial (AC-2)', () => {

@@ -8,10 +8,25 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
+import { createHash } from 'crypto';
 import { AlaraId, makeAlaraId } from './types';
 
 // Re-export so callers can import makeAlaraId from this module
 export { makeAlaraId } from './types';
+
+/**
+ * Derive a stable, UUID-shaped id from its parts (a deterministic v5-style id).
+ * Same parts produce the same id — used for idempotency keys (e.g. a per-referral
+ * receipt stream). Parts are JSON-encoded before hashing so they cannot ambiguously
+ * concatenate. Pure `crypto`, no extra dependency.
+ */
+export function deterministicId(...parts: string[]): string {
+  const h = createHash('sha256').update(JSON.stringify(parts)).digest('hex').slice(0, 32).split('');
+  h[12] = '5';                                               // version 5
+  h[16] = ((parseInt(h[16], 16) & 0x3) | 0x8).toString(16);  // RFC4122 variant
+  const s = h.join('');
+  return `${s.slice(0, 8)}-${s.slice(8, 12)}-${s.slice(12, 16)}-${s.slice(16, 20)}-${s.slice(20, 32)}`;
+}
 
 /** Generate a new Alara object identity (UUIDv4). */
 export function newAlaraId(): AlaraId {

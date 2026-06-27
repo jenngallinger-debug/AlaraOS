@@ -63,6 +63,8 @@ export const EVENT_TYPES = [
   'TaskCreated', 'TaskAssigned', 'TaskCompleted', 'TaskOverdue', 'TaskEscalated',
   // M2 — Promise
   'PromiseCreated', 'PromiseKept', 'PromiseMissed', 'PromiseVoided',
+  // Intake — idempotency receipt (keyed by tenant + external referral id)
+  'IntakeReceiptRecorded',
 ] as const;
 
 export type EventType = typeof EVENT_TYPES[number];

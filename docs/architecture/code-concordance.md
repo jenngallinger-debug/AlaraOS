@@ -480,3 +480,38 @@ MVP boundary (unchanged scope): replay protection is keyed on a client-supplied 
 and a deterministic id — it is NOT HMAC-over-raw-body and has no replay timestamp window.
 Production still needs signed bodies + a freshness window. No core Event Store semantics
 changed.
+
+---
+
+## UPDATE 15 — Referral command idempotency (API Auth Phase 3)
+
+Retrying a referral previously re-ran the whole intake saga: identity resolution reused
+the Patient (UPDATE: external-ref match), but `workflowEngine.start` never dedupes, so a
+retry produced duplicate workflow/task/promise/communication. The workflows table has no
+`correlation_id` column (the referral id was only on the events' correlation_id), so there
+was no query path to find prior intake output by referral id.
+
+Fix — **orchestrator-level idempotency** (protects the canonical operation for any caller,
+not just HTTP):
+
+- `IntakeOrchestrator.handleReferralReceived` derives a deterministic per-referral
+  **receipt stream id** from (tenant, `automynd-referral`, `automyndReferralId`) via the
+  new `deterministicId` helper (`shared/ids.ts`, crypto-based, no new dependency).
+- **Step 0:** `loadStream(receiptStreamId)`. If a receipt exists: a matching content
+  fingerprint replays the original result (no saga, no new artifacts); a different
+  fingerprint is a **conflict** (no silent overwrite, no duplicate).
+- **Step 9:** after a successful saga it appends an `IntakeReceiptRecorded` event (new
+  additive `EVENT_TYPES` entry) to that stream, holding the result ids + fingerprint.
+- A **missing referral id** is rejected before any work.
+- The API maps a conflict result to **409**; replay returns the original 201 result.
+
+Keyed by (tenant, referralId): a different tenant with the same id is independent; the same
+id with a different patient/payload is a conflict. Reuses `loadStream`/`append` only — no
+new query method, no workflow-table change.
+
+Residual (documented): the receipt is written after the saga, so two **concurrent
+first-time** identical referrals could still both run the saga before either receipt
+exists (a pre-saga claim/lock or a unique constraint would close this). Sequential retries
+(the dominant real case — a client retrying after a lost response) are fully idempotent.
+`deterministicId` (core) duplicates the API's `deterministicEventId`; consolidation is a
+later cleanup.

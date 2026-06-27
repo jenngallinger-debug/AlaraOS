@@ -24,6 +24,7 @@
 
 import { DatabaseClient } from '../shared/database';
 import { AlaraId, AlaraObject, makeAlaraId } from '../shared/types';
+import { deterministicId } from '../shared/ids';
 import { EventStore } from '../events/store';
 import { ObjectCommandHandler } from '../object-graph/command-handler';
 import { ObjectGraphRepository } from '../object-graph/repository';
@@ -65,6 +66,10 @@ export interface IntakeOrchestratorResult {
   readonly communicationId?: AlaraId;
   readonly denialReason?: string;
   readonly denialExplanation?: Explanation;
+  /** True when the referral id was reused with a materially different payload (idempotency conflict). */
+  readonly conflict?: boolean;
+  /** True when this result was replayed from a prior receipt (no new work performed). */
+  readonly idempotentReplay?: boolean;
   /** All event IDs emitted during this intake flow */
   readonly eventIds: readonly string[];
 }
@@ -93,6 +98,52 @@ export class IntakeOrchestrator {
 
   async handleReferralReceived(input: ReferralReceivedInput): Promise<IntakeOrchestratorResult> {
     const eventIds: string[] = [];
+
+    // ── Step 0: Idempotency by external referral id ─────────────────────────────
+    // The canonical operation (not just the HTTP surface) is idempotent: a per-referral
+    // receipt stream keyed by (tenant, automynd, referralId) records the original result.
+    // A retry returns that result without re-running the saga; a reused referral id with a
+    // materially different payload is a conflict (never a silent overwrite or duplicate).
+    if (!input.automyndReferralId || !input.automyndReferralId.trim()) {
+      return {
+        success: false,
+        denialReason: 'missing automyndReferralId (required for idempotent intake)',
+        eventIds,
+      };
+    }
+    const receiptStreamId = makeAlaraId(
+      deterministicId(input.tenantId, 'automynd-referral', input.automyndReferralId),
+    );
+    // Fingerprint of the material referral content (not actor) — detects payload changes.
+    const fingerprint = deterministicId(
+      input.automyndPatientId, input.patientName, input.programType,
+      input.referralSource, input.referralDate,
+    );
+    const priorReceipt = await this.eventStore.loadStream(input.tenantId, receiptStreamId);
+    if (priorReceipt.length > 0) {
+      const r = priorReceipt[0].payload as Record<string, string>;
+      if (r.fingerprint !== fingerprint) {
+        return {
+          success: false,
+          conflict: true,
+          patientId: r.patientId ? makeAlaraId(r.patientId) : undefined,
+          denialReason:
+            `idempotency conflict: referral "${input.automyndReferralId}" was already processed with a different payload`,
+          eventIds,
+        };
+      }
+      // Safe replay — return the original result, perform no new work.
+      return {
+        success: true,
+        idempotentReplay: true,
+        patientId: makeAlaraId(r.patientId),
+        workflowId: makeAlaraId(r.workflowId),
+        taskId: makeAlaraId(r.taskId),
+        promiseId: makeAlaraId(r.promiseId),
+        communicationId: makeAlaraId(r.communicationId),
+        eventIds,
+      };
+    }
 
     // ── Step 1: Resolve-or-create Patient (identity resolution, v1) ─────────────
     // External-reference-first (spec §4.1): an exact Automynd patient_id match REUSES
@@ -314,6 +365,28 @@ export class IntakeOrchestrator {
     await this.projectionEngine.build(
       input.tenantId, 'DigitalCareTwin', String(patient.id), twinAssembler,
     );
+
+    // ── Step 9: Record the idempotency receipt ─────────────────────────────────
+    // Append to the deterministic per-referral receipt stream so a future retry of this
+    // referral returns this exact result instead of re-running the saga.
+    const receiptEvt = await this.eventStore.append({
+      tenantId: input.tenantId,
+      streamId: receiptStreamId,
+      type: 'IntakeReceiptRecorded',
+      payload: {
+        fingerprint,
+        automyndReferralId: input.automyndReferralId,
+        patientId: String(patient.id),
+        workflowId: String(workflow.id),
+        taskId: String(task.id),
+        promiseId: String(promise.id),
+        communicationId: String(sentComm.id),
+        actor: input.actor,
+        recordedAt: new Date().toISOString(),
+      },
+      actor: input.actor,
+    });
+    eventIds.push(receiptEvt.id);
 
     return {
       success: true,
