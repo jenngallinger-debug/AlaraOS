@@ -179,9 +179,12 @@ changed here. Where the docs and code diverge, **code is the source of truth**
 > 5 cases): capture → canonical Consent object + a later required-consent read allowed;
 > withdraw → next read blocked; invalid input → validation failure. **Notes / remaining
 > gaps:** (1) the surface is **REST only** (GraphQL not wired); (2) `apps/api` is **not**
-> a root npm workspace (root `workspaces: ["packages/*"]`), so `npm run test/build
-> --workspaces` covers **core only** — apps/api is verified via its own commands
-> (`cd apps/api && npm ci && npm test && npm run build`); (3) the endpoint itself has no
+> a member of the `workspaces` array (kept that way to avoid destabilising the install
+> / pulling in `apps/web`), so the npm `--workspaces` flag still covers core only — but
+> standard root verification now includes apps/api via added root scripts: **`npm run
+> verify`** (= `test:all` + `build:all`, which run core `--workspaces` **and** apps/api),
+> with `npm run install:api` to install apps/api deps. So the endpoints are no longer
+> invisible to project-level verification. (3) the endpoint itself has no
 > caller auth (who-may-grant) — that is a separate API-auth concern; (4) no automatic
 > expiry sweep.
 

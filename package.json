@@ -7,6 +7,12 @@
   "scripts": {
     "build": "npm run build --workspaces",
     "test": "npm run test --workspaces --if-present",
+    "install:api": "npm --prefix apps/api ci",
+    "test:api": "npm --prefix apps/api test",
+    "build:api": "npm --prefix apps/api run build",
+    "test:all": "npm run test --workspaces --if-present && npm run test:api",
+    "build:all": "npm run build --workspaces && npm run build:api",
+    "verify": "npm run test:all && npm run build:all",
     "migrate": "node scripts/migrate.js",
     "migrate:down": "node scripts/migrate.js down"
   },
