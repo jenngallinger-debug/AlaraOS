@@ -7,3 +7,10 @@
 
 export { IdentityResolutionRepository } from './repository';
 export type { ExternalReferenceQuery } from './repository';
+export { IdentityResolutionEngine } from './engine';
+export type {
+  IdentityResolutionOutcome,
+  IdentityCandidateInput,
+  IdentityResolutionResult,
+  IdentityConflict,
+} from './types';
