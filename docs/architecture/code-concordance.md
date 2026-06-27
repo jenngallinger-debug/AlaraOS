@@ -515,3 +515,26 @@ exists (a pre-saga claim/lock or a unique constraint would close this). Sequenti
 (the dominant real case — a client retrying after a lost response) are fully idempotent.
 `deterministicId` (core) duplicates the API's `deterministicEventId`; consolidation is a
 later cleanup.
+
+---
+
+## UPDATE 16 — Basic in-memory rate limiting (API Auth Phase 4)
+
+Closes part of the post-P0 DoS/retry-storm risk (A8/S6). `@fastify/rate-limit` is not
+installed, so this is a dependency-free, process-local fixed-window limiter
+(`apps/api/src/shared/rate-limit.ts`) registered as a Fastify `onRequest` hook in
+`server.ts`.
+
+- Applies ONLY to mutating routes — POST `/commands/*` and `/webhooks/automynd`
+  (`isLimitedRoute`). `/health`, `/graphql`, and all GETs are never limited.
+- Keyed by the authenticated actor (`x-actor-id`) when present, else client IP.
+- Over-limit → **429** with a `retry-after` header.
+- Config (env): `RATE_LIMIT_ENABLED` (default ON outside tests, **OFF under
+  `NODE_ENV=test`** so existing tests are unaffected), `RATE_LIMIT_WINDOW_MS` (default
+  60s), `RATE_LIMIT_MAX` (default 100/window). When disabled, the hook is not installed.
+
+Scope/limits (stated plainly): **process-local only** — counters are per-instance, so
+behind multiple API instances the effective limit multiplies. It is a coarse abuse/DoS
+brake, not a precise quota. No core engine change, no new persistence, no Redis. Shared
+distributed rate limiting and per-route quotas remain future work; GraphQL is out of scope
+(read-only today).

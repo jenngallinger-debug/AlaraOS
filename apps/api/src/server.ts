@@ -14,6 +14,7 @@ import Fastify from 'fastify';
 import mercurius from 'mercurius';
 import { EngineContainer } from './shared/container';
 import { registerRestRoutes } from './rest/routes';
+import { registerRateLimit } from './shared/rate-limit';
 import { schema } from './graphql/schema';
 import { buildResolvers } from './graphql/resolvers';
 
@@ -39,6 +40,9 @@ export async function buildServer(container: EngineContainer) {
       message: error.message,
     });
   });
+
+  // ── Rate limiting (mutating routes only; no-op when disabled / under tests) ─
+  registerRateLimit(app);
 
   // ── REST routes ───────────────────────────────────────────────────────────
   await registerRestRoutes(app, container);

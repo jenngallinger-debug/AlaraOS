@@ -52,3 +52,29 @@ export function deterministicEventId(...parts: string[]): string {
   const s = h.join('');
   return `${s.slice(0, 8)}-${s.slice(8, 12)}-${s.slice(12, 16)}-${s.slice(16, 20)}-${s.slice(20, 32)}`;
 }
+
+// ─── Rate limiting (basic, in-memory, process-local) ──────────────────────────
+
+/**
+ * Whether the basic rate limiter is active. `RATE_LIMIT_ENABLED` (true/false/1/0)
+ * overrides; otherwise it defaults ON outside tests and OFF under `NODE_ENV=test`
+ * (so existing API tests are unaffected unless they opt in).
+ */
+export function isRateLimitEnabled(): boolean {
+  const raw = (process.env.RATE_LIMIT_ENABLED ?? '').trim().toLowerCase();
+  if (raw === 'true' || raw === '1') return true;
+  if (raw === 'false' || raw === '0') return false;
+  return process.env.NODE_ENV !== 'test';
+}
+
+/** Rate-limit window in ms (default 60s). */
+export function getRateLimitWindowMs(): number {
+  const n = Number(process.env.RATE_LIMIT_WINDOW_MS);
+  return Number.isFinite(n) && n > 0 ? n : 60_000;
+}
+
+/** Max requests per key per window (default 100). */
+export function getRateLimitMax(): number {
+  const n = Number(process.env.RATE_LIMIT_MAX);
+  return Number.isFinite(n) && n > 0 ? n : 100;
+}
