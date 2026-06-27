@@ -21,6 +21,9 @@ export { DataIntegrityHumanReviewPolicyModule } from './data-integrity-policy';
 // Consent authority (who may grant/withdraw consent) — wired explicitly by the
 // consent authorizer for the consent-capture rule set; NOT in the M1b auto-load set.
 export { ConsentAuthorityPolicyModule, CONSENT_CAPTURE_RULESET } from './consent-authority-policy';
+// Identity review (ambiguous/conflicting/PHI-risk identity → human) — wired explicitly
+// for the identity-review rule set; always-registered, NOT in the M1b auto-load set.
+export { IdentityReviewPolicyModule, IDENTITY_REVIEW_RULESET } from './identity-review-policy';
 
 import { RulesRegistry } from '../registry';
 import { ConsentPolicyModule } from './consent-policy';

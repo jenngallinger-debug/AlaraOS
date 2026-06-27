@@ -14,3 +14,10 @@ export type {
   IdentityResolutionResult,
   IdentityConflict,
 } from './types';
+export {
+  IdentityReviewGate,
+  buildIdentityConflictFact,
+  createIdentityReviewRulesEngine,
+  registerIdentityReviewPolicies,
+} from './review-gate';
+export type { IdentityReviewDecision, IdentityReviewOptions } from './review-gate';

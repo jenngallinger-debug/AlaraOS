@@ -115,3 +115,37 @@ export interface DataIntegrityFact {
   readonly externalValue: unknown;
   readonly alaraValue: unknown;
 }
+
+// ─── Identity Resolution review (identity-resolution-spec §5.1) ────────────────
+// A DISTINCT fact from DataIntegrityFact: identity conflicts are between candidate
+// PERSONS (a candidate set + evidence), not a single object's external-vs-Alara
+// field divergence. This shape is read by the IdentityReviewPolicyModule on the
+// `ruleset.identity.review` rule set to decide ALLOW vs REQUIRE_HUMAN.
+
+export interface IdentityConflictEvidence {
+  readonly candidateId: string;
+  readonly field: string;
+  /** Machine-readable conflict kind (e.g. DOB_MISMATCH, ID_COLLISION). */
+  readonly code: string;
+}
+
+export interface IdentityConflictFact {
+  /** The engine's pre-review classification. */
+  readonly proposedClassification:
+    | 'MATCH'
+    | 'NO_MATCH'
+    | 'POSSIBLE_MATCH_REVIEW_REQUIRED'
+    | 'INSUFFICIENT_EVIDENCE';
+  /** The normalized candidate input under resolution. */
+  readonly subjectInput: Record<string, unknown>;
+  /** Candidate Person (Patient) ids considered. */
+  readonly candidateIds: readonly string[];
+  /** Specific conflicting evidence (empty when none). */
+  readonly conflictingEvidence: readonly IdentityConflictEvidence[];
+  /** Machine-readable why-codes carried from the matcher. */
+  readonly reasonCodes: readonly string[];
+  /** Confidence in the proposed classification (0..1). */
+  readonly confidence: number;
+  /** Indicator that the action would combine/expose protected health information. */
+  readonly phiRisk: boolean;
+}

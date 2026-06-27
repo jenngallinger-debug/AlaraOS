@@ -147,14 +147,26 @@ export type { ConsentAuthorizerDeps } from './consent-store/authorizer';
 export { resolveParticipationFact } from './reasoning-engine/fact-resolver';
 
 // Identity Resolution — external-reference-first candidate lookup (v1, read-only)
-export { IdentityResolutionRepository, IdentityResolutionEngine } from './identity-resolution';
+export {
+  IdentityResolutionRepository,
+  IdentityResolutionEngine,
+  IdentityReviewGate,
+  buildIdentityConflictFact,
+  createIdentityReviewRulesEngine,
+  registerIdentityReviewPolicies,
+} from './identity-resolution';
 export type {
   ExternalReferenceQuery,
   IdentityResolutionOutcome,
   IdentityCandidateInput,
   IdentityResolutionResult,
   IdentityConflict,
+  IdentityReviewDecision,
+  IdentityReviewOptions,
 } from './identity-resolution';
+// Identity review fact + policy (decision authority lives in the RulesEngine)
+export { IdentityReviewPolicyModule, IDENTITY_REVIEW_RULESET } from './rules-engine/policies/identity-review-policy';
+export type { IdentityConflictFact, IdentityConflictEvidence } from './rules-engine/policies/context-types';
 
 // M10 — Workforce Engine
 export { WorkforceRepository } from './workforce-engine/repository';
