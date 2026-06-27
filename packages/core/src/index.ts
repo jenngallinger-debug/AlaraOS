@@ -154,6 +154,8 @@ export {
   buildIdentityConflictFact,
   createIdentityReviewRulesEngine,
   registerIdentityReviewPolicies,
+  CanonicalSubjectResolver,
+  NoMergeLinkSource,
 } from './identity-resolution';
 export type {
   ExternalReferenceQuery,
@@ -163,6 +165,7 @@ export type {
   IdentityConflict,
   IdentityReviewDecision,
   IdentityReviewOptions,
+  MergeLinkSource,
 } from './identity-resolution';
 // Identity review fact + policy (decision authority lives in the RulesEngine)
 export { IdentityReviewPolicyModule, IDENTITY_REVIEW_RULESET } from './rules-engine/policies/identity-review-policy';

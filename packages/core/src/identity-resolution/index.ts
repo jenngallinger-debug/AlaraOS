@@ -21,3 +21,5 @@ export {
   registerIdentityReviewPolicies,
 } from './review-gate';
 export type { IdentityReviewDecision, IdentityReviewOptions } from './review-gate';
+export { CanonicalSubjectResolver, NoMergeLinkSource } from './subject-resolver';
+export type { MergeLinkSource } from './subject-resolver';
