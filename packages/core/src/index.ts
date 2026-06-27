@@ -115,6 +115,14 @@ export { InsufficientEvidenceError, ReasoningProviderError } from './reasoning-e
 export { ReasoningSummaryProjectionDefinition } from './projection-engine/projections/reasoning-summary';
 export type { ReasoningSummaryInput, ReasoningSummaryValue } from './projection-engine/projections/reasoning-summary';
 
+// M9 — Read Authorization Boundary (Permission Gate for Reality Understanding reads)
+export { assembleAuthorizedContext } from './reasoning-engine/authorized-context';
+export type { AuthorizedContextOptions, AuthorizedContextResult } from './reasoning-engine/authorized-context';
+export {
+  ConsentReadPolicy, ParticipationReadPolicy, AIActReadPolicy,
+  READ_AUTHORIZATION_POLICIES, registerReadAuthorizationPolicies,
+} from './reasoning-engine/read-authorization-policies';
+
 // M10 — Workforce Engine
 export { WorkforceRepository } from './workforce-engine/repository';
 export { WorkforceEngine, reconstructAssignmentFromEvents } from './workforce-engine/engine';
