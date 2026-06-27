@@ -21,7 +21,7 @@ import { PromiseEngine, reconstructPromiseFromEvents, StalePromiseError } from '
 import { EventStore } from '../src/events/store';
 import { RulesEngine, NoopAuditSink } from '../src/rules-engine/engine';
 import { RulesRegistry } from '../src/rules-engine/registry';
-import { BUILT_IN_RULE_SETS } from '../src/rules-engine/built-in-policies';
+import { BUILT_IN_RULE_SETS, DefaultAllowPolicyModule } from '../src/rules-engine/built-in-policies';
 import { DatabaseClient } from '../src/shared/database';
 import { makeAlaraId } from '../src/shared/ids';
 import { AlaraId } from '../src/shared/types';
@@ -37,7 +37,9 @@ const CARE_GUIDE = 'care-guide-001';
 function makeAllowEngine(): RulesEngine {
   const registry = new RulesRegistry();
   for (const rs of BUILT_IN_RULE_SETS) registry.registerRuleSet(rs);
-  // No policy modules = ALLOW by default (M1a behaviour)
+  // Intentional allow must be EXPLICIT: the engine now fails closed for rule sets with
+  // no registered policy, so register DefaultAllowPolicyModule ('*') to permit.
+  registry.registerPolicyModule(DefaultAllowPolicyModule);
   return new RulesEngine(registry, new NoopAuditSink());
 }
 

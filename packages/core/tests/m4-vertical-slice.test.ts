@@ -34,7 +34,7 @@ import { TimelineProjectionDefinition } from '../src/projection-engine/projectio
 import { DigitalCareTwinProjectionDefinition } from '../src/projection-engine/projections/digital-care-twin';
 import { RulesEngine, NoopAuditSink } from '../src/rules-engine/engine';
 import { RulesRegistry } from '../src/rules-engine/registry';
-import { BUILT_IN_RULE_SETS } from '../src/rules-engine/built-in-policies';
+import { BUILT_IN_RULE_SETS, DefaultAllowPolicyModule } from '../src/rules-engine/built-in-policies';
 import { EventStore } from '../src/events/store';
 import { DatabaseClient } from '../src/shared/database';
 import { PolicyModule, RuleContext } from '../src/rules-engine/types';
@@ -55,6 +55,9 @@ function buildPipeline(rulesOverride?: PolicyModule) {
   // Rules Engine
   const rulesRegistry = new RulesRegistry();
   for (const rs of BUILT_IN_RULE_SETS) rulesRegistry.registerRuleSet(rs);
+  // Explicit baseline allow (engine fails closed without a registered policy). A test
+  // override (e.g. a deny module, priority 1) is evaluated before DefaultAllow (999).
+  rulesRegistry.registerPolicyModule(DefaultAllowPolicyModule);
   if (rulesOverride) rulesRegistry.registerPolicyModule(rulesOverride);
   const rules = new RulesEngine(rulesRegistry, new NoopAuditSink());
 

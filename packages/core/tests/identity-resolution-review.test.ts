@@ -102,9 +102,9 @@ describe('Identity Resolution — review human gate (Phase 3)', () => {
     expect(decision.requiresHuman).toBe(false);
   });
 
-  test('missing policy fails OPEN — which is why the factory always registers it', async () => {
-    // A RulesEngine with the rule set but NO policy registered: the engine
-    // default-ALLOWs (fail open). This is the hazard the factory prevents.
+  test('missing policy now fails CLOSED at the engine; the factory registers the precise gate', async () => {
+    // A RulesEngine with the rule set but NO policy registered. The engine now FAILS
+    // CLOSED (DENY) for an unregistered rule set — the prior silent-ALLOW hazard is gone.
     const bareRegistry = new RulesRegistry();
     bareRegistry.registerRuleSet({ id: IDENTITY_REVIEW_RULESET, name: 'x', description: '', version: '1' });
     const bareEngine = new RulesEngine(bareRegistry, new NoopAuditSink());
@@ -116,9 +116,10 @@ describe('Identity Resolution — review human gate (Phase 3)', () => {
       tenantId: TENANT, actor: 'system', eventType: 'IdentityResolution', eventPayload: {},
       ruleSetId: IDENTITY_REVIEW_RULESET, objects: { identityConflict: conflictFact },
     });
-    expect(bare.outcome).toBe('ALLOW'); // fail-open hazard demonstrated
+    expect(bare.outcome).toBe('DENY'); // engine default is fail-closed, not silent ALLOW
 
-    // The factory always registers the policy → the same ambiguous case requires human.
+    // The factory always registers the policy → the same ambiguous case routes to the
+    // precise REQUIRE_HUMAN gate rather than a blanket DENY.
     const safeEngine = createIdentityReviewRulesEngine();
     const safe = await safeEngine.evaluate({
       tenantId: TENANT, actor: 'system', eventType: 'IdentityResolution', eventPayload: {},

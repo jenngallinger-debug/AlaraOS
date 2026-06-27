@@ -329,3 +329,37 @@ Residual (not addressed here): no bounded retry-on-unique; a transaction that ap
 multiple streams in conflicting lock order could deadlock and depend on Postgres deadlock
 detection (single-stream appends, the common case, cannot). Event-table partitioning and
 object-reconstruction snapshots remain open scale items.
+
+---
+
+## UPDATE 10 — Rules Engine fail-closed default (P0 substrate)
+
+`RulesEngine.evaluate` (`rules-engine/engine.ts`) previously returned **ALLOW** when no
+policy module was registered for a rule set ("no-policy ⇒ permit"). For a healthcare
+operating system this is unsafe: an unconfigured rule set silently permitted the action,
+and the retrieval read gate (`RetrievalPermissionGate.isVisible`, which admits only on
+ALLOW) would therefore admit records when its engine had no read policy registered.
+
+Change: the no-policy branch now **fails closed (DENY)** with an explicit
+`engine.no-policy` applied rule and explanation. Intentional allow is no longer implicit
+— it must be expressed by registering a policy for the rule set (e.g.
+`DefaultAllowPolicyModule`, `ruleSetIds: ['*']`). This is the "make intentional allow
+visible in registration" posture.
+
+Blast radius (audited, all preserved):
+- Production (`apps/api/shared/container.ts`) already registers `BUILT_IN_POLICY_MODULES`
+  including `DefaultAllowPolicyModule('*')` → unaffected.
+- Consent authority (`ruleset.consent.capture`) and identity review
+  (`ruleset.identity.review`) always register their policy → unaffected; both fail closed
+  via their own DENY/REQUIRE_HUMAN logic.
+- M1b integration registers Consent/Participation for `ruleset.intake` → unaffected.
+- Test pipelines that relied on implicit ALLOW for `ruleset.intake` (m2 `makeAllowEngine`,
+  m4 `buildPipeline`, identity-resolution-intake `buildPipeline`) now register
+  `DefaultAllowPolicyModule` explicitly — same behavior, now visible.
+- The retrieval read gate now suppresses records when no read policy is registered (a
+  latent fail-open closed); proven in `m11-retrieval-engine.test.ts`.
+
+DEFER nuance (NOT changed — documented follow-on): a lone `DEFER` still does not
+fail-fast and collapses to ALLOW after the loop. No in-repo policy emits DEFER; current
+behavior is pinned by a test (`rules-engine.test.ts`). Tightening DEFER for
+safety-sensitive rule sets is tracked as a follow-on.

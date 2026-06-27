@@ -6,12 +6,17 @@
  * a full Explanation and a list of RecommendedActions.
  *
  * EVALUATION SEMANTICS:
+ *   0. NO policy registered for the rule set → DENY (fail closed). An unconfigured
+ *      rule set is never implicitly permitted; intentional allow must be registered
+ *      (e.g. DefaultAllowPolicyModule, ruleSetIds ['*']).
  *   1. Load all PolicyModules for the rule set (sorted by priority).
  *   2. Evaluate each module in order.
  *   3. If any module returns DENY or REQUIRE_HUMAN → stop, return that outcome.
  *   4. If all modules return ALLOW → merge their actions and return ALLOW.
- *   5. If all modules return DEFER → return DEFER (unusual; means no rules apply).
- *   6. ALLOW with at least one REQUIRE_HUMAN action → escalate to REQUIRE_HUMAN.
+ *   5. ALLOW with at least one REQUIRE_HUMAN action → escalate to REQUIRE_HUMAN.
+ *   6. DEFER nuance (known follow-on): DEFER does not fail-fast and a lone DEFER
+ *      currently collapses to ALLOW after the loop. No in-repo policy emits DEFER;
+ *      tightening this for safety-sensitive rule sets is tracked separately.
  *
  * ADR-003: AI is last in the chain. This engine runs BEFORE the AI layer.
  * ADR-015: AI cannot autonomously perform certain action types. The engine
@@ -60,9 +65,27 @@ export class RulesEngine {
     const modules = this.registry.getPolicyModulesForRuleSet(context.ruleSetId);
 
     if (modules.length === 0) {
-      return this.buildDecision(context, 'ALLOW', 'no-policy-module', [], [], [], [
-        'No policy modules registered for this rule set. Defaulting to ALLOW.',
-      ]);
+      // Fail closed. An unregistered rule set is an unconfigured access decision and
+      // must NOT be implicitly permitted (this is a healthcare operating system).
+      // Intentional allow is never implicit here — it must be expressed by registering
+      // a policy for the rule set (e.g. DefaultAllowPolicyModule, which applies to '*').
+      return this.buildDecision(
+        context,
+        'DENY',
+        'no-policy-module',
+        [{
+          ruleId: 'engine.no-policy',
+          ruleName: 'No Policy Registered (fail closed)',
+          outcome: 'DENY',
+          reason:
+            `No policy module is registered for rule set "${context.ruleSetId}". ` +
+            `Failing closed (DENY). Register a policy (e.g. DefaultAllowPolicyModule) ` +
+            `to permit this rule set.`,
+        }],
+        [],
+        [],
+        [`No policy modules registered for rule set "${context.ruleSetId}". Failing closed (DENY).`],
+      );
     }
 
     const evaluations: PolicyEvaluation[] = [];

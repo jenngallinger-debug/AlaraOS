@@ -55,15 +55,34 @@ class SpyAuditSink implements IAuditSink {
 // ─── Basic evaluation ─────────────────────────────────────────────────────────
 
 describe('RulesEngine — basic evaluation', () => {
-  test('No modules → ALLOW with explanation', async () => {
+  test('No modules → DENY (fail closed) with explanation', async () => {
     const registry = makeRegistry();
     const engine = new RulesEngine(registry);
     const decision = await engine.evaluate(makeContext());
 
-    expect(decision.outcome).toBe('ALLOW');
+    // Fail closed: an unconfigured rule set is never implicitly permitted.
+    expect(decision.outcome).toBe('DENY');
     expect(decision.explanation).toBeDefined();
-    expect(decision.explanation.reasoning.join(' ')).toContain('No policy modules');
+    expect(decision.explanation.reasoning.join(' ')).toContain('Failing closed');
+    expect(decision.explanation.appliedRules.some(r => r.ruleId === 'engine.no-policy')).toBe(true);
     expect(decision.evaluatedAt).toBeInstanceOf(Date);
+  });
+
+  test('Unknown / unregistered rule set → DENY (fail closed)', async () => {
+    const registry = makeRegistry(); // no policy modules at all
+    const engine = new RulesEngine(registry);
+    const decision = await engine.evaluate(makeContext({ ruleSetId: 'ruleset.totally.unregistered' }));
+
+    expect(decision.outcome).toBe('DENY');
+  });
+
+  test('Explicitly registered DefaultAllow → ALLOW (intentional allow is visible)', async () => {
+    const registry = makeRegistry(DefaultAllowPolicyModule);
+    const engine = new RulesEngine(registry);
+    const decision = await engine.evaluate(makeContext({ ruleSetId: 'ruleset.anything' }));
+
+    // Allow is permitted only because a policy was explicitly registered for it.
+    expect(decision.outcome).toBe('ALLOW');
   });
 
   test('Evaluation is deterministic — same input → same output', async () => {
@@ -158,6 +177,29 @@ describe('RulesEngine — REQUIRE_HUMAN', () => {
     const decision = await engine.evaluate(makeContext());
 
     expect(decision.outcome).toBe('REQUIRE_HUMAN');
+  });
+});
+
+// ─── DEFER nuance (pinned current behavior — known follow-on) ──────────────────
+
+describe('RulesEngine — DEFER collapse (pinned, not yet changed)', () => {
+  // No in-repo policy emits DEFER. This pins the CURRENT behavior so a future
+  // safety tightening (DEFER alone should not silently ALLOW) is test-guarded.
+  test('a lone DEFER currently collapses to ALLOW after the loop', async () => {
+    const deferModule: PolicyModule = {
+      id: 'test.defer', name: 'Defer', version: '1', priority: 1,
+      ruleSetIds: ['ruleset.intake'],
+      evaluate: () => ({
+        moduleId: 'test.defer', outcome: 'DEFER',
+        appliedRules: [], skippedRules: [], actions: [], reasoning: 'No applicable rule.',
+      }),
+    };
+    const registry = makeRegistry(deferModule);
+    const engine = new RulesEngine(registry);
+    const decision = await engine.evaluate(makeContext());
+
+    // Documented nuance: DEFER does not fail-fast and a lone DEFER resolves to ALLOW.
+    expect(decision.outcome).toBe('ALLOW');
   });
 });
 

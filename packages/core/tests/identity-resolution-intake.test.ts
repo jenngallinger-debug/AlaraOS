@@ -23,7 +23,7 @@ import { InMemoryProjectionStore } from '../src/projection-engine/store';
 import { registerAllProjections } from '../src/projection-engine';
 import { RulesEngine, NoopAuditSink } from '../src/rules-engine/engine';
 import { RulesRegistry } from '../src/rules-engine/registry';
-import { BUILT_IN_RULE_SETS } from '../src/rules-engine/built-in-policies';
+import { BUILT_IN_RULE_SETS, DefaultAllowPolicyModule } from '../src/rules-engine/built-in-policies';
 import { EventStore } from '../src/events/store';
 import { ObjectCommandHandler } from '../src/object-graph/command-handler';
 import { ObjectGraphRepository } from '../src/object-graph/repository';
@@ -39,6 +39,9 @@ function buildPipeline() {
 
   const rulesRegistry = new RulesRegistry();
   for (const rs of BUILT_IN_RULE_SETS) rulesRegistry.registerRuleSet(rs);
+  // Engine fails closed for rule sets with no registered policy; intake intentionally
+  // allows, so register the explicit DefaultAllow baseline.
+  rulesRegistry.registerPolicyModule(DefaultAllowPolicyModule);
   const rules = new RulesEngine(rulesRegistry, new NoopAuditSink());
 
   const templates = new WorkflowTemplateRegistry();

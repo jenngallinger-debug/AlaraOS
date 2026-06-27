@@ -303,3 +303,33 @@ describe('M11 Retrieval & Query Engine', () => {
     expect(RETRIEVAL_READ_RULESET).toBe('retrieval-read');
   });
 });
+
+// ─── Read-gate fail-closed (P0: no read policy registered → suppress) ──────────
+
+describe('RetrievalPermissionGate — fail closed without a read policy', () => {
+  test('no read policy registered → record is NOT visible (engine fails closed)', async () => {
+    // Registry knows the rule set but has NO policy module for it.
+    const registry = new RulesRegistry();
+    registry.registerRuleSet(READ_RULESET);
+    const gate = new RetrievalPermissionGate(new RulesEngine(registry, new NoopAuditSink()));
+
+    const visible = await gate.isVisible({
+      tenantId: TENANT, actor: ACTOR_ALLOWED, source: 'object',
+      record: { id: 'r1', restricted: false },
+    });
+    expect(visible).toBe(false); // unconfigured read authz must suppress, not admit
+  });
+
+  test('with a read policy registered, an allowed record IS visible', async () => {
+    const registry = new RulesRegistry();
+    registry.registerRuleSet(READ_RULESET);
+    registry.registerPolicyModule(VisibilityPolicy);
+    const gate = new RetrievalPermissionGate(new RulesEngine(registry, new NoopAuditSink()));
+
+    const visible = await gate.isVisible({
+      tenantId: TENANT, actor: ACTOR_ALLOWED, source: 'object',
+      record: { id: 'r1', restricted: false },
+    });
+    expect(visible).toBe(true);
+  });
+});
