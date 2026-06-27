@@ -1,0 +1,109 @@
+# AlaraOS — Tenancy & Row-Level Security (current state)
+
+> **Status: factual reconciliation, not aspiration.** This documents what tenant
+> isolation actually does today. **RLS is scaffolded in the schema but is NOT a live
+> backstop.** Tenant isolation is currently enforced entirely by application-level
+> `WHERE tenant_id` predicates. Do not assume the database is isolating tenants.
+
+## 1. What the schema declares
+
+Every tenant-bearing table (29 tables — `objects`, `events`, `external_references`,
+`observations`, `knowledge_entries`, `workflows`, `tasks`, `promises`, `relationships`,
+`edges`, `communications`, `projections`, the reasoning/org-brain tables, the journey
+tables, the workforce tables, …) is created with:
+
+```sql
+ALTER TABLE <t> ENABLE ROW LEVEL SECURITY;
+CREATE POLICY tenant_isolation ON <t>
+    USING (tenant_id = current_setting('app.tenant_id', TRUE));
+```
+
+So RLS is **enabled** and a `tenant_isolation` policy exists on each table.
+
+## 2. Why it is NOT a live backstop today
+
+Three facts, all verified in-repo, make the scaffolding inert or dangerous:
+
+1. **No `FORCE ROW LEVEL SECURITY`.** RLS does not apply to the table **owner** role
+   (only `FORCE` makes it apply to the owner). If the application connects as the role
+   that owns the tables — the typical setup — **RLS is bypassed entirely** and the
+   policies never run.
+2. **The application never sets `app.tenant_id`.** There is no `set_config`, `SET`, or
+   `SET LOCAL app.tenant_id` anywhere in `packages/core/src` or `apps/api/src`. The
+   policy reads `current_setting('app.tenant_id', TRUE)` — the `TRUE` (`missing_ok`)
+   makes an unset GUC return `NULL` instead of erroring, and `tenant_id = NULL` is never
+   true. So under a **non-owner** role, every policy-gated query would match **zero
+   rows** — an outage, not a leak.
+3. **Policies are `USING`-only (no `WITH CHECK`).** Even where RLS *is* enforced, a
+   `USING`-only policy gates **reads/visibility**; it does **not** constrain
+   `INSERT`/`UPDATE`. A write with the wrong `tenant_id` would not be rejected by RLS.
+
+**Net effect:** in the only configuration the app runs in today (owner role), RLS is a
+no-op; switching to a non-owner role without setting the GUC would break the app. Either
+way, RLS provides **no tenant backstop right now**.
+
+## 3. What actually isolates tenants today
+
+**Application-level `WHERE tenant_id = $n` filters**, applied near-comprehensively across
+all repositories (object graph, event store, consent, relationship, knowledge, journey,
+reasoning, workflow/task/promise, workforce). The audit found:
+
+- **No cross-tenant result leak** in the current query set.
+- Two by-PK reads without a tenant predicate, both benign (reads by a globally-unique,
+  self-generated id): the `EventStore.append` idempotency check
+  (`SELECT * FROM events WHERE id = $1`) and the `ObjectGraphRepository.createWithClient`
+  post-insert re-fetch (`SELECT * FROM objects WHERE id = $1`).
+- Two JOINs, both safe (driven by a tenant-filtered table via a foreign key).
+- Writes set `tenant_id` from the **caller-supplied** command — there is no DB-level
+  check that the value is correct.
+
+The guarantee is therefore **discipline-based**: it holds only while every query keeps
+its `WHERE tenant_id` and every by-id read uses a self-generated id.
+
+## 4. The testing gap (and the guard that closes part of it)
+
+`InMemoryStore` filters by tenant in its own hand-written handlers, **independently of
+the SQL's `WHERE` clause**. So a production query that forgot `tenant_id` could still
+pass unit tests. `InMemoryStore` also cannot model `current_setting`/RLS at all, so RLS
+behavior is entirely untested.
+
+**Mitigation in place:** `packages/core/tests/tenancy-guard.test.ts` statically scans the
+SQL string literals in `packages/core/src` and fails if a tenant-scoped table is queried
+without a `tenant_id` predicate, unless the exact statement is allow-listed with a
+documented reason (only the two benign by-id reads above are listed). It is a
+conservative string/regex guard, not a SQL parser. This catches a forgotten tenant filter
+at the app layer — the only place it *can* be caught while the DB provides no backstop.
+
+## 5. Why full RLS enablement is deferred
+
+Turning RLS into a real backstop is a **milestone, not a quick edit**, because:
+
+- **Connection model.** `DatabaseClient.query` borrows an arbitrary pooled connection per
+  call, so a session-level `SET app.tenant_id` would **leak across unrelated callers**.
+  `SET LOCAL app.tenant_id` is only safe inside a transaction (which gets a stable
+  connection). Today many repositories call `db.query` directly, outside transactions, so
+  RLS-via-GUC requires a **tenant-scoped connection/transaction abstraction** and moving
+  those call sites onto it.
+- **Write policies.** The policies are `USING`-only and must gain `WITH CHECK` to
+  constrain `INSERT`/`UPDATE`.
+- **Owner role.** Needs `FORCE ROW LEVEL SECURITY` (or running as a non-owner role) — and
+  that must not ship before the GUC is reliably set, or the app returns empty results.
+- **Test harness.** `InMemoryStore` cannot model RLS; a **real-Postgres integration
+  harness** is needed to prove enforcement and the owner/non-owner behavior.
+
+## 6. Recommended future milestone (not started)
+
+In dependency order, each step independently shippable and verifiable:
+
+1. **Tenant-scoped DB helper** — e.g. `DatabaseClient.withTenant(tenantId, fn)` that runs
+   inside a transaction and issues `SET LOCAL app.tenant_id`. Opt-in; no call-site change
+   required initially.
+2. **Route reads/writes through it** so every statement carries the GUC.
+3. **`WITH CHECK`** added to the `tenant_isolation` policies (constrain writes).
+4. **`FORCE ROW LEVEL SECURITY`** (or non-owner role) — only after steps 1–3.
+5. **Real-Postgres integration test harness** proving isolation, the non-owner behavior,
+   and write rejection.
+
+Until then: **app-level `WHERE tenant_id` is the contract**, and the tenancy guard test is
+the enforcement point. RLS remains scaffolded defense-in-depth for the future, not a
+backstop today.

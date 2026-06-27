@@ -391,3 +391,32 @@ object), the Permission Gate, the RulesEngine, and all authorization policy beha
 Remaining read-path limitations (not addressed here): consent has no scope/purpose-of-use
 granularity (HIPAA / 42 CFR Part 2 segmentation); merge-aware reads (a merged-away
 subject id) remain deferred with the Identity merge model.
+
+---
+
+## UPDATE 12 — Tenancy/RLS reconciliation + tenant-filter guard (audit-driven, zero behavior change)
+
+The architecture review flagged a tenancy mismatch. Audit result (no code changed):
+RLS is **enabled** with `tenant_isolation` policies on 29 tables, but it is **not a live
+backstop** — there is no `FORCE ROW LEVEL SECURITY` (so the owner role bypasses RLS), the
+app never sets `app.tenant_id` (so a non-owner role would return zero rows), and the
+policies are `USING`-only (no `WITH CHECK`, so writes are unconstrained even when
+enforced). Tenant isolation today is enforced entirely by application-level
+`WHERE tenant_id` predicates, which the audit found near-comprehensive (no leak; two
+benign by-id reads; safe joins).
+
+Added (this step):
+- `docs/architecture/tenancy-rls.md` — the authoritative statement of the real state, the
+  owner-bypass / non-owner-outage / no-`WITH CHECK` facts, why `SET LOCAL app.tenant_id`
+  needs a transaction/request-scoped connection, why full RLS is deferred, and the future
+  milestone.
+- `packages/core/tests/tenancy-guard.test.ts` — a static guard that scans SQL literals in
+  `packages/core/src` and fails if a tenant-scoped table is queried without a `tenant_id`
+  predicate, unless explicitly allow-listed with a documented reason. Only the two audited
+  by-id reads are allow-listed (EventStore idempotency; ObjectGraph post-insert re-fetch).
+  This closes the unit-test blind spot (InMemoryStore filters by tenant independently of
+  the SQL shape, so it cannot catch a forgotten tenant predicate).
+
+NOT changed: no RLS enablement, no `FORCE`, no `WITH CHECK`, no `DatabaseClient` change,
+no tenant behavior. RLS remains scaffolded defense-in-depth; app-level filtering is the
+contract and the guard is its enforcement point.
