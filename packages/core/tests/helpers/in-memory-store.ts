@@ -143,7 +143,17 @@ export class InMemoryStore {
       if (idx >= 0) { this.extRefs[idx].value = value; } else { this.extRefs.push({ object_id: oid, tenant_id: tid, system, ext_type, value }); }
       return [] as unknown as T[];
     }
-    if (t.startsWith('SELECT system, ext_type, value') || t.startsWith('SELECT o.id')) {
+    // findByExternalReference: SELECT o.id, ... FROM objects o JOIN external_references er ...
+    // values = [tenantId, system, ext_type, value] → returns the joined object rows.
+    if (t.startsWith('SELECT o.id') && t.includes('JOIN external_references')) {
+      const [tid, system, extType, value] = values as string[];
+      return this.extRefs
+        .filter(r => r.tenant_id === tid && r.system === system && r.ext_type === extType && r.value === value)
+        .map(r => this.objects.get(r.object_id))
+        .filter((o): o is ObjectRow => !!o && o.tenant_id === tid) as unknown as T[];
+    }
+    // getExternalReferences: SELECT system, ext_type, value FROM external_references WHERE object_id=$1 AND tenant_id=$2
+    if (t.startsWith('SELECT system, ext_type, value')) {
       const [oid, tid] = values as string[];
       return this.extRefs.filter(r => r.object_id === oid && r.tenant_id === tid) as unknown as T[];
     }

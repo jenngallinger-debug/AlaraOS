@@ -146,6 +146,10 @@ export { ConsentAuthorizer, ConsentAuthorizationError } from './consent-store/au
 export type { ConsentAuthorizerDeps } from './consent-store/authorizer';
 export { resolveParticipationFact } from './reasoning-engine/fact-resolver';
 
+// Identity Resolution — external-reference-first candidate lookup (v1, read-only)
+export { IdentityResolutionRepository } from './identity-resolution';
+export type { ExternalReferenceQuery } from './identity-resolution';
+
 // M10 — Workforce Engine
 export { WorkforceRepository } from './workforce-engine/repository';
 export { WorkforceEngine, reconstructAssignmentFromEvents } from './workforce-engine/engine';
