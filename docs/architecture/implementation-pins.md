@@ -15,6 +15,7 @@ These are **constraints, not technologies**. They are binding on all implementat
 10. The cycle is **logical dependency order**, not a synchronous pipeline.
 11. Persistence must support durable append-only storage and atomic write boundaries.
 12. Identity Resolution requires its **own implementation spec** before production use.
+    _Spec written (no code yet): `identity-resolution-spec.md` — resolves over the existing `Patient` object + external references, deterministic-first, non-destructive merges, human-gated conflicts/PHI._
 13. Legal erasure must preserve audit integrity while making protected payload unrecoverable.
 14. Confidence must be either canonical/composable or **explicitly** non-composable.
 15. Failure Signatures must be classified as machine-evaluable predicates **or** human
