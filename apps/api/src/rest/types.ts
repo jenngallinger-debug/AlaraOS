@@ -57,6 +57,42 @@ export interface EmitEventResponse {
   streamId: string;
 }
 
+// ─── POST /commands/consent (capture) and /commands/consent/withdraw ──────────
+
+export interface CaptureConsentBody {
+  tenantId: string;
+  subjectId: string;
+  grantorId: string;
+  recipientId: string;
+  permissionTypes: string[];
+  effectiveDate?: string;
+  expirationDate?: string;
+  capturedBy?: string;
+  source?: string;
+}
+
+export interface CaptureConsentResponse {
+  captured: boolean;
+  consentId?: string;
+  status?: string;
+  eventId?: string;
+  error?: string;
+}
+
+export interface WithdrawConsentBody {
+  tenantId: string;
+  consentId: string;
+  capturedBy?: string;
+}
+
+export interface WithdrawConsentResponse {
+  withdrawn: boolean;
+  consentId?: string;
+  status?: string;
+  eventId?: string;
+  error?: string;
+}
+
 // ─── POST /webhooks/automynd ──────────────────────────────────────────────────
 
 export interface AutomyndWebhookBody {

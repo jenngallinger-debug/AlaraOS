@@ -166,6 +166,24 @@ changed here. Where the docs and code diverge, **code is the source of truth**
 > validates fields but does not itself authorize **who may grant** consent (a separate
 > application/policy concern, not enforced here); (3) no automatic expiry sweep (as
 > above).
+>
+> **UPDATE 6 (Consent surface wired).** The `ConsentCaptureService` is now called from
+> a concrete application boundary in the existing API app (`apps/api`, Fastify):
+> `POST /commands/consent` (capture → `ConsentCaptureService.capture` → `ConsentEngine.grant`)
+> and `POST /commands/consent/withdraw` (→ `ConsentCaptureService.withdraw` →
+> `ConsentEngine.revoke`), wired via the DI container (`shared/container.ts`). The
+> handler holds **no authorization logic** — it validates request shape (JSON schema),
+> delegates to the service (which performs business validation → `422`), and the
+> engine writes canonical state; **the Permission Gate / RulesEngine remain
+> enforcement-only**. Full loop proven over the same store (`apps/api/tests/consent.test.ts`,
+> 5 cases): capture → canonical Consent object + a later required-consent read allowed;
+> withdraw → next read blocked; invalid input → validation failure. **Notes / remaining
+> gaps:** (1) the surface is **REST only** (GraphQL not wired); (2) `apps/api` is **not**
+> a root npm workspace (root `workspaces: ["packages/*"]`), so `npm run test/build
+> --workspaces` covers **core only** — apps/api is verified via its own commands
+> (`cd apps/api && npm ci && npm test && npm run build`); (3) the endpoint itself has no
+> caller auth (who-may-grant) — that is a separate API-auth concern; (4) no automatic
+> expiry sweep.
 
 **Original finding — Permission Gate existed as a combination and was PARTIALLY implemented.**
 

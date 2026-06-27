@@ -29,6 +29,7 @@ import { ProjectionRegistry } from '@alara-os/core';
 import { InMemoryProjectionStore } from '@alara-os/core';
 import { registerAllProjections } from '@alara-os/core';
 import { IntakeOrchestrator } from '@alara-os/core';
+import { ConsentEngine, ConsentCaptureService } from '@alara-os/core';
 
 export interface EngineContainer {
   db: DatabaseClient;
@@ -44,6 +45,7 @@ export interface EngineContainer {
   projectionEngine: ProjectionEngine;
   projectionStore: InMemoryProjectionStore;
   orchestrator: IntakeOrchestrator;
+  consentCapture: ConsentCaptureService;
 }
 
 export function buildContainer(db: DatabaseClient): EngineContainer {
@@ -88,9 +90,12 @@ export function buildContainer(db: DatabaseClient): EngineContainer {
     db, eventStore, rules, workflowEngine, taskEngine, promiseEngine, commEngine, projectionEngine,
   );
 
+  // Consent capture (intake/portal boundary → canonical ConsentEngine)
+  const consentCapture = new ConsentCaptureService(new ConsentEngine(db));
+
   return {
     db, eventStore, objectRepo, objectHandler, rules, triggers,
     workflowEngine, taskEngine, promiseEngine, commEngine,
-    projectionEngine, projectionStore, orchestrator,
+    projectionEngine, projectionStore, orchestrator, consentCapture,
   };
 }

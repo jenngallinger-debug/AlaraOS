@@ -11,12 +11,17 @@ import {
   AutomyndWebhookBody, AutomyndWebhookResponse,
   CreateReferralBody, CreateReferralResponse,
   EmitEventBody, EmitEventResponse,
+  CaptureConsentBody, CaptureConsentResponse,
+  WithdrawConsentBody, WithdrawConsentResponse,
 } from './types';
 import {
   FixtureAutomyndAdapter,
   EventType,
   makeAlaraId,
+  ConsentCaptureValidationError,
+  ConsentNotFoundError,
 } from '@alara-os/core';
+import type { ConsentPermissionType } from '@alara-os/core';
 
 // ─── JSON Schemas for validation ──────────────────────────────────────────────
 
@@ -73,6 +78,40 @@ const automyndWebhookSchema = {
       eventType: { type: 'string', enum: ['patient.observed', 'referral.observed', 'visit.observed', 'order.observed'] },
       tenantId:  { type: 'string', minLength: 1 },
       payload:   { type: 'object' },
+    },
+    additionalProperties: false,
+  },
+};
+
+const captureConsentSchema = {
+  body: {
+    type: 'object',
+    required: ['tenantId', 'subjectId', 'grantorId', 'recipientId', 'permissionTypes'],
+    properties: {
+      tenantId:        { type: 'string', minLength: 1 },
+      subjectId:       { type: 'string', minLength: 1 },
+      grantorId:       { type: 'string', minLength: 1 },
+      recipientId:     { type: 'string', minLength: 1 },
+      // No minItems here on purpose: an empty list is a business-rule failure that
+      // ConsentCaptureService rejects (→ 422), keeping validation in the service.
+      permissionTypes: { type: 'array', items: { type: 'string' } },
+      effectiveDate:   { type: 'string' },
+      expirationDate:  { type: 'string' },
+      capturedBy:      { type: 'string' },
+      source:          { type: 'string' },
+    },
+    additionalProperties: false,
+  },
+};
+
+const withdrawConsentSchema = {
+  body: {
+    type: 'object',
+    required: ['tenantId', 'consentId'],
+    properties: {
+      tenantId:   { type: 'string', minLength: 1 },
+      consentId:  { type: 'string', minLength: 1 },
+      capturedBy: { type: 'string' },
     },
     additionalProperties: false,
   },
@@ -169,6 +208,76 @@ export async function registerRestRoutes(
         type:     event.type,
         streamId: String(event.streamId),
       };
+    },
+  );
+
+  // ── POST /commands/consent (capture / grant) ────────────────────────────────
+  // The surface collects consent input; ConsentCaptureService validates and calls
+  // ConsentEngine; the engine writes canonical state. No authorization here.
+  app.post<{ Body: CaptureConsentBody }>(
+    '/commands/consent',
+    { schema: captureConsentSchema },
+    async (req, reply): Promise<CaptureConsentResponse> => {
+      const b = req.body;
+      try {
+        const result = await container.consentCapture.capture({
+          tenantId:       b.tenantId,
+          subjectId:      b.subjectId,
+          grantorId:      b.grantorId,
+          recipientId:    b.recipientId,
+          permissionTypes: b.permissionTypes as ConsentPermissionType[],
+          effectiveDate:  b.effectiveDate,
+          expirationDate: b.expirationDate,
+          capturedBy:     b.capturedBy ?? 'api',
+          source:         b.source,
+        });
+        reply.status(201);
+        return {
+          captured:  true,
+          consentId: String(result.consentId),
+          status:    result.status,
+          eventId:   result.eventId,
+        };
+      } catch (err) {
+        if (err instanceof ConsentCaptureValidationError) {
+          reply.status(422);
+          return { captured: false, error: err.message };
+        }
+        throw err;
+      }
+    },
+  );
+
+  // ── POST /commands/consent/withdraw (revoke) ────────────────────────────────
+  app.post<{ Body: WithdrawConsentBody }>(
+    '/commands/consent/withdraw',
+    { schema: withdrawConsentSchema },
+    async (req, reply): Promise<WithdrawConsentResponse> => {
+      const b = req.body;
+      try {
+        const result = await container.consentCapture.withdraw({
+          tenantId:   b.tenantId,
+          consentId:  makeAlaraId(b.consentId),
+          capturedBy: b.capturedBy ?? 'api',
+        });
+        reply.status(200);
+        return {
+          withdrawn: true,
+          consentId: String(result.consentId),
+          status:    result.status,
+          eventId:   result.eventId,
+        };
+      } catch (err) {
+        if (err instanceof ConsentCaptureValidationError) {
+          reply.status(422);
+          return { withdrawn: false, error: err.message };
+        }
+        if (err instanceof ConsentNotFoundError) {
+          reply.status(404);
+          return { withdrawn: false, error: err.message };
+        }
+        throw err;
+      }
     },
   );
 
