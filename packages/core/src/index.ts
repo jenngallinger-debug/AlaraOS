@@ -136,6 +136,11 @@ export { ConsentEngine, ConsentNotFoundError } from './consent-store/engine';
 export type {
   GrantConsentCommand, ConsentChangeCommand, ConsentMutationResult,
 } from './consent-store/engine';
+// Consent Capture — intake/portal application boundary that calls ConsentEngine
+export { ConsentCaptureService, ConsentCaptureValidationError } from './consent-store/capture';
+export type {
+  CaptureConsentInput, CaptureConsentResult, WithdrawConsentInput, WithdrawConsentResult,
+} from './consent-store/capture';
 
 // M10 — Workforce Engine
 export { WorkforceRepository } from './workforce-engine/repository';

@@ -6,3 +6,10 @@ export type {
   ConsentChangeCommand,
   ConsentMutationResult,
 } from './engine';
+export { ConsentCaptureService, ConsentCaptureValidationError } from './capture';
+export type {
+  CaptureConsentInput,
+  CaptureConsentResult,
+  WithdrawConsentInput,
+  WithdrawConsentResult,
+} from './capture';

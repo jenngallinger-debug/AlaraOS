@@ -148,6 +148,24 @@ changed here. Where the docs and code diverge, **code is the source of truth**
 > `expire()` flips status on demand, but no background job ages consents to `expired`;
 > (2) no higher-level consent-capture flow yet (intake/portal/who-may-grant) — the
 > engine is the primitive; (3) Identity Resolution remains a separate step (pin #12).
+>
+> **UPDATE 5 (Consent capture / intake integration implemented).**
+> `consent-store/capture.ts` (`ConsentCaptureService`) is the smallest application
+> boundary where consent is **captured** during an intake/portal interaction: it
+> validates the captured input and **calls the canonical `ConsentEngine`** (`capture`
+> → `grant`, `withdraw` → `revoke`). It owns **no authorization and no lifecycle
+> logic** — the engine owns canonical state; the Permission Gate / RulesEngine remain
+> read/enforcement-only. (A dedicated service rather than `IntakeOrchestrator` because
+> that orchestrator is a referral-received pipeline; consent capture is a distinct,
+> reusable concern for intake **and** portal.) Full loop proven
+> (`consent-capture.test.ts`, 6 cases): capture → canonical Consent object + event;
+> required-consent read allowed after capture; captured withdrawal → next read blocked;
+> missing required fields rejected; wrong subject/actor/permission still blocks.
+> **Remaining gaps:** (1) the service is the boundary — it is not yet *called from* a
+> concrete surface (the referral pipeline / an HTTP or portal handler); (2) capture
+> validates fields but does not itself authorize **who may grant** consent (a separate
+> application/policy concern, not enforced here); (3) no automatic expiry sweep (as
+> above).
 
 **Original finding — Permission Gate existed as a combination and was PARTIALLY implemented.**
 
