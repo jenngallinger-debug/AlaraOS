@@ -120,8 +120,13 @@ export { assembleAuthorizedContext } from './reasoning-engine/authorized-context
 export type { AuthorizedContextOptions, AuthorizedContextResult } from './reasoning-engine/authorized-context';
 export {
   ConsentReadPolicy, ParticipationReadPolicy, AIActReadPolicy,
-  READ_AUTHORIZATION_POLICIES, registerReadAuthorizationPolicies,
+  READ_AUTHORIZATION_POLICIES, registerReadAuthorizationPolicies, AUTHZ_REQUIRES_KEY,
 } from './reasoning-engine/read-authorization-policies';
+export type { AuthorizationRequirements } from './reasoning-engine/read-authorization-policies';
+export { GraphFactResolver } from './reasoning-engine/fact-resolver';
+export type {
+  FactResolver, FactResolveInput, AuthorizationFacts, ConsentFactSource, RelationshipReadPort,
+} from './reasoning-engine/fact-resolver';
 
 // M10 — Workforce Engine
 export { WorkforceRepository } from './workforce-engine/repository';

@@ -93,6 +93,24 @@ changed here. Where the docs and code diverge, **code is the source of truth**
 > remaining step. (c) A lone `DEFER` is collapsed to `ALLOW` by the RulesEngine; read
 > policies must use `DENY`/`REQUIRE_HUMAN` to block (the boundary is ALLOW-only, so it
 > correctly suppresses `DENY`/`REQUIRE_HUMAN`/error).
+>
+> **UPDATE 2 (Fact Resolution implemented).** `reasoning-engine/fact-resolver.ts`
+> (`GraphFactResolver`) resolves authorization **facts** from canonical state, and the
+> read adapters now honour a per-read **requirements** envelope — so **absence of a
+> required fact no longer becomes permission**. Participation resolves from the
+> relationship participation edges (`RelationshipReadPort`); ai-act derives from the
+> caller's intended AI use; consent resolves via an optional `ConsentFactSource`. A
+> required-but-unresolved fact **fails closed**: consent/participation delegate to the
+> real module with an undefined fact (→ DENY); ai-act returns `REQUIRE_HUMAN`. The
+> resolver resolves facts only — authorization stays with the Gate/RulesEngine. Proven
+> by `reasoning-fact-resolution.test.ts` (9 cases). **Remaining gaps (do not overstate):**
+> (1) Consent has no canonical query-by-subject path yet, so real consent **ALLOW**
+> requires wiring a Consent store behind `ConsentFactSource`; until then consent
+> resolves to undefined → fails closed when required (safe, but cannot positively allow
+> on real consent). (2) Callers opt in: register the read adapters and pass a `resolver`
+> + `requires` (+ a `ConsentFactSource`) to `assembleAuthorizedContext`; with neither,
+> behaviour is unchanged (manual facts honoured; absent-and-not-required facts pass) —
+> backward compatible. (3) The `DEFER` nuance above is unchanged.
 
 **Original finding — Permission Gate existed as a combination and was PARTIALLY implemented.**
 

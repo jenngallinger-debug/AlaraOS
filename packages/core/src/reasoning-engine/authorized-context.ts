@@ -20,14 +20,23 @@
 
 import { DetectedPattern } from '../organizational-brain/types';
 import { KnowledgeEntry, Observation } from '../knowledge-engine/types';
+import { AIActionFact } from '../rules-engine/policies/context-types';
 import { RetrievalPermissionGate } from '../retrieval-engine/permission-gate';
 import { assembleContext, AssemblerInput } from './prompt-assembler';
+import { AuthorizationFacts, FactResolver } from './fact-resolver';
+import { AuthorizationRequirements, AUTHZ_REQUIRES_KEY } from './read-authorization-policies';
 import { ReasoningContext } from './types';
 
 export interface AuthorizedContextOptions {
   readonly actor: string;
   /** Rule set the gate evaluates against (defaults to the retrieval read gate). */
   readonly ruleSetId?: string;
+  /** Resolves consent/participation/ai-act facts from canonical state (facts only). */
+  readonly resolver?: FactResolver;
+  /** Which fact kinds are required for this read; required-but-unresolved fails closed. */
+  readonly requires?: AuthorizationRequirements;
+  /** The intended AI use for this read (fed to the resolver and the ai-act fact). */
+  readonly intendedAiUse?: AIActionFact;
 }
 
 export interface AuthorizedContextResult {
@@ -49,15 +58,38 @@ export async function assembleAuthorizedContext(
   input: AssemblerInput,
   opts: AuthorizedContextOptions,
 ): Promise<AuthorizedContextResult> {
-  const { actor, ruleSetId } = opts;
+  const { actor, ruleSetId, resolver, requires, intendedAiUse } = opts;
   let deniedCount = 0;
+
+  // Resolve facts ONCE for (actor, subject, intended AI use). Consent and
+  // participation are about the subject/actor, not per evidence record.
+  const resolved: AuthorizationFacts = resolver
+    ? await resolver.resolve({
+        tenantId: input.tenantId,
+        actor,
+        subjectId: input.subjectId,
+        intendedAiUse,
+      })
+    : {};
+
+  // The record the gate actually evaluates: the candidate record + resolved facts
+  // (a record's own attached fact takes precedence) + the requirements envelope.
+  // The ORIGINAL record is what enters the reasoning context — this gating
+  // envelope never pollutes reasoning input.
+  const enrich = (record: Record<string, unknown>): Record<string, unknown> => ({
+    ...record,
+    consent: record['consent'] ?? resolved.consent,
+    participation: record['participation'] ?? resolved.participation,
+    aiAction: record['aiAction'] ?? resolved.aiAction ?? intendedAiUse,
+    [AUTHZ_REQUIRES_KEY]: requires ?? {},
+  });
 
   const gateRecord = async (record: Record<string, unknown>): Promise<boolean> => {
     const visible = await gate.isVisible({
       tenantId: input.tenantId,
       actor,
       source: 'object',
-      record,
+      record: enrich(record),
       ruleSetId,
     });
     if (!visible) deniedCount += 1;

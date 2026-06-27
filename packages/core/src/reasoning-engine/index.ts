@@ -15,4 +15,16 @@ export {
   AIActReadPolicy,
   READ_AUTHORIZATION_POLICIES,
   registerReadAuthorizationPolicies,
+  AUTHZ_REQUIRES_KEY,
 } from './read-authorization-policies';
+export type { AuthorizationRequirements } from './read-authorization-policies';
+
+// Fact Resolution for read authorization
+export { GraphFactResolver } from './fact-resolver';
+export type {
+  FactResolver,
+  FactResolveInput,
+  AuthorizationFacts,
+  ConsentFactSource,
+  RelationshipReadPort,
+} from './fact-resolver';

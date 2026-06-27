@@ -8,7 +8,7 @@ These are **constraints, not technologies**. They are binding on all implementat
 4. Derived values enter canon only as timestamped readings / events.
 5. Events require deterministic causal ordering.
 6. Authorization must gate Graph reads **before** Reality Understanding sees data.
-   _Status: implemented for Reality Understanding reads — `reasoning-engine/authorized-context.ts` routes evidence through the existing `RetrievalPermissionGate` before `assembleContext`; read-boundary adapters delegate to the real Consent/Participation/AI-Act modules. Residual production wiring (fact resolution + policy registration) noted in `code-concordance.md` §4._
+   _Status: implemented for Reality Understanding reads — `reasoning-engine/authorized-context.ts` routes evidence through the existing `RetrievalPermissionGate` before `assembleContext`; read-boundary adapters delegate to the real Consent/Participation/AI-Act modules. **Fact resolution added** (`reasoning-engine/fact-resolver.ts`): participation resolves from canonical relationship edges, ai-act from intended use, consent via an optional `ConsentFactSource`; a required-but-unresolved fact fails closed. Remaining: wire a Consent store behind `ConsentFactSource`, and callers must register the read adapters and pass a resolver + `requires`. See `code-concordance.md` §4._
 7. Capabilities own cycle instances, **never** Objects.
 8. Shared writes serialize through Object state machines.
 9. Objecthood is a **design-time schema gate**, not runtime validation.
