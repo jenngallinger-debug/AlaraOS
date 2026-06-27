@@ -40,14 +40,22 @@ export class ConsentRepository {
    * the ConsentPolicyModule renders the ALLOW/DENY decision.
    */
   async findForSubject(tenantId: string, subjectId: string): Promise<ConsentFact[]> {
+    // Subject-targeted query (hot authorization read path): filter by tenant, type,
+    // AND the consent subject inside the JSONB — never load every Consent object in the
+    // tenant. Backed in production by the partial expression index
+    // idx_objects_consent_subject (migration 012) on (attributes->>'subjectId').
     const rows = await this.db.query<ConsentObjectRow>(
-      `SELECT * FROM objects WHERE tenant_id = $1 AND type = $2`,
-      [tenantId, CONSENT_TYPE],
+      `SELECT id, tenant_id, type, state, attributes, version
+         FROM objects
+        WHERE tenant_id = $1 AND type = $2 AND attributes->>'subjectId' = $3`,
+      [tenantId, CONSENT_TYPE, subjectId],
     );
     const facts: ConsentFact[] = [];
     for (const row of rows) {
       const fact = rowToConsentFact(row);
-      if (fact && fact.subjectId === subjectId) facts.push(fact);
+      // The query already scopes to this subject; map every well-formed consent
+      // (any status — the caller selects active/revoked/expired).
+      if (fact) facts.push(fact);
     }
     return facts;
   }

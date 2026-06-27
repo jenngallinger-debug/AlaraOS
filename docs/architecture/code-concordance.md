@@ -363,3 +363,31 @@ DEFER nuance (NOT changed — documented follow-on): a lone `DEFER` still does n
 fail-fast and collapses to ALLOW after the loop. No in-repo policy emits DEFER; current
 behavior is pinned by a test (`rules-engine.test.ts`). Tightening DEFER for
 safety-sensitive rule sets is tracked as a follow-on.
+
+---
+
+## UPDATE 11 — Consent read path is subject-targeted (P0 substrate)
+
+`ConsentRepository.findForSubject` (`consent-store/repository.ts`) previously loaded
+EVERY Consent object in the tenant (`SELECT * FROM objects WHERE tenant_id=$1 AND
+type='Consent'`) and filtered by `subjectId` in JavaScript — a full per-tenant scan on
+the hottest authorization read path.
+
+Change: the read is now subject-targeted —
+`WHERE tenant_id=$1 AND type='Consent' AND attributes->>'subjectId'=$3` — so it never
+loads consents for other subjects. The in-app subject filter is removed (the query
+guarantees the scope). Result semantics are unchanged: it still returns every well-formed
+consent for the subject in ANY status, so `GraphConsentFactSource` continues to select
+active vs revoked vs expired and the ConsentPolicyModule / Permission Gate decide.
+
+Index: migration `012_consent_subject_index.sql` adds a partial expression index
+`idx_objects_consent_subject ON objects ((attributes->>'subjectId')) WHERE type='Consent'`
+to back the query in production. (Migrations are applied out-of-band; tests run against
+the InMemoryStore, which now models the targeted query.)
+
+Unchanged: ConsentEngine lifecycle, the Consent object model (still a canonical graph
+object), the Permission Gate, the RulesEngine, and all authorization policy behavior.
+
+Remaining read-path limitations (not addressed here): consent has no scope/purpose-of-use
+granularity (HIPAA / 42 CFR Part 2 segmentation); merge-aware reads (a merged-away
+subject id) remain deferred with the Identity merge model.

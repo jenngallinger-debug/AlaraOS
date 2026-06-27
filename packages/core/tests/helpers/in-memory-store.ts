@@ -103,6 +103,15 @@ export class InMemoryStore {
       this.objects.set(id, row);
       return [row] as unknown as T[];
     }
+    // Consent subject-targeted lookup: tenant + type + attributes->>'subjectId'.
+    // (Must precede the getById prefix match below — they share a SELECT prefix.)
+    if (t.includes("attributes->>'subjectId'")) {
+      const [tid, type, subjectId] = values as string[];
+      return Array.from(this.objects.values()).filter(o =>
+        o.tenant_id === tid && o.type === type &&
+        String((o.attributes ?? {})['subjectId'] ?? '') === subjectId,
+      ) as unknown as T[];
+    }
     if (t.startsWith('SELECT id, tenant_id, type, state, attributes')) {
       const [id, tid] = values as string[];
       const row = this.objects.get(id);
