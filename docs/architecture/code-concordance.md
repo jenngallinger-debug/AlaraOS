@@ -111,6 +111,25 @@ changed here. Where the docs and code diverge, **code is the source of truth**
 > + `requires` (+ a `ConsentFactSource`) to `assembleAuthorizedContext`; with neither,
 > behaviour is unchanged (manual facts honoured; absent-and-not-required facts pass) —
 > backward compatible. (3) The `DEFER` nuance above is unchanged.
+>
+> **UPDATE 3 (Consent Store / ConsentFactSource wired).** `ConsentFactSource` is now
+> backed by a canonical query path: `consent-store/repository.ts` (`ConsentRepository`)
+> reads `Consent` objects from the unified object graph (`Consent` is an existing
+> `OBJECT_TYPE` — no new type introduced) and maps them to the existing `ConsentFact`;
+> `consent-store/consent-fact-source.ts` (`GraphConsentFactSource`) selects the consent
+> relevant to (subject, actor) and hands it to the resolver. **Valid canonical consent
+> now allows; revoked/expired/wrong-subject/wrong-actor/wrong-permission/missing all
+> fail closed** — the existing `ConsentPolicyModule` makes the decision (no policy
+> logic duplicated). Proven by `consent-store.test.ts` (9 cases). **Remaining gaps (do
+> not overstate):** (1) only the consent **read/query** path is added — there is no
+> consent **issuance/lifecycle** flow yet, so `Consent` objects must be created
+> elsewhere before positive consent can resolve (until then resolution returns none →
+> fails closed when required). (2) Production must construct the resolver with
+> `new GraphConsentFactSource(new ConsentRepository(db))` and pass `requires:{consent:true}`
+> (callers opt in). (3) The query lists `Consent` objects by (tenant, type) and filters
+> subject in code — a subject-indexed column/query is a later optimisation. The
+> `ConsentFact` type already carries status / revokedAt / expirationDate / permissionTypes
+> / recipientId, so **no missing consent fields** were needed.
 
 **Original finding — Permission Gate existed as a combination and was PARTIALLY implemented.**
 

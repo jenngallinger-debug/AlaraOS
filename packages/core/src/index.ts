@@ -128,6 +128,10 @@ export type {
   FactResolver, FactResolveInput, AuthorizationFacts, ConsentFactSource, RelationshipReadPort,
 } from './reasoning-engine/fact-resolver';
 
+// Consent Store — canonical query path backing ConsentFactSource (BD-014)
+export { ConsentRepository } from './consent-store/repository';
+export { GraphConsentFactSource } from './consent-store/consent-fact-source';
+
 // M10 — Workforce Engine
 export { WorkforceRepository } from './workforce-engine/repository';
 export { WorkforceEngine, reconstructAssignmentFromEvents } from './workforce-engine/engine';

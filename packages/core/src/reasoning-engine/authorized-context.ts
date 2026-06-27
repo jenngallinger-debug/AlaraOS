@@ -74,14 +74,17 @@ export async function assembleAuthorizedContext(
 
   // The record the gate actually evaluates: the candidate record + resolved facts
   // (a record's own attached fact takes precedence) + the requirements envelope.
-  // The ORIGINAL record is what enters the reasoning context — this gating
-  // envelope never pollutes reasoning input.
+  // Resolved consent/participation are applied only for the kinds REQUIRED by this
+  // read (so a not-required, default-resolved fact never spuriously denies); ai-act
+  // is always applied because the read itself is an AI use. The ORIGINAL record is
+  // what enters the reasoning context — this gating envelope never pollutes it.
+  const r: AuthorizationRequirements = requires ?? {};
   const enrich = (record: Record<string, unknown>): Record<string, unknown> => ({
     ...record,
-    consent: record['consent'] ?? resolved.consent,
-    participation: record['participation'] ?? resolved.participation,
+    consent: record['consent'] ?? (r.consent ? resolved.consent : undefined),
+    participation: record['participation'] ?? (r.participation ? resolved.participation : undefined),
     aiAction: record['aiAction'] ?? resolved.aiAction ?? intendedAiUse,
-    [AUTHZ_REQUIRES_KEY]: requires ?? {},
+    [AUTHZ_REQUIRES_KEY]: r,
   });
 
   const gateRecord = async (record: Record<string, unknown>): Promise<boolean> => {

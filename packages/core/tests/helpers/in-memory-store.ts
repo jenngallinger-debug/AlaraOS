@@ -93,6 +93,12 @@ export class InMemoryStore {
       const row = this.objects.get(id);
       return (row ? [row] : []) as unknown as T[];
     }
+    // list objects by (tenant, type) — used by the Consent query path
+    if (t.startsWith('SELECT * FROM objects WHERE tenant_id')) {
+      const [tid, type] = values as string[];
+      return Array.from(this.objects.values())
+        .filter(o => o.tenant_id === tid && o.type === type) as unknown as T[];
+    }
     if (t.startsWith('UPDATE objects')) {
       const [changesStr, id, tid, ver] = values as [string, string, string, number];
       const row = this.objects.get(id);
