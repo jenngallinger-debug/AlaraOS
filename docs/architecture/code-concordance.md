@@ -596,3 +596,47 @@ out of scope for this hardening pass):
 Recommendation when the sink is built: (1) for the default sink (store derived, PHI-free
 fields) with (3) available for a regulated full-fidelity audit store. Tracked here; no code
 change in this slice beyond the narrow logging fix above.
+
+## UPDATE 19 — GraphQL read-surface auth gate (Hardening Phase 2)
+
+The `/graphql` read surface returns PHI / tenant-scoped read models (`object.attributes`,
+`digitalCareTwin.patientAttributes`, `timeline`, `referralSourceStrength`; some list
+resolvers are still `[]` stubs). It was registered in `server.ts` with **no auth hook**,
+outside the transport-auth boundary and excluded from rate limiting — i.e. readable by any
+caller on the network. The schema is read-only (no Mutation type) and GraphiQL is already
+off in production, so the issue is purely access control on reads.
+
+Narrow hardening applied (`shared/graphql-gate.ts`, wired in `server.ts`):
+
+- **Auth gate** — an `onRequest` hook on the `/graphql` data path requires an authenticated
+  actor (`x-actor-id`); missing → **401** before Mercurius runs. This puts the read surface
+  on the SAME transport-auth boundary as the mutating REST commands. Config:
+  `GRAPHQL_REQUIRE_AUTH` (true/false/1/0) overrides; otherwise **required outside tests,
+  relaxed under `NODE_ENV=test`** so the existing AC-5/6/7 suite (which sends no header) is
+  unaffected unless it opts in.
+- **Availability kill-switch** — `GRAPHQL_ENABLED` (default ON; the read API is a real
+  product surface). When `false`, Mercurius is not registered, so `/graphql` returns the
+  framework's standard **404** (surface not disclosed). Read at build time.
+- Tests cover all four: default-relaxed-in-test, explicit-required→401, explicit-required +
+  valid actor→200, disabled→404.
+
+### Decision packet (DEFERRED — needs real authN + resolver changes; HARD STOP for this slice)
+
+The gate closes *unauthenticated* access but NOT **cross-tenant** access: every query takes
+`tenantId` as a client-supplied argument and resolvers read that tenant's data directly, so
+an authenticated caller can still name *any* tenant and read its PHI. Closing this correctly
+requires deriving the caller's tenant/identity from a verified principal (real authN, not the
+spoofable `x-actor-id` dev header) and enforcing it in the resolvers (or via RLS / a
+tenant-scoped read gate). That is identity/authN + tenant-aware resolver work — explicitly
+out of scope for this hardening pass. Options to decide later:
+
+1. **Resolver-level tenant check** — compare the authenticated principal's tenant claim
+   against the query `tenantId`; reject mismatches. Requires a real tenant claim on the
+   principal.
+2. **Tenant-scoped read gate** — route GraphQL reads through the same authorization/consent
+   gate the reasoning engine uses, so PHI reads honor consent/participation, not just tenancy.
+3. **RLS** — enforce tenant isolation in the database read path (note: full RLS enablement is
+   itself a separately-scoped, deferred track).
+
+Recommendation: (1) as the minimum once real authN lands, with (2) for PHI-bearing resolvers.
+No resolver change in this slice.

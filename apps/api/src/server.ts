@@ -15,6 +15,8 @@ import mercurius from 'mercurius';
 import { EngineContainer } from './shared/container';
 import { registerRestRoutes } from './rest/routes';
 import { registerRateLimit } from './shared/rate-limit';
+import { registerGraphqlAuthGate } from './shared/graphql-gate';
+import { isGraphqlEnabled } from './shared/config';
 import { schema } from './graphql/schema';
 import { buildResolvers } from './graphql/resolvers';
 
@@ -47,13 +49,18 @@ export async function buildServer(container: EngineContainer) {
   // ── REST routes ───────────────────────────────────────────────────────────
   await registerRestRoutes(app, container);
 
-  // ── GraphQL (Mercurius) ───────────────────────────────────────────────────
-  await app.register(mercurius, {
-    schema,
-    resolvers: buildResolvers(container) as Parameters<typeof mercurius>[1]['resolvers'],
-    graphiql: process.env.NODE_ENV !== 'production',
-    path: '/graphql',
-  });
+  // ── GraphQL (Mercurius) — read surface; gated by config ───────────────────
+  // Mounted only when enabled (disabled → route absent → standard 404). When mounted,
+  // an auth gate brings /graphql onto the same transport-auth boundary as REST commands.
+  if (isGraphqlEnabled()) {
+    registerGraphqlAuthGate(app);
+    await app.register(mercurius, {
+      schema,
+      resolvers: buildResolvers(container) as Parameters<typeof mercurius>[1]['resolvers'],
+      graphiql: process.env.NODE_ENV !== 'production',
+      path: '/graphql',
+    });
+  }
 
   // ── Health check ──────────────────────────────────────────────────────────
   app.get('/health', async () => ({

@@ -8,7 +8,7 @@
  */
 
 import { FastifyInstance } from 'fastify';
-import { buildTestApp, validReferral, TENANT, REFERRAL_ACTOR } from './helpers';
+import { buildTestApp, validReferral, TENANT, REFERRAL_ACTOR, SYSTEM_ACTOR } from './helpers';
 
 let app: FastifyInstance;
 let store: ReturnType<typeof buildTestApp>['store'];
@@ -44,6 +44,69 @@ async function seedReferral() {
   });
   return res.json();
 }
+
+// ─── GraphQL read-surface gate (auth + availability) ──────────────────────────
+
+describe('GraphQL read-surface gate', () => {
+  const INTROSPECTION = '{ __schema { queryType { name } } }';
+
+  // Save/restore the gate env so toggling does not leak across tests.
+  let prevAuth: string | undefined;
+  let prevEnabled: string | undefined;
+  beforeEach(() => {
+    prevAuth = process.env.GRAPHQL_REQUIRE_AUTH;
+    prevEnabled = process.env.GRAPHQL_ENABLED;
+  });
+  afterEach(() => {
+    if (prevAuth === undefined) delete process.env.GRAPHQL_REQUIRE_AUTH; else process.env.GRAPHQL_REQUIRE_AUTH = prevAuth;
+    if (prevEnabled === undefined) delete process.env.GRAPHQL_ENABLED; else process.env.GRAPHQL_ENABLED = prevEnabled;
+  });
+
+  function rawGql(query: string, actor?: string | null) {
+    const headers: Record<string, string> = { 'content-type': 'application/json' };
+    if (actor) headers['x-actor-id'] = actor;
+    return app.inject({ method: 'POST', url: '/graphql', headers, payload: JSON.stringify({ query }) });
+  }
+
+  test('default under NODE_ENV=test → auth NOT required, query succeeds without x-actor-id', async () => {
+    delete process.env.GRAPHQL_REQUIRE_AUTH; // default path (relaxed in test)
+    const res = await rawGql(INTROSPECTION);
+    expect(res.statusCode).toBe(200);
+    expect(res.json().data.__schema.queryType.name).toBe('Query');
+  });
+
+  test('auth required (explicit) + no actor → 401, Mercurius never reached', async () => {
+    process.env.GRAPHQL_REQUIRE_AUTH = 'true';
+    const res = await rawGql(INTROSPECTION); // no x-actor-id
+    expect(res.statusCode).toBe(401);
+    expect(res.json().message).toMatch(/x-actor-id/);
+  });
+
+  test('auth required (explicit) + valid actor → 200, query succeeds', async () => {
+    process.env.GRAPHQL_REQUIRE_AUTH = 'true';
+    const res = await rawGql(INTROSPECTION, SYSTEM_ACTOR);
+    expect(res.statusCode).toBe(200);
+    expect(res.json().data.__schema.queryType.name).toBe('Query');
+  });
+
+  test('disabled (GRAPHQL_ENABLED=false) → surface not mounted, 404', async () => {
+    process.env.GRAPHQL_ENABLED = 'false';
+    // Availability is read at build time, so build a fresh app under the disabled flag.
+    const disabled = buildTestApp();
+    const disabledApp = await disabled.buildApp();
+    await disabledApp.ready();
+    try {
+      const res = await disabledApp.inject({
+        method: 'POST', url: '/graphql',
+        headers: { 'content-type': 'application/json' },
+        payload: JSON.stringify({ query: INTROSPECTION }),
+      });
+      expect(res.statusCode).toBe(404);
+    } finally {
+      await disabledApp.close();
+    }
+  });
+});
 
 // ─── AC-5: Timeline projection via GraphQL ────────────────────────────────────
 

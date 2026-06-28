@@ -70,6 +70,41 @@ export function deterministicEventId(...parts: string[]): string {
   return `${s.slice(0, 8)}-${s.slice(8, 12)}-${s.slice(12, 16)}-${s.slice(16, 20)}-${s.slice(20, 32)}`;
 }
 
+// ─── GraphQL read-surface gate ────────────────────────────────────────────────
+
+/**
+ * Whether the GraphQL read surface (`/graphql`) is mounted. It is a real product read
+ * API, so it defaults ON; `GRAPHQL_ENABLED` (true/false/1/0) overrides. When disabled the
+ * route is not registered at all, so requests get the framework's standard 404 (the
+ * surface is not disclosed) — an operator kill-switch for environments that don't need it.
+ */
+export function isGraphqlEnabled(): boolean {
+  const raw = (process.env.GRAPHQL_ENABLED ?? '').trim().toLowerCase();
+  if (raw === 'false' || raw === '0') return false;
+  if (raw === 'true' || raw === '1') return true;
+  return true;
+}
+
+/**
+ * Whether a request to `/graphql` must carry an authenticated actor (`x-actor-id`).
+ *
+ * GraphQL reads return PHI/tenant-scoped data and were previously reachable with NO
+ * authentication. This brings the read surface onto the SAME transport-auth boundary as
+ * the mutating REST commands: no `x-actor-id` → 401. `GRAPHQL_REQUIRE_AUTH` (true/false/1/0)
+ * overrides; otherwise auth is required outside tests and relaxed under `NODE_ENV=test`
+ * (so the existing GraphQL AC suite, which sends no header, is unaffected unless it opts in).
+ *
+ * NOTE: this only requires *a* principal — it does NOT stop an authenticated caller from
+ * naming another tenant's `tenantId` (cross-tenant isolation needs tenant-aware resolvers /
+ * real authN; see code-concordance UPDATE 19 decision packet).
+ */
+export function isGraphqlAuthRequired(): boolean {
+  const raw = (process.env.GRAPHQL_REQUIRE_AUTH ?? '').trim().toLowerCase();
+  if (raw === 'true' || raw === '1') return true;
+  if (raw === 'false' || raw === '0') return false;
+  return process.env.NODE_ENV !== 'test';
+}
+
 // ─── Rate limiting (basic, in-memory, process-local) ──────────────────────────
 
 /**
