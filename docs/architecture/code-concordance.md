@@ -925,3 +925,22 @@ re-setting `status`/`revokedAt` (same terminal state, but a spurious event each 
 
 Out of scope (unchanged): consent *capture* idempotency (UPDATE 20) and the first-time
 concurrency window. This slice does not touch the webhook, HMAC, GraphQL, CORS, or rate limiting.
+
+## UPDATE 26 — Identity & tenant boundary (DECISION PACKET — design only, NOT implemented)
+
+Full packet in `docs/architecture/identity-tenant-boundary.md`. Records the design for the first
+production-grade identity + tenant boundary — the remaining true production blocker after the P0/P2
+hardening. **No runtime change.**
+
+Core finding: AlaraOS already has rich **policy-based AuthZ** (ADR-014 participation roles,
+`ConsentAuthorizer`, `RetrievalPermissionGate`) but **no AuthN** — `x-actor-id` and `tenantId` are
+both unverified client inputs, so impersonation (incl. a `system` actor) and cross-tenant PHI
+access are open. The packet introduces a verified `Principal` (user/service/system/external) whose
+claims (tenant membership, roles, scopes) replace trust in the header; tenant is **derived from the
+principal**, not the request; cross-tenant requests are blocked at the boundary (closes the UPDATE
+19 GraphQL gap and the REST body-tenant gap). AuthZ stays two-layer: coarse boundary RBAC + the
+existing per-subject policies. Migration mirrors the HMAC rollout (`AUTH_MODE` legacy→dual→required).
+This packet is the **prerequisite for real RLS** (`tenancy-rls.md` §6 consumes the principal-derived
+tenant). First slice if approved: the **Principal abstraction** (internal, no behavior change).
+
+Distinct from `identity-resolution-spec.md` (patient matching) — see packet §0.

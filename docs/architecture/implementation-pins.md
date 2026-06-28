@@ -84,6 +84,16 @@ These are **constraints, not technologies**. They are binding on all implementat
    returns a stable 200 with `idempotentReplay` (eventId `''`). A transition to a different status
    still proceeds; authorization, validation, and the optimistic-concurrency guard on the real
    update path are unchanged. See `code-concordance.md` UPDATE 25._
+   _Identity & tenant boundary (Hardening P2, DESIGN ONLY — not implemented): decision packet for
+   the first production-grade identity + tenant boundary — the remaining true production blocker.
+   AlaraOS has policy-based AuthZ (ADR-014 participation, ConsentAuthorizer, RetrievalPermissionGate)
+   but no AuthN: `x-actor-id` and `tenantId` are unverified client inputs (impersonation +
+   cross-tenant PHI open). Introduces a verified `Principal` (user/service/system/external) with
+   tenant/roles/scopes claims; tenant DERIVED from principal not request; cross-tenant blocked at
+   the boundary (closes UPDATE 19); two-layer AuthZ (boundary RBAC + existing per-subject policies);
+   `AUTH_MODE` legacy→dual→required rollout. Prerequisite for real RLS (`tenancy-rls.md` §6). First
+   slice: Principal abstraction (internal, no behavior change). Full packet in
+   `docs/architecture/identity-tenant-boundary.md`; see `code-concordance.md` UPDATE 26._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,
