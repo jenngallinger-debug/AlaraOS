@@ -64,7 +64,10 @@ export interface WithdrawConsentResult {
   readonly withdrawn: true;
   readonly consentId: AlaraId;
   readonly status: 'revoked';
+  /** The revoke event id, or '' on an idempotent no-op (consent was already revoked). */
   readonly eventId: string;
+  /** True when the consent was already revoked, so no new event was appended. */
+  readonly idempotentReplay?: boolean;
 }
 
 export class ConsentCaptureValidationError extends Error {
@@ -208,7 +211,13 @@ export class ConsentCaptureService {
       actor: input.capturedBy,
     });
 
-    return { withdrawn: true, consentId: result.consentId, status: 'revoked', eventId: result.eventId };
+    return {
+      withdrawn: true,
+      consentId: result.consentId,
+      status: 'revoked',
+      eventId: result.eventId,
+      idempotentReplay: result.idempotentReplay,
+    };
   }
 }
 

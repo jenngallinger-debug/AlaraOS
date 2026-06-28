@@ -177,6 +177,20 @@ describe('POST /commands/consent/withdraw', () => {
     await post('/commands/consent/withdraw', { tenantId: TENANT, consentId: cap.json().consentId }, SUBJECT);
     expect(await readAllowed(container.db)).toBe(false);
   });
+
+  test('repeated withdraw is idempotent: still 200 and stable, no additional event', async () => {
+    const cap = await post('/commands/consent', captureBody(), SUBJECT);
+    const consentId = cap.json().consentId;
+    const first = await post('/commands/consent/withdraw', { tenantId: TENANT, consentId }, SUBJECT);
+    const eventsAfterFirst = store.events.length;
+    const second = await post('/commands/consent/withdraw', { tenantId: TENANT, consentId }, SUBJECT);
+    expect(first.statusCode).toBe(200);
+    expect(second.statusCode).toBe(200);                       // stable, still successful
+    expect(second.json().withdrawn).toBe(true);
+    expect(second.json().consentId).toBe(consentId);
+    expect(second.json().status).toBe('revoked');
+    expect(store.events.length).toBe(eventsAfterFirst);        // no redundant ObjectUpdated
+  });
 });
 
 describe('consent endpoint authorization (authenticated actor)', () => {

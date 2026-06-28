@@ -216,3 +216,67 @@ describe('Consent Capture idempotency', () => {
     expect(await consentCount(h.repo)).toBe(1); // conflict created nothing new
   });
 });
+
+// ─── Withdraw idempotency ─────────────────────────────────────────────────────
+
+describe('Consent withdraw idempotency', () => {
+  const streamTypes = (h: Harness, consentId: import('../src/shared/types').AlaraId) =>
+    h.events.loadStream(TENANT, consentId).then((s) => s.map((e) => e.type));
+
+  test('first withdraw appends exactly one ObjectUpdated; a repeat appends none', async () => {
+    const h = makeHarness();
+    const { consentId } = await h.capture.capture(captureArgs());
+
+    const first = await h.capture.withdraw({ tenantId: TENANT, consentId, capturedBy: CLERK });
+    expect(first.withdrawn).toBe(true);
+    expect(first.idempotentReplay).toBeFalsy();
+    expect(first.eventId).not.toBe('');
+    expect(await streamTypes(h, consentId)).toEqual(['ObjectCreated', 'ObjectUpdated']);
+
+    const second = await h.capture.withdraw({ tenantId: TENANT, consentId, capturedBy: CLERK });
+    expect(second.idempotentReplay).toBe(true);
+    expect(second.eventId).toBe('');                                  // no new event id
+    expect(await streamTypes(h, consentId)).toEqual(['ObjectCreated', 'ObjectUpdated']); // no third event
+  });
+
+  test('repeated withdraw returns a stable successful response', async () => {
+    const h = makeHarness();
+    const { consentId } = await h.capture.capture(captureArgs());
+    const a = await h.capture.withdraw({ tenantId: TENANT, consentId, capturedBy: CLERK });
+    const b = await h.capture.withdraw({ tenantId: TENANT, consentId, capturedBy: CLERK });
+    const c = await h.capture.withdraw({ tenantId: TENANT, consentId, capturedBy: CLERK });
+    for (const r of [a, b, c]) {
+      expect(r.withdrawn).toBe(true);
+      expect(String(r.consentId)).toBe(String(consentId));
+      expect(r.status).toBe('revoked');
+    }
+    expect(b.idempotentReplay).toBe(true);
+    expect(c.idempotentReplay).toBe(true);
+  });
+
+  test('withdrawing a DIFFERENT consent still appends its own event (no over-broad short-circuit)', async () => {
+    const h = makeHarness();
+    const c1 = await h.capture.capture(captureArgs());
+    const c2 = await h.capture.capture(captureArgs({ recipientId: 'other-actor' }));
+    await h.capture.withdraw({ tenantId: TENANT, consentId: c1.consentId, capturedBy: CLERK });
+    const w2 = await h.capture.withdraw({ tenantId: TENANT, consentId: c2.consentId, capturedBy: CLERK });
+    expect(w2.idempotentReplay).toBeFalsy();
+    expect(w2.eventId).not.toBe('');
+    expect(await streamTypes(h, c2.consentId)).toEqual(['ObjectCreated', 'ObjectUpdated']);
+  });
+
+  test('version protection unchanged: real withdraw bumps version (optimistic concurrency), no-op does not', async () => {
+    const h = makeHarness();
+    const { consentId } = await h.capture.capture(captureArgs());
+    const granted = await reconstructFromEvents(h.events, TENANT, consentId);
+
+    await h.capture.withdraw({ tenantId: TENANT, consentId, capturedBy: CLERK });
+    const revoked = await reconstructFromEvents(h.events, TENANT, consentId);
+    expect(revoked!.version).toBe(granted!.version + 1);              // the version-gated update happened
+    expect((revoked!.attributes as { status?: string }).status).toBe('revoked');
+
+    await h.capture.withdraw({ tenantId: TENANT, consentId, capturedBy: CLERK });
+    const afterNoop = await reconstructFromEvents(h.events, TENANT, consentId);
+    expect(afterNoop!.version).toBe(revoked!.version);               // no-op did not touch version
+  });
+});

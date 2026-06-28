@@ -668,11 +668,8 @@ retry created **two distinct active Consent objects**. Closed by reusing the alr
   content→conflict) and API end-to-end (200 replay, 201 distinct, 409 conflict).
 
 Scope/limits & residuals (stated plainly):
-- **Withdraw is NOT covered by this slice.** A repeated withdraw of an already-revoked consent
-  is version-gated (no concurrent double-write) but still appends a redundant `ObjectUpdated`
-  re-setting `status=revoked`; the terminal state is unchanged, so this is a minor
-  non-idempotency, not duplicate state. Tracked as residual; not fixed here to keep the slice
-  narrow.
+- **Withdraw idempotency: now CLOSED in UPDATE 25** (was a residual here). A repeated withdraw
+  of an already-revoked consent no longer appends a redundant `ObjectUpdated`.
 - Same first-time **concurrency** window as the referral pattern: the Consent is created and the
   receipt appended in separate transactions, so two simultaneous first-time identical captures
   could still both create before either records a receipt. Documented platform-wide residual
@@ -900,3 +897,31 @@ runtime behavior.
 Slice 2 deliberately does NOT pick a runtime default beyond `off`; slice 3 will move the
 operative default to `dual` when it wires the verifier into the route. **Owner confirmation of
 Automynd's actual signature header/format is still required before slice 3.**
+
+## UPDATE 25 — Consent withdraw idempotency (Hardening Phase 2)
+
+Closes the withdraw residual noted in UPDATE 20. `ConsentEngine.transition` (the shared
+revoke/expire path) loaded the consent and then **unconditionally** called `updateObject`, so a
+repeated withdraw of an already-`revoked` consent appended a redundant `ObjectUpdated`
+re-setting `status`/`revokedAt` (same terminal state, but a spurious event each time).
+
+- `consent-store/engine.ts` `transition`: after loading `current`, short-circuit when the
+  consent already holds the target status — `current.attributes.status === changes.status` →
+  return the current state with **no** `updateObject` call. Only the *exact same-status* repeat
+  short-circuits; a transition to a DIFFERENT status (e.g. revoke an expired consent) still
+  proceeds, so behavior is otherwise unchanged. Applies to `expire` too (idempotent expire).
+- `ConsentMutationResult` / `WithdrawConsentResult` gain an additive `idempotentReplay?: boolean`;
+  on a no-op `eventId` is `''` (no new event id). Response shape is preserved (every result still
+  carries `eventId`); the API withdraw still returns **200** on the repeat, so the response is
+  stable and successful.
+- Preserved: authorization (`assertMayWithdraw` still runs first in `ConsentCaptureService`),
+  validation, and the optimistic-concurrency guard on the REAL update path (first withdraw still
+  updates with `expectedVersion: current.version`). The no-op path performs no write, so it does
+  not touch the version.
+- Tests: core `consent-capture.test.ts` (first withdraw → one `ObjectUpdated`; repeat → none +
+  `idempotentReplay`/empty eventId; stable response across repeats; a *different* consent still
+  appends its own event; version bumps on the real update, unchanged on the no-op) and API
+  `consent.test.ts` (repeat withdraw → 200, stable, no extra event).
+
+Out of scope (unchanged): consent *capture* idempotency (UPDATE 20) and the first-time
+concurrency window. This slice does not touch the webhook, HMAC, GraphQL, CORS, or rate limiting.

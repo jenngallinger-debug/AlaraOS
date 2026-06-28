@@ -75,9 +75,15 @@ These are **constraints, not technologies**. They are binding on all implementat
    content fingerprint; authorize→idempotency-check ordering (a stranger gets 403 before any
    replay disclosure); a replay returns the original consent (API 200 vs first-capture 201); an
    explicit key reused with different content → `ConsentIdempotencyConflictError` (API 409).
-   New `ConsentCaptureReceiptRecorded` event. Residuals: withdraw not covered (redundant
-   re-revoke `ObjectUpdated`, same terminal state); same first-time concurrency window as the
-   referral pattern. See `code-concordance.md` UPDATE 20._
+   New `ConsentCaptureReceiptRecorded` event. Residual: same first-time concurrency window as the
+   referral pattern (withdraw idempotency is now closed — see UPDATE 25). See
+   `code-concordance.md` UPDATE 20._
+   _Consent withdraw idempotency (Hardening P2): `ConsentEngine.transition` now short-circuits
+   when the consent already holds the target status (`current.attributes.status === changes.status`)
+   — a repeated withdraw of an already-revoked consent appends NO redundant `ObjectUpdated` and
+   returns a stable 200 with `idempotentReplay` (eventId `''`). A transition to a different status
+   still proceeds; authorization, validation, and the optimistic-concurrency guard on the real
+   update path are unchanged. See `code-concordance.md` UPDATE 25._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

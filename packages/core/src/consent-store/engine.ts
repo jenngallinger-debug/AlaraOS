@@ -44,7 +44,10 @@ export interface ConsentChangeCommand {
 export interface ConsentMutationResult {
   readonly consentId: AlaraId;
   readonly version: number;
+  /** The mutation's event id, or '' on an idempotent no-op (no new event was appended). */
   readonly eventId: string;
+  /** True when the consent already held the target status, so no ObjectUpdated was appended. */
+  readonly idempotentReplay?: boolean;
 }
 
 export class ConsentNotFoundError extends Error {
@@ -102,6 +105,14 @@ export class ConsentEngine {
     const current = await this.repo.getById(cmd.tenantId, cmd.consentId);
     if (!current || current.type !== CONSENT_TYPE) {
       throw new ConsentNotFoundError(cmd.consentId);
+    }
+    // Idempotency: if the consent already holds the target status, the transition is a no-op.
+    // Return the current state WITHOUT appending a redundant ObjectUpdated (a repeated withdraw
+    // of an already-revoked consent must not keep re-writing status/revokedAt). Only the exact
+    // same-status repeat short-circuits; a transition to a DIFFERENT status still proceeds.
+    const targetStatus = changes.status;
+    if (targetStatus !== undefined && current.attributes.status === targetStatus) {
+      return { consentId: current.id, version: current.version, eventId: '', idempotentReplay: true };
     }
     const { object, eventId } = await this.handler.updateObject({
       tenantId: cmd.tenantId,
