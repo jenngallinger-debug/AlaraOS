@@ -145,6 +145,15 @@ These are **constraints, not technologies**. They are binding on all implementat
    unenforced. **Closes the UPDATE 19 cross-tenant gap** across REST (UPDATE 31) + GraphQL. Schema
    unchanged; no derivation; no RetrievalPermissionGate-on-reads yet; default byte-identical. See
    `code-concordance.md` UPDATE 32._
+   _Production JWKS resolver (identity boundary — DECISION PACKET, design only): designs JWKS-by-`kid`
+   to replace the single static `AUTH_PUBLIC_KEY`, enabling `AUTH_MODE=dual` against a real IdP.
+   Keeps `verifyJwt`/`authenticatePrincipal` SYNCHRONOUS by reading an in-memory key cache
+   (`Map<kid,KeyObject>`, TTL + last-known-good + min-interval) filled by a non-blocking background
+   refresher (startup never blocks on the IdP). `verifyJwt` gains a sync key-resolver; rotation is
+   overlap-based; fail-closed (dual→legacy, required→401). Dependency-free (Node `fetch`,
+   `createPublicKey({format:'jwk'})`); vendor-neutral (AUTH_JWKS_URL is config). 4 slices; first =
+   key-resolver refactor (no behavior change). No runtime change. Full packet
+   `docs/architecture/jwks-resolver.md`; see `code-concordance.md` UPDATE 33._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

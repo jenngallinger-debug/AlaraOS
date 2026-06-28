@@ -1106,3 +1106,21 @@ pre-existing API tests pass, incl. the AC-5/6/7 GraphQL suite).
 With UPDATE 31 (REST) + UPDATE 32 (GraphQL), the UPDATE 19 cross-tenant decision packet is
 addressed across **both** write and read surfaces for verified principals. Next: production JWKS
 resolver (key rotation) before turning `AUTH_MODE=dual` on against a real IdP.
+
+## UPDATE 33 — Production JWKS resolver (DECISION PACKET — design only, NOT implemented)
+
+Full packet in `docs/architecture/jwks-resolver.md`. Designs the move from a single static
+`AUTH_PUBLIC_KEY` to JWKS-by-`kid`, the last piece before `AUTH_MODE=dual` can run against a real
+managed IdP. **No runtime change.**
+
+Crux: `verifyJwt`/`authenticatePrincipal` are **synchronous** and the hot path (REST handlers +
+GraphQL `context` factory) calls them with no `await`. JWKS fetching is async, so the design keeps
+the hot path sync by reading an in-memory **cache** (`Map<kid,KeyObject>`, TTL + last-known-good +
+min-interval throttle) populated by a **non-blocking background refresher** — startup never blocks
+on the IdP. `verifyJwt` gains a sync key-**resolver** `(kid?) => KeyObject | undefined`; the current
+single key becomes a one-entry resolver, JWKS a cache-backed one. Rotation is overlap-based (no
+deploy). Fail-closed: unresolvable `kid` → `dual` falls back to legacy, `required` → 401.
+Dependency-free (Node built-in `fetch`; JWK→KeyObject via `createPublicKey({format:'jwk'})`).
+Vendor-neutral — `AUTH_JWKS_URL`/issuer/audience are config, standard RFC-7517 JWKS + RS256, no
+vendor SDK. Four implementation slices; recommended first = the **key-resolver refactor** (sync, no
+behavior change, no network, no IdP decision needed).
