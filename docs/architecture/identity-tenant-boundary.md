@@ -210,7 +210,9 @@ binding first (this packet), then RLS consumes the principal-derived tenant.
 3. **Tenant derivation + cross-tenant block.** For token principals, derive/validate tenant from
    claims; reject mismatched `tenantId` (REST 403 / GraphQL 403) at the boundary.
 4. **Command-level role/scope gates.** Replace `ALARA_SYSTEM_ACTORS` with a `system:*` scope; add
-   coarse role gates per mutating command.
+   coarse role gates per mutating command. **◑ PARTIAL (UPDATE 28):** the `/commands/events`
+   system gate now authorizes on `principal.scopes` (legacy principals for configured
+   `ALARA_SYSTEM_ACTORS` carry `SYSTEM_SCOPE`); broader per-command role gates remain future work.
 5. **GraphQL tenant + permission enforcement.** Derive tenant from principal in resolvers; route
    PHI reads through `RetrievalPermissionGate` (closes UPDATE 19).
 6. **`required` mode + remove legacy `x-actor-id`.**

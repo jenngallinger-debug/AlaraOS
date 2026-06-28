@@ -11,6 +11,7 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import {
   authenticatePrincipal, legacyPrincipal, getAuthenticatedActor,
+  principalHasScope, SYSTEM_SCOPE,
 } from '../src/shared/auth';
 import { buildTestApp, validReferral, TENANT, REFERRAL_ACTOR, SYSTEM_ACTOR } from './helpers';
 
@@ -48,12 +49,21 @@ describe('legacyPrincipal / authenticatePrincipal (legacy mode)', () => {
     expect(authenticatePrincipal(reqWith({ 'x-actor-id': '   ' }))).toBeUndefined(); // trimmed-empty
   });
 
-  test('a system actor id still yields a principal (no special-casing in slice 1)', () => {
-    // The system→scope mapping is a later slice; here the system actor is an ordinary
-    // legacy principal. The privileged-surface gate stays on isSystemActor (see integration).
+  test('a configured system actor maps to type=system and carries SYSTEM_SCOPE', () => {
+    // Slice 4: configured ALARA_SYSTEM_ACTORS (default 'system') are granted the system scope
+    // so the raw-event gate can authorize on scope rather than the raw actor string.
     const p = authenticatePrincipal(reqWith({ 'x-actor-id': SYSTEM_ACTOR }));
     expect(p!.principalId).toBe(SYSTEM_ACTOR);
-    expect(p!.scopes).toEqual([]);
+    expect(p!.type).toBe('system');
+    expect(p!.scopes).toEqual([SYSTEM_SCOPE]);
+    expect(principalHasScope(p!, SYSTEM_SCOPE)).toBe(true);
+  });
+
+  test('a non-system actor has no system scope (type=user)', () => {
+    const p = legacyPrincipal('care-guide-001');
+    expect(p.type).toBe('user');
+    expect(p.scopes).toEqual([]);
+    expect(principalHasScope(p, SYSTEM_SCOPE)).toBe(false);
   });
 
   test('getAuthenticatedActor is behavior-compatible (returns principalId, else undefined)', () => {
@@ -89,12 +99,14 @@ describe('Principal abstraction does not change request behavior', () => {
     expect(res.statusCode).toBe(401);
   });
 
-  test('system-actor gate on /commands/events is preserved', async () => {
+  test('system-scope gate on /commands/events is preserved (201 / 403 / 401)', async () => {
     const body = { tenantId: TENANT, streamId: '00000000-0000-4000-8000-0000000000a1', type: 'ObjectCreated', payload: {} };
     const ok = await app.inject({ method: 'POST', url: '/commands/events', headers: { 'x-actor-id': SYSTEM_ACTOR }, payload: body });
-    expect(ok.statusCode).toBe(201);                                    // system actor allowed
+    expect(ok.statusCode).toBe(201);                                    // configured system actor (has SYSTEM_SCOPE) allowed
     const forbidden = await app.inject({ method: 'POST', url: '/commands/events', headers: { 'x-actor-id': 'not-system' }, payload: body });
-    expect(forbidden.statusCode).toBe(403);                            // non-system actor still rejected
+    expect(forbidden.statusCode).toBe(403);                            // non-system actor (no scope) rejected
+    const unauth = await app.inject({ method: 'POST', url: '/commands/events', payload: body });
+    expect(unauth.statusCode).toBe(401);                              // missing actor still 401
   });
 
   test('GraphQL behavior is unchanged (query with actor still returns data)', async () => {

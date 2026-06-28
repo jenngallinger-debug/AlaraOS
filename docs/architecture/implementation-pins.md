@@ -102,6 +102,13 @@ These are **constraints, not technologies**. They are binding on all implementat
    `/commands/events` still gates on `isSystemActor`. NO behavior change (all prior tests
    unchanged). Slices 2–4 (token verification, tenant binding, system→scope) are later. See
    `code-concordance.md` UPDATE 27._
+   _System actor → scope gate (identity boundary SLICE 4 partial — IMPLEMENTED): `shared/auth.ts`
+   adds `SYSTEM_SCOPE='system:*'`; `legacyPrincipal` grants it (and `type:'system'`) to configured
+   `ALARA_SYSTEM_ACTORS`; `principalHasScope` helper. `/commands/events` now authorizes on
+   `principalHasScope(principal, SYSTEM_SCOPE)` instead of `isSystemActor(actor)` — identical
+   allow/deny (201/403/401), env read per request as before. `auth.ts`→`config.ts` import (no
+   cycle); `ALARA_SYSTEM_ACTORS` unchanged as the config source. Only the raw-event gate migrated;
+   broader per-command RBAC still future. See `code-concordance.md` UPDATE 28._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

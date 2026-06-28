@@ -20,10 +20,14 @@
 
 import { FastifyRequest } from 'fastify';
 import { timingSafeEqual } from 'crypto';
+import { isSystemActor } from './config';
 
 export const ACTOR_HEADER = 'x-actor-id';
 
-/** The kind of caller. Legacy-mode principals are always `user` (refined in a later slice). */
+/** Scope granting privileged system operations (e.g. raw event append at `/commands/events`). */
+export const SYSTEM_SCOPE = 'system:*';
+
+/** The kind of caller. A configured system actor maps to `system`; other legacy actors `user`. */
 export type PrincipalType = 'user' | 'service' | 'system' | 'external';
 
 /**
@@ -54,18 +58,27 @@ export function getHeader(req: FastifyRequest, name: string): string | undefined
 }
 
 /**
- * Build a legacy-mode Principal from a raw actor id (pure; no request needed). Claims are
- * minimal and inert: type `user`, empty tenants/roles/scopes. Behavior-preserving by design.
+ * Build a legacy-mode Principal from a raw actor id (pure; no request needed). A configured
+ * system actor (`ALARA_SYSTEM_ACTORS`) is mapped to `type: 'system'` and granted `SYSTEM_SCOPE`,
+ * so the privileged-surface gate can authorize on scope rather than the raw actor string. This
+ * is behavior-preserving: the same configured actors map to the same allow/deny decision, and
+ * the env is read per request exactly as before. Tenants/roles remain empty in legacy mode.
  */
 export function legacyPrincipal(actorId: string): Principal {
+  const system = isSystemActor(actorId);
   return {
     principalId: actorId,
-    type: 'user',
+    type: system ? 'system' : 'user',
     tenants: [],
     roles: [],
-    scopes: [],
+    scopes: system ? [SYSTEM_SCOPE] : [],
     legacyActorId: actorId,
   };
+}
+
+/** Whether the principal carries the given capability scope. */
+export function principalHasScope(principal: Principal, scope: string): boolean {
+  return principal.scopes.includes(scope);
 }
 
 /**

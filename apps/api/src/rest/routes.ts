@@ -7,10 +7,13 @@
 
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { EngineContainer } from '../shared/container';
-import { getAuthenticatedActor, getHeader, secretsMatch } from '../shared/auth';
+import {
+  getAuthenticatedActor, authenticatePrincipal, principalHasScope, SYSTEM_SCOPE,
+  getHeader, secretsMatch,
+} from '../shared/auth';
 import { registerRawBodyJsonParser } from '../shared/raw-body';
 import {
-  isSystemActor, AUTOMYND_SECRET_HEADER, getAutomyndWebhookSecret,
+  AUTOMYND_SECRET_HEADER, getAutomyndWebhookSecret,
   IDEMPOTENCY_KEY_HEADER, deterministicEventId, isRawEventCommandEnabled,
 } from '../shared/config';
 import {
@@ -222,17 +225,20 @@ export async function registerRestRoutes(
         return;
       }
       // Raw event append is a PRIVILEGED command (it can write any canonical event to
-      // any stream). Require an authenticated actor, and restrict it to a configured
-      // system actor — this surface is not generally available.
-      const actor = getAuthenticatedActor(req);
-      if (!actor) {
+      // any stream). Require an authenticated principal, and restrict it to one carrying the
+      // system scope — authorize on the principal's scope rather than the raw actor string.
+      // (In legacy mode the system scope is granted to configured ALARA_SYSTEM_ACTORS, so the
+      // allow/deny decision is identical to the previous isSystemActor check.)
+      const principal = authenticatePrincipal(req);
+      if (!principal) {
         reply.status(401);
         return { error: 'unauthenticated: missing x-actor-id' };
       }
-      if (!isSystemActor(actor)) {
+      if (!principalHasScope(principal, SYSTEM_SCOPE)) {
         reply.status(403);
         return { error: 'forbidden: raw event append requires a system actor' };
       }
+      const actor = principal.principalId;
       const { tenantId, streamId, type, payload } = req.body;
 
       const streamAlaraId = makeAlaraId(streamId);

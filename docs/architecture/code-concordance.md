@@ -966,3 +966,31 @@ Implements slice 1 of the identity/tenant packet (UPDATE 26 / `identity-tenant-b
   (401), `/commands/events` system-actor gate (201 vs 403), GraphQL query unchanged (200).
 
 Next: slice 2 — token verification in `dual` mode (`AUTH_MODE`), still without tenant enforcement.
+
+## UPDATE 28 — System actor → scope gate (identity boundary SLICE 4, partial — IMPLEMENTED)
+
+Migrates the `/commands/events` privileged gate from a raw actor-string check to a
+principal-**scope** check, building on the Principal abstraction (UPDATE 27). **NO external
+behavior change** — the allow/deny decision is identical for the same inputs.
+
+- `apps/api/src/shared/auth.ts`: new `SYSTEM_SCOPE = 'system:*'`; `legacyPrincipal` now maps a
+  configured system actor (`isSystemActor` → `ALARA_SYSTEM_ACTORS`, default `system`) to
+  `type: 'system'` with `scopes: [SYSTEM_SCOPE]` (non-system actors stay `type: 'user'`, empty
+  scopes). New `principalHasScope(principal, scope)` helper. `auth.ts` now imports `isSystemActor`
+  from `config.ts` (one-directional, no cycle).
+- `apps/api/src/rest/routes.ts`: the `/commands/events` gate uses `authenticatePrincipal(req)` →
+  401 if absent → `principalHasScope(principal, SYSTEM_SCOPE)` → 403 if absent; `actor` is now
+  `principal.principalId` (same value as the prior header read). `isSystemActor` is no longer
+  imported here.
+- **Why behavior-preserving:** the scope is granted exactly when `isSystemActor(actorId)` was
+  true, and the env is read per request as before — so configured system actor → 201, non-system
+  → 403, missing → 401, all unchanged. `isSystemActor`/`getSystemActors` remain in `config.ts`
+  (now consumed by `auth.ts`); `ALARA_SYSTEM_ACTORS` remains the configuration source.
+- Scope: ONLY the raw-event gate. No other command gained a role/scope gate (broader per-command
+  RBAC is still future work). GraphQL/consent/referral/webhook unchanged.
+- Tests (`apps/api/tests/principal.test.ts`): system actor → `type:'system'` + `[SYSTEM_SCOPE]`;
+  non-system → no scope; `/commands/events` gate 201/403/401 preserved; `principalHasScope` unit;
+  plus the unchanged referral/missing-actor/GraphQL cases.
+
+Next: slice 2 — token verification in `dual` mode (the IdP-dependent slice); or slice 3 — tenant
+derivation + cross-tenant block.
