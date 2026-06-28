@@ -1226,3 +1226,29 @@ pre-existing API tests pass. Dependency-free, no IdP vendor; vendor-specific val
 
 This completes JWKS slices 1–3. Remaining for production *enablement* (config + owner): set
 `AUTH_JWKS_URL`/issuer/audience against the chosen IdP and flip `AUTH_MODE` legacy→dual→required.
+
+## UPDATE 38 — Legacy auth fallback deprecation signal (identity boundary)
+
+Adds the operational signal needed to drive `dual`-mode legacy usage to zero before the
+`AUTH_MODE=required` cutover. **No auth decision / response / status-code change** (all 210
+pre-existing API tests pass); this is a side-effect only.
+
+- New `apps/api/src/shared/deprecation.ts`: a small, spy-able sink. `emitDeprecation(signal)` with a
+  structured **PHI-safe** `DeprecationSignal { event, mode, reason, principalId? }`; the default sink
+  emits one `console.warn` line and is **silent under `NODE_ENV=test`** (matches the Fastify logger
+  toggle). `setDeprecationSinkForTests` captures emissions deterministically. The `principalId` is
+  **length-bounded** (≤64 + ellipsis) — defensive against oversized header input.
+- `auth.ts` `authenticatePrincipal`: in `dual` mode, when no valid token principal is available AND
+  the legacy `x-actor-id` fallback **admits** a request, emit
+  `{ event: 'auth.legacy_fallback', mode: 'dual', reason: 'legacy_actor_fallback', principalId }`.
+  The returned principal is unchanged.
+- **PHI-safety:** the signal carries ONLY bounded, non-sensitive metadata — never the request body,
+  `tenantId`, token, raw headers, or PHI. Asserted by a test that confirms the serialized signal
+  contains no `Bearer`, no JWT segment, no tenant claim, and no `authorization`.
+- **No signal** in `legacy` mode, when a valid token is used, when nothing is admitted (no token +
+  no legacy actor), or in `required` mode (legacy is rejected) — each covered by a test.
+- Tests (`apps/api/tests/deprecation-signal.test.ts`, +8, injected capturing sink — no console spy,
+  no network).
+
+Next (code, unblocked): none required before enablement — the remaining identity work is the
+owner-gated `dual`→`required` cutover (watch this signal → zero) and the deferred RLS milestone.

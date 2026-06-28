@@ -207,7 +207,7 @@ binding first (this packet), then RLS consumes the principal-derived tenant.
 2. **Token verification (dual, tenant unenforced).** Add JWT/OIDC verification; `AUTH_MODE=dual`
    accepts token-or-legacy; populate `Principal` claims; deprecation signal on legacy. No tenant
    enforcement yet. **✅ DONE (UPDATE 30)** — RS256 verifier + `AUTH_MODE` wired; tenant still
-   unenforced; deprecation signal deferred to the wiring/rollout step.
+   unenforced. **Legacy-fallback deprecation signal added in UPDATE 38.**
 3. **Tenant derivation + cross-tenant block.** For token principals, derive/validate tenant from
    claims; reject mismatched `tenantId` (REST 403 / GraphQL 403) at the boundary. **◑ PARTIAL
    (UPDATE 31):** REST mutating commands now reject a `tenantId` not in a verified principal's

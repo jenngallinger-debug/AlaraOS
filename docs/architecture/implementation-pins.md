@@ -187,6 +187,13 @@ These are **constraints, not technologies**. They are binding on all implementat
    (cold/unknown-kid → dual→legacy, required→reject). Default (`AUTH_JWKS_URL` unset) byte-identical;
    rollback = unset the URL. Tested with an injected fake fetcher (no network). See
    `code-concordance.md` UPDATE 37._
+   _Legacy auth fallback deprecation signal (identity boundary): `shared/deprecation.ts` is a small
+   spy-able sink; `authenticatePrincipal` emits a PHI-safe `{event:'auth.legacy_fallback', mode:'dual',
+   reason:'legacy_actor_fallback', principalId}` ONLY when `dual` admits a request via the legacy
+   `x-actor-id` fallback. No signal in legacy / valid-token / nothing-admitted / required. Bounded,
+   non-sensitive metadata only — never body/tenant/token/headers/PHI; `principalId` length-bounded.
+   Default sink silent under `NODE_ENV=test`. NO auth decision / response / status change. The metric
+   to drive legacy usage to zero before `AUTH_MODE=required`. See `code-concordance.md` UPDATE 38._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

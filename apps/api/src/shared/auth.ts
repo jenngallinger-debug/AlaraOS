@@ -25,6 +25,7 @@ import {
 } from './config';
 import { verifyJwt, singleKeyResolver } from './jwt';
 import { getJwksResolver } from './jwks-runtime';
+import { emitDeprecation } from './deprecation';
 
 export const ACTOR_HEADER = 'x-actor-id';
 
@@ -156,7 +157,21 @@ export function authenticatePrincipal(req: FastifyRequest): Principal | undefine
   const tokenPrincipal = tokenAuthenticate(req);
   if (tokenPrincipal) return tokenPrincipal;
   if (mode === 'required') return undefined; // token mandatory; legacy not accepted
-  return legacyAuthenticate(req);            // dual: fall back to legacy
+
+  // dual: fall back to legacy. When the fallback actually admits a request (no valid token but a
+  // legacy actor is present), emit a PHI-safe deprecation signal — the metric operators watch to
+  // drive legacy usage to zero before flipping to AUTH_MODE=required. The auth DECISION (the
+  // returned principal) is unchanged; this is a side-effect only.
+  const legacy = legacyAuthenticate(req);
+  if (legacy) {
+    emitDeprecation({
+      event: 'auth.legacy_fallback',
+      mode: 'dual',
+      reason: 'legacy_actor_fallback',
+      principalId: legacy.principalId,
+    });
+  }
+  return legacy;
 }
 
 /**
