@@ -118,14 +118,15 @@ Until then: **app-level `WHERE tenant_id` is the contract**, and the tenancy gua
 the enforcement point. RLS remains scaffolded defense-in-depth for the future, not a
 backstop today.
 
-## Appendix B — CI wiring for the RLS integration harness (DECISION PACKET — DEFERRED)
+## Appendix B — CI wiring for the RLS integration harness (✅ IMPLEMENTED — UPDATE 42)
 
-> **Status: DEFERRED — no CI exists to wire into.** The opt-in real-Postgres harness (step 5,
-> UPDATE 40) needs a CI job with a Postgres service to become enforced. Audited 2026-06; the repo
-> has **no CI configuration** (no `.github/workflows/`, no GitLab/Circle/Travis/Azure/Jenkins/etc.,
-> none git-tracked). A GitHub remote exists, so **GitHub Actions** is the natural provider. Per the
-> slice's stop condition, the actual workflow file is NOT created here (standing up a CI pipeline
-> from nothing is an owner/infra decision, not narrow wiring). This records the recommended shape.
+> **Status: IMPLEMENTED.** Owner approved adopting GitHub Actions (minimum scope: enforce the
+> opt-in harness only). The recommended shape below was lifted into
+> `.github/workflows/rls-integration.yml` — a single `rls-integration` job with a `postgres:16`
+> service that sets `ALARA_TEST_DATABASE_URL` only for that job and runs
+> `npm ci` → `npm --prefix packages/core run test:integration:pg`. No deploys/releases/environments/
+> secrets; default verify (local or any future job that omits the env var) stays Postgres-free.
+> (Originally deferred because no CI existed — audit 2026-06.)
 
 **Facts:** npm workspaces (`packages/*`) with `package-lock.json` → `npm ci`; `engines.node >= 20`.
 The harness self-skips unless `ALARA_TEST_DATABASE_URL` is set, and an opt-in script already exists:

@@ -1,0 +1,48 @@
+# Alara OS — RLS integration CI
+#
+# Enforces the OPT-IN real-Postgres harness for the tenant-scoped DB helper
+# (packages/core/tests/tenant-scope.integration.test.ts; see docs/architecture/tenancy-rls.md
+# Appendix B). This is the ONLY job and it is intentionally narrow: it runs a throwaway Postgres
+# service and the integration test, nothing else. No deploys, releases, environments, or secrets.
+#
+# The harness self-skips unless ALARA_TEST_DATABASE_URL is set, and only THIS job sets it — so the
+# default `npm run verify` (local or a future CI job) never requires Postgres.
+
+name: RLS Integration
+
+on: [push, pull_request]
+
+jobs:
+  rls-integration:
+    name: RLS integration (real Postgres)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: alara
+          POSTGRES_PASSWORD: alara
+          POSTGRES_DB: alara_test
+        ports:
+          - 5432:5432
+        # Wait for Postgres to accept connections before the job's steps run.
+        options: >-
+          --health-cmd "pg_isready -U alara"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      # Set ONLY for this job. The opt-in harness runs only when this is present; everything else
+      # self-skips, so the default suite never needs Postgres. A throwaway DB — the fixture creates a
+      # session-local TEMP table with FORCE ROW LEVEL SECURITY (the `alara` superuser owns it).
+      ALARA_TEST_DATABASE_URL: postgres://alara:alara@localhost:5432/alara_test
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20' # repo engines: node >= 20
+      - run: npm ci
+      - run: npm --prefix packages/core run test:integration:pg

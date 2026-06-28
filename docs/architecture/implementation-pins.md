@@ -219,6 +219,13 @@ These are **constraints, not technologies**. They are binding on all implementat
    `ALARA_TEST_DATABASE_URL` + `npm ci` → `npm --prefix packages/core run test:integration:pg`; only
    that job sets the DB URL so default verify stays Postgres-free. No runtime/CI change. See
    `code-concordance.md` UPDATE 41._
+   _GitHub Actions RLS integration job (CI adopted, minimal scope — IMPLEMENTED): owner approved
+   GitHub Actions; `.github/workflows/rls-integration.yml` is the repo's first CI — a single
+   `rls-integration` job (`postgres:16` service, `ALARA_TEST_DATABASE_URL` set ONLY on that job) that
+   runs `npm ci` → `npm --prefix packages/core run test:integration:pg`. Makes the opt-in real-PG
+   harness ENFORCED on push/PR. No app/runtime change, no deploys/releases/secrets, no app-schema RLS;
+   default + local verify stay Postgres-free (harness self-skips elsewhere). See
+   `code-concordance.md` UPDATE 42._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

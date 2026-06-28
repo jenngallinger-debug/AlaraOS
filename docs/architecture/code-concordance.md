@@ -1321,3 +1321,22 @@ and `npm ci` → `npm --prefix packages/core run test:integration:pg`. Facts: np
 `package-lock.json` → `npm ci`; `engines.node >= 20`. Only that job sets the DB URL, so a default
 `verify` job (and local `verify`) stays Postgres-free / self-skips. Open owner decisions: adopt
 GitHub Actions at all; whether to also run default verify; Postgres image/role; trigger policy.
+
+## UPDATE 42 — GitHub Actions RLS integration job (CI adopted, minimal scope — IMPLEMENTED)
+
+Owner approved adopting GitHub Actions (minimum scope: enforce the opt-in real-Postgres harness,
+UPDATE 40/41). Lifts `tenancy-rls.md` Appendix B into a real workflow. **No app/runtime change; no
+deploys/releases/environments/secrets; local + default verify unchanged and Postgres-free.**
+
+- New `.github/workflows/rls-integration.yml` — the repo's first CI. A single `rls-integration` job
+  on `ubuntu-latest`, `on: [push, pull_request]`, with a `postgres:16` **service** (health-checked,
+  port 5432) and `ALARA_TEST_DATABASE_URL` set **only on that job**. Steps: `actions/checkout@v4` →
+  `actions/setup-node@v4` (node 20, matching `engines`) → `npm ci` → `npm --prefix packages/core run
+  test:integration:pg`. YAML validated (parses; correct triggers/service/env/steps).
+- **Why nothing else changes:** only this job sets the DB URL, so the harness self-skips everywhere
+  else; the default `npm run verify` (local or any future verify job) never needs Postgres. No app
+  schema RLS enabled, no policy, no call-site migration, no code touched.
+
+This makes the RLS harness **enforced** (real-PG assertions now run on push/PR), the prerequisite
+that de-risks RLS milestone steps 2–4. Scope kept deliberately narrow — no general test/build job,
+deploy, release, or secret handling (those are separate owner decisions).
