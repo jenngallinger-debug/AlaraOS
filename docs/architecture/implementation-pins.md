@@ -226,6 +226,14 @@ These are **constraints, not technologies**. They are binding on all implementat
    harness ENFORCED on push/PR. No app/runtime change, no deploys/releases/secrets, no app-schema RLS;
    default + local verify stay Postgres-free (harness self-skips elsewhere). See
    `code-concordance.md` UPDATE 42._
+   _Fix RLS harness CI failure (UPDATE 43, harness-only): first CI run failed at the test step —
+   root cause is the Postgres service user (`alara`) being a SUPERUSER, which bypasses RLS even with
+   `FORCE` (so the isolation probe returned all rows). Fix in
+   `tenant-scope.integration.test.ts`: the probe SELECT now runs under a fixture-local NON-superuser
+   role (`CREATE ROLE … NOLOGIN`, `GRANT SELECT`, `SET LOCAL ROLE`) against a real throwaway table
+   dropped in `afterAll`; GUC set/no-leak tests unchanged. No production code, no workflow change, no
+   secrets; still opt-in/self-skipping. Not run locally (no local PG) — validated by next CI run.
+   Folds non-superuser-role coverage into the harness. See `code-concordance.md` UPDATE 43._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

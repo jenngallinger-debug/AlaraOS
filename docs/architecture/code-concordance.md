@@ -1340,3 +1340,30 @@ deploys/releases/environments/secrets; local + default verify unchanged and Post
 This makes the RLS harness **enforced** (real-PG assertions now run on push/PR), the prerequisite
 that de-risks RLS milestone steps 2–4. Scope kept deliberately narrow — no general test/build job,
 deploy, release, or secret handling (those are separate owner decisions).
+
+## UPDATE 43 — Fix RLS harness CI failure (superuser bypass) — harness-only
+
+The first CI run of the RLS integration job (UPDATE 42) **failed** at the test step
+(`test:integration:pg`); infra steps (Postgres service, checkout, setup-node, `npm ci`) all passed.
+
+- **Root cause:** the Postgres service user (`alara`, the image default) is a **superuser**, and
+  superusers / `BYPASSRLS` roles **ignore row-level security even with `FORCE ROW LEVEL SECURITY`**.
+  So the `tenant_isolation` policy never filtered and `visibleFor('tenant-A')` returned BOTH rows →
+  the `toEqual(['tenant-A'])` assertion failed. (Tests 1–3 only read `current_setting`, which is
+  role-agnostic, so they passed — consistent with the observed step-6-only failure. Confirmed from
+  the harness code + step-level CI data; raw logs were not retrievable — `gh` absent, log endpoint
+  403.)
+- **Fix (harness-only, no production code, no workflow change):**
+  `packages/core/tests/tenant-scope.integration.test.ts` — the RLS-isolation probe now creates a
+  fixture-local **non-superuser** role (`CREATE ROLE rls_probe_role NOLOGIN`) and a real throwaway
+  table, `GRANT SELECT`s to the role, and runs the probe SELECT under `SET LOCAL ROLE rls_probe_role`
+  (transaction-scoped → drops superuser so RLS actually applies). `afterAll` best-effort drops the
+  table + role. Switched from a TEMP table (cross-role access is fragile) to a real table dropped in
+  cleanup. No secrets (NOLOGIN role, no password). Still entirely opt-in — self-skips without
+  `ALARA_TEST_DATABASE_URL`; the GUC set/no-leak tests are unchanged.
+- **Not run locally** (no local Postgres / `ALARA_TEST_DATABASE_URL`): the file type-checks and the
+  suite self-skips locally; the fix will be validated by the next CI run.
+
+This also folds the **non-superuser-role coverage** (previously listed as remaining step-5 work) into
+the harness. No app schema RLS, no policy on app tables, no call-site migration, no auth/GraphQL/
+webhook change.
