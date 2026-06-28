@@ -84,6 +84,22 @@ export function principalHasScope(principal: Principal, scope: string): boolean 
   return principal.scopes.includes(scope);
 }
 
+/** A principal is "verified" when it came from a token; legacy principals carry `legacyActorId`. */
+export function isVerifiedPrincipal(principal: Principal): boolean {
+  return principal.legacyActorId === undefined;
+}
+
+/**
+ * Whether `principal` may act in `tenantId`. **Legacy principals are NOT tenant-enforced yet**
+ * (backward compatible → always allowed). A VERIFIED token principal must list the requested
+ * tenant in its `tenants` claim; an empty membership **fails closed** (no tenant access).
+ * This is a membership check only — it does not derive or default a tenant.
+ */
+export function isTenantAllowed(principal: Principal, tenantId: string): boolean {
+  if (!isVerifiedPrincipal(principal)) return true;
+  return principal.tenants.includes(tenantId);
+}
+
 /** Extract the bearer token from the `Authorization: Bearer <jwt>` header, if present. */
 export function getBearerToken(req: FastifyRequest): string | undefined {
   const raw = getHeader(req, 'authorization');

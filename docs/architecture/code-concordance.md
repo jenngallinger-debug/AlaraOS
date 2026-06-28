@@ -1045,3 +1045,33 @@ behavior is unchanged** (`AUTH_MODE=legacy`): all 145 pre-existing API tests pas
 
 Next: slice 3 — tenant derivation + cross-tenant block (REST 403), reading the now-verified
 `principal.tenants`.
+
+## UPDATE 31 — REST tenant membership block (identity boundary SLICE 3, partial — IMPLEMENTED)
+
+Enforces the first tenant boundary on REST mutating commands, reading the verified
+`principal.tenants` from UPDATE 30. **Default `legacy` behavior unchanged** (all 168 pre-existing
+API tests pass). Owner rule: a request `tenantId` must be in the principal's `tenants` **when the
+principal is verified**; legacy principals stay backward-compatible.
+
+- `apps/api/src/shared/auth.ts`: `isVerifiedPrincipal(principal)` (true when no `legacyActorId`,
+  i.e. token-derived) and `isTenantAllowed(principal, tenantId)` — legacy → always allowed;
+  verified → `tenants.includes(tenantId)` (**empty membership fails closed**). Membership check
+  only; no tenant derivation/defaulting.
+- `apps/api/src/rest/routes.ts`: the four principal-authed mutating commands —
+  `/commands/referrals`, `/commands/events`, `/commands/consent`, `/commands/consent/withdraw` —
+  now switch from `getAuthenticatedActor` to `authenticatePrincipal` (equivalent: `principalId`
+  is the old actor) and, after reading the body `tenantId`, return **403** when
+  `!isTenantAllowed(principal, tenantId)`. The check runs before the engine, so a denied request
+  mutates nothing. Order on `/commands/events`: system-scope gate (403) then tenant block (403).
+  `getAuthenticatedActor` is no longer imported here (still exported for `graphql-gate`).
+- **Excluded (hard stop):** `/webhooks/automynd` (shared-secret ingress, not principal-authed) is
+  untouched. **NOT done:** GraphQL tenant behavior (unchanged), tenant derivation/defaulting, RLS.
+- **Why legacy is unchanged:** under default `AUTH_MODE=legacy` every principal is legacy
+  (`legacyActorId` set) → `isTenantAllowed` returns true → byte-identical behavior.
+- Tests (`apps/api/tests/tenant-block.test.ts`, +10, RS256 keypair via Node crypto): legacy
+  referral 201; verified token matching tenant 201; non-matching 403 (nothing created); empty
+  tenants 403 (fail closed); multi-tenant token reaches either tenant; dual fallback to legacy on
+  missing/invalid token; consent enforced; events scope+tenant interaction (201 / wrong-tenant 403
+  / no-scope 403); required-mode legacy rejected 401.
+
+Next: slice 5 — the GraphQL tenant block (closes UPDATE 19), then the production JWKS resolver.

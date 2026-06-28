@@ -8,7 +8,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { EngineContainer } from '../shared/container';
 import {
-  getAuthenticatedActor, authenticatePrincipal, principalHasScope, SYSTEM_SCOPE,
+  authenticatePrincipal, principalHasScope, SYSTEM_SCOPE, isTenantAllowed,
   getHeader, secretsMatch,
 } from '../shared/auth';
 import { registerRawBodyJsonParser } from '../shared/raw-body';
@@ -144,8 +144,8 @@ export async function registerRestRoutes(
     async (req, reply): Promise<CreateReferralResponse> => {
       // Transport authentication: a mutating command requires an authenticated actor.
       // The authenticated principal is the intake actor — body `actor` is not trusted.
-      const actor = getAuthenticatedActor(req);
-      if (!actor) {
+      const principal = authenticatePrincipal(req);
+      if (!principal) {
         reply.status(401);
         return {
           success: false,
@@ -155,6 +155,18 @@ export async function registerRestRoutes(
         };
       }
       const body = req.body;
+      // Tenant boundary: a VERIFIED token principal may only act in a tenant it is a member of
+      // (empty membership fails closed). Legacy principals are not yet enforced (unchanged).
+      if (!isTenantAllowed(principal, body.tenantId)) {
+        reply.status(403);
+        return {
+          success: false,
+          projectionIds: {},
+          decisionSummary: { outcome: 'denied', explanation: 'tenant not permitted' },
+          error: 'forbidden: tenant not permitted for this principal',
+        };
+      }
+      const actor = principal.principalId;
 
       const result = await container.orchestrator.handleReferralReceived({
         tenantId:           body.tenantId,
@@ -240,6 +252,11 @@ export async function registerRestRoutes(
       }
       const actor = principal.principalId;
       const { tenantId, streamId, type, payload } = req.body;
+      // Tenant boundary (verified principals only; legacy unchanged) — see referrals handler.
+      if (!isTenantAllowed(principal, tenantId)) {
+        reply.status(403);
+        return { error: 'forbidden: tenant not permitted for this principal' };
+      }
 
       const streamAlaraId = makeAlaraId(streamId);
       const event = await container.eventStore.append({
@@ -269,12 +286,18 @@ export async function registerRestRoutes(
     async (req, reply): Promise<CaptureConsentResponse> => {
       // Transport authentication: authorize the AUTHENTICATED actor, never a
       // body-supplied field. Missing principal → fail closed (401).
-      const actor = getAuthenticatedActor(req);
-      if (!actor) {
+      const principal = authenticatePrincipal(req);
+      if (!principal) {
         reply.status(401);
         return { captured: false, error: 'unauthenticated: missing x-actor-id' };
       }
+      const actor = principal.principalId;
       const b = req.body;
+      // Tenant boundary (verified principals only; legacy unchanged) — see referrals handler.
+      if (!isTenantAllowed(principal, b.tenantId)) {
+        reply.status(403);
+        return { captured: false, error: 'forbidden: tenant not permitted for this principal' };
+      }
       try {
         const result = await container.consentCapture.capture({
           tenantId:       b.tenantId,
@@ -322,12 +345,18 @@ export async function registerRestRoutes(
     '/commands/consent/withdraw',
     { schema: withdrawConsentSchema },
     async (req, reply): Promise<WithdrawConsentResponse> => {
-      const actor = getAuthenticatedActor(req);
-      if (!actor) {
+      const principal = authenticatePrincipal(req);
+      if (!principal) {
         reply.status(401);
         return { withdrawn: false, error: 'unauthenticated: missing x-actor-id' };
       }
+      const actor = principal.principalId;
       const b = req.body;
+      // Tenant boundary (verified principals only; legacy unchanged) — see referrals handler.
+      if (!isTenantAllowed(principal, b.tenantId)) {
+        reply.status(403);
+        return { withdrawn: false, error: 'forbidden: tenant not permitted for this principal' };
+      }
       try {
         const result = await container.consentCapture.withdraw({
           tenantId:   b.tenantId,

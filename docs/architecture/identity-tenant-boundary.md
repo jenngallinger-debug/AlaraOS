@@ -209,7 +209,10 @@ binding first (this packet), then RLS consumes the principal-derived tenant.
    enforcement yet. **✅ DONE (UPDATE 30)** — RS256 verifier + `AUTH_MODE` wired; tenant still
    unenforced; deprecation signal deferred to the wiring/rollout step.
 3. **Tenant derivation + cross-tenant block.** For token principals, derive/validate tenant from
-   claims; reject mismatched `tenantId` (REST 403 / GraphQL 403) at the boundary.
+   claims; reject mismatched `tenantId` (REST 403 / GraphQL 403) at the boundary. **◑ PARTIAL
+   (UPDATE 31):** REST mutating commands now reject a `tenantId` not in a verified principal's
+   `tenants` (empty → fail closed); legacy principals unchanged. GraphQL block + tenant
+   *derivation/defaulting* remain future.
 4. **Command-level role/scope gates.** Replace `ALARA_SYSTEM_ACTORS` with a `system:*` scope; add
    coarse role gates per mutating command. **◑ PARTIAL (UPDATE 28):** the `/commands/events`
    system gate now authorizes on `principal.scopes` (legacy principals for configured

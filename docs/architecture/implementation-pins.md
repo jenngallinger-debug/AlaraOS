@@ -129,6 +129,14 @@ These are **constraints, not technologies**. They are binding on all implementat
    NO tenant enforcement (tenants claim populated but unused), NO GraphQL change, no new dep,
    default behavior unchanged. Vendor-neutral (no IdP hardcoded). See `code-concordance.md`
    UPDATE 30._
+   _REST tenant membership block (identity boundary SLICE 3 partial — IMPLEMENTED): `shared/auth.ts`
+   adds `isVerifiedPrincipal` (token-derived = no `legacyActorId`) + `isTenantAllowed(principal,
+   tenantId)` — legacy → always allowed (unchanged); verified token → request `tenantId` must be in
+   `principal.tenants`, empty membership **fails closed**. The four principal-authed mutating
+   commands (referrals/events/consent/withdraw) now use `authenticatePrincipal` and return **403**
+   when the tenant is not permitted (before the engine, so nothing mutates). Webhook excluded
+   (shared-secret). NO GraphQL change, NO tenant derivation/defaulting, NO RLS. Default legacy
+   behavior byte-identical. See `code-concordance.md` UPDATE 31._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,
