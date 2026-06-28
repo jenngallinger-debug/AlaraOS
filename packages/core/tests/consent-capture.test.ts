@@ -12,7 +12,7 @@ import { DatabaseClient } from '../src/shared/database';
 import { EventStore } from '../src/events/store';
 import { reconstructFromEvents } from '../src/object-graph/command-handler';
 import { ConsentEngine } from '../src/consent-store/engine';
-import { ConsentCaptureService, ConsentCaptureValidationError, CaptureConsentInput } from '../src/consent-store/capture';
+import { ConsentCaptureService, ConsentCaptureValidationError, ConsentIdempotencyConflictError, CaptureConsentInput } from '../src/consent-store/capture';
 import { ConsentRepository } from '../src/consent-store/repository';
 import { GraphConsentFactSource } from '../src/consent-store/consent-fact-source';
 import { GraphFactResolver, RelationshipReadPort } from '../src/reasoning-engine/fact-resolver';
@@ -140,5 +140,79 @@ describe('Consent Capture / Intake Integration', () => {
     const wrongPermission = makeHarness();
     await wrongPermission.capture.capture(captureArgs({ permissionTypes: ['update'] as ConsentPermissionType[] }));
     expect(await readAllowed(wrongPermission)).toBe(false);
+  });
+});
+
+// ─── Capture idempotency (eventStore wired) ───────────────────────────────────
+
+describe('Consent Capture idempotency', () => {
+  // A harness whose capture service has the event store wired (idempotency active),
+  // mirroring the API container. Shares one db so the repo can count Consent objects.
+  function makeIdem() {
+    const store = new InMemoryStore();
+    const db = store as unknown as DatabaseClient;
+    const events = new EventStore(db);
+    const capture = new ConsentCaptureService(new ConsentEngine(db), undefined, events);
+    const repo = new ConsentRepository(db);
+    return { db, events, capture, repo };
+  }
+  const consentCount = (repo: ConsentRepository) => repo.findForSubject(TENANT, SUBJECT).then((f) => f.length);
+
+  test('1. first capture succeeds and creates one Consent', async () => {
+    const h = makeIdem();
+    const res = await h.capture.capture(captureArgs());
+    expect(res.captured).toBe(true);
+    expect(res.idempotentReplay).toBeFalsy();
+    expect(await consentCount(h.repo)).toBe(1);
+  });
+
+  test('2/3. identical resubmit (no explicit key) → safe replay, no duplicate Consent or events', async () => {
+    const h = makeIdem();
+    const first = await h.capture.capture(captureArgs());
+    const second = await h.capture.capture(captureArgs());
+
+    expect(second.idempotentReplay).toBe(true);
+    expect(second.consentId).toBe(first.consentId);   // stable response
+    expect(second.eventId).toBe(first.eventId);
+    expect(await consentCount(h.repo)).toBe(1);        // no second Consent
+
+    // The single Consent's stream still has exactly one ObjectCreated (no duplicate write).
+    const stream = await h.events.loadStream(TENANT, first.consentId);
+    expect(stream.map((e) => e.type)).toEqual(['ObjectCreated']);
+  });
+
+  test('4. different content → distinct Consent (idempotency does not collapse them)', async () => {
+    const h = makeIdem();
+    const a = await h.capture.capture(captureArgs({ permissionTypes: ['read'] as ConsentPermissionType[] }));
+    const b = await h.capture.capture(captureArgs({ permissionTypes: ['update'] as ConsentPermissionType[] }));
+    expect(b.idempotentReplay).toBeFalsy();
+    expect(b.consentId).not.toBe(a.consentId);
+    expect(await consentCount(h.repo)).toBe(2);
+  });
+
+  test('4b. different explicit idempotency key with identical content → distinct Consent', async () => {
+    const h = makeIdem();
+    const a = await h.capture.capture(captureArgs({ idempotencyKey: 'key-A' }));
+    const b = await h.capture.capture(captureArgs({ idempotencyKey: 'key-B' }));
+    expect(b.consentId).not.toBe(a.consentId);
+    expect(await consentCount(h.repo)).toBe(2);
+  });
+
+  test('5. missing explicit key still dedups via content key (referral natural-key convention)', async () => {
+    const h = makeIdem();
+    const first = await h.capture.capture(captureArgs()); // no idempotencyKey
+    const second = await h.capture.capture(captureArgs()); // no idempotencyKey
+    expect(second.idempotentReplay).toBe(true);
+    expect(second.consentId).toBe(first.consentId);
+    expect(await consentCount(h.repo)).toBe(1);
+  });
+
+  test('6. same explicit key reused with DIFFERENT content → conflict, no second Consent', async () => {
+    const h = makeIdem();
+    await h.capture.capture(captureArgs({ idempotencyKey: 'k1', permissionTypes: ['read'] as ConsentPermissionType[] }));
+    await expect(
+      h.capture.capture(captureArgs({ idempotencyKey: 'k1', permissionTypes: ['update'] as ConsentPermissionType[] })),
+    ).rejects.toBeInstanceOf(ConsentIdempotencyConflictError);
+    expect(await consentCount(h.repo)).toBe(1); // conflict created nothing new
   });
 });

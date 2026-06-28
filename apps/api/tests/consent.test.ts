@@ -55,6 +55,14 @@ async function post(url: string, payload: Record<string, unknown>, actor?: strin
   return (await app.inject({ method: 'POST', url, payload, headers })) as unknown as InjectRes;
 }
 
+// POST capture with an explicit idempotency-key header (and authenticated actor).
+async function postKeyed(payload: Record<string, unknown>, actor: string, key: string): Promise<InjectRes> {
+  return (await app.inject({
+    method: 'POST', url: '/commands/consent', payload,
+    headers: { 'x-actor-id': actor, 'idempotency-key': key },
+  })) as unknown as InjectRes;
+}
+
 async function readAllowed(db: DatabaseClient, subjectId = SUBJECT, actor = ACTOR): Promise<boolean> {
   const registry = new RulesRegistry();
   registry.registerRuleSet({ id: RETRIEVAL_READ_RULESET, name: 'read', description: '', version: '1' });
@@ -114,6 +122,34 @@ describe('POST /commands/consent (capture)', () => {
   test('capture → required-consent reasoning read is allowed', async () => {
     await post('/commands/consent', captureBody(), SUBJECT);
     expect(await readAllowed(container.db)).toBe(true);
+  });
+});
+
+describe('POST /commands/consent — idempotency (end to end)', () => {
+  test('identical resubmit → 200 replay, same consentId, exactly one Consent', async () => {
+    const first = await post('/commands/consent', captureBody(), SUBJECT);
+    const second = await post('/commands/consent', captureBody(), SUBJECT);
+    expect(first.statusCode).toBe(201);
+    expect(second.statusCode).toBe(200);                       // replay, nothing created
+    expect(second.json().consentId).toBe(first.json().consentId);
+    expect(consentCount()).toBe(1);
+  });
+
+  test('different content → distinct Consent (201, two objects)', async () => {
+    const a = await post('/commands/consent', captureBody({ permissionTypes: ['read'] }), SUBJECT);
+    const b = await post('/commands/consent', captureBody({ permissionTypes: ['update'] }), SUBJECT);
+    expect(a.statusCode).toBe(201);
+    expect(b.statusCode).toBe(201);
+    expect(b.json().consentId).not.toBe(a.json().consentId);
+    expect(consentCount()).toBe(2);
+  });
+
+  test('explicit idempotency-key reused with different content → 409, no second Consent', async () => {
+    const a = await postKeyed(captureBody({ permissionTypes: ['read'] }), SUBJECT, 'idem-1');
+    const conflict = await postKeyed(captureBody({ permissionTypes: ['update'] }), SUBJECT, 'idem-1');
+    expect(a.statusCode).toBe(201);
+    expect(conflict.statusCode).toBe(409);
+    expect(consentCount()).toBe(1);
   });
 });
 

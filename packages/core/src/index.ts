@@ -137,7 +137,7 @@ export type {
   GrantConsentCommand, ConsentChangeCommand, ConsentMutationResult,
 } from './consent-store/engine';
 // Consent Capture — intake/portal application boundary that calls ConsentEngine
-export { ConsentCaptureService, ConsentCaptureValidationError } from './consent-store/capture';
+export { ConsentCaptureService, ConsentCaptureValidationError, ConsentIdempotencyConflictError } from './consent-store/capture';
 export type {
   CaptureConsentInput, CaptureConsentResult, WithdrawConsentInput, WithdrawConsentResult,
 } from './consent-store/capture';

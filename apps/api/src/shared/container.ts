@@ -100,7 +100,8 @@ export function buildContainer(db: DatabaseClient): EngineContainer {
     relationships: new RelationshipRepository(db),
     consents: new ConsentRepository(db),
   });
-  const consentCapture = new ConsentCaptureService(new ConsentEngine(db), consentAuthorizer);
+  // eventStore enables capture idempotency (duplicate submit → safe replay, not a 2nd Consent).
+  const consentCapture = new ConsentCaptureService(new ConsentEngine(db), consentAuthorizer, eventStore);
 
   return {
     db, eventStore, objectRepo, objectHandler, rules, triggers,

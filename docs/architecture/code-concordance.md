@@ -640,3 +640,40 @@ out of scope for this hardening pass. Options to decide later:
 
 Recommendation: (1) as the minimum once real authN lands, with (2) for PHI-bearing resolvers.
 No resolver change in this slice.
+
+## UPDATE 20 — Consent capture idempotency (Hardening Phase 2)
+
+`POST /commands/consent` (capture/grant) was not idempotent: `ConsentCaptureService.capture`
+→ `ConsentEngine.grant` → `createObject` always mints a fresh Consent id, so a double-click /
+retry created **two distinct active Consent objects**. Closed by reusing the already-landed
+**referral receipt-stream pattern** (UPDATE 15), keyed for consent.
+
+- `ConsentCaptureService` gained an optional `eventStore` (3rd ctor arg). When wired (the API
+  container passes it), capture is idempotent; when omitted (existing core tests) behaviour is
+  unchanged — no dedup, no breakage.
+- **Key derivation:** a content *fingerprint* = `deterministicId(tenant, subject, grantor,
+  recipient, sorted permissionTypes, effectiveDate||'', expirationDate||'')`. The idempotency
+  key is the caller's explicit `idempotency-key` header when present, else the fingerprint —
+  so a duplicate submit dedups either way (no required new header; backward compatible).
+- **Flow:** validate → **authorize (assertMayGrant)** → idempotency check. Authorization runs
+  BEFORE the replay so an unauthorized actor gets 403 and never learns a matching consent
+  exists. A per-capture receipt stream `deterministicId(tenant, 'consent-capture', key)` records
+  `{fingerprint, consentId, eventId}` via a new `ConsentCaptureReceiptRecorded` event. On retry
+  the receipt is replayed (same consentId/eventId, no second Consent); an explicit key reused
+  with a DIFFERENT fingerprint throws `ConsentIdempotencyConflictError`.
+- **REST mapping:** replay → **200** (nothing created) vs first capture **201**; conflict →
+  **409**. `idempotency-key` header is read in the route (optional).
+- Tests: core (first→one Consent; identical replay→same id + single ObjectCreated; different
+  content→distinct; different explicit key→distinct; missing key→content-dedup; same key+diff
+  content→conflict) and API end-to-end (200 replay, 201 distinct, 409 conflict).
+
+Scope/limits & residuals (stated plainly):
+- **Withdraw is NOT covered by this slice.** A repeated withdraw of an already-revoked consent
+  is version-gated (no concurrent double-write) but still appends a redundant `ObjectUpdated`
+  re-setting `status=revoked`; the terminal state is unchanged, so this is a minor
+  non-idempotency, not duplicate state. Tracked as residual; not fixed here to keep the slice
+  narrow.
+- Same first-time **concurrency** window as the referral pattern: the Consent is created and the
+  receipt appended in separate transactions, so two simultaneous first-time identical captures
+  could still both create before either records a receipt. Documented platform-wide residual
+  (needs a pre-write claim); unchanged by this slice.

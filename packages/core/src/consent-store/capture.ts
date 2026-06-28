@@ -16,7 +16,9 @@
  * and calls ConsentEngine — no new model, no new object type.
  */
 
-import { AlaraId } from '../shared/types';
+import { AlaraId, makeAlaraId } from '../shared/types';
+import { deterministicId } from '../shared/ids';
+import { EventStore } from '../events/store';
 import { ConsentPermissionType } from '../rules-engine/policies/context-types';
 import { ConsentEngine } from './engine';
 import { ConsentAuthorizer } from './authorizer';
@@ -35,6 +37,12 @@ export interface CaptureConsentInput {
   readonly capturedBy: string;
   /** Optional provenance, e.g. 'intake' | 'portal'. */
   readonly source?: string;
+  /**
+   * Optional explicit idempotency key (e.g. the `idempotency-key` header). When absent, a
+   * key is derived from the material consent content, so a duplicate submit is deduped
+   * either way. An explicit key reused with DIFFERENT content is a conflict.
+   */
+  readonly idempotencyKey?: string;
 }
 
 export interface CaptureConsentResult {
@@ -42,6 +50,8 @@ export interface CaptureConsentResult {
   readonly consentId: AlaraId;
   readonly status: 'active';
   readonly eventId: string;
+  /** True when this result was replayed from a prior capture (no new consent created). */
+  readonly idempotentReplay?: boolean;
 }
 
 export interface WithdrawConsentInput {
@@ -64,6 +74,14 @@ export class ConsentCaptureValidationError extends Error {
   }
 }
 
+/** Raised when an explicit idempotency key is reused with materially different consent content. */
+export class ConsentIdempotencyConflictError extends Error {
+  constructor(idempotencyKey: string) {
+    super(`Consent capture conflict: idempotency key "${idempotencyKey}" was already used for different consent content`);
+    this.name = 'ConsentIdempotencyConflictError';
+  }
+}
+
 export class ConsentCaptureService {
   /**
    * @param engine    canonical consent lifecycle (grant/revoke)
@@ -72,9 +90,18 @@ export class ConsentCaptureService {
    *   canonical write. When omitted, behaviour is unchanged (no authz) — surfaces
    *   that require authorization (e.g. the API) must supply it.
    */
+  /**
+   * @param engine     canonical consent lifecycle (grant/revoke)
+   * @param authority  optional caller-authorization (who may grant/withdraw)
+   * @param eventStore optional event store enabling capture idempotency. When provided, a
+   *   per-capture receipt stream (keyed by tenant + idempotency/content key) makes a
+   *   duplicate submit a safe replay instead of a second Consent object. When omitted,
+   *   behaviour is unchanged (no dedup) — surfaces that need it (e.g. the API) supply it.
+   */
   constructor(
     private readonly engine: ConsentEngine,
     private readonly authority?: ConsentAuthorizer,
+    private readonly eventStore?: EventStore,
   ) {}
 
   /** Capture granted consent → canonical Consent object via ConsentEngine.grant. */
@@ -88,7 +115,9 @@ export class ConsentCaptureService {
       throw new ConsentCaptureValidationError('permissionTypes must be a non-empty list');
     }
 
-    // Authorization decision lives in the RulesEngine/policy layer (delegated).
+    // Authorization decision lives in the RulesEngine/policy layer (delegated). It runs
+    // BEFORE the idempotency replay so an unauthorized actor is rejected (403) and never
+    // learns whether a matching consent already exists.
     if (this.authority) {
       await this.authority.assertMayGrant({
         tenantId: input.tenantId,
@@ -97,7 +126,56 @@ export class ConsentCaptureService {
       });
     }
 
-    const result = await this.engine.grant({
+    // ── Idempotency (when an event store is wired) ──────────────────────────────
+    // A content fingerprint identifies the material consent; the idempotency key is the
+    // caller's explicit key when given, else the fingerprint (so identical submits dedup
+    // regardless). A per-capture receipt stream records the first result; a retry replays
+    // it (no second Consent), and an explicit key reused with different content conflicts.
+    if (this.eventStore) {
+      const fingerprint = consentFingerprint(input);
+      const idemKey = input.idempotencyKey?.trim() || fingerprint;
+      const receiptStreamId = makeAlaraId(
+        deterministicId(input.tenantId, 'consent-capture', idemKey),
+      );
+      const prior = await this.eventStore.loadStream(input.tenantId, receiptStreamId);
+      if (prior.length > 0) {
+        const r = prior[0].payload as Record<string, string>;
+        if (r.fingerprint !== fingerprint) {
+          throw new ConsentIdempotencyConflictError(idemKey);
+        }
+        return {
+          captured: true,
+          consentId: makeAlaraId(r.consentId),
+          status: 'active',
+          eventId: r.eventId,
+          idempotentReplay: true,
+        };
+      }
+
+      const result = await this.engine.grant(this.toGrant(input));
+      await this.eventStore.append({
+        tenantId: input.tenantId,
+        streamId: receiptStreamId,
+        type: 'ConsentCaptureReceiptRecorded',
+        payload: {
+          fingerprint,
+          idempotencyKey: idemKey,
+          consentId: String(result.consentId),
+          eventId: result.eventId,
+          actor: input.capturedBy,
+          recordedAt: new Date().toISOString(),
+        },
+        actor: input.capturedBy,
+      });
+      return { captured: true, consentId: result.consentId, status: 'active', eventId: result.eventId };
+    }
+
+    const result = await this.engine.grant(this.toGrant(input));
+    return { captured: true, consentId: result.consentId, status: 'active', eventId: result.eventId };
+  }
+
+  private toGrant(input: CaptureConsentInput) {
+    return {
       tenantId: input.tenantId,
       subjectId: input.subjectId,
       grantorId: input.grantorId,
@@ -106,9 +184,7 @@ export class ConsentCaptureService {
       effectiveDate: input.effectiveDate,
       expirationDate: input.expirationDate,
       actor: input.capturedBy,
-    });
-
-    return { captured: true, consentId: result.consentId, status: 'active', eventId: result.eventId };
+    };
   }
 
   /** Capture a withdrawal / decline → revoke the canonical consent via ConsentEngine.revoke. */
@@ -140,4 +216,21 @@ function requireField(name: string, value: unknown): void {
   if (value === undefined || value === null || value === '') {
     throw new ConsentCaptureValidationError(`${name} is required`);
   }
+}
+
+/**
+ * Stable fingerprint of the material consent content (not the recording actor or source).
+ * permissionTypes are sorted so order does not change the fingerprint; missing optional
+ * dates normalize to '' so the same omission deduplicates consistently.
+ */
+function consentFingerprint(input: CaptureConsentInput): string {
+  return deterministicId(
+    input.tenantId,
+    input.subjectId,
+    input.grantorId,
+    input.recipientId,
+    JSON.stringify([...input.permissionTypes].sort()),
+    input.effectiveDate ?? '',
+    input.expirationDate ?? '',
+  );
 }

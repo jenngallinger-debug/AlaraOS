@@ -24,6 +24,7 @@ import {
   EventType,
   makeAlaraId,
   ConsentCaptureValidationError,
+  ConsentIdempotencyConflictError,
   ConsentAuthorizationError,
   ConsentNotFoundError,
 } from '@alara-os/core';
@@ -278,8 +279,12 @@ export async function registerRestRoutes(
           expirationDate: b.expirationDate,
           capturedBy:     actor, // authenticated actor — body `capturedBy` is not trusted
           source:         b.source,
+          // Optional idempotency key (header). Absent → the service derives one from the
+          // consent content, so a duplicate submit is deduped to a safe replay either way.
+          idempotencyKey: getHeader(req, IDEMPOTENCY_KEY_HEADER),
         });
-        reply.status(201);
+        // A replay returns the original consent (200, not 201 — nothing new was created).
+        reply.status(result.idempotentReplay ? 200 : 201);
         return {
           captured:  true,
           consentId: String(result.consentId),
@@ -289,6 +294,11 @@ export async function registerRestRoutes(
       } catch (err) {
         if (err instanceof ConsentAuthorizationError) {
           reply.status(403);
+          return { captured: false, error: err.message };
+        }
+        if (err instanceof ConsentIdempotencyConflictError) {
+          // Same idempotency key reused with different consent content.
+          reply.status(409);
           return { captured: false, error: err.message };
         }
         if (err instanceof ConsentCaptureValidationError) {

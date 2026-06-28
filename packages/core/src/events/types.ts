@@ -65,6 +65,8 @@ export const EVENT_TYPES = [
   'PromiseCreated', 'PromiseKept', 'PromiseMissed', 'PromiseVoided',
   // Intake — idempotency receipt (keyed by tenant + external referral id)
   'IntakeReceiptRecorded',
+  // Consent — capture idempotency receipt (keyed by tenant + idempotency/content key)
+  'ConsentCaptureReceiptRecorded',
 ] as const;
 
 export type EventType = typeof EVENT_TYPES[number];
