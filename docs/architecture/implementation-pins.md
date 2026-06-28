@@ -109,6 +109,16 @@ These are **constraints, not technologies**. They are binding on all implementat
    allow/deny (201/403/401), env read per request as before. `auth.ts`→`config.ts` import (no
    cycle); `ALARA_SYSTEM_ACTORS` unchanged as the config source. Only the raw-event gate migrated;
    broader per-command RBAC still future. See `code-concordance.md` UPDATE 28._
+   _IdP / token strategy (identity boundary — OWNER DECISION PACKET, design only): forces the
+   single owner decision that unblocks token dual-mode, tenant derivation, GraphQL tenant block,
+   and RLS session-tenant. Recommends a two-track approach sharing ONE verifier — short-term
+   local/dev **RS256 JWT** (+ test-token factory) to start Slices 2–3 now without a vendor, and
+   **managed BAA-signed OIDC** for production staff + **service tokens** for machine/system
+   principals, all via **RS256 + JWKS** so dev and prod verify identically. Required claims map to
+   `Principal` (`sub`→principalId, `tenants`, `roles`, `scope`, `principal_type`). Gating decisions
+   to START Slice 2: RS256+JWKS scheme + tenant membership model (single vs multi-tenant). No
+   runtime change. Full packet `docs/architecture/idp-token-decision.md`; see
+   `code-concordance.md` UPDATE 29._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

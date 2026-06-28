@@ -994,3 +994,21 @@ behavior change** — the allow/deny decision is identical for the same inputs.
 
 Next: slice 2 — token verification in `dual` mode (the IdP-dependent slice); or slice 3 — tenant
 derivation + cross-tenant block.
+
+## UPDATE 29 — IdP / token strategy (OWNER DECISION PACKET — design only, NOT implemented)
+
+Full packet in `docs/architecture/idp-token-decision.md`. Forces the single owner decision that
+unblocks the remaining security-closing identity slices (token dual-mode, tenant derivation,
+GraphQL tenant block, RLS session-tenant). **No runtime change.**
+
+The Principal plumbing is ready (UPDATE 27–28); the missing piece is a **trusted claims source**.
+The packet compares four options (local/dev JWT · managed OIDC · session-cookie · service-token
+only) and recommends a **two-track approach sharing one verifier**: short-term **local/dev RS256
+JWT** (+ test-token factory) to unblock Slices 2–3 now without a vendor, and **managed BAA-signed
+OIDC** for production staff with **service tokens** for machine/system principals — using **RS256 +
+JWKS** from day one so dev and production verify through the same code path. Specifies the required
+token claims mapped to `Principal` (`sub`→principalId, `tenants`, `roles`, `scope`,
+`principal_type`). The only decisions that gate *starting* Slice 2: (a) RS256+JWKS as the scheme,
+(b) the tenant membership model (single vs multi-tenant). Vendor/frontend questions can run in
+parallel. Risk of delay: `x-actor-id` stays spoofable → impersonation + cross-tenant PHI remain
+open, RLS stays inert, and Slices 2/3/5 cannot proceed.
