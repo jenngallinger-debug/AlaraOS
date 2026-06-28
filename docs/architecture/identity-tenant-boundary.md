@@ -206,7 +206,8 @@ binding first (this packet), then RLS consumes the principal-derived tenant.
    downstream slices, independently shippable, needs no IdP decision.)* **✅ DONE (UPDATE 27).**
 2. **Token verification (dual, tenant unenforced).** Add JWT/OIDC verification; `AUTH_MODE=dual`
    accepts token-or-legacy; populate `Principal` claims; deprecation signal on legacy. No tenant
-   enforcement yet.
+   enforcement yet. **✅ DONE (UPDATE 30)** — RS256 verifier + `AUTH_MODE` wired; tenant still
+   unenforced; deprecation signal deferred to the wiring/rollout step.
 3. **Tenant derivation + cross-tenant block.** For token principals, derive/validate tenant from
    claims; reject mismatched `tenantId` (REST 403 / GraphQL 403) at the boundary.
 4. **Command-level role/scope gates.** Replace `ALARA_SYSTEM_ACTORS` with a `system:*` scope; add

@@ -20,7 +20,10 @@
 
 import { FastifyRequest } from 'fastify';
 import { timingSafeEqual } from 'crypto';
-import { isSystemActor } from './config';
+import {
+  isSystemActor, getAuthMode, getAuthIssuer, getAuthAudience, getAuthPublicKey,
+} from './config';
+import { verifyJwt } from './jwt';
 
 export const ACTOR_HEADER = 'x-actor-id';
 
@@ -81,14 +84,54 @@ export function principalHasScope(principal: Principal, scope: string): boolean 
   return principal.scopes.includes(scope);
 }
 
-/**
- * Authenticate the caller into a `Principal`. LEGACY MODE ONLY today: derives the principal
- * from the `x-actor-id` header exactly as before (no token/session/JWT). Returns `undefined`
- * when no actor is present — preserving the existing "missing actor" semantics.
- */
-export function authenticatePrincipal(req: FastifyRequest): Principal | undefined {
+/** Extract the bearer token from the `Authorization: Bearer <jwt>` header, if present. */
+export function getBearerToken(req: FastifyRequest): string | undefined {
+  const raw = getHeader(req, 'authorization');
+  if (!raw) return undefined;
+  const match = /^Bearer\s+(.+)$/i.exec(raw);
+  return match ? match[1].trim() : undefined;
+}
+
+/** Legacy authentication: a principal derived from the `x-actor-id` header (or undefined). */
+function legacyAuthenticate(req: FastifyRequest): Principal | undefined {
   const actorId = getHeader(req, ACTOR_HEADER);
   return actorId ? legacyPrincipal(actorId) : undefined;
+}
+
+/**
+ * Token authentication: verify a bearer RS256 JWT into a `Principal`, or undefined when there is
+ * no token, the auth config is incomplete, or verification fails. Pure verification lives in
+ * jwt.ts; this only resolves config and adapts the result.
+ */
+function tokenAuthenticate(req: FastifyRequest): Principal | undefined {
+  const token = getBearerToken(req);
+  if (!token) return undefined;
+  const issuer = getAuthIssuer();
+  const audience = getAuthAudience();
+  const publicKey = getAuthPublicKey();
+  if (!issuer || !audience || !publicKey) return undefined; // unconfigured → no token principal
+  const result = verifyJwt({ token, publicKey, issuer, audience });
+  return result.valid ? result.principal : undefined;
+}
+
+/**
+ * Authenticate the caller into a `Principal`, honoring `AUTH_MODE`:
+ *   - `legacy` (default): `x-actor-id` only — byte-identical to the previous behavior.
+ *   - `dual`: prefer a valid bearer-token principal; fall back to legacy `x-actor-id`.
+ *   - `required`: a valid bearer-token principal is mandatory; legacy `x-actor-id` is NOT accepted.
+ * Returns `undefined` when no acceptable principal is present (preserving "missing actor" → 401).
+ *
+ * NOTE: this populates verified claims (incl. `tenants`) but does NOT yet derive or enforce
+ * tenant boundaries — that is a later slice. Tenant is still taken from the request.
+ */
+export function authenticatePrincipal(req: FastifyRequest): Principal | undefined {
+  const mode = getAuthMode();
+  if (mode === 'legacy') return legacyAuthenticate(req);
+
+  const tokenPrincipal = tokenAuthenticate(req);
+  if (tokenPrincipal) return tokenPrincipal;
+  if (mode === 'required') return undefined; // token mandatory; legacy not accepted
+  return legacyAuthenticate(req);            // dual: fall back to legacy
 }
 
 /**

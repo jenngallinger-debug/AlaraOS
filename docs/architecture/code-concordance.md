@@ -1012,3 +1012,36 @@ token claims mapped to `Principal` (`sub`→principalId, `tenants`, `roles`, `sc
 (b) the tenant membership model (single vs multi-tenant). Vendor/frontend questions can run in
 parallel. Risk of delay: `x-actor-id` stays spoofable → impersonation + cross-tenant PHI remain
 open, RLS stays inert, and Slices 2/3/5 cannot proceed.
+
+## UPDATE 30 — Token verification + AUTH_MODE (identity boundary SLICE 2 — IMPLEMENTED, default OFF)
+
+Implements the approved RS256-JWT verification scaffold (owner decision UPDATE 29). **Default
+behavior is unchanged** (`AUTH_MODE=legacy`): all 145 pre-existing API tests pass untouched.
+
+- New `apps/api/src/shared/jwt.ts` — PURE, dependency-free RS256 verifier (Node `crypto` only,
+  no jsonwebtoken/jose). `verifyJwt({token, publicKey, issuer, audience, nowSec?})` →
+  `{valid, principal}` or `{valid:false, reason}` (`malformed` / `unsupported_alg` /
+  `bad_signature` / `expired` / `not_yet_valid` / `issuer_mismatch` / `audience_mismatch` /
+  `invalid_claims`). **Security:** only `alg: RS256` accepted (rejects `none`/HS*/others —
+  no algorithm confusion); signature verified before any claim is trusted; `exp` required;
+  `iss`/`aud` matched; `nbf` honored. Claim mapping → `Principal`: `sub`→principalId,
+  `principal_type`→type (validated, default `user`), `tenants[]`, `roles[]`, `scope`
+  (space-delimited) or `scopes[]`. VENDOR-NEUTRAL — verifies against a configured key, no IdP
+  named.
+- Config (`config.ts`): `getAuthMode()` (`legacy|dual|required`, default `legacy`, invalid→legacy),
+  `getAuthIssuer()`/`getAuthAudience()`, `getAuthPublicKey()` (PEM from `AUTH_PUBLIC_KEY`, `\n`
+  un-escaped) — a local/dev key source; a production JWKS-URL-by-`kid` resolver is a later slice.
+- `auth.ts`: `getBearerToken(req)` (Authorization: Bearer); `authenticatePrincipal` now honors
+  `AUTH_MODE` — `legacy` = byte-identical x-actor-id; `dual` = prefer a verified token principal,
+  else legacy fallback; `required` = token mandatory, legacy rejected. `auth.ts→jwt.ts` runtime
+  import (jwt.ts imports only the `Principal` TYPE from auth.ts → no runtime cycle).
+- **Not done in this slice (by design):** NO tenant derivation/enforcement (the verified `tenants`
+  claim is populated but unused — tenant still from the request), NO GraphQL tenant change, NO
+  legacy deprecation signal yet, NO production JWKS fetch, no new dependency.
+- Tests (`apps/api/tests/jwt-auth.test.ts`, +23): RS256 keypair + signed test tokens via Node
+  crypto; claim mapping; expired/nbf/iss/aud/missing-exp/missing-sub/`alg:none`/tampered/wrong-key/
+  malformed rejections; and the legacy/dual/required wiring (incl. fail-safe legacy fallback when
+  the token is invalid or auth config is incomplete).
+
+Next: slice 3 — tenant derivation + cross-tenant block (REST 403), reading the now-verified
+`principal.tenants`.

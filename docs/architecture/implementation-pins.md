@@ -119,6 +119,16 @@ These are **constraints, not technologies**. They are binding on all implementat
    to START Slice 2: RS256+JWKS scheme + tenant membership model (single vs multi-tenant). No
    runtime change. Full packet `docs/architecture/idp-token-decision.md`; see
    `code-concordance.md` UPDATE 29._
+   _Token verification + AUTH_MODE (identity boundary SLICE 2 — IMPLEMENTED, default OFF):
+   `shared/jwt.ts` is a PURE, dependency-free RS256 verifier (Node crypto) — `verifyJwt` checks
+   alg=RS256 only (rejects none/HS*), signature-before-claims, iss/aud/exp/nbf, and maps
+   sub/principal_type/tenants/roles/scope onto a `Principal`. Config `AUTH_MODE`
+   (legacy|dual|required, default legacy), `AUTH_ISSUER`/`AUTH_AUDIENCE`/`AUTH_PUBLIC_KEY` (PEM;
+   JWKS-URL resolver is a later slice). `authenticatePrincipal` honors the mode: legacy =
+   byte-identical x-actor-id; dual = prefer verified token else legacy; required = token only.
+   NO tenant enforcement (tenants claim populated but unused), NO GraphQL change, no new dep,
+   default behavior unchanged. Vendor-neutral (no IdP hardcoded). See `code-concordance.md`
+   UPDATE 30._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

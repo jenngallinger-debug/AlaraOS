@@ -21,6 +21,44 @@ export function isSystemActor(actor: string): boolean {
   return getSystemActors().has(actor);
 }
 
+// ─── Auth / identity token verification config (identity boundary; see auth.ts + jwt.ts) ───
+// Vendor-neutral: RS256 over a configured public key (JWKS-shaped). No IdP vendor is named or
+// hardcoded. In `legacy` mode (default) these are unused and behavior is unchanged.
+
+/** Auth enforcement mode: `legacy` (x-actor-id only), `dual` (token or legacy), `required`. */
+export type AuthMode = 'legacy' | 'dual' | 'required';
+
+/**
+ * Auth mode from `AUTH_MODE`. Default `legacy` (today's behavior); an unrecognized value falls
+ * back to `legacy` — the safe, non-breaking state. Token verification only runs in dual/required.
+ */
+export function getAuthMode(): AuthMode {
+  const raw = (process.env.AUTH_MODE ?? '').trim().toLowerCase();
+  return raw === 'dual' || raw === 'required' ? raw : 'legacy';
+}
+
+/** Expected token issuer (`iss`) from `AUTH_ISSUER`, or undefined when unset. */
+export function getAuthIssuer(): string | undefined {
+  const s = (process.env.AUTH_ISSUER ?? '').trim();
+  return s.length > 0 ? s : undefined;
+}
+
+/** Expected token audience (`aud`) from `AUTH_AUDIENCE`, or undefined when unset. */
+export function getAuthAudience(): string | undefined {
+  const s = (process.env.AUTH_AUDIENCE ?? '').trim();
+  return s.length > 0 ? s : undefined;
+}
+
+/**
+ * RS256 verification public key (PEM) from `AUTH_PUBLIC_KEY`, or undefined when unset. Literal
+ * `\n` sequences are converted to newlines so the PEM can live in a single env var. This is the
+ * local/dev key source; a production JWKS-URL resolver (fetch keys by `kid`) is a later slice.
+ */
+export function getAuthPublicKey(): string | undefined {
+  const s = (process.env.AUTH_PUBLIC_KEY ?? '').trim();
+  return s.length > 0 ? s.replace(/\\n/g, '\n') : undefined;
+}
+
 /**
  * Whether the raw event-append command surface (`POST /commands/events`) is mounted.
  *
