@@ -834,7 +834,7 @@ Env flag `WEBHOOK_HMAC_MODE` with three states:
    auth change; prove raw bytes captured and no other route affected. **✅ DONE (UPDATE 23).**
 2. **HMAC verify helper + config** — `verifyWebhookSignature` (pure, unit-tested) and config
    helpers (`AUTOMYND_WEBHOOK_KEYS`, `WEBHOOK_TIMESTAMP_TOLERANCE_SEC`, `WEBHOOK_HMAC_MODE`). No
-   wiring yet.
+   wiring yet. **✅ DONE (UPDATE 24).**
 3. **Wire `dual` mode** into the route (accept HMAC or legacy secret; deprecation signal on
    legacy). Default `dual`. Full ingress-order + mode tests.
 4. **Flip to `required`** and remove the legacy secret path (separate, later, after sender
@@ -868,3 +868,35 @@ this is pure plumbing that makes the exact request bytes available for the later
 
 Next: slice 2 — `verifyWebhookSignature` helper + config (`AUTOMYND_WEBHOOK_KEYS`,
 `WEBHOOK_TIMESTAMP_TOLERANCE_SEC`, `WEBHOOK_HMAC_MODE`), still unwired.
+
+## UPDATE 24 — Webhook HMAC verifier + config (HMAC slice 2 of 4 — IMPLEMENTED, UNWIRED)
+
+Implements packet slice 2. **Pure helper + config only — NOT called by the route.** The
+webhook still authenticates with the shared secret exactly as before; nothing here changes
+runtime behavior.
+
+- New `apps/api/src/shared/webhook-hmac.ts` (pure, no Fastify, no env):
+  - `parseSignatureHeader('t=,v1=,kid=')` → `{timestamp, v1, kid?}` or null (order-independent;
+    rejects missing/non-integer `t`, missing/non-hex `v1`).
+  - `computeWebhookSignature(secret, t, rawBody)` = `HMAC-SHA256(secret, "{t}.{rawBody}")` hex.
+  - `verifyWebhookSignature({header, rawBody, keys, toleranceSec, nowSec?})` →
+    `{valid:true, kid?}` or `{valid:false, reason}` where reason ∈ `malformed_header` /
+    `timestamp_out_of_tolerance` / `no_keys_configured` / `unknown_kid` / `signature_mismatch`.
+    Order: parse → timestamp tolerance (`|now−t| ≤ toleranceSec`, signed `t` so tampering also
+    fails the signature) → key resolution → constant-time compare (reuses `secretsMatch`).
+  - **Key rotation:** a named `kid` must exist in the keyset (else `unknown_kid` — no silent
+    fallback to other keys); an absent `kid` tries every active key and accepts the first match
+    (supports an overlap window). Removing a key stops its signatures verifying.
+- Config (`shared/config.ts`, parsed but unenforced): `WEBHOOK_SIGNATURE_HEADER`
+  (`x-automynd-signature`); `parseWebhookKeys` / `getWebhookKeys` (`AUTOMYND_WEBHOOK_KEYS`,
+  `kid:secret` comma list — first `:` splits, malformed entries skipped, dup kid last-wins);
+  `getWebhookTimestampToleranceSec` (`WEBHOOK_TIMESTAMP_TOLERANCE_SEC`, default 300, invalid→300);
+  `getWebhookHmacMode` (`WEBHOOK_HMAC_MODE` → `off`|`dual`|`required`, default `off`, invalid→`off`).
+- Tests (`tests/webhook-hmac.test.ts`, 47 cases): valid (with/without kid), wrong secret,
+  tampered body, tampered timestamp (in-window → mismatch), expired/future timestamp, boundary,
+  malformed headers, unknown kid, no keys, uppercase-hex, rotation overlap + key removal, uniform
+  failure reason, and all config defaults/invalid values.
+
+Slice 2 deliberately does NOT pick a runtime default beyond `off`; slice 3 will move the
+operative default to `dual` when it wires the verifier into the route. **Owner confirmation of
+Automynd's actual signature header/format is still required before slice 3.**

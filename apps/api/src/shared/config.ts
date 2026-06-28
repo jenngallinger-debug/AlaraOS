@@ -53,6 +53,57 @@ export function getAutomyndWebhookSecret(): string | undefined {
   return s.length > 0 ? s : undefined;
 }
 
+// ─── Webhook HMAC signing config (decision packet UPDATE 22; verifier in webhook-hmac.ts) ──
+// NOTE: parsed here but NOT yet enforced at the route. Wiring is a later slice; today the
+// webhook still authenticates with the shared secret only.
+
+/** Header carrying the Automynd HMAC signature: `t=<unix_seconds>,v1=<hex>,kid=<key-id>`. */
+export const WEBHOOK_SIGNATURE_HEADER = 'x-automynd-signature';
+
+/** HMAC enforcement mode: `off` (shared-secret only, today), `dual` (HMAC or secret), `required`. */
+export type WebhookHmacMode = 'off' | 'dual' | 'required';
+
+/**
+ * Parse a `kid:secret,kid2:secret2` keyset (pure, env-free). The FIRST `:` separates kid from
+ * secret, so a secret may itself contain `:`. Empty/malformed entries (no colon, empty kid, or
+ * empty secret) are skipped; a duplicate kid takes the last value.
+ */
+export function parseWebhookKeys(raw: string): Map<string, string> {
+  const keys = new Map<string, string>();
+  for (const entry of raw.split(',')) {
+    const trimmed = entry.trim();
+    if (!trimmed) continue;
+    const i = trimmed.indexOf(':');
+    if (i <= 0) continue;                       // no colon, or empty kid
+    const kid = trimmed.slice(0, i).trim();
+    const secret = trimmed.slice(i + 1).trim();
+    if (!kid || !secret) continue;
+    keys.set(kid, secret);
+  }
+  return keys;
+}
+
+/** The configured Automynd signing keyset (kid → secret) from `AUTOMYND_WEBHOOK_KEYS`. */
+export function getWebhookKeys(): Map<string, string> {
+  return parseWebhookKeys(process.env.AUTOMYND_WEBHOOK_KEYS ?? '');
+}
+
+/** Signature timestamp tolerance in seconds. `WEBHOOK_TIMESTAMP_TOLERANCE_SEC`, default 300. */
+export function getWebhookTimestampToleranceSec(): number {
+  const n = Number(process.env.WEBHOOK_TIMESTAMP_TOLERANCE_SEC);
+  return Number.isFinite(n) && n > 0 ? n : 300;
+}
+
+/**
+ * HMAC enforcement mode from `WEBHOOK_HMAC_MODE`. Default `off` (today's shared-secret-only
+ * behavior); an unrecognized value falls back to `off` — the safe, non-breaking state, since a
+ * later slice will deliberately move the operative default to `dual` when HMAC is wired.
+ */
+export function getWebhookHmacMode(): WebhookHmacMode {
+  const raw = (process.env.WEBHOOK_HMAC_MODE ?? '').trim().toLowerCase();
+  return raw === 'dual' || raw === 'required' ? raw : 'off';
+}
+
 /**
  * Derive a stable, UUID-shaped event id from its parts (a deterministic v5-style id).
  * Same parts produce the same id, so the Event Store's idempotency-by-id makes a
