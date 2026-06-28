@@ -1151,3 +1151,29 @@ network, no dependency, no external behavior change** (all 185 pre-existing API 
   `tokenAuthenticate`) pass unchanged.
 
 Next: JWKS slice 2 — the dependency-free, injectable JWKS cache + fetcher (still unwired).
+
+## UPDATE 35 — JWKS cache/fetcher module (JWKS slice 2 — IMPLEMENTED, unwired)
+
+Implements JWKS slice 2 (UPDATE 33): a dependency-free, injectable JWKS cache exposing the
+synchronous `KeyResolver` that `verifyJwt` (UPDATE 34) consumes. **NOT imported by auth — zero
+runtime behavior change** (all 191 pre-existing API tests pass); the production `fetch` adapter
+and wiring are JWKS slice 3.
+
+- New `apps/api/src/shared/jwks.ts` (Node `crypto` only — no `jose`/`jwks-rsa`):
+  - `parseJwks(raw)` → `Map<kid, KeyObject>` (or `undefined` for a malformed `{keys:[…]}`). Accepts
+    only RSA signing keys (`kty:RSA`; `use:sig`/`alg:RS256` when stated; `kid`+`n`+`e` required);
+    JWK→KeyObject via `createPublicKey({ format:'jwk' })`; unparseable entries skipped.
+  - `JwksCache` with an **injected** async `fetcher`, **TTL** staleness, **min-interval throttle**
+    (anti-storm), and **last-known-good** (a failed fetch / malformed / empty document keeps the
+    prior keys). `resolve(kid?)` is **synchronous** (cache read; no `kid` + exactly one key → that
+    key, else undefined); `resolver()` returns a `KeyResolver`; `maybeRefresh()`/`refresh()` are the
+    async population path. Injectable clock for deterministic tests.
+- **By design, NOT done:** no real network, no `fetch` call, no auth/config wiring, no dependency.
+- Tests (`apps/api/tests/jwks.test.ts`, +12, real RSA keypairs + fake fetcher + injected clock):
+  parse RSA/skip non-RSA·enc·RS512·keyless·no-params; successful fetch populates; known/unknown kid;
+  **the resolver verifies a token through `verifyJwt`** (end-to-end of the module); resolver is
+  synchronous; TTL triggers refresh; fetch-failure and malformed-response keep last-known-good;
+  **rotation** (add overlap, retire old); min-interval throttle blocks storms; no-kid single/ambiguous/empty.
+
+Next: JWKS slice 3 — wire it behind `AUTH_JWKS_URL` with a Node-`fetch` adapter + non-blocking
+background refresh; `authenticatePrincipal` stays synchronous.

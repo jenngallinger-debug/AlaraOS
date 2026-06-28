@@ -141,7 +141,7 @@ vendor SDK and no vendor name in the codebase.
 2. **JWKS cache + fetcher (dependency-free, injectable).** Pure cache module
    (`Map<kid,KeyObject>` + TTL + last-known-good + min-interval) with an injectable fetch (Node
    `fetch`); JWK→KeyObject via `createPublicKey({ format: 'jwk' })`. Unit-tested with a fake
-   fetcher; NOT wired.
+   fetcher; NOT wired. **✅ DONE (UPDATE 35).**
 3. **Wire JWKS resolver behind config.** `AUTH_JWKS_URL` selects the JWKS resolver; non-blocking
    warm + background refresh; `authenticatePrincipal` stays synchronous (cache read). Fail-closed
    per mode. Integration tests with an injected fetcher.

@@ -161,6 +161,13 @@ These are **constraints, not technologies**. They are binding on all implementat
    single `AUTH_PUBLIC_KEY` via `singleKeyResolver` — same key, same result, `authenticatePrincipal`
    unchanged. All other validation byte-identical. No JWKS fetch / cache / network / dep / config
    change yet (slices 2–4). See `code-concordance.md` UPDATE 34._
+   _JWKS cache/fetcher module (JWKS slice 2 — IMPLEMENTED, unwired): `shared/jwks.ts` (Node crypto
+   only). `parseJwks` builds `Map<kid,KeyObject>` from a JWKS (RSA signing keys only; JWK→KeyObject
+   via `createPublicKey({format:'jwk'})`; malformed → undefined). `JwksCache` takes an INJECTED async
+   fetcher, with TTL staleness, min-interval throttle, and last-known-good on failure/malformed/empty;
+   `resolve(kid?)` is SYNCHRONOUS and `resolver()` returns a `KeyResolver` for `verifyJwt`. NOT
+   imported by auth (no network/fetch/config/dep) — wiring is slice 3. Zero runtime change. See
+   `code-concordance.md` UPDATE 35._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,
