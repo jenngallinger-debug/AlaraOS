@@ -195,9 +195,14 @@ export class RulesEngine {
       decision,
       evaluatedAt: decision.evaluatedAt,
     };
-    // Fire-and-forget — audit failures must not block the pipeline
+    // Fire-and-forget — audit failures must not block the pipeline.
+    // PHI-safety: the entry carries RuleContext (eventPayload/objects), and a failing
+    // sink may surface an error that echoes the row it tried to persist. Never log the
+    // entry or the raw error — log only the error TYPE plus the entry's id (a UUID),
+    // which is enough to correlate without leaking PHI into stdout/log aggregation.
     this.auditSink.record(entry).catch(err => {
-      console.error('[RulesEngine] Audit sink error:', err);
+      const errType = err instanceof Error ? err.name : typeof err;
+      console.error(`[RulesEngine] audit sink error (${errType}); entry ${entry.id} not persisted`);
     });
   }
 }

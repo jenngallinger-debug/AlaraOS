@@ -232,6 +232,36 @@ describe('RulesEngine — audit logging', () => {
     expect(entry.decision.outcome).toBeDefined();
     expect(entry.evaluatedAt).toBeInstanceOf(Date);
   });
+
+  test('Audit sink failure is logged WITHOUT leaking PHI (PHI-safe logging)', async () => {
+    // A sink that fails by echoing the row it tried to persist — the worst case for
+    // PHI leakage into stdout/log aggregation.
+    const phi = 'Samuel-Brown-1949-03-14';
+    class ThrowingAuditSink implements IAuditSink {
+      async record(entry: RuleAuditEntry): Promise<void> {
+        throw new Error(`db write failed for ${JSON.stringify(entry.context)} :: ${phi}`);
+      }
+    }
+    const engine = new RulesEngine(makeRegistry(DefaultAllowPolicyModule), new ThrowingAuditSink());
+    const ctx = makeContext({ eventPayload: { patientName: phi, dob: phi } });
+
+    const logged: string[] = [];
+    const orig = console.error;
+    console.error = (...args: unknown[]) => { logged.push(args.map(String).join(' ')); };
+    try {
+      await engine.evaluate(ctx);
+      await new Promise((r) => setImmediate(r)); // let the fire-and-forget .catch run
+    } finally {
+      console.error = orig;
+    }
+
+    expect(logged).toHaveLength(1);
+    const line = logged[0];
+    expect(line).not.toContain(phi);            // no PHI value
+    expect(line).not.toContain('patientName');  // no payload keys
+    expect(line).toContain('Error');            // error TYPE is logged
+    expect(line).toMatch(/entry [0-9a-f-]+ not persisted/); // entry UUID for correlation
+  });
 });
 
 // ─── Built-in policies ────────────────────────────────────────────────────────

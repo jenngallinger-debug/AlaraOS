@@ -559,3 +559,40 @@ sufficient: `x-actor-id` is an MVP transport header with no real verification, s
 Scope/limits: the system-actor gate and transport auth still apply when the surface is
 enabled — this change only removes the surface from the default production attack surface.
 Real authN for the enabled case remains future work (see UPDATE notes on auth boundary).
+
+## UPDATE 18 — PHI-safe audit/logging review (Hardening Phase 2)
+
+Audit of the write/log surfaces for PHI leakage. Findings and disposition:
+
+- **No PHI is logged today.** The Fastify logger (`server.ts`, on outside `NODE_ENV=test`)
+  uses pino defaults — request *metadata* only (method/url/status/responseTime), never
+  request or webhook bodies. Domain error messages carry field names / canonical ids
+  (`consentId`, `permissionTypes`), not PHI values. The only concrete `IAuditSink` wired
+  anywhere is `NoopAuditSink` (discards entries), so no audit row is persisted or logged.
+- **Narrow fix applied** — `rules-engine/engine.ts` audit-failure path. It previously did
+  `console.error('[RulesEngine] Audit sink error:', err)`, dumping the raw error. A future
+  real sink could throw an error that echoes the row it tried to persist (which carries the
+  full `RuleContext` = `eventPayload`/`objects` = PHI), leaking it to stdout. Now it logs
+  only the error TYPE plus the entry's UUID (`entry ${id} not persisted`) — enough to
+  correlate, no PHI. Locked in by a test that fails the build if the entry/PHI reappears in
+  the log line.
+
+### Decision packet (DEFERRED — do not implement speculatively)
+
+`RuleAuditEntry.context` retains the **entire** `RuleContext`, including `eventPayload` and
+`objects`, which carry PHI. This is latent: no persistent audit sink exists yet, so nothing
+stores it today. When a real audit sink is built, it MUST NOT persist raw PHI. Options to
+decide at that time (not now — building redaction with no consumer would be speculative and
+out of scope for this hardening pass):
+
+1. **Minimize at the entry boundary** — change `RuleAuditEntry` to store a redacted/derived
+   context (ids, types, outcome, applied-rule reasons) instead of the raw payload/objects.
+   Cleanest, but changes a shared type and what auditors can see.
+2. **Redact in the sink** — keep the entry shape, require each `IAuditSink` to redact before
+   persistence. Localizes the policy to the sink but is easy to get wrong per-sink.
+3. **Encrypt-at-rest + access-controlled audit store** — retain full context but treat the
+   audit log as a PHI store with its own encryption/retention/access policy.
+
+Recommendation when the sink is built: (1) for the default sink (store derived, PHI-free
+fields) with (3) available for a regulated full-fidelity audit store. Tracked here; no code
+change in this slice beyond the narrow logging fix above.
