@@ -16,6 +16,7 @@ import { EngineContainer } from './shared/container';
 import { registerRestRoutes } from './rest/routes';
 import { registerRateLimit } from './shared/rate-limit';
 import { registerGraphqlAuthGate } from './shared/graphql-gate';
+import { registerSecurityHeaders, registerCors } from './shared/http-security';
 import { isGraphqlEnabled } from './shared/config';
 import { schema } from './graphql/schema';
 import { buildResolvers } from './graphql/resolvers';
@@ -42,6 +43,10 @@ export async function buildServer(container: EngineContainer) {
       message: error.message,
     });
   });
+
+  // ── HTTP security headers (all responses) + CORS (env allowlist, deny by default) ─
+  registerSecurityHeaders(app);
+  await registerCors(app);
 
   // ── Rate limiting (mutating routes only; no-op when disabled / under tests) ─
   registerRateLimit(app);

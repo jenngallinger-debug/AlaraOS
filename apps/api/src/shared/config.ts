@@ -105,6 +105,51 @@ export function isGraphqlAuthRequired(): boolean {
   return process.env.NODE_ENV !== 'test';
 }
 
+// ─── HTTP security headers + CORS ─────────────────────────────────────────────
+
+/**
+ * Whether the standard security-header set is emitted on every response. Default ON
+ * everywhere (the headers are universally safe — nosniff, frame DENY, no-referrer, etc.).
+ * `SECURITY_HEADERS_ENABLED` (true/false/1/0) overrides.
+ */
+export function areSecurityHeadersEnabled(): boolean {
+  const raw = (process.env.SECURITY_HEADERS_ENABLED ?? '').trim().toLowerCase();
+  if (raw === 'false' || raw === '0') return false;
+  if (raw === 'true' || raw === '1') return true;
+  return true;
+}
+
+/**
+ * Whether to emit HSTS (`Strict-Transport-Security`). Default OFF: HSTS is
+ * deployment-sensitive (it pins a host to HTTPS and can lock out a misconfigured domain),
+ * and there is no known production origin in-repo. Opt in per environment with
+ * `HSTS_ENABLED=true` once TLS termination is confirmed.
+ */
+export function isHstsEnabled(): boolean {
+  const raw = (process.env.HSTS_ENABLED ?? '').trim().toLowerCase();
+  return raw === 'true' || raw === '1';
+}
+
+/** HSTS max-age in seconds (default 180 days). Only used when HSTS is enabled. */
+export function getHstsMaxAge(): number {
+  const n = Number(process.env.HSTS_MAX_AGE);
+  return Number.isFinite(n) && n > 0 ? n : 15_552_000;
+}
+
+/**
+ * Allowed cross-origin origins, from `CORS_ALLOWED_ORIGINS` (comma-separated). Empty by
+ * default → cross-origin is DENIED (no `Access-Control-Allow-Origin`), which is safer than
+ * a permissive wildcard. There is no known production frontend origin in-repo; the owner
+ * sets this per environment (e.g. the portal's URL). A literal `*` is honored but should be
+ * avoided in production.
+ */
+export function getCorsAllowedOrigins(): string[] {
+  return (process.env.CORS_ALLOWED_ORIGINS ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+}
+
 // ─── Rate limiting (basic, in-memory, process-local) ──────────────────────────
 
 /**

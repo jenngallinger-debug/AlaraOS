@@ -677,3 +677,37 @@ Scope/limits & residuals (stated plainly):
   receipt appended in separate transactions, so two simultaneous first-time identical captures
   could still both create before either records a receipt. Documented platform-wide residual
   (needs a pre-write claim); unchanged by this slice.
+
+## UPDATE 21 — HTTP security headers + CORS (Hardening Phase 2)
+
+Audit of the HTTP edge: no security headers were set on any response, and although
+`@fastify/cors` was a dependency it was **never registered** (so the API sent no CORS headers
+— cross-origin was blocked by the browser default, safe but not a deliberate policy).
+`@fastify/helmet` is not installed. Both pieces added in `apps/api/src/shared/http-security.ts`,
+wired early in `server.ts` (before routes).
+
+- **Security headers** — a dependency-free `onSend` hook (matches the rate-limit slice's
+  "no new dep" convention; no Helmet) adds to EVERY response (routes, errors, 404s):
+  `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,
+  `Cross-Origin-Resource-Policy: same-origin`, `X-DNS-Prefetch-Control: off`,
+  `X-Permitted-Cross-Domain-Policies: none`. Default ON (`SECURITY_HEADERS_ENABLED`). No CSP —
+  this is a JSON API plus the dev-only GraphiQL HTML, and a restrictive CSP would break GraphiQL.
+- **HSTS** — opt-in (`HSTS_ENABLED`, default **OFF**; `HSTS_MAX_AGE` default 180d). HSTS pins a
+  host to HTTPS and can lock out a misconfigured domain, and there is no known production origin
+  in-repo, so it is deliberately not on by default. Enable per-environment once TLS is confirmed.
+- **CORS** — registers the installed `@fastify/cors` with an env allowlist
+  `CORS_ALLOWED_ORIGINS` (comma-separated). **Empty → `origin: false` (cross-origin DENIED, no
+  ACAO)** — safer than a wildcard. A non-empty list reflects only those origins; preflight
+  (OPTIONS) honors the same list. `credentials: false` (header auth, no cookies);
+  `allowedHeaders` = content-type + the API's `x-actor-id` / `x-automynd-secret` /
+  `idempotency-key`.
+- Tests (`tests/http-security.test.ts`): default headers present (+ on 404), HSTS off by
+  default / on when enabled, headers disablable; CORS denied by default, allowed origin
+  reflected, non-allowlisted origin not reflected, preflight for an allowed origin.
+
+### Owner decision (documented, not blocking)
+
+`CORS_ALLOWED_ORIGINS` ships **empty (deny)** because no production frontend origin exists in
+the repo or env. When a browser client (e.g. the portal) is deployed, the owner must set this
+to that origin's exact URL(s) — do NOT use `*`. Same for `HSTS_ENABLED` once the API is served
+over TLS behind its real hostname.
