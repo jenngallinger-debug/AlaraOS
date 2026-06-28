@@ -137,7 +137,7 @@ vendor SDK and no vendor name in the codebase.
 1. **Key-resolver refactor (NO behavior change).** `verifyJwt` accepts a sync resolver
    `(kid?) => KeyObject | undefined` and reads `kid` from the header; `AUTH_PUBLIC_KEY` becomes a
    one-entry resolver. Pure, unit-tested, default behavior identical. *(Same staging pattern as the
-   HMAC verifier — safe seam, no network, no IdP decision needed.)*
+   HMAC verifier — safe seam, no network, no IdP decision needed.)* **✅ DONE (UPDATE 34).**
 2. **JWKS cache + fetcher (dependency-free, injectable).** Pure cache module
    (`Map<kid,KeyObject>` + TTL + last-known-good + min-interval) with an injectable fetch (Node
    `fetch`); JWK→KeyObject via `createPublicKey({ format: 'jwk' })`. Unit-tested with a fake

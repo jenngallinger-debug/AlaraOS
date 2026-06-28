@@ -22,6 +22,7 @@ import type { Principal, PrincipalType } from './auth';
 export type TokenVerifyFailureReason =
   | 'malformed'
   | 'unsupported_alg'
+  | 'unknown_kid'
   | 'bad_signature'
   | 'expired'
   | 'not_yet_valid'
@@ -33,11 +34,23 @@ export type TokenVerifyResult =
   | { readonly valid: true; readonly principal: Principal }
   | { readonly valid: false; readonly reason: TokenVerifyFailureReason };
 
+/**
+ * Synchronous key resolver: returns the RS256 verification key (PEM or KeyObject) for a token's
+ * `kid`, or `undefined` when no key is available (→ fail closed). Synchronous on purpose — the
+ * future JWKS resolver reads an in-memory cache, never the network (see jwks-resolver.md).
+ */
+export type KeyResolver = (kid?: string) => string | KeyObject | undefined;
+
+/** Adapt a single configured key into a degenerate resolver (returns it for any/no `kid`). */
+export function singleKeyResolver(key: string | KeyObject): KeyResolver {
+  return () => key;
+}
+
 export interface TokenVerifyOptions {
   /** The raw JWT (no `Bearer ` prefix). */
   readonly token: string;
-  /** RS256 public key — PEM string or a crypto KeyObject. */
-  readonly publicKey: string | KeyObject;
+  /** Resolves the RS256 verification key by `kid` (single-key callers use `singleKeyResolver`). */
+  readonly resolveKey: KeyResolver;
   /** Expected `iss`. */
   readonly issuer: string;
   /** Expected `aud` (must be present in the token's audience). */
@@ -91,10 +104,16 @@ export function verifyJwt(opts: TokenVerifyOptions): TokenVerifyResult {
   const payload = decodeJson(payloadSeg);
   if (!payload) return { valid: false, reason: 'malformed' };
 
+  // Resolve the verification key by the header's `kid` (a single-key caller ignores it). Fail
+  // closed when the resolver returns nothing — an unresolved key can never be verified.
+  const kid = typeof header['kid'] === 'string' ? (header['kid'] as string) : undefined;
+  const resolved = opts.resolveKey(kid);
+  if (resolved === undefined) return { valid: false, reason: 'unknown_kid' };
+
   // Signature first — never trust claims from an unverified token.
   let key: KeyObject;
   try {
-    key = typeof opts.publicKey === 'string' ? createPublicKey(opts.publicKey) : opts.publicKey;
+    key = typeof resolved === 'string' ? createPublicKey(resolved) : resolved;
   } catch {
     return { valid: false, reason: 'bad_signature' }; // unusable key → cannot verify → reject
   }

@@ -23,7 +23,7 @@ import { timingSafeEqual } from 'crypto';
 import {
   isSystemActor, getAuthMode, getAuthIssuer, getAuthAudience, getAuthPublicKey,
 } from './config';
-import { verifyJwt } from './jwt';
+import { verifyJwt, singleKeyResolver } from './jwt';
 
 export const ACTOR_HEADER = 'x-actor-id';
 
@@ -126,7 +126,9 @@ function tokenAuthenticate(req: FastifyRequest): Principal | undefined {
   const audience = getAuthAudience();
   const publicKey = getAuthPublicKey();
   if (!issuer || !audience || !publicKey) return undefined; // unconfigured → no token principal
-  const result = verifyJwt({ token, publicKey, issuer, audience });
+  // Single configured key today → a degenerate resolver. The JWKS-backed resolver (a later
+  // slice) is a drop-in replacement here without changing this call.
+  const result = verifyJwt({ token, resolveKey: singleKeyResolver(publicKey), issuer, audience });
   return result.valid ? result.principal : undefined;
 }
 

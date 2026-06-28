@@ -154,6 +154,13 @@ These are **constraints, not technologies**. They are binding on all implementat
    `createPublicKey({format:'jwk'})`); vendor-neutral (AUTH_JWKS_URL is config). 4 slices; first =
    key-resolver refactor (no behavior change). No runtime change. Full packet
    `docs/architecture/jwks-resolver.md`; see `code-concordance.md` UPDATE 33._
+   _JWT key-resolver refactor (JWKS slice 1 — IMPLEMENTED, no network): `shared/jwt.ts` adds
+   `KeyResolver=(kid?)=>string|KeyObject|undefined` + `singleKeyResolver`; `verifyJwt` takes
+   `resolveKey` instead of `publicKey`, reads `kid` from the header, and **fails closed
+   (`unknown_kid`)** when the resolver returns nothing (before signature). `auth.ts` adapts the
+   single `AUTH_PUBLIC_KEY` via `singleKeyResolver` — same key, same result, `authenticatePrincipal`
+   unchanged. All other validation byte-identical. No JWKS fetch / cache / network / dep / config
+   change yet (slices 2–4). See `code-concordance.md` UPDATE 34._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

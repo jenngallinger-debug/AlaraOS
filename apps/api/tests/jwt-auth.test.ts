@@ -8,7 +8,7 @@
 
 import { generateKeyPairSync, createSign, KeyObject } from 'crypto';
 import { FastifyRequest } from 'fastify';
-import { verifyJwt } from '../src/shared/jwt';
+import { verifyJwt, singleKeyResolver, KeyResolver } from '../src/shared/jwt';
 import { authenticatePrincipal, getAuthenticatedActor } from '../src/shared/auth';
 
 // ─── RS256 test-token factory (Node crypto only) ──────────────────────────────
@@ -25,9 +25,10 @@ const b64url = (buf: Buffer | string) =>
 /** Mint a signed RS256 JWT. `claims` overrides the default valid payload; `alg`/`key` for abuse cases. */
 function mintToken(
   claims: Record<string, unknown> = {},
-  opts: { alg?: string; key?: KeyObject; tamper?: boolean } = {},
+  opts: { alg?: string; key?: KeyObject; tamper?: boolean; kid?: string } = {},
 ): string {
-  const header = { alg: opts.alg ?? 'RS256', typ: 'JWT' };
+  const header: Record<string, unknown> = { alg: opts.alg ?? 'RS256', typ: 'JWT' };
+  if (opts.kid) header.kid = opts.kid;
   const payload = {
     sub: 'user-123', iss: ISSUER, aud: AUDIENCE,
     exp: NOW + 600, iat: NOW,
@@ -39,8 +40,10 @@ function mintToken(
   return `${signingInput}.${sigSeg}`;
 }
 
+// Default verifier path: the single configured key adapted into a degenerate resolver
+// (exactly what auth.ts does), so the existing success/rejection cases are unaffected.
 const verify = (token: string, nowSec = NOW) =>
-  verifyJwt({ token, publicKey: PEM, issuer: ISSUER, audience: AUDIENCE, nowSec });
+  verifyJwt({ token, resolveKey: singleKeyResolver(PEM), issuer: ISSUER, audience: AUDIENCE, nowSec });
 
 // ─── Pure verifier: success + claim mapping ───────────────────────────────────
 
@@ -134,6 +137,44 @@ describe('verifyJwt — rejections', () => {
 
   test('malformed token (not 3 segments) → malformed', () => {
     expect(verify('a.b')).toEqual({ valid: false, reason: 'malformed' });
+  });
+});
+
+// ─── kid-aware key resolver (Slice 1 of JWKS) ─────────────────────────────────
+
+describe('verifyJwt — kid-aware key resolver', () => {
+  const KID = 'key-1';
+  // A resolver keyed by kid, like a JWKS cache will be (but in-memory, no network).
+  const byKid: KeyResolver = (kid) => (kid === KID ? PEM : undefined);
+  const verifyWith = (token: string, resolveKey: KeyResolver) =>
+    verifyJwt({ token, resolveKey, issuer: ISSUER, audience: AUDIENCE, nowSec: NOW });
+
+  test('token with a kid resolves through the resolver and verifies', () => {
+    expect(verifyWith(mintToken({}, { kid: KID }), byKid).valid).toBe(true);
+  });
+
+  test('unknown kid fails closed → unknown_kid', () => {
+    expect(verifyWith(mintToken({}, { kid: 'no-such-key' }), byKid)).toEqual({ valid: false, reason: 'unknown_kid' });
+  });
+
+  test('absent kid still works with a single-key resolver', () => {
+    expect(verifyWith(mintToken(), singleKeyResolver(PEM)).valid).toBe(true);
+  });
+
+  test('resolver returning the WRONG key → bad_signature (not unknown_kid)', () => {
+    const other = generateKeyPairSync('rsa', { modulusLength: 2048 });
+    const wrongPem = other.publicKey.export({ type: 'spki', format: 'pem' }).toString();
+    expect(verifyWith(mintToken({}, { kid: KID }), () => wrongPem)).toEqual({ valid: false, reason: 'bad_signature' });
+  });
+
+  test('resolver returning undefined (no key available) → unknown_kid, fail closed', () => {
+    expect(verifyWith(mintToken(), () => undefined)).toEqual({ valid: false, reason: 'unknown_kid' });
+  });
+
+  test('a valid kid token still maps claims onto the Principal', () => {
+    const r = verifyWith(mintToken({ sub: 'kid-user', tenants: ['t1'] }, { kid: KID }), byKid);
+    expect(r.valid && r.principal.principalId).toBe('kid-user');
+    expect(r.valid && r.principal.tenants).toEqual(['t1']);
   });
 });
 

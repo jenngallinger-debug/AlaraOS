@@ -1124,3 +1124,30 @@ Dependency-free (Node built-in `fetch`; JWK→KeyObject via `createPublicKey({fo
 Vendor-neutral — `AUTH_JWKS_URL`/issuer/audience are config, standard RFC-7517 JWKS + RS256, no
 vendor SDK. Four implementation slices; recommended first = the **key-resolver refactor** (sync, no
 behavior change, no network, no IdP decision needed).
+
+## UPDATE 34 — JWT key-resolver refactor (JWKS slice 1 — IMPLEMENTED, no network)
+
+Implements JWKS slice 1 (UPDATE 33): make `verifyJwt` key selection `kid`-aware via a synchronous
+resolver, turning the single-key assumption into a drop-in seam for the future JWKS cache. **No
+network, no dependency, no external behavior change** (all 185 pre-existing API tests pass).
+
+- `apps/api/src/shared/jwt.ts`: new `KeyResolver = (kid?) => string | KeyObject | undefined` and
+  `singleKeyResolver(key)`. `TokenVerifyOptions.publicKey` → `resolveKey: KeyResolver`. `verifyJwt`
+  now reads `kid` from the (already-decoded) header, calls `resolveKey(kid)`, and **fails closed
+  (`unknown_kid`) when the resolver returns `undefined`** — before signature verification. All other
+  validation is byte-identical: RS256-only, signature-before-claims, `iss`/`aud`/`exp`/`nbf`, claim
+  mapping. New failure reason `unknown_kid` added to the union.
+- `apps/api/src/shared/auth.ts`: `tokenAuthenticate` adapts the single configured `AUTH_PUBLIC_KEY`
+  into `singleKeyResolver(publicKey)` — same key, same result; the JWKS-backed resolver (a later
+  slice) drops in here without touching this call. `authenticatePrincipal` external behavior
+  unchanged.
+- **Not done (by design):** no JWKS fetch, no cache, no network, no config change (`AUTH_PUBLIC_KEY`
+  still the only key source). Those are JWKS slices 2–4.
+- Tests (`apps/api/tests/jwt-auth.test.ts`, +6): token with `kid` resolves and verifies; unknown
+  `kid` → `unknown_kid` (fail closed); absent `kid` works with the single-key resolver; resolver
+  returning the WRONG key → `bad_signature` (not `unknown_kid`); resolver returning `undefined` →
+  `unknown_kid`; claim mapping preserved for a `kid` token. The existing single-key suite now runs
+  through `singleKeyResolver`, and the dual/required wiring + tenant-block suites (which call
+  `tokenAuthenticate`) pass unchanged.
+
+Next: JWKS slice 2 — the dependency-free, injectable JWKS cache + fetcher (still unwired).
