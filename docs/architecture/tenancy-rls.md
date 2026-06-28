@@ -97,7 +97,10 @@ In dependency order, each step independently shippable and verifiable:
 
 1. **Tenant-scoped DB helper** — e.g. `DatabaseClient.withTenant(tenantId, fn)` that runs
    inside a transaction and issues `SET LOCAL app.tenant_id`. Opt-in; no call-site change
-   required initially.
+   required initially. **✅ DONE (UPDATE 39):** `withTenantTransaction(db, tenantId, fn)`
+   (`packages/core/src/shared/tenant-scope.ts`) wraps the existing `transaction()` and binds
+   `app.tenant_id` via a parameterized `set_config(..., is_local=true)`. **Opt-in and unused —
+   RLS-inert (the GUC is unread), no call-site change, no behavior change.**
 2. **Route reads/writes through it** so every statement carries the GUC.
 3. **`WITH CHECK`** added to the `tenant_isolation` policies (constrain writes).
 4. **`FORCE ROW LEVEL SECURITY`** (or non-owner role) — only after steps 1–3.

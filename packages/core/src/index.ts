@@ -7,6 +7,8 @@
 export * from './shared/types';
 export * from './shared/ids';
 export { DatabaseClient } from './shared/database';
+export { withTenantTransaction, TENANT_GUC } from './shared/tenant-scope';
+export type { TenantScopedDb } from './shared/tenant-scope';
 
 // Events
 export * from './events/types';

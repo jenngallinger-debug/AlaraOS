@@ -1252,3 +1252,30 @@ pre-existing API tests pass); this is a side-effect only.
 
 Next (code, unblocked): none required before enablement — the remaining identity work is the
 owner-gated `dual`→`required` cutover (watch this signal → zero) and the deferred RLS milestone.
+
+## UPDATE 39 — Tenant-scoped DB helper (RLS milestone step 1 — IMPLEMENTED, opt-in, RLS-inert)
+
+Implements step 1 of the deferred RLS milestone (`tenancy-rls.md` §6): a pure, opt-in helper to
+run a unit of work with `app.tenant_id` set for the transaction. **Changes nothing today** — all
+650 core tests pass; no call site uses it; RLS stays inert.
+
+- New `packages/core/src/shared/tenant-scope.ts`: `withTenantTransaction(db, tenantId, fn)` wraps
+  the EXISTING `DatabaseClient.transaction()` (the only place with a stable connection — `query`/
+  `queryOne` borrow arbitrary pooled connections, §5) and binds the GUC via a **parameterized**
+  `set_config('app.tenant_id', tenantId, true)` (`is_local=true` → transaction-scoped; SET LOCAL
+  cannot bind params, so set_config is the injection-safe form). Exports `TENANT_GUC` and a minimal
+  `TenantScopedDb { transaction }` interface (structurally satisfied by `DatabaseClient` and the
+  in-memory double). Exported from the core index.
+- **Why this does NOT enable RLS / change behavior:** RLS is scaffolded but inert (owner role
+  bypasses it; the GUC is unread — §2), so setting `app.tenant_id` is a no-op on results. The helper
+  is **opt-in and unused** — no repository routes through it, no PG policy added, no `WITH CHECK`, no
+  `FORCE`, no role change. It is purely the seam steps 2–5 will adopt later.
+- Tests (`packages/core/tests/tenant-scope.test.ts`, +4, mocked transaction — no real Postgres):
+  sets the GUC first via parameterized `set_config` inside the transaction then runs fn; tenant id
+  is a bound value (injection-safe — a `DROP TABLE` payload never enters the SQL text); fn errors
+  propagate and roll back; `TENANT_GUC === 'app.tenant_id'` matches the policy.
+
+Remaining RLS steps (still NOT started, owner/harness-gated): route reads/writes through the helper
+(step 2), `WITH CHECK` policies (3), `FORCE ROW LEVEL SECURITY` / non-owner role (4), and a
+real-Postgres integration harness (5). App-level `WHERE tenant_id` + the tenancy guard test remain
+the contract until then.

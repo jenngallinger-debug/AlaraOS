@@ -194,6 +194,14 @@ These are **constraints, not technologies**. They are binding on all implementat
    non-sensitive metadata only — never body/tenant/token/headers/PHI; `principalId` length-bounded.
    Default sink silent under `NODE_ENV=test`. NO auth decision / response / status change. The metric
    to drive legacy usage to zero before `AUTH_MODE=required`. See `code-concordance.md` UPDATE 38._
+   _Tenant-scoped DB helper (RLS milestone step 1 — IMPLEMENTED, opt-in, RLS-inert):
+   `shared/tenant-scope.ts` `withTenantTransaction(db, tenantId, fn)` wraps the existing
+   `transaction()` and binds `app.tenant_id` via a parameterized `set_config(..., is_local=true)`.
+   **Changes nothing today** — RLS is inert (GUC unread), the helper is UNUSED (no call site, no PG
+   policy/FORCE/role change). Exports `TENANT_GUC` + `TenantScopedDb`. Tests (mocked transaction, no
+   real PG): GUC-first/parameterized, injection-safe bound value, rollback on error. Steps 2–5
+   (route call sites, `WITH CHECK`, `FORCE`/non-owner role, real-PG harness) still NOT started; app
+   `WHERE tenant_id` + tenancy guard remain the contract. See `code-concordance.md` UPDATE 39._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,
