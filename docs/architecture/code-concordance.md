@@ -831,7 +831,7 @@ Env flag `WEBHOOK_HMAC_MODE` with three states:
 ### Exact implementation slices (if approved)
 
 1. **Raw-body capture** — encapsulated webhook context + `request.rawBody`. Pure plumbing, no
-   auth change; prove raw bytes captured and no other route affected.
+   auth change; prove raw bytes captured and no other route affected. **✅ DONE (UPDATE 23).**
 2. **HMAC verify helper + config** — `verifyWebhookSignature` (pure, unit-tested) and config
    helpers (`AUTOMYND_WEBHOOK_KEYS`, `WEBHOOK_TIMESTAMP_TOLERANCE_SEC`, `WEBHOOK_HMAC_MODE`). No
    wiring yet.
@@ -843,3 +843,28 @@ Env flag `WEBHOOK_HMAC_MODE` with three states:
 Owner decision needed before slice 3: confirm Automynd's actual signing capability/header
 format. If Automynd dictates a different header or scheme, adapt scheme/headers above to match
 their contract — the rest of the design (raw-body, timestamp, rotation, modes) still holds.
+
+## UPDATE 23 — Webhook raw-body capture (HMAC slice 1 of 4 — IMPLEMENTED)
+
+Implements packet slice 1 from UPDATE 22. **No auth, idempotency, or shared-secret change** —
+this is pure plumbing that makes the exact request bytes available for the later HMAC check.
+
+- New `apps/api/src/shared/raw-body.ts`: `registerRawBodyJsonParser(instance)` installs a JSON
+  content-type parser that stashes the exact received string on `req.rawBody`, then delegates to
+  `instance.getDefaultJsonParser('error', 'error')` — Fastify's own default parser with the
+  framework-default poisoning actions — so empty-body, prototype/constructor-poisoning, and
+  400-on-malformed are byte-for-byte identical to every other JSON route. `getRawBody(req)`
+  accessor + `RawBodyRequest` type. No new dependency.
+- `rest/routes.ts`: the `/webhooks/automynd` route is now registered inside an encapsulated
+  `app.register(async (webhook) => { registerRawBodyJsonParser(webhook); webhook.post(...) })`
+  context. Content-type parsers are encapsulated, so **only** the webhook buffers the raw body;
+  all other routes keep the default parser. The handler body is unchanged.
+- Nothing reads `req.rawBody` yet — it is captured for slice 2's `verifyWebhookSignature`.
+- Tests (`tests/raw-body.test.ts`): the helper in a mini app proves byte-exact capture (with
+  irregular whitespace), faithful JSON parse, 400-on-malformed, and **encapsulation** (a sibling
+  route on the parent gets no `rawBody` and still parses); the real `/webhooks/automynd` route
+  still returns 200 for a valid delivery and 400 for malformed JSON. The existing webhook suite
+  (`rest.test.ts`) passing is the regression proof that auth/idempotency are unaffected.
+
+Next: slice 2 — `verifyWebhookSignature` helper + config (`AUTOMYND_WEBHOOK_KEYS`,
+`WEBHOOK_TIMESTAMP_TOLERANCE_SEC`, `WEBHOOK_HMAC_MODE`), still unwired.

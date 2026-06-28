@@ -8,6 +8,7 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { EngineContainer } from '../shared/container';
 import { getAuthenticatedActor, getHeader, secretsMatch } from '../shared/auth';
+import { registerRawBodyJsonParser } from '../shared/raw-body';
 import {
   isSystemActor, AUTOMYND_SECRET_HEADER, getAutomyndWebhookSecret,
   IDEMPOTENCY_KEY_HEADER, deterministicEventId, isRawEventCommandEnabled,
@@ -353,7 +354,15 @@ export async function registerRestRoutes(
   );
 
   // ── POST /webhooks/automynd ─────────────────────────────────────────────────
-  app.post<{ Body: AutomyndWebhookBody }>(
+  // Registered in an ENCAPSULATED context so the raw-body JSON parser applies to this route
+  // ONLY (every other route keeps the framework default parser). The parser stashes the exact
+  // received bytes on `req.rawBody` for the future HMAC check (code-concordance UPDATE 22),
+  // then delegates to the default JSON parser — so auth, validation, and idempotency behaviour
+  // are unchanged by this slice. No HMAC, no shared-secret change here.
+  await app.register(async (webhook) => {
+    registerRawBodyJsonParser(webhook);
+
+    webhook.post<{ Body: AutomyndWebhookBody }>(
     '/webhooks/automynd',
     { schema: automyndWebhookSchema },
     async (req, reply): Promise<AutomyndWebhookResponse> => {
@@ -433,7 +442,8 @@ export async function registerRestRoutes(
       reply.status(200);
       return { received: true, alaraEventId: event.id, message: `${eventType} processed` };
     },
-  );
+    );
+  });
 }
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
