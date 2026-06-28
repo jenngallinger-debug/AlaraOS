@@ -137,6 +137,14 @@ These are **constraints, not technologies**. They are binding on all implementat
    when the tenant is not permitted (before the engine, so nothing mutates). Webhook excluded
    (shared-secret). NO GraphQL change, NO tenant derivation/defaulting, NO RLS. Default legacy
    behavior byte-identical. See `code-concordance.md` UPDATE 31._
+   _GraphQL tenant membership block (identity boundary SLICE 5 partial — IMPLEMENTED): the Mercurius
+   `context` factory (`server.ts`) injects `authenticatePrincipal(request)` as `context.principal`;
+   `resolvers.ts` `assertTenantAllowed` guards every tenant-scoped resolver (object/workflow/
+   timeline/digitalCareTwin/referralSourceStrength + 3 stubs). A verified token querying a non-member
+   tenant (empty → fail closed) → safe GraphQL error, null data, NO PHI leaked; legacy / no-principal
+   unenforced. **Closes the UPDATE 19 cross-tenant gap** across REST (UPDATE 31) + GraphQL. Schema
+   unchanged; no derivation; no RetrievalPermissionGate-on-reads yet; default byte-identical. See
+   `code-concordance.md` UPDATE 32._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

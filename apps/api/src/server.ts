@@ -17,6 +17,7 @@ import { registerRestRoutes } from './rest/routes';
 import { registerRateLimit } from './shared/rate-limit';
 import { registerGraphqlAuthGate } from './shared/graphql-gate';
 import { registerSecurityHeaders, registerCors } from './shared/http-security';
+import { authenticatePrincipal } from './shared/auth';
 import { isGraphqlEnabled } from './shared/config';
 import { schema } from './graphql/schema';
 import { buildResolvers } from './graphql/resolvers';
@@ -62,6 +63,9 @@ export async function buildServer(container: EngineContainer) {
     await app.register(mercurius, {
       schema,
       resolvers: buildResolvers(container) as Parameters<typeof mercurius>[1]['resolvers'],
+      // Expose the authenticated principal to resolvers so PHI/tenant-scoped reads can enforce
+      // verified-principal tenant membership (legacy principals / no principal are unenforced).
+      context: (request) => ({ principal: authenticatePrincipal(request) }),
       graphiql: process.env.NODE_ENV !== 'production',
       path: '/graphql',
     });

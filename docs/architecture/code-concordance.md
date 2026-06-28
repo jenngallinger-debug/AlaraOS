@@ -1075,3 +1075,34 @@ principal is verified**; legacy principals stay backward-compatible.
   / no-scope 403); required-mode legacy rejected 401.
 
 Next: slice 5 — the GraphQL tenant block (closes UPDATE 19), then the production JWKS resolver.
+
+## UPDATE 32 — GraphQL tenant membership block (identity boundary SLICE 5, partial — IMPLEMENTED)
+
+Extends the REST tenant block (UPDATE 31) to the GraphQL read surface, **closing the
+cross-tenant PHI gap from UPDATE 19's decision packet**. **Default behavior unchanged** (all 178
+pre-existing API tests pass, incl. the AC-5/6/7 GraphQL suite).
+
+- `apps/api/src/server.ts`: the Mercurius registration gains a `context` factory —
+  `context: (request) => ({ principal: authenticatePrincipal(request) })` — so resolvers receive
+  the authenticated principal (honoring `AUTH_MODE`).
+- `apps/api/src/graphql/resolvers.ts`: a `GqlContext` type + `assertTenantAllowed(context,
+  tenantId)` guard reusing `auth.isTenantAllowed`. It is called at the top of **every
+  tenant-scoped resolver** — `object`, `workflow`, `timeline`, `digitalCareTwin`,
+  `referralSourceStrength`, and the `tasksByWorkflow`/`promisesByWorkflow`/
+  `communicationsBySubject` stubs (8 total). A verified token principal querying a tenant not in
+  its `tenants` (empty → fail closed) throws → a **safe GraphQL error with null data** (HTTP 200,
+  no PHI in the response). Legacy principals and the relaxed unauthenticated path (no principal)
+  are unenforced → unchanged.
+- **Why legacy is unchanged:** under default `AUTH_MODE=legacy` / the test-relaxed gate, a query
+  carries no token; `context.principal` is undefined (or a legacy principal) → `assertTenantAllowed`
+  returns without throwing → byte-identical.
+- **Scope:** schema shape unchanged; no tenant derivation/defaulting; no `RetrievalPermissionGate`
+  routing yet (consent/participation on reads is still future); REST/webhook/RLS untouched.
+- Tests (`apps/api/tests/graphql-tenant-block.test.ts`, +7, RS256 keypair via Node crypto): legacy
+  default returns data; verified matching-tenant returns data; **non-member tenant → error + NO
+  PHI leaked** (asserts the patient name is absent from the response); empty tenants fail closed;
+  multi-tenant token reaches either allowed tenant; the block also covers the `object` resolver.
+
+With UPDATE 31 (REST) + UPDATE 32 (GraphQL), the UPDATE 19 cross-tenant decision packet is
+addressed across **both** write and read surfaces for verified principals. Next: production JWKS
+resolver (key rotation) before turning `AUTH_MODE=dual` on against a real IdP.

@@ -218,7 +218,10 @@ binding first (this packet), then RLS consumes the principal-derived tenant.
    system gate now authorizes on `principal.scopes` (legacy principals for configured
    `ALARA_SYSTEM_ACTORS` carry `SYSTEM_SCOPE`); broader per-command role gates remain future work.
 5. **GraphQL tenant + permission enforcement.** Derive tenant from principal in resolvers; route
-   PHI reads through `RetrievalPermissionGate` (closes UPDATE 19).
+   PHI reads through `RetrievalPermissionGate` (closes UPDATE 19). **◑ PARTIAL (UPDATE 32):**
+   verified-principal tenant membership now enforced in every tenant-scoped resolver (closes the
+   UPDATE 19 cross-tenant gap); routing PHI reads through `RetrievalPermissionGate` (consent/
+   participation) remains future.
 6. **`required` mode + remove legacy `x-actor-id`.**
 7. **(Separate track) RLS milestone** per `tenancy-rls.md` §6, fed by the principal-derived tenant.
 8. **(Later) external actor types** (family / patient / referral / physician / payer) onto

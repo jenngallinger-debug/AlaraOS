@@ -17,12 +17,32 @@ import {
   DigitalCareTwinValue,
   ReferralSourceStrengthValue,
 } from '@alara-os/core';
+import { Principal, isTenantAllowed } from '../shared/auth';
+
+/** Resolver context (from the Mercurius `context` factory in server.ts). */
+interface GqlContext {
+  readonly principal?: Principal;
+}
+
+/**
+ * Tenant membership guard for tenant-scoped reads. A VERIFIED token principal may only query a
+ * tenant it is a member of (empty membership fails closed → throws). Legacy principals, and the
+ * unauthenticated path where the gate is relaxed (no principal), are unenforced — behaviour is
+ * unchanged. A thrown error becomes a safe GraphQL error with null data (no cross-tenant leak).
+ */
+function assertTenantAllowed(context: GqlContext, tenantId: string): void {
+  const p = context.principal;
+  if (!p) return;                          // no principal (gate relaxed) → unchanged
+  if (isTenantAllowed(p, tenantId)) return; // legacy → always true; verified+member → true
+  throw new Error('forbidden: tenant not permitted for this principal');
+}
 
 export function buildResolvers(container: EngineContainer) {
   return {
     Query: {
       // ── object ───────────────────────────────────────────────────────────────
-      object: async (_: unknown, { tenantId, id }: { tenantId: string; id: string }) => {
+      object: async (_: unknown, { tenantId, id }: { tenantId: string; id: string }, context: GqlContext) => {
+        assertTenantAllowed(context, tenantId);
         const obj = await container.objectRepo.getById(tenantId, makeAlaraId(id));
         if (!obj) return null;
         const refs = await container.objectRepo.getExternalReferences(tenantId, makeAlaraId(id));
@@ -30,12 +50,14 @@ export function buildResolvers(container: EngineContainer) {
       },
 
       // ── workflow ─────────────────────────────────────────────────────────────
-      workflow: async (_: unknown, { tenantId, id }: { tenantId: string; id: string }) => {
+      workflow: async (_: unknown, { tenantId, id }: { tenantId: string; id: string }, context: GqlContext) => {
+        assertTenantAllowed(context, tenantId);
         return container.workflowEngine.getById(tenantId, makeAlaraId(id));
       },
 
       // ── tasksByWorkflow ──────────────────────────────────────────────────────
-      tasksByWorkflow: async (_: unknown, { tenantId, workflowId }: { tenantId: string; workflowId: string }) => {
+      tasksByWorkflow: async (_: unknown, { tenantId, workflowId }: { tenantId: string; workflowId: string }, context: GqlContext) => {
+        assertTenantAllowed(context, tenantId);
         // TaskEngine doesn't expose a listByWorkflow — read from store directly
         // This is a read model query; no canonical mutation
         const tasks: unknown[] = [];
@@ -45,17 +67,20 @@ export function buildResolvers(container: EngineContainer) {
       },
 
       // ── promisesByWorkflow ───────────────────────────────────────────────────
-      promisesByWorkflow: async (_: unknown, { tenantId, workflowId }: { tenantId: string; workflowId: string }) => {
+      promisesByWorkflow: async (_: unknown, { tenantId, workflowId }: { tenantId: string; workflowId: string }, context: GqlContext) => {
+        assertTenantAllowed(context, tenantId);
         return [];
       },
 
       // ── communicationsBySubject ──────────────────────────────────────────────
-      communicationsBySubject: async (_: unknown, { tenantId, subjectId }: { tenantId: string; subjectId: string }) => {
+      communicationsBySubject: async (_: unknown, { tenantId, subjectId }: { tenantId: string; subjectId: string }, context: GqlContext) => {
+        assertTenantAllowed(context, tenantId);
         return [];
       },
 
       // ── timeline ─────────────────────────────────────────────────────────────
-      timeline: async (_: unknown, { tenantId, subjectId }: { tenantId: string; subjectId: string }) => {
+      timeline: async (_: unknown, { tenantId, subjectId }: { tenantId: string; subjectId: string }, context: GqlContext) => {
+        assertTenantAllowed(context, tenantId);
         const stored = await container.projectionStore.get(tenantId, 'Timeline', subjectId);
         if (!stored) return null;
         const value = stored.value as unknown as TimelineValue;
@@ -71,7 +96,8 @@ export function buildResolvers(container: EngineContainer) {
       },
 
       // ── digitalCareTwin ──────────────────────────────────────────────────────
-      digitalCareTwin: async (_: unknown, { tenantId, patientId }: { tenantId: string; patientId: string }) => {
+      digitalCareTwin: async (_: unknown, { tenantId, patientId }: { tenantId: string; patientId: string }, context: GqlContext) => {
+        assertTenantAllowed(context, tenantId);
         const stored = await container.projectionStore.get(tenantId, 'DigitalCareTwin', patientId);
         if (!stored) return null;
         const value = stored.value as unknown as DigitalCareTwinValue;
@@ -92,7 +118,8 @@ export function buildResolvers(container: EngineContainer) {
       },
 
       // ── referralSourceStrength ────────────────────────────────────────────────
-      referralSourceStrength: async (_: unknown, { tenantId, referralSourceId }: { tenantId: string; referralSourceId: string }) => {
+      referralSourceStrength: async (_: unknown, { tenantId, referralSourceId }: { tenantId: string; referralSourceId: string }, context: GqlContext) => {
+        assertTenantAllowed(context, tenantId);
         const stored = await container.projectionStore.get(tenantId, 'ReferralSourceStrength', referralSourceId);
         if (!stored) return null;
         const value = stored.value as unknown as ReferralSourceStrengthValue;
