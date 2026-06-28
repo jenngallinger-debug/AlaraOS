@@ -203,7 +203,7 @@ binding first (this packet), then RLS consumes the principal-derived tenant.
    `authenticatePrincipal(req)` that, in `legacy` mode, returns a legacy principal from
    `x-actor-id` (tenant from request, empty roles). Pure refactor behind `getAuthenticatedActor`;
    everything still works. *(Mirrors how the HMAC verifier was staged unwired — de-risks all
-   downstream slices, independently shippable, needs no IdP decision.)*
+   downstream slices, independently shippable, needs no IdP decision.)* **✅ DONE (UPDATE 27).**
 2. **Token verification (dual, tenant unenforced).** Add JWT/OIDC verification; `AUTH_MODE=dual`
    accepts token-or-legacy; populate `Principal` claims; deprecation signal on legacy. No tenant
    enforcement yet.

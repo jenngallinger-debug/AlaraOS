@@ -944,3 +944,25 @@ This packet is the **prerequisite for real RLS** (`tenancy-rls.md` §6 consumes 
 tenant). First slice if approved: the **Principal abstraction** (internal, no behavior change).
 
 Distinct from `identity-resolution-spec.md` (patient matching) — see packet §0.
+
+## UPDATE 27 — Principal abstraction, legacy mode (identity boundary SLICE 1 — IMPLEMENTED)
+
+Implements slice 1 of the identity/tenant packet (UPDATE 26 / `identity-tenant-boundary.md`).
+**Internal refactor, NO behavior change** — proven by all pre-existing tests passing unchanged.
+
+- `apps/api/src/shared/auth.ts`: new `Principal` type (`principalId`, `type`, `tenants`, `roles`,
+  `scopes`, `legacyActorId`) + `PrincipalType`; `legacyPrincipal(actorId)` (pure) and
+  `authenticatePrincipal(req)` (derives a legacy principal from `x-actor-id`, `undefined` when
+  absent). `getAuthenticatedActor(req)` now returns `authenticatePrincipal(req)?.principalId` —
+  byte-identical to the previous header read.
+- **Legacy-mode claims are minimal and inert:** `type: 'user'`, empty `tenants`/`roles`/`scopes`.
+  Nothing consumes the principal's claims yet; tenant is still taken from the request, and the
+  `/commands/events` privileged gate still uses `isSystemActor` (untouched). The system→scope
+  mapping, token verification, and tenant binding are explicitly later slices (2–4).
+- No new dependency; GraphQL/REST/webhook/consent behavior unchanged.
+- Tests (`apps/api/tests/principal.test.ts`, +9): legacy principal shape; `authenticatePrincipal`
+  present/absent/whitespace; system actor yields an ordinary legacy principal (no special-casing);
+  `getAuthenticatedActor` behavior-compat; and integration — referral success (201), missing actor
+  (401), `/commands/events` system-actor gate (201 vs 403), GraphQL query unchanged (200).
+
+Next: slice 2 — token verification in `dual` mode (`AUTH_MODE`), still without tenant enforcement.

@@ -5,15 +5,45 @@
  * This is a MINIMAL development/test boundary — NOT real authentication: the
  * authenticated actor is taken from the `x-actor-id` request header. There is no
  * login, no session, and no JWT verification here. A real auth provider would
- * replace `getAuthenticatedActor` (verifying a token/session) without changing the
+ * replace `authenticatePrincipal` (verifying a token/session) without changing the
  * downstream authorization path: the authenticated actor is what the
  * ConsentAuthorizer evaluates — never a body-supplied field.
+ *
+ * Identity & tenant boundary — SLICE 1 (Principal abstraction, legacy mode only).
+ * See docs/architecture/identity-tenant-boundary.md. This introduces a typed `Principal`
+ * BEHIND the existing boundary with NO behavior change: `authenticatePrincipal` derives a
+ * legacy principal purely from `x-actor-id`, and `getAuthenticatedActor` now returns the
+ * principal's id (identical to the previous header read). Real claims — verified tenant
+ * membership, roles, scopes, the system→scope mapping — are later slices; here they are
+ * empty/inert and consumed by nothing.
  */
 
 import { FastifyRequest } from 'fastify';
 import { timingSafeEqual } from 'crypto';
 
 export const ACTOR_HEADER = 'x-actor-id';
+
+/** The kind of caller. Legacy-mode principals are always `user` (refined in a later slice). */
+export type PrincipalType = 'user' | 'service' | 'system' | 'external';
+
+/**
+ * The authenticated caller. In legacy mode the claims are intentionally minimal: tenant
+ * membership/roles/scopes are empty and NOT yet enforced (tenant is still taken from the
+ * request as today). The shape is forward-compatible with token-derived principals.
+ */
+export interface Principal {
+  /** Stable id of the caller; becomes the engine `actor`. In legacy mode this is the actor id. */
+  readonly principalId: string;
+  readonly type: PrincipalType;
+  /** Authorized tenant set (empty in legacy mode — no verified tenant binding yet). */
+  readonly tenants: readonly string[];
+  /** Coarse boundary roles (empty in legacy mode). */
+  readonly roles: readonly string[];
+  /** Capability scopes (empty in legacy mode; the system→scope mapping is a later slice). */
+  readonly scopes: readonly string[];
+  /** The raw `x-actor-id` this principal was derived from (legacy mode only). */
+  readonly legacyActorId?: string;
+}
 
 /** Read a single header value, trimmed; undefined when absent/empty. */
 export function getHeader(req: FastifyRequest, name: string): string | undefined {
@@ -23,9 +53,38 @@ export function getHeader(req: FastifyRequest, name: string): string | undefined
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
-/** The authenticated actor for this request, or undefined if none is present. */
+/**
+ * Build a legacy-mode Principal from a raw actor id (pure; no request needed). Claims are
+ * minimal and inert: type `user`, empty tenants/roles/scopes. Behavior-preserving by design.
+ */
+export function legacyPrincipal(actorId: string): Principal {
+  return {
+    principalId: actorId,
+    type: 'user',
+    tenants: [],
+    roles: [],
+    scopes: [],
+    legacyActorId: actorId,
+  };
+}
+
+/**
+ * Authenticate the caller into a `Principal`. LEGACY MODE ONLY today: derives the principal
+ * from the `x-actor-id` header exactly as before (no token/session/JWT). Returns `undefined`
+ * when no actor is present — preserving the existing "missing actor" semantics.
+ */
+export function authenticatePrincipal(req: FastifyRequest): Principal | undefined {
+  const actorId = getHeader(req, ACTOR_HEADER);
+  return actorId ? legacyPrincipal(actorId) : undefined;
+}
+
+/**
+ * The authenticated actor id, or `undefined` if none. Now derived from the `Principal` so a
+ * future token-based principal flows through unchanged; the returned value is byte-identical
+ * to the previous direct `x-actor-id` read.
+ */
 export function getAuthenticatedActor(req: FastifyRequest): string | undefined {
-  return getHeader(req, ACTOR_HEADER);
+  return authenticatePrincipal(req)?.principalId;
 }
 
 /**

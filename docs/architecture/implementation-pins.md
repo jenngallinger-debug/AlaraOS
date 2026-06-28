@@ -94,6 +94,14 @@ These are **constraints, not technologies**. They are binding on all implementat
    `AUTH_MODE` legacy→dual→required rollout. Prerequisite for real RLS (`tenancy-rls.md` §6). First
    slice: Principal abstraction (internal, no behavior change). Full packet in
    `docs/architecture/identity-tenant-boundary.md`; see `code-concordance.md` UPDATE 26._
+   _Principal abstraction (identity boundary SLICE 1 — IMPLEMENTED, legacy mode): `shared/auth.ts`
+   adds a typed `Principal` (principalId/type/tenants/roles/scopes/legacyActorId) +
+   `legacyPrincipal`/`authenticatePrincipal`; `getAuthenticatedActor` now derives its return from
+   the principal (byte-identical to the old `x-actor-id` read). Legacy claims are minimal/inert
+   (type `user`, empty tenants/roles/scopes); nothing consumes them yet, tenant still from request,
+   `/commands/events` still gates on `isSystemActor`. NO behavior change (all prior tests
+   unchanged). Slices 2–4 (token verification, tenant binding, system→scope) are later. See
+   `code-concordance.md` UPDATE 27._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,
