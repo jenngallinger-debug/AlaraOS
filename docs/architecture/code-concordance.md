@@ -1305,3 +1305,19 @@ strictly opt-in and self-skips without Postgres (proven: 1 suite / 4 tests **ski
 This de-risks RLS steps 2–4 (route call sites, `WITH CHECK`, `FORCE`/non-owner role) by giving a
 real-PG proof point. Remaining harness coverage (non-owner role behavior, write rejection on real
 APP tables) lands alongside those steps.
+
+## UPDATE 41 — CI wiring for the RLS harness (DECISION PACKET — DEFERRED, no CI exists)
+
+Audited whether to wire the opt-in real-Postgres harness (UPDATE 40) into CI. **The repo has NO CI
+configuration** (no `.github/workflows/`, no GitLab/Circle/Travis/Azure/Jenkins/etc., none
+git-tracked; a GitHub remote exists → GitHub Actions is the natural provider). Per the slice's stop
+condition, **deferred** — the actual workflow file is NOT created (standing up a CI pipeline from
+nothing is the "do not invent CI structure" hard stop and an owner/infra decision). **No runtime or
+CI change.**
+
+Recorded the recommended job shape in `tenancy-rls.md` Appendix B: an isolated `rls-integration`
+GitHub Actions job with a `postgres:16` service, `ALARA_TEST_DATABASE_URL` set to the service URL,
+and `npm ci` → `npm --prefix packages/core run test:integration:pg`. Facts: npm workspaces +
+`package-lock.json` → `npm ci`; `engines.node >= 20`. Only that job sets the DB URL, so a default
+`verify` job (and local `verify`) stays Postgres-free / self-skips. Open owner decisions: adopt
+GitHub Actions at all; whether to also run default verify; Postgres image/role; trigger policy.

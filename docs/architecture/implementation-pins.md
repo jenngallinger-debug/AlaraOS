@@ -211,6 +211,14 @@ These are **constraints, not technologies**. They are binding on all implementat
    production code change; no app-schema RLS. Opt-in script `test:integration:pg`. Remaining harness
    coverage (non-owner role, write rejection on real tables) lands with RLS steps 2–4. See
    `code-concordance.md` UPDATE 40._
+   _CI wiring for the RLS harness (DECISION PACKET — DEFERRED): the repo has NO CI config (no
+   `.github/workflows/`, no other provider; GitHub remote → Actions is the natural provider). Per
+   the slice's stop condition, NOT implemented — creating a CI pipeline from nothing is the "do not
+   invent CI structure" hard stop / an owner decision. Recommended shape recorded in `tenancy-rls.md`
+   Appendix B: an isolated `rls-integration` Actions job with a `postgres:16` service +
+   `ALARA_TEST_DATABASE_URL` + `npm ci` → `npm --prefix packages/core run test:integration:pg`; only
+   that job sets the DB URL so default verify stays Postgres-free. No runtime/CI change. See
+   `code-concordance.md` UPDATE 41._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

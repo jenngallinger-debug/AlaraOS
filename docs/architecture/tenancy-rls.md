@@ -117,3 +117,53 @@ In dependency order, each step independently shippable and verifiable:
 Until then: **app-level `WHERE tenant_id` is the contract**, and the tenancy guard test is
 the enforcement point. RLS remains scaffolded defense-in-depth for the future, not a
 backstop today.
+
+## Appendix B — CI wiring for the RLS integration harness (DECISION PACKET — DEFERRED)
+
+> **Status: DEFERRED — no CI exists to wire into.** The opt-in real-Postgres harness (step 5,
+> UPDATE 40) needs a CI job with a Postgres service to become enforced. Audited 2026-06; the repo
+> has **no CI configuration** (no `.github/workflows/`, no GitLab/Circle/Travis/Azure/Jenkins/etc.,
+> none git-tracked). A GitHub remote exists, so **GitHub Actions** is the natural provider. Per the
+> slice's stop condition, the actual workflow file is NOT created here (standing up a CI pipeline
+> from nothing is an owner/infra decision, not narrow wiring). This records the recommended shape.
+
+**Facts:** npm workspaces (`packages/*`) with `package-lock.json` → `npm ci`; `engines.node >= 20`.
+The harness self-skips unless `ALARA_TEST_DATABASE_URL` is set, and an opt-in script already exists:
+`npm --prefix packages/core run test:integration:pg`. The fixture uses `FORCE ROW LEVEL SECURITY`
+on a TEMP table it creates, so the connecting role must own that table (a default superuser like
+`postgres`/`alara` works; a least-privilege role would need the step-4 non-owner test instead).
+
+**Recommended GitHub Actions job (add when the owner adopts CI — keeps default verify Postgres-free):**
+
+```yaml
+name: ci
+on: [push, pull_request]
+jobs:
+  rls-integration:                      # isolated, clearly named; separate from default test/build
+    name: RLS integration (real Postgres)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_USER: alara, POSTGRES_PASSWORD: alara, POSTGRES_DB: alara_test }
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U alara" --health-interval 10s
+          --health-timeout 5s --health-retries 5
+    env:
+      ALARA_TEST_DATABASE_URL: postgres://alara:alara@localhost:5432/alara_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm ci
+      - run: npm --prefix packages/core run test:integration:pg
+```
+
+Only THIS job sets `ALARA_TEST_DATABASE_URL`; any separate default-`verify` job must NOT, so the
+harness self-skips there and the default suite never needs Postgres.
+
+**Open owner decisions:** adopt GitHub Actions at all (none exists today); whether to add a default
+`verify` job (lint/test/build) alongside this one; the Postgres image/version + credentials/role
+(owner role for the current `FORCE` probe, or a non-owner role to also cover step 4); and the
+trigger/branch policy. **Not implemented here** — creating the workflow is the owner's call.
