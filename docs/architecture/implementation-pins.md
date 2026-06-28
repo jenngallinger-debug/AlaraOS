@@ -177,6 +177,16 @@ These are **constraints, not technologies**. They are binding on all implementat
    IdP — fully testable with an injected fake fetcher, no vendor/network. Fail-closed inherited;
    default/legacy byte-identical; rollback = unset `AUTH_JWKS_URL`. Full spec `jwks-resolver.md`
    Appendix A; see `code-concordance.md` UPDATE 36._
+   _JWKS runtime wiring (identity boundary JWKS slice 3 — IMPLEMENTED, flag-gated): `shared/jwks-runtime.ts`
+   adds `fetchJwks` (Node global `fetch` + `AbortSignal.timeout`, no dep), a process-singleton
+   `JwksCache` with an injectable fetcher, `getJwksResolver()` (sync resolver + fire-and-forget
+   refresh) and `warmJwks()` (non-blocking). `auth.ts` `tokenAuthenticate` resolver precedence: JWKS
+   when `AUTH_JWKS_URL` set (even cold), else `singleKeyResolver(AUTH_PUBLIC_KEY)`, else fail closed;
+   `authenticatePrincipal` stays synchronous. `server.ts` `void warmJwks()` at build (non-blocking).
+   Config `getAuthJwksUrl`/`getAuthJwksCacheTtlSec`(600)/`getAuthJwksTimeoutMs`(3000). Fail-closed
+   (cold/unknown-kid → dual→legacy, required→reject). Default (`AUTH_JWKS_URL` unset) byte-identical;
+   rollback = unset the URL. Tested with an injected fake fetcher (no network). See
+   `code-concordance.md` UPDATE 37._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

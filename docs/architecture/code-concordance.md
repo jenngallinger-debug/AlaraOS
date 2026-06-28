@@ -1196,3 +1196,33 @@ injected fake fetcher + a local RSA keypair — no vendor, no real network. Fail
 401). Strictly flag-gated, so default/legacy behavior stays byte-identical; rollback = unset
 `AUTH_JWKS_URL`. Recommendation: implement slice 3 now; the IdP/JWKS URL + Node ≥18 confirmation gate
 only *enablement* and run in parallel.
+
+## UPDATE 37 — JWKS runtime wiring behind AUTH_JWKS_URL (JWKS slice 3 — IMPLEMENTED, flag-gated)
+
+Wires the `JwksCache` (UPDATE 35) into runtime token verification behind `AUTH_JWKS_URL`.
+**Default behavior unchanged** (`AUTH_JWKS_URL` unset → the static `AUTH_PUBLIC_KEY` path): all 203
+pre-existing API tests pass. Dependency-free, no IdP vendor; vendor-specific values are config only.
+
+- Config (`config.ts`): `getAuthJwksUrl()` (when set, JWKS takes precedence), `getAuthJwksCacheTtlSec()`
+  (default 600), `getAuthJwksTimeoutMs()` (default 3000).
+- New `apps/api/src/shared/jwks-runtime.ts`: `fetchJwks(url, timeoutMs)` — the only real I/O —
+  uses Node's global `fetch` + `AbortSignal.timeout` (no dependency); a **process-singleton**
+  `JwksCache` with an **injectable** fetcher (tests inject a fake — no network);
+  `getJwksResolver()` returns the cache's **synchronous** resolver and kicks a fire-and-forget
+  `maybeRefresh()` (never awaited → hot path stays sync); `warmJwks()` (non-blocking, never
+  rejects). `configureJwksForTests()` injects fetcher/timing for deterministic tests.
+- `auth.ts` `tokenAuthenticate`: resolver precedence — `getJwksResolver()` (JWKS when configured,
+  even cold) **else** `singleKeyResolver(AUTH_PUBLIC_KEY)` **else** fail closed. `authenticatePrincipal`
+  remains synchronous.
+- `server.ts`: `void warmJwks()` at build — non-blocking, never fails/blocks startup; no-op when
+  `AUTH_JWKS_URL` is unset.
+- **Fail-closed:** a cold cache / unreachable JWKS / unknown `kid` → resolver `undefined` →
+  `verifyJwt` `unknown_kid` → no token principal → `dual` falls back to legacy `x-actor-id`,
+  `required` → reject. **Rollback:** unset `AUTH_JWKS_URL` (static key) or `AUTH_MODE=legacy`.
+- Tests (`apps/api/tests/jwks-wiring.test.ts`, +7, injected fake fetcher + local RSA keypair, no
+  network): default static path unchanged; JWKS precedence over `AUTH_PUBLIC_KEY`; warm + valid kid
+  succeeds; unknown kid → dual→legacy; cold cache → dual→legacy / required→reject; fetch failure
+  preserves last-known-good; rotation (new kid usable, old retired).
+
+This completes JWKS slices 1–3. Remaining for production *enablement* (config + owner): set
+`AUTH_JWKS_URL`/issuer/audience against the chosen IdP and flip `AUTH_MODE` legacy→dual→required.

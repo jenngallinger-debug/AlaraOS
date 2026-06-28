@@ -18,6 +18,7 @@ import { registerRateLimit } from './shared/rate-limit';
 import { registerGraphqlAuthGate } from './shared/graphql-gate';
 import { registerSecurityHeaders, registerCors } from './shared/http-security';
 import { authenticatePrincipal } from './shared/auth';
+import { warmJwks } from './shared/jwks-runtime';
 import { isGraphqlEnabled } from './shared/config';
 import { schema } from './graphql/schema';
 import { buildResolvers } from './graphql/resolvers';
@@ -78,6 +79,11 @@ export async function buildServer(container: EngineContainer) {
     version: '0.5.0',
     timestamp: new Date().toISOString(),
   }));
+
+  // ── Non-blocking JWKS warm ────────────────────────────────────────────────
+  // When AUTH_JWKS_URL is set, pre-warm the key cache without blocking or failing startup
+  // (never awaited, never rejects). No-op when JWKS is not configured.
+  void warmJwks();
 
   return app;
 }

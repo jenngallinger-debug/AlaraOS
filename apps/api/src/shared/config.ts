@@ -60,6 +60,28 @@ export function getAuthPublicKey(): string | undefined {
 }
 
 /**
+ * JWKS endpoint URL from `AUTH_JWKS_URL`, or undefined when unset. When set, the JWKS-backed
+ * resolver takes precedence over `AUTH_PUBLIC_KEY` (see jwks-runtime.ts). Unset → static key only,
+ * preserving today's behavior.
+ */
+export function getAuthJwksUrl(): string | undefined {
+  const s = (process.env.AUTH_JWKS_URL ?? '').trim();
+  return s.length > 0 ? s : undefined;
+}
+
+/** JWKS cache TTL in seconds (`AUTH_JWKS_CACHE_TTL_SEC`, default 600). */
+export function getAuthJwksCacheTtlSec(): number {
+  const n = Number(process.env.AUTH_JWKS_CACHE_TTL_SEC);
+  return Number.isFinite(n) && n > 0 ? n : 600;
+}
+
+/** JWKS fetch timeout in ms (`AUTH_JWKS_TIMEOUT_MS`, default 3000). */
+export function getAuthJwksTimeoutMs(): number {
+  const n = Number(process.env.AUTH_JWKS_TIMEOUT_MS);
+  return Number.isFinite(n) && n > 0 ? n : 3000;
+}
+
+/**
  * Whether the raw event-append command surface (`POST /commands/events`) is mounted.
  *
  * Raw append is the most privileged write surface (any canonical event onto any stream),

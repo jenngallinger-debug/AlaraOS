@@ -144,7 +144,7 @@ vendor SDK and no vendor name in the codebase.
    fetcher; NOT wired. **✅ DONE (UPDATE 35).**
 3. **Wire JWKS resolver behind config.** `AUTH_JWKS_URL` selects the JWKS resolver; non-blocking
    warm + background refresh; `authenticatePrincipal` stays synchronous (cache read). Fail-closed
-   per mode. Integration tests with an injected fetcher.
+   per mode. Integration tests with an injected fetcher. **✅ DONE (UPDATE 37).**
 4. **Rollout / retire static key.** Staging→prod env + docs; keep `AUTH_PUBLIC_KEY` for dev/test.
 
 ---

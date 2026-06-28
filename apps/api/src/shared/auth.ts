@@ -24,6 +24,7 @@ import {
   isSystemActor, getAuthMode, getAuthIssuer, getAuthAudience, getAuthPublicKey,
 } from './config';
 import { verifyJwt, singleKeyResolver } from './jwt';
+import { getJwksResolver } from './jwks-runtime';
 
 export const ACTOR_HEADER = 'x-actor-id';
 
@@ -124,11 +125,17 @@ function tokenAuthenticate(req: FastifyRequest): Principal | undefined {
   if (!token) return undefined;
   const issuer = getAuthIssuer();
   const audience = getAuthAudience();
-  const publicKey = getAuthPublicKey();
-  if (!issuer || !audience || !publicKey) return undefined; // unconfigured → no token principal
-  // Single configured key today → a degenerate resolver. The JWKS-backed resolver (a later
-  // slice) is a drop-in replacement here without changing this call.
-  const result = verifyJwt({ token, resolveKey: singleKeyResolver(publicKey), issuer, audience });
+  if (!issuer || !audience) return undefined; // unconfigured → no token principal
+  // Resolver precedence: when AUTH_JWKS_URL is set, the JWKS-backed resolver wins (returns a
+  // resolver even cold — a cold cache fails closed per kid). Otherwise fall back to the static
+  // AUTH_PUBLIC_KEY. No key source at all → fail closed. Stays synchronous (no await).
+  let resolveKey = getJwksResolver();
+  if (!resolveKey) {
+    const publicKey = getAuthPublicKey();
+    resolveKey = publicKey ? singleKeyResolver(publicKey) : undefined;
+  }
+  if (!resolveKey) return undefined;
+  const result = verifyJwt({ token, resolveKey, issuer, audience });
   return result.valid ? result.principal : undefined;
 }
 
