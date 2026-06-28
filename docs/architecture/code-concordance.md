@@ -711,3 +711,135 @@ wired early in `server.ts` (before routes).
 the repo or env. When a browser client (e.g. the portal) is deployed, the owner must set this
 to that origin's exact URL(s) — do NOT use `*`. Same for `HSTS_ENABLED` once the API is served
 over TLS behind its real hostname.
+
+## UPDATE 22 — Webhook HMAC signing (DECISION PACKET — design only, NOT implemented)
+
+Status: **DESIGN ONLY.** No runtime change. This records the agreed design so the
+implementation slices can be approved and executed later. Supersedes the inline note in
+`rest/routes.ts` ("Production: HMAC over the raw request body").
+
+### Current behavior (as shipped)
+
+`POST /webhooks/automynd` (`apps/api/src/rest/routes.ts`) authenticates with a **shared
+secret header**: `secretsMatch(getHeader(req, 'x-automynd-secret'), getAutomyndWebhookSecret())`
+— constant-time compare (`shared/auth.ts`) against env `AUTOMYND_WEBHOOK_SECRET`; fails closed
+(401) when unconfigured/absent/mismatched. Replay protection is separate: a required
+`idempotency-key` header drives `deterministicEventId(tenantId, 'automynd', key)`, and the
+Event Store dedups by id (UPDATE 14). Fastify 4 uses its **default JSON parser — the raw
+request bytes are not retained**.
+
+### Threat model
+
+The shared-secret header is the weak link:
+- **Static bearer token.** The same secret is sent on every request. Anything that observes a
+  request header (a logging proxy, an APM trace, a mis-set `console.log`, a compromised
+  intermediary) captures a credential that grants full forgery ability until rotated.
+- **No body integrity.** The secret does not bind to the payload, so a party that holds the
+  secret can submit any body. There is no proof the body is the one Automynd produced.
+- **No freshness.** A captured valid request can be replayed; today only the `idempotency-key`
+  + Event-Store dedup blunts the *effect* of an exact replay, and only if the attacker reuses
+  the same key. A new key with the same (captured) secret is accepted as fresh.
+
+HMAC-over-raw-body with a timestamp fixes all three: the signing key is never transmitted, the
+signature binds to the exact bytes, and the timestamp bounds freshness.
+
+### Recommended signature scheme
+
+- **Algorithm:** `HMAC-SHA256`, hex-encoded. Constant-time compare (reuse the
+  `timingSafeEqual` approach in `shared/auth.ts`).
+- **Signed payload (canonical string):** `"{timestamp}.{rawBody}"` — Stripe-style. Signing the
+  timestamp *and* the raw body together prevents both body tampering and timestamp tampering.
+  MUST sign the exact received bytes, never a re-serialized object (key order / whitespace
+  differ → signature would never verify).
+- **Versioned** so the algorithm can be upgraded without a flag day (`v1=` today).
+
+### Headers / names
+
+- `X-Automynd-Signature: t=<unix_seconds>,v1=<hex>,kid=<key-id>` (Stripe-style, atomic — the
+  timestamp and signature travel together; `kid` selects the signing key for rotation, optional
+  during single-key operation).
+- Keep `idempotency-key` exactly as today (orthogonal; still required).
+- Retire `x-automynd-secret` only at the end of rollout (see plan).
+
+### Timestamp tolerance / replay window
+
+- Reject when `|now − t| > TOLERANCE`. **Default ±300s (5 min)**, env-configurable
+  (`WEBHOOK_TIMESTAMP_TOLERANCE_SEC`). Rationale: tolerate clock skew + delivery latency while
+  keeping the replay window small.
+- Defense-in-depth with the existing idempotency: an exact replay inside the window still
+  produces **no duplicate event** (Event-Store dedup by `idempotency-key`); a replay outside the
+  window is rejected by the timestamp check before any work. The two layers are complementary.
+
+### Raw-body capture in Fastify 4 (dependency-free)
+
+Register the webhook route inside an **encapsulated plugin context** and add a content-type
+parser *only there* that retains the raw string before parsing JSON:
+
+```
+app.register(async (webhook) => {
+  webhook.addContentTypeParser('application/json', { parseAs: 'string' }, (req, body, done) => {
+    (req as FastifyRequest & { rawBody?: string }).rawBody = body;
+    try { done(null, JSON.parse(body)); } catch (e) { done(e as Error); }
+  });
+  webhook.post('/webhooks/automynd', { schema: automyndWebhookSchema }, handler);
+});
+```
+
+Content-type parsers are **encapsulated** to the registering instance, so only the webhook route
+buffers the raw body; every other route keeps the default parser. No new dependency (avoids
+`fastify-raw-body`), consistent with the rate-limit / security-header slices.
+
+### Key rotation
+
+- **Keyset config** instead of a single secret: `AUTOMYND_WEBHOOK_KEYS` = comma-separated
+  `kid:secret` pairs (the existing single `AUTOMYND_WEBHOOK_SECRET` maps to an implicit default
+  `kid` for the dual-accept phase).
+- **Verify:** if the request carries `kid`, verify against that key; if absent (or to support an
+  overlap), try each active key with constant-time compare and accept on first match.
+- **Rotate:** add new key (both active) → ask Automynd to switch sending key → after a soak,
+  remove the old key. No downtime, no flag day.
+
+### Interaction with existing idempotency
+
+Unchanged and complementary. New ingress order: **(1) HMAC verify (signature + timestamp) →
+(2) `idempotency-key` presence → (3) deterministic event id + Event-Store dedup append.** The
+idempotency mechanism (`deterministicEventId`, UPDATE 14) is untouched; HMAC is an additional
+gate in front of it. A valid-signature exact replay is still deduped to the same event.
+
+### Rollout / backward-compatibility plan (no flag day)
+
+Env flag `WEBHOOK_HMAC_MODE` with three states:
+1. **`off`** (today's behavior): shared secret only.
+2. **`dual`** (rollout): accept a request if **either** a valid HMAC **or** the legacy
+   `x-automynd-secret` is present; emit a deprecation log/metric whenever a delivery passes on
+   the legacy secret alone. Ship `dual` first so the current sender keeps working.
+3. **`required`**: HMAC mandatory; legacy secret rejected. Flip once Automynd is confirmed
+   signing and the deprecation metric is zero.
+
+### Test plan (for the implementation slices)
+
+- Raw-body slice: `request.rawBody` equals the exact bytes sent; other routes unaffected.
+- HMAC helper (unit): correct signature verifies; wrong key / tampered body / tampered timestamp
+  fail; non-hex / malformed header fails; constant-time path covered.
+- Timestamp: within tolerance passes; just-outside fails; missing `t` fails.
+- Modes: `off` → legacy only; `dual` → valid HMAC passes, legacy passes (+ deprecation signal),
+  neither → 401; `required` → valid HMAC passes, legacy → 401.
+- Rotation: signature under either active `kid` verifies; removed key fails.
+- Idempotency unchanged: signed exact replay → still one event; signed-but-different payload
+  under a reused `idempotency-key` → still 409.
+
+### Exact implementation slices (if approved)
+
+1. **Raw-body capture** — encapsulated webhook context + `request.rawBody`. Pure plumbing, no
+   auth change; prove raw bytes captured and no other route affected.
+2. **HMAC verify helper + config** — `verifyWebhookSignature` (pure, unit-tested) and config
+   helpers (`AUTOMYND_WEBHOOK_KEYS`, `WEBHOOK_TIMESTAMP_TOLERANCE_SEC`, `WEBHOOK_HMAC_MODE`). No
+   wiring yet.
+3. **Wire `dual` mode** into the route (accept HMAC or legacy secret; deprecation signal on
+   legacy). Default `dual`. Full ingress-order + mode tests.
+4. **Flip to `required`** and remove the legacy secret path (separate, later, after sender
+   migration).
+
+Owner decision needed before slice 3: confirm Automynd's actual signing capability/header
+format. If Automynd dictates a different header or scheme, adapt scheme/headers above to match
+their contract — the rest of the design (raw-body, timestamp, rotation, modes) still holds.
