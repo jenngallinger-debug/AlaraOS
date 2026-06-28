@@ -168,6 +168,15 @@ These are **constraints, not technologies**. They are binding on all implementat
    `resolve(kid?)` is SYNCHRONOUS and `resolver()` returns a `KeyResolver` for `verifyJwt`. NOT
    imported by auth (no network/fetch/config/dep) — wiring is slice 3. Zero runtime change. See
    `code-concordance.md` UPDATE 35._
+   _JWKS runtime-wiring readiness audit (identity boundary — design only): confirms slice 3 is an
+   additive, flag-gated wiring with a clean one-line swap point (`tokenAuthenticate` already builds
+   `singleKeyResolver(publicKey)`; `JwksCache.resolver()` is a drop-in `KeyResolver`). Remaining:
+   `getAuthJwksUrl()` helper, ~8-line Node-`fetch` adapter (`AbortSignal.timeout`, no dep),
+   process-singleton cache with INJECTABLE fetcher, non-blocking startup warm, resolver precedence
+   (JWKS over `AUTH_PUBLIC_KEY`); `authenticatePrincipal` stays sync. NOT blocked by the production
+   IdP — fully testable with an injected fake fetcher, no vendor/network. Fail-closed inherited;
+   default/legacy byte-identical; rollback = unset `AUTH_JWKS_URL`. Full spec `jwks-resolver.md`
+   Appendix A; see `code-concordance.md` UPDATE 36._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

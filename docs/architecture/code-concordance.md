@@ -1177,3 +1177,22 @@ and wiring are JWKS slice 3.
 
 Next: JWKS slice 3 — wire it behind `AUTH_JWKS_URL` with a Node-`fetch` adapter + non-blocking
 background refresh; `authenticatePrincipal` stays synchronous.
+
+## UPDATE 36 — JWKS runtime-wiring readiness audit (design only, NO code change)
+
+Readiness audit for JWKS slice 3 (the wiring slice). Full implementation spec is
+`jwks-resolver.md` Appendix A. **No runtime change.**
+
+Findings: slices 1–2 leave a clean one-line swap point — `tokenAuthenticate` already builds
+`resolveKey: singleKeyResolver(publicKey)`, and `JwksCache.resolver()` is a drop-in `KeyResolver`.
+What remains is entirely additive: a `getAuthJwksUrl()` config helper (does not exist yet), a
+~8-line dependency-free Node-`fetch` adapter with `AbortSignal.timeout`, a process-singleton
+`JwksCache` with an **injectable** fetcher, a **non-blocking** startup warm (`maybeRefresh().catch()`,
+never awaited), and a resolver-precedence change (`AUTH_JWKS_URL` → JWKS resolver; else
+`AUTH_PUBLIC_KEY` → static; else none). `authenticatePrincipal` stays synchronous (cache read).
+**Not blocked by the production IdP:** the wiring is generic RFC-7517 and fully testable with an
+injected fake fetcher + a local RSA keypair — no vendor, no real network. Fail-closed is inherited
+(cold cache / unknown `kid` → `verifyJwt` `unknown_kid` → `dual` falls back to legacy, `required` →
+401). Strictly flag-gated, so default/legacy behavior stays byte-identical; rollback = unset
+`AUTH_JWKS_URL`. Recommendation: implement slice 3 now; the IdP/JWKS URL + Node ≥18 confirmation gate
+only *enablement* and run in parallel.

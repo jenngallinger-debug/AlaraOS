@@ -156,3 +156,102 @@ dependency, no IdP decision required). It turns the single-key assumption into a
 resolver seam so JWKS becomes a drop-in, and it unblocks slices 2–4 without touching the hot-path
 call signatures. The genuine prerequisites for *enabling* JWKS in production — the IdP/JWKS URL and
 confirming a Node ≥18 runtime — remain owner decisions and can be settled in parallel.
+
+---
+
+## Appendix A — Slice 3 runtime-wiring READINESS AUDIT (implementation spec; NOT wired)
+
+Audit of what remains to wire `JwksCache` into runtime auth, recorded so slice 3 has an exact
+spec. Slices 1–2 are committed (`code-concordance.md` UPDATE 34/35); this is **audit-only**.
+
+### A.1 What is already implemented
+
+- **`verifyJwt`** takes a synchronous `KeyResolver` and fails closed (`unknown_kid`) when it
+  returns nothing (UPDATE 34).
+- **`JwksCache`/`parseJwks`** (UPDATE 35, tested, unwired): injected `JwksFetcher`,
+  `Map<kid,KeyObject>`, **synchronous** `resolve(kid?)`/`resolver(): KeyResolver`, `size()`, async
+  `refresh()`/`maybeRefresh()`, TTL staleness, min-interval throttle, last-known-good.
+- **Config:** `getAuthMode` (`legacy|dual|required`), `getAuthIssuer`, `getAuthAudience`,
+  `getAuthPublicKey`. `authenticatePrincipal` already honors `AUTH_MODE`.
+- **The swap point already exists:** `tokenAuthenticate` builds
+  `resolveKey: singleKeyResolver(publicKey)` — a one-line change to choose a resolver.
+
+### A.2 Exact runtime wiring that remains (the whole of slice 3)
+
+1. **Config helpers:** `getAuthJwksUrl()` (new — does not exist today), plus optional
+   `getAuthJwksCacheTtlSec()` (default 600) and `getAuthJwksTimeoutMs()` (default 3000).
+2. **Node `fetch` adapter** (the only new I/O, ~8 lines, dependency-free):
+   `fetch(url, { signal: AbortSignal.timeout(ms) })` → `res.ok` check → `res.json()`; throws on
+   timeout/non-2xx (so `JwksCache` keeps last-known-good). Uses the built-in global `fetch`
+   (Node ≥18) — **no dependency**.
+3. **Process-singleton `JwksCache`** (module-level, keyed by URL) so all requests share one cache;
+   the fetcher is **injectable** (default = the adapter) so tests never touch the network.
+4. **Non-blocking warm** in `buildServer`: when `AUTH_JWKS_URL` is set,
+   `getJwksCache().maybeRefresh().catch(() => {})` — **not awaited** (startup must not depend on the
+   IdP). Plus a fire-and-forget `maybeRefresh()` from `tokenAuthenticate` to keep the cache warm
+   under traffic — never awaited, so the hot path stays synchronous.
+5. **Resolver precedence in `tokenAuthenticate`:**
+
+   | `AUTH_JWKS_URL` | `AUTH_PUBLIC_KEY` | resolver |
+   |---|---|---|
+   | set | (any) | JWKS cache resolver |
+   | unset | set | `singleKeyResolver` (today) |
+   | unset | unset | none → no token principal |
+
+   The config guard changes from "require publicKey" to "require issuer + audience + *a* key
+   source". `authenticatePrincipal` stays **synchronous**.
+
+### A.3 Required configuration
+
+`AUTH_JWKS_URL` (IdP JWKS endpoint) + the existing `AUTH_ISSUER`/`AUTH_AUDIENCE` + `AUTH_MODE=dual`
+(or `required`). Optional: `AUTH_JWKS_CACHE_TTL_SEC` (600), `AUTH_JWKS_TIMEOUT_MS` (3000).
+`AUTH_PUBLIC_KEY` remains the local/dev/test path.
+
+### A.4 Is implementation blocked by the production IdP / JWKS URL?
+
+**No.** The wiring is generic (any RFC-7517 JWKS). It can be fully built and tested **with no
+vendor and no real network** — the cache already takes an injected fetcher, and tests use a fake
+fetcher / local in-process JWKS (as `jwks.test.ts` already does). The production IdP/JWKS URL is
+only a **config value needed to ENABLE** it in a real environment, not to implement or test it.
+
+### A.5 Can a test/local JWKS or injected fetcher support implementation before vendor choice?
+
+**Yes — fully.** Integration tests inject a fake `JwksFetcher` returning a JWKS built from a local
+RSA keypair (the established pattern). The singleton factory takes an injectable fetcher (default =
+the Node adapter) so tests bypass the network entirely. No vendor required to reach green.
+
+### A.6 Risks of wiring before the production IdP is known
+
+Low **if strictly flag-gated**: the JWKS path activates ONLY when `AUTH_JWKS_URL` is set AND
+`AUTH_MODE` is `dual`/`required`. With those unset (default), behavior is byte-identical
+(legacy / static key). Risks to manage (all testable with an injected fetcher): the fetch
+timeout/error handling must never block the event loop or startup; the hot path must never `await`;
+fail-closed must hold when the cache is cold/unreachable; and a typo'd URL must **fail closed**, not
+fail open. The one thing untestable without the vendor is the IdP's exact JWKS quirks — mitigated by
+RFC-7517 conformance and the `parseJwks` filters.
+
+### A.7 Fail-closed behavior (wired)
+
+Cold cache, unreachable JWKS, or unknown `kid` → `resolver()` returns `undefined` → `verifyJwt` →
+`unknown_kid` → no token principal → **`dual` falls back to legacy `x-actor-id`; `required` → 401**.
+Identical to the verifier's existing fail-closed path; no special-casing.
+
+### A.8 Test plan
+
+Injected fake fetcher + local RSA keypair (no network): valid token verifies via JWKS; unknown
+`kid` → fail closed (dual→legacy, required→401); cold cache (pre-warm) → fail closed;
+`AUTH_JWKS_URL` unset → static-key path unchanged; precedence (both set → JWKS wins); warm is
+non-blocking; default `legacy` byte-identical.
+
+### A.9 Rollback
+
+Unset `AUTH_JWKS_URL` (revert to the static key) or `AUTH_MODE=legacy` — instant, no deploy.
+Additive and flag-gated, so there is no hard cutover.
+
+### A.10 Safest next implementation slice
+
+Slice 3 as specified above: **strictly flag-gated on `AUTH_JWKS_URL`, fetcher injectable
+(default Node `fetch`), non-blocking warm, synchronous hot-path preserved, fail-closed, integration
+tests via injected fetcher.** No vendor required to implement or verify; default/legacy behavior
+byte-identical. The production IdP/JWKS URL and a confirmed Node ≥18 runtime gate only *enablement*,
+and can be settled in parallel.
