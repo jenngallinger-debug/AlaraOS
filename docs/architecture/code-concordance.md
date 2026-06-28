@@ -1279,3 +1279,29 @@ Remaining RLS steps (still NOT started, owner/harness-gated): route reads/writes
 (step 2), `WITH CHECK` policies (3), `FORCE ROW LEVEL SECURITY` / non-owner role (4), and a
 real-Postgres integration harness (5). App-level `WHERE tenant_id` + the tenancy guard test remain
 the contract until then.
+
+## UPDATE 40 — Real-Postgres RLS integration harness (RLS milestone step 5 — STARTED, OPT-IN)
+
+Adds the test harness that must exist before any RLS enablement or call-site migration
+(`tenancy-rls.md` §6 step 5). **Default behavior + default test suite unchanged**: the harness is
+strictly opt-in and self-skips without Postgres (proven: 1 suite / 4 tests **skipped** when
+`ALARA_TEST_DATABASE_URL` is unset). No production code changed; no RLS enabled in app schemas.
+
+- New `packages/core/tests/tenant-scope.integration.test.ts`: `describe.skip` unless
+  `ALARA_TEST_DATABASE_URL` is set; connects only inside `beforeAll` (skipped blocks run no hooks →
+  no connection when unconfigured). Uses `new DatabaseClient({ connectionString, max: 1 })` so all
+  calls pin to one connection — which makes the session-local TEMP-table fixture persist AND makes
+  the no-leak assertion genuinely distinguish `SET LOCAL` (rolled back at COMMIT) from a session
+  `SET`. Proves: (1) `withTenantTransaction` sets `current_setting('app.tenant_id', true)` in the
+  transaction; (2) the GUC does NOT leak outside the transaction; (3) nor after a rollback; (4)
+  **RLS isolation end-to-end** — a TEMP table with `ENABLE`/`FORCE ROW LEVEL SECURITY` and a
+  `tenant_isolation` policy returns only the current tenant's rows per `withTenantTransaction`
+  tenant. Entirely fixture-local (TEMP table auto-dropped at `db.end()`); no app schema/policy.
+- Opt-in script: `packages/core/package.json` `test:integration:pg` (runs only this file). The
+  default `npm run verify` / `test:all` never requires Postgres — the file self-skips.
+- No production DB-code change: `DatabaseClient` already accepts a `PoolConfig` (`connectionString`,
+  `max`).
+
+This de-risks RLS steps 2–4 (route call sites, `WITH CHECK`, `FORCE`/non-owner role) by giving a
+real-PG proof point. Remaining harness coverage (non-owner role behavior, write rejection on real
+APP tables) lands alongside those steps.

@@ -105,7 +105,14 @@ In dependency order, each step independently shippable and verifiable:
 3. **`WITH CHECK`** added to the `tenant_isolation` policies (constrain writes).
 4. **`FORCE ROW LEVEL SECURITY`** (or non-owner role) — only after steps 1–3.
 5. **Real-Postgres integration test harness** proving isolation, the non-owner behavior,
-   and write rejection.
+   and write rejection. **◑ STARTED (UPDATE 40):** an OPT-IN harness
+   (`packages/core/tests/tenant-scope.integration.test.ts`, run via
+   `npm --prefix packages/core run test:integration:pg` with `ALARA_TEST_DATABASE_URL` set;
+   `describe.skip` otherwise — the default suite never needs Postgres) proves
+   `withTenantTransaction` sets `app.tenant_id` in-transaction, that it does NOT leak
+   (transaction-scoped, incl. after rollback), and — in a session-local TEMP-table fixture with
+   `FORCE ROW LEVEL SECURITY` — that RLS isolation filters by the GUC per-tenant. The remaining
+   harness coverage (non-owner role, write rejection on real APP tables) lands with steps 2–4.
 
 Until then: **app-level `WHERE tenant_id` is the contract**, and the tenancy guard test is
 the enforcement point. RLS remains scaffolded defense-in-depth for the future, not a

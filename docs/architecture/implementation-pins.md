@@ -202,6 +202,15 @@ These are **constraints, not technologies**. They are binding on all implementat
    real PG): GUC-first/parameterized, injection-safe bound value, rollback on error. Steps 2–5
    (route call sites, `WITH CHECK`, `FORCE`/non-owner role, real-PG harness) still NOT started; app
    `WHERE tenant_id` + tenancy guard remain the contract. See `code-concordance.md` UPDATE 39._
+   _Real-Postgres RLS integration harness (RLS milestone step 5 — STARTED, opt-in):
+   `packages/core/tests/tenant-scope.integration.test.ts` runs ONLY when `ALARA_TEST_DATABASE_URL`
+   is set (else `describe.skip` — default `verify` never needs Postgres; proven: 4 tests skip).
+   Connects in `beforeAll` with `max:1`; proves `withTenantTransaction` sets `app.tenant_id`
+   in-transaction, no leak outside / after rollback, and RLS isolation end-to-end via a
+   session-local TEMP table with `FORCE ROW LEVEL SECURITY` + a `tenant_isolation` policy. No
+   production code change; no app-schema RLS. Opt-in script `test:integration:pg`. Remaining harness
+   coverage (non-owner role, write rejection on real tables) lands with RLS steps 2–4. See
+   `code-concordance.md` UPDATE 40._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

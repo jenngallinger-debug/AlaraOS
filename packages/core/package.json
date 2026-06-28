@@ -7,7 +7,8 @@
   "scripts": {
     "build": "tsc",
     "test": "node --experimental-vm-modules ../../node_modules/.bin/jest --config jest.config.js",
-    "test:watch": "node --experimental-vm-modules ../../node_modules/.bin/jest --config jest.config.js --watch"
+    "test:watch": "node --experimental-vm-modules ../../node_modules/.bin/jest --config jest.config.js --watch",
+    "test:integration:pg": "node --experimental-vm-modules ../../node_modules/.bin/jest --config jest.config.js tenant-scope.integration"
   },
   "dependencies": {
     "pg": "^8.12.0",
