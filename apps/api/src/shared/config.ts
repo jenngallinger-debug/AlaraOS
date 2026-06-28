@@ -21,6 +21,23 @@ export function isSystemActor(actor: string): boolean {
   return getSystemActors().has(actor);
 }
 
+/**
+ * Whether the raw event-append command surface (`POST /commands/events`) is mounted.
+ *
+ * Raw append is the most privileged write surface (any canonical event onto any stream),
+ * and the `x-actor-id` system-actor gate is only an MVP transport check — a spoofed
+ * `system` header would unlock it. So we fail closed: the surface is OFF by default and
+ * only ON when explicitly opted in, or implicitly under `NODE_ENV=test` (where the AC-3
+ * suite exercises it). `ALLOW_RAW_EVENT_COMMAND` (true/false/1/0) overrides either way,
+ * including the escape hatch to enable it in dev/prod when an operator accepts the risk.
+ */
+export function isRawEventCommandEnabled(): boolean {
+  const raw = (process.env.ALLOW_RAW_EVENT_COMMAND ?? '').trim().toLowerCase();
+  if (raw === 'true' || raw === '1') return true;
+  if (raw === 'false' || raw === '0') return false;
+  return process.env.NODE_ENV === 'test';
+}
+
 /** Header carrying the Automynd webhook shared secret (MVP boundary; see auth.ts). */
 export const AUTOMYND_SECRET_HEADER = 'x-automynd-secret';
 

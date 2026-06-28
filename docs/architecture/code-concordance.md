@@ -538,3 +538,24 @@ behind multiple API instances the effective limit multiplies. It is a coarse abu
 brake, not a precise quota. No core engine change, no new persistence, no Redis. Shared
 distributed rate limiting and per-route quotas remain future work; GraphQL is out of scope
 (read-only today).
+
+## UPDATE 17 — Raw event command production gate (Hardening Phase 2)
+
+`POST /commands/events` (raw canonical event append onto any stream) is the most
+privileged write surface. Auth + the `x-actor-id` system-actor gate are necessary but not
+sufficient: `x-actor-id` is an MVP transport header with no real verification, so a spoofed
+`system` actor would unlock it. We therefore fail closed and gate the surface itself.
+
+- New config helper `isRawEventCommandEnabled()` (`apps/api/src/shared/config.ts`):
+  `ALLOW_RAW_EVENT_COMMAND` (true/false/1/0) overrides; otherwise the surface is enabled
+  ONLY under `NODE_ENV=test` (where the AC-3 suite exercises it) and **disabled by default
+  in dev/prod**. Setting `ALLOW_RAW_EVENT_COMMAND=true` is the explicit operator escape hatch.
+- When disabled the handler answers with `reply.callNotFound()` — the framework's standard
+  **404**, byte-identical to an unregistered route. This is the least-revealing response:
+  it does not disclose that a privileged surface exists (vs. a 403 which confirms it). The
+  gate runs before the auth/system-actor checks, so a disabled surface is 404 regardless of
+  credentials, and no event is appended.
+
+Scope/limits: the system-actor gate and transport auth still apply when the surface is
+enabled — this change only removes the surface from the default production attack surface.
+Real authN for the enabled case remains future work (see UPDATE notes on auth boundary).

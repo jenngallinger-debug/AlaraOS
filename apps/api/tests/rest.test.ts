@@ -263,6 +263,51 @@ describe('POST /commands/events (AC-3)', () => {
   });
 });
 
+// ─── Raw event command production gate ────────────────────────────────────────
+
+describe('POST /commands/events — production gate (ALLOW_RAW_EVENT_COMMAND)', () => {
+  // The gate is read at request time (config.isRawEventCommandEnabled), so toggling the
+  // env var between requests is sufficient — no app rebuild required.
+  let prev: string | undefined;
+  beforeEach(() => { prev = process.env.ALLOW_RAW_EVENT_COMMAND; });
+  afterEach(() => {
+    if (prev === undefined) delete process.env.ALLOW_RAW_EVENT_COMMAND;
+    else process.env.ALLOW_RAW_EVENT_COMMAND = prev;
+  });
+
+  const validEvent = {
+    tenantId: TENANT, streamId: '00000000-0000-4000-8000-0000000000ff',
+    type: 'ObjectCreated', payload: {},
+  };
+
+  test('enabled by default under NODE_ENV=test (no override) → 201', async () => {
+    delete process.env.ALLOW_RAW_EVENT_COMMAND; // default path; NODE_ENV=test under jest
+    const res = await postEvent(validEvent);
+    expect(res.statusCode).toBe(201);
+  });
+
+  test('explicitly disabled → 404 not-found (surface not disclosed), no event', async () => {
+    process.env.ALLOW_RAW_EVENT_COMMAND = 'false';
+    const before = store.events.length;
+    const res = await postEvent(validEvent);
+    expect(res.statusCode).toBe(404);
+    expect(store.events.length).toBe(before); // nothing appended
+  });
+
+  test('disabled gate fires before auth (404 even with a system actor)', async () => {
+    process.env.ALLOW_RAW_EVENT_COMMAND = '0';
+    const res = await postEvent(validEvent, SYSTEM_ACTOR);
+    expect(res.statusCode).toBe(404);
+  });
+
+  test('explicitly enabled (true) → 201, behaves normally', async () => {
+    process.env.ALLOW_RAW_EVENT_COMMAND = 'true';
+    const res = await postEvent(validEvent);
+    expect(res.statusCode).toBe(201);
+    expect(res.json().eventId).toBeDefined();
+  });
+});
+
 // ─── AC-4: POST /webhooks/automynd (signed) ───────────────────────────────────
 
 describe('POST /webhooks/automynd (AC-4)', () => {

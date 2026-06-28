@@ -10,7 +10,7 @@ import { EngineContainer } from '../shared/container';
 import { getAuthenticatedActor, getHeader, secretsMatch } from '../shared/auth';
 import {
   isSystemActor, AUTOMYND_SECRET_HEADER, getAutomyndWebhookSecret,
-  IDEMPOTENCY_KEY_HEADER, deterministicEventId,
+  IDEMPOTENCY_KEY_HEADER, deterministicEventId, isRawEventCommandEnabled,
 } from '../shared/config';
 import {
   AutomyndWebhookBody, AutomyndWebhookResponse,
@@ -211,7 +211,14 @@ export async function registerRestRoutes(
   app.post<{ Body: EmitEventBody }>(
     '/commands/events',
     { schema: emitEventSchema },
-    async (req, reply): Promise<EmitEventResponse> => {
+    async (req, reply): Promise<EmitEventResponse | void> => {
+      // Production gate: raw append is OFF unless explicitly enabled (or under tests).
+      // When disabled we answer with the framework's standard 404 — identical to an
+      // unregistered route — so the privileged surface is not even disclosed to exist.
+      if (!isRawEventCommandEnabled()) {
+        reply.callNotFound();
+        return;
+      }
       // Raw event append is a PRIVILEGED command (it can write any canonical event to
       // any stream). Require an authenticated actor, and restrict it to a configured
       // system actor — this surface is not generally available.
