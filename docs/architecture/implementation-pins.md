@@ -283,6 +283,19 @@ These are **constraints, not technologies**. They are binding on all implementat
    (opt-in real-PG: functional reads on all dedicated tables + non-superuser RLS isolation on Batch A
    table shapes). No production RLS/policy/writes. 18/20 dedicated-table reads adopted; 2 aggregates +
    Consent remain. See `code-concordance.md` UPDATE 48._
+   _RLS Step 2 Batch A aggregates (UPDATE 49 — Slice 35): the two deferred aggregates now each run
+   inside ONE `withTenantTransaction` via the UPDATE 47 private-`…On(client,…)`-helper pattern.
+   `KnowledgeRepository.query` runs entries-then-observations reads (extracted `activeEntriesForSubjectOn`
+   / `observationsForSubjectOn`) on one client, then the unchanged in-memory filtering;
+   `WorkforceRepository.getAvailabilityForMembers` loops `availabilityOn(client,…)` per member on one
+   client (same order, same `String(id)` keying, same `Map`). `getActiveEntriesForSubject`/
+   `getObservationsForSubject`/`getAvailability` now wrap their helper — unchanged public behavior.
+   Byte-identical SQL/params/ordering/mapping/returns/signatures; was 2/N transactions → now 1 each.
+   Unit (`batch-a-tenant.test.ts`, +5, SQL-routing mock) proves txnCount===1 + GUC-once-and-first +
+   all reads on one client in original order + preserved filtering/keying/empty paths; harness (+2)
+   proves each aggregate returns only tenant-local rows and cross-tenant rows can't participate. No
+   production RLS/policy/writes. **Batch A fully adopted (20/20 reads); ConsentRepository remains.**
+   See `code-concordance.md` UPDATE 49._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

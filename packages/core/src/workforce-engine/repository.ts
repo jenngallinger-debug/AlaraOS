@@ -6,6 +6,7 @@
  */
 
 import { DatabaseClient } from '../shared/database';
+import type { PoolClient } from '../shared/database';
 import { withTenantTransaction } from '../shared/tenant-scope';
 import { AlaraId } from '../shared/types';
 import {
@@ -135,7 +136,8 @@ export class WorkforceRepository {
 
   // RLS step 2 (Batch A): single-statement, tenant-filtered reads run inside a tenant-scoped
   // transaction (carries `app.tenant_id`). Behavior-preserving today (RLS inert → same rows);
-  // identical SQL/params/ordering/mapping. `getAvailabilityForMembers` aggregate is deferred.
+  // identical SQL/params/ordering/mapping. `getAvailabilityForMembers` now batches all per-member
+  // reads inside ONE tenant-scoped transaction via the private `availabilityOn` helper (Slice 35).
   async getMemberById(tenantId: string, id: AlaraId): Promise<WorkforceMember | null> {
     return withTenantTransaction(this.db, tenantId, async (client) => {
       const r = await client.query<MemberRow>(
@@ -177,23 +179,44 @@ export class WorkforceRepository {
   // ── Availability ──────────────────────────────────────────────────────────
 
   async getAvailability(tenantId: string, memberId: AlaraId): Promise<Availability | null> {
-    return withTenantTransaction(this.db, tenantId, async (client) => {
-      const r = await client.query<AvailabilityRow>(
-        `SELECT * FROM workforce_availability WHERE member_id = $1 AND tenant_id = $2`,
-        [memberId, tenantId],
-      );
-      const row = r.rows[0] ?? null;
-      return row ? rowToAvailability(row) : null;
-    });
+    return withTenantTransaction(this.db, tenantId, (client) =>
+      this.availabilityOn(client, tenantId, memberId),
+    );
+  }
+
+  /**
+   * Availability for a single member, run on a CALLER-SUPPLIED transaction client. Shared by
+   * `getAvailability` (which wraps it in a tenant-scoped transaction) and `getAvailabilityForMembers`
+   * (which runs it on its single transaction client) so the batch never opens a transaction per
+   * member. Identical SQL/params/mapping/null-return to the original `getAvailability`.
+   */
+  private async availabilityOn(
+    client: PoolClient,
+    tenantId: string,
+    memberId: AlaraId,
+  ): Promise<Availability | null> {
+    const r = await client.query<AvailabilityRow>(
+      `SELECT * FROM workforce_availability WHERE member_id = $1 AND tenant_id = $2`,
+      [memberId, tenantId],
+    );
+    const row = r.rows[0] ?? null;
+    return row ? rowToAvailability(row) : null;
   }
 
   async getAvailabilityForMembers(tenantId: string, memberIds: readonly AlaraId[]): Promise<Map<string, Availability>> {
-    const map = new Map<string, Availability>();
-    for (const id of memberIds) {
-      const avail = await this.getAvailability(tenantId, id);
-      if (avail) map.set(String(id), avail);
-    }
-    return map;
+    // RLS step 2 (final WorkforceRepository adoption): the entire batch runs inside ONE
+    // tenant-scoped transaction — every per-member availability read runs on the SAME client with
+    // a single `app.tenant_id` (was one transaction per member). Same SQL/params/mapping, same
+    // iteration order and `String(id)` keying, same Map return; `getAvailability` is inlined via
+    // `availabilityOn` to avoid a transaction per member.
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const map = new Map<string, Availability>();
+      for (const id of memberIds) {
+        const avail = await this.availabilityOn(client, tenantId, id);
+        if (avail) map.set(String(id), avail);
+      }
+      return map;
+    });
   }
 
   // ── Assignments ───────────────────────────────────────────────────────────

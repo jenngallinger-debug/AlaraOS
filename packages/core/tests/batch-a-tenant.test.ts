@@ -146,3 +146,135 @@ describe('WorkforceRepository (Batch A, tenant-scoped)', () => {
       ['tenant-A', 'm1']);
   });
 });
+
+// ── RLS step 2 Batch A aggregates (Slice 35): ONE transaction, one GUC, one client ────────────
+
+/**
+ * Fake DB that routes canned rows by SQL (so aggregates issuing >1 distinct SELECT are provable):
+ * a SINGLE client instance records every query into one array — proving "all on one client" — and
+ * `txnCount` proves exactly one transaction. `availByMember` keys availability rows by member id so
+ * the per-member batch can return found/missing per id.
+ */
+function makeRoutingDb(opts: {
+  entryRows?: Record<string, unknown>[];
+  obsRows?: Record<string, unknown>[];
+  availByMember?: Record<string, Record<string, unknown>[]>;
+}) {
+  const queries: Captured[] = [];
+  const state = { txnCount: 0 };
+  const client = {
+    query: async (text: string, values?: unknown[]) => {
+      queries.push({ text, values });
+      if (/set_config/i.test(text)) return { rows: [{}] };
+      if (/FROM knowledge_entries/i.test(text)) return { rows: opts.entryRows ?? [] };
+      if (/FROM observations/i.test(text)) return { rows: opts.obsRows ?? [] };
+      if (/FROM workforce_availability/i.test(text)) {
+        const memberId = String((values ?? [])[0]);
+        return { rows: (opts.availByMember ?? {})[memberId] ?? [] };
+      }
+      return { rows: [] };
+    },
+  };
+  const db = {
+    async transaction<T>(fn: (c: never) => Promise<T>): Promise<T> {
+      state.txnCount += 1;
+      return fn(client as never);
+    },
+  } as unknown as DatabaseClient;
+  return { db, queries, state };
+}
+
+const AVAIL = (memberId: string) => ({
+  member_id: memberId, tenant_id: 'tenant-A', status: 'available', current_load: 1, max_load: 5,
+  next_available_at: null, unavailable_until: null, snapshot_at: '2026-01-01T00:00:00Z',
+});
+
+describe('KnowledgeRepository.query (Batch A aggregate, ONE transaction)', () => {
+  test('runs both reads in a single transaction with the GUC set once, entries then observations on one client', async () => {
+    const h = makeRoutingDb({ entryRows: [ENTRY], obsRows: [OBS] });
+    const res = await new KnowledgeRepository(h.db).query({ tenantId: 'tenant-A', subjectId: 'subj-1' });
+
+    // ── ONE transaction; GUC set exactly once ────────────────────────────────
+    expect(h.state.txnCount).toBe(1);
+    const gucSets = h.queries.filter((q) => /set_config/i.test(q.text));
+    expect(gucSets).toHaveLength(1);
+    expect(gucSets[0].values).toEqual([TENANT_GUC, 'tenant-A']);
+
+    // ── every query ran on the same client, entries SELECT before observations SELECT ─
+    expect(h.queries.map((q) => q.text)).toEqual([
+      'SELECT set_config($1, $2, true)',
+      "SELECT * FROM knowledge_entries WHERE tenant_id = $1 AND subject_id = $2 AND status = 'active' ORDER BY asserted_at DESC",
+      'SELECT * FROM observations WHERE tenant_id = $1 AND subject_id = $2 ORDER BY observed_at DESC',
+    ]);
+    expect(h.queries[1].values).toEqual(['tenant-A', 'subj-1']);
+    expect(h.queries[2].values).toEqual(['tenant-A', 'subj-1']);
+
+    // ── identical returned result shape ──────────────────────────────────────
+    expect(res.subjectId).toBe('subj-1');
+    expect(res.entries.map((e) => e.id)).toEqual(['e1']);
+    expect(res.observations.map((o) => o.id)).toEqual(['obs1']);
+    expect(res.totalEntries).toBe(1);
+    expect(res.totalObservations).toBe(1);
+  });
+
+  test('topic branch: both reads carry the topic param ($3) in the single transaction', async () => {
+    const h = makeRoutingDb({ entryRows: [], obsRows: [] });
+    await new KnowledgeRepository(h.db).query({ tenantId: 'tenant-A', subjectId: 'subj-1', topic: 'eligibility' });
+    expect(h.state.txnCount).toBe(1);
+    expect(h.queries[1].text).toBe(
+      "SELECT * FROM knowledge_entries WHERE tenant_id = $1 AND subject_id = $2 AND topic = $3 AND status = 'active' ORDER BY asserted_at DESC",
+    );
+    expect(h.queries[1].values).toEqual(['tenant-A', 'subj-1', 'eligibility']);
+    expect(h.queries[2].text).toBe(
+      'SELECT * FROM observations WHERE tenant_id = $1 AND subject_id = $2 AND topic = $3 ORDER BY observed_at DESC',
+    );
+    expect(h.queries[2].values).toEqual(['tenant-A', 'subj-1', 'eligibility']);
+  });
+
+  test('in-memory filtering preserved: kind filter drops non-matching entries (still one transaction)', async () => {
+    const h = makeRoutingDb({ entryRows: [ENTRY, { ...ENTRY, id: 'e2', kind: 'risk' }], obsRows: [OBS] });
+    const res = await new KnowledgeRepository(h.db).query({ tenantId: 'tenant-A', subjectId: 'subj-1', kind: 'risk' });
+    expect(h.state.txnCount).toBe(1);
+    expect(res.entries.map((e) => e.id)).toEqual(['e2']);
+    expect(res.totalEntries).toBe(1);
+    expect(res.observations.map((o) => o.id)).toEqual(['obs1']);
+  });
+});
+
+describe('WorkforceRepository.getAvailabilityForMembers (Batch A aggregate, ONE transaction)', () => {
+  test('batches all per-member reads in a single transaction with the GUC set once, on one client', async () => {
+    const h = makeRoutingDb({ availByMember: { m1: [AVAIL('m1')], m3: [AVAIL('m3')] } }); // m2 missing
+    const map = await new WorkforceRepository(h.db).getAvailabilityForMembers(
+      'tenant-A', ['m1', 'm2', 'm3'] as AlaraId[],
+    );
+
+    // ── ONE transaction; GUC set exactly once ────────────────────────────────
+    expect(h.state.txnCount).toBe(1);
+    const gucSets = h.queries.filter((q) => /set_config/i.test(q.text));
+    expect(gucSets).toHaveLength(1);
+    expect(gucSets[0].values).toEqual([TENANT_GUC, 'tenant-A']);
+
+    // ── one availability SELECT per member, IN ORDER, identical SQL/params, all one client ─
+    const availQueries = h.queries.filter((q) => /FROM workforce_availability/i.test(q.text));
+    expect(availQueries).toHaveLength(3);
+    for (const q of availQueries) {
+      expect(q.text).toBe('SELECT * FROM workforce_availability WHERE member_id = $1 AND tenant_id = $2');
+    }
+    expect(availQueries.map((q) => q.values)).toEqual([
+      ['m1', 'tenant-A'], ['m2', 'tenant-A'], ['m3', 'tenant-A'],
+    ]);
+
+    // ── identical Map result: only found members, String(id) keys ────────────
+    expect([...map.keys()]).toEqual(['m1', 'm3']);
+    expect(map.get('m1')?.memberId).toBe('m1');
+    expect(map.has('m2')).toBe(false);
+  });
+
+  test('empty member list: still one transaction, no availability SELECTs, empty map', async () => {
+    const h = makeRoutingDb({});
+    const map = await new WorkforceRepository(h.db).getAvailabilityForMembers('tenant-A', [] as AlaraId[]);
+    expect(h.state.txnCount).toBe(1);
+    expect(h.queries.filter((q) => /FROM workforce_availability/i.test(q.text))).toHaveLength(0);
+    expect(map.size).toBe(0);
+  });
+});

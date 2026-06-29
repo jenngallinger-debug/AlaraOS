@@ -362,6 +362,68 @@ describeIf('withTenantTransaction — real Postgres (opt-in via ALARA_TEST_DATAB
     expect((await repo.getTeamById('tenant-A', 't-a' as AlaraId))?.tenantId).toBe('tenant-A');
   });
 
+  // ── RLS step 2 Batch A aggregates (Slice 35): one tenant-scoped transaction per aggregate ──────
+
+  test('KnowledgeRepository.query (one transaction) returns only tenant-local entries + observations', async () => {
+    // Functional proof the aggregate's two reads run end-to-end on real Postgres and cannot pull a
+    // foreign tenant's rows. Throwaway tables dropped in afterAll.
+    await db.transaction(async (client) => {
+      await client.query('DROP TABLE IF EXISTS observations');
+      await client.query('DROP TABLE IF EXISTS knowledge_entries');
+      await client.query(`CREATE TABLE observations (
+        id text, tenant_id text NOT NULL, subject_id text NOT NULL, subject_type text, topic text,
+        statement text, facts jsonb, source text, confidence text, ai_involved boolean,
+        source_event_ids text[], source_observation_ids text[], observed_at text, actor text, version int)`);
+      await client.query(`CREATE TABLE knowledge_entries (
+        id text, tenant_id text NOT NULL, subject_id text NOT NULL, subject_type text, topic text,
+        kind text, status text NOT NULL, statement text, content jsonb, confidence text,
+        ai_involved boolean, supporting_observation_ids text[], superseded_by_id text,
+        asserted_at text, asserted_by text, expires_at text, version int)`);
+      await client.query(`INSERT INTO observations (id,tenant_id,subject_id,topic,observed_at,version) VALUES
+        ('o-a','tenant-A','subj-1','health','2026-01-01T00:00:00Z',1),
+        ('o-b','tenant-B','subj-1','health','2026-01-01T00:00:00Z',1)`);
+      await client.query(`INSERT INTO knowledge_entries
+        (id,tenant_id,subject_id,topic,status,asserted_at,version) VALUES
+        ('k-a','tenant-A','subj-1','health','active','2026-01-01T00:00:00Z',1),
+        ('k-b','tenant-B','subj-1','health','active','2026-01-01T00:00:00Z',1)`);
+    });
+
+    const repo = new KnowledgeRepository(db);
+    const a = await repo.query({ tenantId: 'tenant-A', subjectId: 'subj-1' });
+    expect(a.entries.map((e) => e.id)).toEqual(['k-a']);          // never k-b
+    expect(a.observations.map((o) => o.id)).toEqual(['o-a']);     // never o-b
+    const b = await repo.query({ tenantId: 'tenant-B', subjectId: 'subj-1' });
+    expect(b.entries.map((e) => e.id)).toEqual(['k-b']);
+    expect(b.observations.map((o) => o.id)).toEqual(['o-b']);     // cross-tenant rows cannot participate
+  });
+
+  test('WorkforceRepository.getAvailabilityForMembers (one transaction) returns only tenant-local rows', async () => {
+    // The batch reads availability for a list of member ids in ONE transaction; a foreign tenant's
+    // availability row for the same member id must never appear. Throwaway table dropped in afterAll.
+    await db.transaction(async (client) => {
+      await client.query('DROP TABLE IF EXISTS workforce_availability');
+      await client.query(`CREATE TABLE workforce_availability (
+        member_id text NOT NULL, tenant_id text NOT NULL, status text, current_load int, max_load int,
+        next_available_at text, unavailable_until text, snapshot_at text)`);
+      // Same member id 'm-1' exists for BOTH tenants; 'm-2' only for tenant-A; 'm-3' for neither.
+      await client.query(`INSERT INTO workforce_availability
+        (member_id,tenant_id,status,current_load,max_load,snapshot_at) VALUES
+        ('m-1','tenant-A','available',1,5,'2026-01-01T00:00:00Z'),
+        ('m-1','tenant-B','offline',0,5,'2026-01-01T00:00:00Z'),
+        ('m-2','tenant-A','available',2,5,'2026-01-01T00:00:00Z')`);
+    });
+
+    const repo = new WorkforceRepository(db);
+    const mapA = await repo.getAvailabilityForMembers('tenant-A', ['m-1', 'm-2', 'm-3'] as AlaraId[]);
+    expect([...mapA.keys()].sort()).toEqual(['m-1', 'm-2']);      // m-3 absent
+    expect(mapA.get('m-1')?.status).toBe('available');           // tenant-A row, not tenant-B's 'offline'
+    expect(mapA.has('m-3')).toBe(false);
+
+    const mapB = await repo.getAvailabilityForMembers('tenant-B', ['m-1', 'm-2'] as AlaraId[]);
+    expect([...mapB.keys()]).toEqual(['m-1']);                   // m-2 belongs to tenant-A only
+    expect(mapB.get('m-1')?.status).toBe('offline');             // cross-tenant rows cannot participate
+  });
+
   test('Batch A primary tables enforce RLS isolation under a NON-superuser role', async () => {
     // Mirrors the established RLS proof for each Batch A repo's primary table shape (tenant_id/
     // subject_id). The probe SELECT runs under a fixture-local non-superuser role so FORCE RLS is not

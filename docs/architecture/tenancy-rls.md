@@ -189,8 +189,8 @@ re-fetch) and are allow-listed (§3) — they need RLS-aware analysis before mig
 |---|---|---|---|---|---|---|
 | **DatabaseProjectionStore** `projection-engine/store.ts` | `projections` | get/list **read**; save/delete write | yes | no (1 stmt) | **no** (InMemory wired) | **LOW** (read) |
 | RelationshipRepository `relationship-engine/repository.ts` | `relationships`, `edges` | read | yes | no | yes | LOW |
-| KnowledgeEngineRepository `knowledge-engine/repository.ts` | `observations`, `knowledge_entries` | read | yes | **✅ UPDATE 48** (reads; `query` aggregate deferred) | engine | LOW |
-| WorkforceEngineRepository `workforce-engine/repository.ts` | `workforce_members`, `workforce_availability`, `assignments`, `capacity_snapshots`, `workforce_teams` | read | yes | **✅ UPDATE 48** (reads; `getAvailabilityForMembers` aggregate deferred) | engine | LOW |
+| KnowledgeEngineRepository `knowledge-engine/repository.ts` | `observations`, `knowledge_entries` | read | yes | **✅ UPDATE 48** (reads) + **✅ UPDATE 49** (`query` aggregate — one transaction) | engine | LOW |
+| WorkforceEngineRepository `workforce-engine/repository.ts` | `workforce_members`, `workforce_availability`, `assignments`, `capacity_snapshots`, `workforce_teams` | read | yes | **✅ UPDATE 48** (reads) + **✅ UPDATE 49** (`getAvailabilityForMembers` aggregate — one transaction) | engine | LOW |
 | OrganizationalBrainRepository `organizational-brain/repository.ts` | `detected_patterns` | read | yes | **✅ UPDATE 48** (all 4 reads) | engine | LOW |
 | ConsentRepository `consent-store/repository.ts` | `objects` (type=Consent) | read | yes | no | yes | LOW-MED (reads central `objects`) |
 | IdentityResolutionRepository `identity-resolution/repository.ts` | (delegates to ObjectGraph) | read | yes | no | yes | LOW-MED (no own queries) |
@@ -202,8 +202,9 @@ re-fetch) and are allow-listed (§3) — they need RLS-aware analysis before mig
 **[✅ UPDATE 45]** → (2) RelationshipRepository reads (first LIVE adopter) **[✅ UPDATE 46 — the 7
 single-statement reads + `computeCareTeamView` aggregate ✅ UPDATE 47]** → (3) other read-only
 dedicated-table repos **[✅ UPDATE 48 — Knowledge (5), Workforce (9), OrganizationalBrain (4)
-single-statement reads; the two aggregates `KnowledgeRepository.query` + `WorkforceRepository.getAvailabilityForMembers`
-deferred to avoid transaction restructuring; Consent coordinated with `objects` still pending]** →
+single-statement reads; ✅ UPDATE 49 — the two deferred aggregates `KnowledgeRepository.query` +
+`WorkforceRepository.getAvailabilityForMembers` now each run inside ONE tenant-scoped transaction
+(private `…On(client,…)` helpers, UPDATE 47 pattern); Consent coordinated with `objects` still pending]** →
 (4) DatabaseProjectionStore writes → (5) JourneyEngineRepository → (6) ObjectGraphRepository
 (needs the by-id-without-tenant special case) → (7) EventStore (the cross-tenant by-id idempotency
 read needs RLS-aware handling).

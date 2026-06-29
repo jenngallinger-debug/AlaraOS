@@ -1525,3 +1525,50 @@ migrated sub-methods).
 Next: the two deferred aggregates (`KnowledgeRepository.query`,
 `WorkforceRepository.getAvailabilityForMembers`) via the UPDATE 47 single-transaction-refactor
 pattern, then Consent (coordinated with the central `objects` table) — per the UPDATE 44 order.
+
+## UPDATE 49 — RLS Step 2 Batch A aggregates: single-transaction refactor (Knowledge/Workforce adoption complete)
+
+Completes the Batch A repos by folding the two UPDATE 48-deferred aggregate reads into ONE
+tenant-scoped transaction each (one `app.tenant_id`, all internal reads on the same transaction
+client), using the UPDATE 47 private-`…On(client,…)`-helper pattern to avoid nested transactions.
+**No functional change** — proven by the engine suites (`m7-knowledge-engine`, `m10-workforce-engine`,
+plus `m9`/`m10.5`/`m11` consumers) still passing against InMemoryStore, which exercise these aggregates.
+
+- `packages/core/src/knowledge-engine/repository.ts` — `query` now opens ONE
+  `withTenantTransaction(q.tenantId, …)` and runs both reads on its client **in the original order
+  (entries first, then observations)** via two extracted private helpers:
+  `activeEntriesForSubjectOn(client,…)` and `observationsForSubjectOn(client,…)` (each holding the
+  byte-identical SQL + both topic branches of the former public reads). `getActiveEntriesForSubject`
+  / `getObservationsForSubject` now wrap their helper in a transaction (unchanged public behavior).
+  The subsequent **in-memory filtering** (`kind`/`status`/`minConfidence` via `CONFIDENCE_RANK`/
+  `activeOnly`+`expiresAt`; obs `minConfidence`) and the return shape (`totalEntries`/
+  `totalObservations`/`queriedAt`) are untouched. Was: 2 transactions + 2 GUC sets → now: 1 + 1.
+- `packages/core/src/workforce-engine/repository.ts` — `getAvailabilityForMembers` now opens ONE
+  `withTenantTransaction` and loops the extracted private `availabilityOn(client,…)` (byte-identical
+  `SELECT * FROM workforce_availability WHERE member_id = $1 AND tenant_id = $2`) per member on the
+  single client. **Same iteration order, same `if (avail) map.set(String(id), avail)` keying, same
+  `Map` return.** `getAvailability` wraps the same helper (unchanged public behavior). Was: N
+  transactions + N GUC sets → now: 1 + 1.
+- **Preserved exactly:** SQL text/params/ordering, row mappers, in-memory filtering, Map/result
+  shapes, error/null behavior, and public method signatures. Only `this.db.query` indirection →
+  `client.query(...).rows` on one transaction client. No query rewrites, no schema/policy changes,
+  no `FORCE`/`WITH CHECK`, no writes, no wiring change.
+- Unit (`batch-a-tenant.test.ts`, +5): a SQL-routing mocked `DatabaseClient` proving for each
+  aggregate — exactly ONE transaction (`txnCount===1`), GUC set **once** and **first**, all internal
+  SELECTs on the single client in original order with byte-identical SQL/params (`query`: entries
+  then observations, incl. topic-branch `$3`; batch: one availability SELECT per member in list
+  order), identical returns, and preserved in-memory filtering (`kind`) / `String(id)` keying /
+  missing-member + empty-list paths. Default suite, Postgres-free.
+- Harness (`tenant-scope.integration.test.ts`, +2): real-Postgres proofs that each aggregate returns
+  only tenant-local rows and that cross-tenant rows cannot participate through the aggregate path —
+  `query` (tenant-A view never includes tenant-B's `o-b`/`k-b`, and vice versa) and
+  `getAvailabilityForMembers` (same member id `m-1` exists for both tenants; tenant-A gets its
+  `available` row, tenant-B its `offline` row; foreign-only `m-2`/absent `m-3` excluded). Fixtures
+  dropped in `afterAll`. Opt-in / self-skipping → default `verify` stays Postgres-free; CI executes
+  the new assertions.
+- No production RLS enabled, no policy on app schemas. **Batch A fully adopted: all 20 dedicated-table
+  reads (18 single-statement + 2 aggregates) now tenant-scoped.** Remaining RLS-step-2 read work:
+  ConsentRepository (coordinated with the central `objects` table).
+
+Next: ConsentRepository reads (coordinated with `objects`) — per the UPDATE 44 order — then the
+write paths (ProjectionStore writes → Journey → ObjectGraph → EventStore).
