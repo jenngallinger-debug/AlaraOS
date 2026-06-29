@@ -12,6 +12,7 @@
 
 import { PoolClient } from 'pg';
 import { DatabaseClient } from '../shared/database';
+import { withTenantTransaction } from '../shared/tenant-scope';
 import { newAlaraId } from '../shared/ids';
 import {
   AlaraId,
@@ -160,18 +161,26 @@ export class ObjectGraphRepository {
    * Retrieve an object by its Alara UUID.
    * External IDs are never used as lookup keys here.
    */
+  // RLS step 2 (read phase): the self-contained reads of the central `objects` / `external_references`
+  // tables run inside a per-method tenant-scoped transaction (carries `app.tenant_id`).
+  // Behavior-preserving today — RLS is inert (no policy on `objects`); identical SQL/params/mapping/
+  // returns. Sets the GUC only — NO policy/FORCE/WITH CHECK. The WRITE path (create/update/
+  // createWithClient + the command-handler transaction + the by-id readback) is intentionally
+  // UNTOUCHED here; it is coordinated with EventStore in a later slice. See tenancy-rls.md Appendix C.
   async getById(
     tenantId: string,
     id: AlaraId,
   ): Promise<AlaraObject | null> {
-    const row = await this.db.queryOne<ObjectRow>(
-      `SELECT id, tenant_id, type, state, attributes, version, created_at, updated_at
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<ObjectRow>(
+        `SELECT id, tenant_id, type, state, attributes, version, created_at, updated_at
          FROM objects
         WHERE id = $1 AND tenant_id = $2`,
-      [id, tenantId],
-    );
-
-    return row ? rowToObject(row) : null;
+        [id, tenantId],
+      );
+      const row = r.rows[0] ?? null;
+      return row ? rowToObject(row) : null;
+    });
   }
 
   /**
@@ -200,18 +209,20 @@ export class ObjectGraphRepository {
     tenantId: string,
     objectId: AlaraId,
   ): Promise<ExternalReference[]> {
-    const rows = await this.db.query<ExternalReferenceRow>(
-      `SELECT system, ext_type, value
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<ExternalReferenceRow>(
+        `SELECT system, ext_type, value
          FROM external_references
         WHERE object_id = $1 AND tenant_id = $2`,
-      [objectId, tenantId],
-    );
+        [objectId, tenantId],
+      );
 
-    return rows.map((r) => ({
-      system: r.system,
-      extType: r.ext_type,
-      value: r.value,
-    }));
+      return r.rows.map((row) => ({
+        system: row.system,
+        extType: row.ext_type,
+        value: row.value,
+      }));
+    });
   }
 
   /**
@@ -225,8 +236,9 @@ export class ObjectGraphRepository {
     extType: string,
     value: string,
   ): Promise<AlaraObject[]> {
-    const rows = await this.db.query<ObjectRow>(
-      `SELECT o.id, o.tenant_id, o.type, o.state, o.attributes,
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<ObjectRow>(
+        `SELECT o.id, o.tenant_id, o.type, o.state, o.attributes,
               o.version, o.created_at, o.updated_at
          FROM objects o
          JOIN external_references er ON er.object_id = o.id
@@ -234,10 +246,11 @@ export class ObjectGraphRepository {
           AND er.system   = $2
           AND er.ext_type = $3
           AND er.value    = $4`,
-      [tenantId, system, extType, value],
-    );
+        [tenantId, system, extType, value],
+      );
 
-    return rows.map(rowToObject);
+      return r.rows.map(rowToObject);
+    });
   }
 
   /** Convenience: transactional create via a provided client */

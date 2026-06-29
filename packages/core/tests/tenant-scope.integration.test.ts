@@ -21,6 +21,7 @@ import { OrganizationalBrainRepository } from '../src/organizational-brain/repos
 import { KnowledgeRepository } from '../src/knowledge-engine/repository';
 import { WorkforceRepository } from '../src/workforce-engine/repository';
 import { ConsentRepository } from '../src/consent-store/repository';
+import { ObjectGraphRepository } from '../src/object-graph/repository';
 import { JourneyRepository } from '../src/journey-engine/repository';
 import { Journey, JourneyEvent, JourneyProjection, JourneyReference } from '../src/journey-engine/types';
 import { AlaraId } from '../src/shared/types';
@@ -64,7 +65,8 @@ describeIf('withTenantTransaction — real Postgres (opt-in via ALARA_TEST_DATAB
       await db.query('DROP ROLE IF EXISTS know_probe_role');
       await db.query('DROP TABLE IF EXISTS wf_rls_probe');
       await db.query('DROP ROLE IF EXISTS wf_probe_role');
-      // RLS step 2 — ConsentRepository fixture (central `objects` table, throwaway)
+      // RLS step 2 — ConsentRepository / ObjectGraphRepository fixtures (central `objects` table)
+      await db.query('DROP TABLE IF EXISTS external_references');
       await db.query('DROP TABLE IF EXISTS objects');
       // RLS step 2 — JourneyRepository write fixtures (journey_* tables, throwaway)
       await db.query('DROP TABLE IF EXISTS journeys');
@@ -521,6 +523,51 @@ describeIf('withTenantTransaction — real Postgres (opt-in via ALARA_TEST_DATAB
     expect((await repo.findById('tenant-A', 'c-a'))?.consentId).toBe('consent-a');
     expect(await repo.findById('tenant-B', 'c-a')).toBeNull();        // wrong tenant → null
     expect(await repo.findById('tenant-A', 'p-a')).toBeNull();        // non-Consent type → null
+  });
+
+  // ── RLS step 2 — ObjectGraphRepository reads (Slice 40a; central `objects` + `external_references`) ──
+
+  test('ObjectGraphRepository reads return only tenant-local rows on real Postgres', async () => {
+    // Functional proof the MIGRATED reads work end-to-end on the shared `objects` table + the
+    // `external_references` JOIN. Fixtures faithful to migration 001: objects.attributes JSONB +
+    // created_at/updated_at; external_references PK (object_id, system, ext_type). Dropped in afterAll.
+    // NOTE: reads only — the write path (create/update/createWithClient + the command-handler
+    // transaction + by-id readback) is untouched here; no RLS policy on `objects` (GUC inert).
+    await db.transaction(async (client) => {
+      await client.query('DROP TABLE IF EXISTS external_references');
+      await client.query('DROP TABLE IF EXISTS objects');
+      await client.query(`CREATE TABLE objects (
+        id text, tenant_id text NOT NULL, type text, state text, attributes jsonb, version int,
+        created_at text, updated_at text)`);
+      await client.query(`CREATE TABLE external_references (
+        object_id text, tenant_id text NOT NULL, system text, ext_type text, value text,
+        PRIMARY KEY (object_id, system, ext_type))`);
+      await client.query(`INSERT INTO objects (id,tenant_id,type,state,attributes,version,created_at,updated_at) VALUES
+        ('o-a','tenant-A','Patient','created','{"x":1}',1,'2026-01-01T00:00:00Z','2026-01-01T00:00:00Z'),
+        ('o-b','tenant-B','Patient','created','{"x":2}',1,'2026-01-01T00:00:00Z','2026-01-01T00:00:00Z')`);
+      // Same (system, ext_type, value) for both tenants but pointing at different objects.
+      await client.query(`INSERT INTO external_references (object_id,tenant_id,system,ext_type,value) VALUES
+        ('o-a','tenant-A','Automynd','patient_id','AM-1'),
+        ('o-b','tenant-B','Automynd','patient_id','AM-1')`);
+    });
+
+    const repo = new ObjectGraphRepository(db);
+
+    // getById: tenant-local only.
+    expect((await repo.getById('tenant-A', 'o-a' as AlaraId))?.tenantId).toBe('tenant-A');
+    expect(await repo.getById('tenant-B', 'o-a' as AlaraId)).toBeNull();           // wrong tenant → null
+
+    // getExternalReferences: tenant-local only.
+    expect((await repo.getExternalReferences('tenant-A', 'o-a' as AlaraId)).map((r) => r.value)).toEqual(['AM-1']);
+    expect(await repo.getExternalReferences('tenant-B', 'o-a' as AlaraId)).toEqual([]);   // wrong tenant → empty
+
+    // findByExternalReference: the JOIN returns only the caller-tenant object, even though the same
+    // (system, ext_type, value) exists for both tenants.
+    expect((await repo.findByExternalReference('tenant-A', 'Automynd', 'patient_id', 'AM-1')).map((o) => o.id))
+      .toEqual(['o-a']);
+    expect((await repo.findByExternalReference('tenant-B', 'Automynd', 'patient_id', 'AM-1')).map((o) => o.id))
+      .toEqual(['o-b']);                                                            // cannot cross tenants
+    expect(await repo.findByExternalReference('tenant-A', 'Automynd', 'patient_id', 'none')).toEqual([]);
   });
 
   // ── RLS step 2 write phase — JourneyRepository writes (Slice 38) ────────────────────────────

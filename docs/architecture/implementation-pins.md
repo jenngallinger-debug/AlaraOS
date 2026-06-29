@@ -354,6 +354,21 @@ These are **constraints, not technologies**. They are binding on all implementat
    null/array/scalar mapping. Harness: the Journey integration test now adds cross-tenant read
    assertions (wrong tenant → empty/null). Not API-wired → zero production risk. **JourneyRepository
    complete; ObjectGraph/EventStore next.** See `code-concordance.md` UPDATE 53._
+   _RLS Step 2 — ObjectGraphRepository READS (UPDATE 54 — Slice 40a): the 3 self-contained reads of the
+   central `objects`/`external_references` tables (`getById`, `getExternalReferences`,
+   `findByExternalReference`) now run inside per-method `withTenantTransaction`. FIRST live-wired
+   central-store adopter (GraphQL/consent/retrieval/identity/intake) — split reads-now / writes-later
+   per audit; behavior-preserving as RLS is inert. Byte-identical SQL (incl. the JOIN)/params/mapping/
+   returns; GUC only — NO policy/WITH CHECK. `getById` still called by `create`/`update` but
+   sequentially (no txn wrapper around it) → no nesting. ⚠ `findByExternalReference` JOIN doesn't filter
+   `er.tenant_id` (constrained via `er.object_id=o.id`+`o.tenant_id` → no leak; flag for RLS-enablement).
+   **WRITES DEFERRED to Slice 40b** (coordinated w/ EventStore): `createWithClient` by-id readback +
+   `create`/`update`/`addExternalReference` need the GUC on the `ObjectCommandHandler` transaction — the
+   prerequisite for enabling RLS on `objects`/`events`. Unit (`object-graph-tenant.test.ts`, 6): one
+   txn, GUC once-and-first, normalized SQL + params, null/array mapping. Harness +1 (opt-in real-PG,
+   migration-001-faithful objects[JSONB+created/updated] + external_references PK): same-tenant rows,
+   wrong-tenant empty/null, JOIN returns only caller-tenant object. **ObjectGraph reads done; writes
+   (40b) + EventStore next.** See `code-concordance.md` UPDATE 54._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

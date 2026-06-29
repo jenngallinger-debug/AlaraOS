@@ -195,7 +195,7 @@ re-fetch) and are allow-listed (§3) — they need RLS-aware analysis before mig
 | ConsentRepository `consent-store/repository.ts` | `objects` (type=Consent) | read | yes | **✅ UPDATE 50** (`findForSubject` + `findById`; sets GUC only — NO `objects` policy) | yes | LOW-MED (reads central `objects`) |
 | IdentityResolutionRepository `identity-resolution/repository.ts` | (delegates to ObjectGraph) | read | yes | no | yes | LOW-MED (no own queries) |
 | JourneyEngineRepository `journey-engine/repository.ts` | `journey_*` | **mixed** (5 INSERT/6 UPDATE writes; 7 reads) | yes | **✅ FULLY ADOPTED** — writes ✅ UPDATE 52, reads ✅ UPDATE 53 (all 18 methods per-method txn; sets GUC only — NO policy/WITH CHECK) | engine (not API-wired) | MED-HIGH (heaviest writes) |
-| ObjectGraphRepository `object-graph/repository.ts` | `objects`, `external_references` | **mixed** | mostly (1 by-id read allow-listed) | partial (`client.query`) | yes | HIGH (central canonical store) |
+| ObjectGraphRepository `object-graph/repository.ts` | `objects`, `external_references` | **mixed** | mostly (1 by-id read allow-listed) | **reads ✅ UPDATE 54** (getById/getExternalReferences/findByExternalReference, per-method txn, GUC only); **writes DEFERRED** (handler-txn GUC + by-id readback, coordinated w/ EventStore) | yes (LIVE-WIRED in API) | HIGH (central canonical store) |
 | EventStore `events/store.ts` | `events` | **mixed** (append + loadStream/loadAll) | mostly (1 by-id read allow-listed) | **yes** (advisory lock) | yes | HIGH (core write path) |
 
 **Recommended migration order (safest → riskiest):** (1) DatabaseProjectionStore reads
@@ -227,8 +227,16 @@ per-call `now` timestamp preserved verbatim. JourneyRepository is now FULLY tena
 methods). ⚠ `getEvents`' `afterId` cursor subquery `(SELECT occurred_at FROM journey_events WHERE
 id=$3)` is NOT tenant-scoped — a scalar cursor lookup that cannot leak rows; flag for the RLS-enablement
 slice (under a USING policy it becomes tenant-filtered → a mild safety improvement).]** →
-(6) ObjectGraphRepository (needs the by-id-without-tenant special case) → (7) EventStore (the
-cross-tenant by-id idempotency read needs RLS-aware handling).
+(6) ObjectGraphRepository (needs the by-id-without-tenant special case) **[✅ UPDATE 54 — READS:
+`getById`, `getExternalReferences`, `findByExternalReference` wrapped in per-method
+`withTenantTransaction`; byte-identical SQL/params/mapping/returns; GUC only — NO policy/WITH CHECK.
+First LIVE-WIRED central-store adopter (GraphQL/consent/retrieval/identity/intake), behavior-preserving
+as RLS is inert. ⚠ `findByExternalReference`'s JOIN does not filter `er.tenant_id` (constrained via
+`er.object_id=o.id` + `o.tenant_id` → cannot leak; flag for RLS-enablement). WRITES DEFERRED →
+Slice 40b: `createWithClient` by-id readback `SELECT * FROM objects WHERE id=$1` + `create`/`update`/
+`addExternalReference` need the GUC set on the **`ObjectCommandHandler` transaction**, coordinated with
+EventStore (shared txn) — this is the prerequisite for ENABLING RLS on `objects`/`events`.]** →
+(7) EventStore (the cross-tenant by-id idempotency read needs RLS-aware handling).
 
 ### Decision — recommended FIRST RLS Step 2 target — ✅ IMPLEMENTED (UPDATE 45)
 
