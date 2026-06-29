@@ -169,3 +169,59 @@ harness self-skips there and the default suite never needs Postgres.
 `verify` job (lint/test/build) alongside this one; the Postgres image/version + credentials/role
 (owner role for the current `FORCE` probe, or a non-owner role to also cover step 4); and the
 trigger/branch policy. **Not implemented here** — creating the workflow is the owner's call.
+
+## Appendix C — Tenant-scoped repository migration inventory (RLS Step 2 planning)
+
+> **Audit/planning only — NO call sites migrated (UPDATE 44).** Inventory of every tenant-scoped
+> data path, to pick the safest first adopter of `withTenantTransaction()` for RLS step 2. The
+> harness (Appendix A) is green in CI (commit `ba2bc48`), so step 2 may begin — on the
+> lowest-risk path first.
+
+**Cross-cutting facts:** every repo accesses the DB via `this.db.query<…>()` / `queryOne()` — which
+borrow an **arbitrary pooled connection** (NOT transaction-scoped) — **except** `EventStore` and
+`ObjectGraphRepository.createWithClient`, which already use `db.transaction()` + `client.query()`.
+Migrating a single-statement `db.query` read to `withTenantTransaction` simply runs it on the
+transaction's `client` (adapt `db.query(...)` rows → `(await client.query(...)).rows`). Two by-id
+reads intentionally omit the tenant predicate (EventStore idempotency check; ObjectGraph post-insert
+re-fetch) and are allow-listed (§3) — they need RLS-aware analysis before migration.
+
+| Path (file) | Table(s) | R/W | tenant-filtered | txn today | live-wired | risk |
+|---|---|---|---|---|---|---|
+| **DatabaseProjectionStore** `projection-engine/store.ts` | `projections` | get/list **read**; save/delete write | yes | no (1 stmt) | **no** (InMemory wired) | **LOW** (read) |
+| RelationshipRepository `relationship-engine/repository.ts` | `relationships`, `edges` | read | yes | no | yes | LOW |
+| KnowledgeEngineRepository `knowledge-engine/repository.ts` | `observations`, `knowledge_entries` | read | yes | no | engine | LOW |
+| WorkforceEngineRepository `workforce-engine/repository.ts` | `workforce_members` | read | yes | no | engine | LOW |
+| OrganizationalBrainRepository `organizational-brain/repository.ts` | `detected_patterns` | read | yes | no | engine | LOW |
+| ConsentRepository `consent-store/repository.ts` | `objects` (type=Consent) | read | yes | no | yes | LOW-MED (reads central `objects`) |
+| IdentityResolutionRepository `identity-resolution/repository.ts` | (delegates to ObjectGraph) | read | yes | no | yes | LOW-MED (no own queries) |
+| JourneyEngineRepository `journey-engine/repository.ts` | `journey_*` | **mixed** (5 INSERT/7 UPDATE) | yes | no | engine | MED-HIGH (heaviest writes) |
+| ObjectGraphRepository `object-graph/repository.ts` | `objects`, `external_references` | **mixed** | mostly (1 by-id read allow-listed) | partial (`client.query`) | yes | HIGH (central canonical store) |
+| EventStore `events/store.ts` | `events` | **mixed** (append + loadStream/loadAll) | mostly (1 by-id read allow-listed) | **yes** (advisory lock) | yes | HIGH (core write path) |
+
+**Recommended migration order (safest → riskiest):** (1) DatabaseProjectionStore reads →
+(2) RelationshipRepository reads (first LIVE adopter) → (3) other read-only dedicated-table repos
+(Knowledge, Workforce, OrganizationalBrain; Consent coordinated with `objects`) →
+(4) DatabaseProjectionStore writes → (5) JourneyEngineRepository → (6) ObjectGraphRepository
+(needs the by-id-without-tenant special case) → (7) EventStore (the cross-tenant by-id idempotency
+read needs RLS-aware handling).
+
+### Decision — recommended FIRST RLS Step 2 target
+
+**`DatabaseProjectionStore.get` + `listForSubject` (the `projections` table).** It is read-only,
+single-statement, already tenant-filtered, on a **dedicated** table (isolated RLS blast radius), and
+holds **disposable** cache data (ADR-016 — lowest consequence). It is **not live-wired** today
+(`InMemoryProjectionStore` is used), so establishing the adopter pattern + harness proof here carries
+**zero production-read risk**. The first **live** adopter should be **RelationshipRepository reads**
+next. *(A low-risk read-only path exists, so no preparatory slice is required beyond the harness
+extension below — but per the hard stop, nothing is migrated in this slice.)*
+
+### Tests/harness extensions required BEFORE migrating that first repo
+
+1. Extend `tenant-scope.integration.test.ts` with a real throwaway table matching the `projections`
+   schema (or apply migration 004 to the test DB) + a `tenant_isolation` policy, and assert — under
+   the **non-superuser role** (UPDATE 43 pattern) — that the migrated `get`/`listForSubject` return
+   only the current tenant's rows.
+2. A behavior-preserving unit test (InMemory double or mocked `DatabaseClient`) proving the migrated
+   methods return identical results while RLS is inert (the GUC is unread).
+3. Keep the default suite Postgres-free (new PG assertions self-skip).
+4. Handle the `db.query` → `client.query` row-shape adaptation (`.rows`) inside the migrated methods.

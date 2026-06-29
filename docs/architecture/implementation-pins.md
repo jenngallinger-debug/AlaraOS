@@ -234,6 +234,14 @@ These are **constraints, not technologies**. They are binding on all implementat
    dropped in `afterAll`; GUC set/no-leak tests unchanged. No production code, no workflow change, no
    secrets; still opt-in/self-skipping. Not run locally (no local PG) — validated by next CI run.
    Folds non-superuser-role coverage into the harness. See `code-concordance.md` UPDATE 43._
+   _Tenant-scoped repository migration inventory (RLS Step 2 planning — docs only): inventory of all
+   10 tenant-scoped repos/stores in `tenancy-rls.md` Appendix C. All read via `this.db.query`/
+   `queryOne` (pooled, non-txn) except EventStore + ObjectGraph.createWithClient. Recommended FIRST
+   adopter of `withTenantTransaction`: `DatabaseProjectionStore.get`/`listForSubject` (`projections`
+   table — read-only, tenant-filtered, dedicated + disposable, NOT live-wired → zero prod-read risk);
+   first LIVE adopter next = RelationshipRepository reads. Two by-id reads (EventStore idempotency,
+   ObjectGraph re-fetch) need RLS-aware handling before migration. NO call sites migrated, no runtime
+   change. See `code-concordance.md` UPDATE 44._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

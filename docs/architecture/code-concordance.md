@@ -1367,3 +1367,26 @@ The first CI run of the RLS integration job (UPDATE 42) **failed** at the test s
 This also folds the **non-superuser-role coverage** (previously listed as remaining step-5 work) into
 the harness. No app schema RLS, no policy on app tables, no call-site migration, no auth/GraphQL/
 webhook change.
+
+## UPDATE 44 — Tenant-scoped repository migration inventory (RLS Step 2 planning — docs only)
+
+Inventory of every tenant-scoped data path to choose the safest first adopter of
+`withTenantTransaction()` for RLS step 2 (full table + order in `tenancy-rls.md` Appendix C).
+**Audit/planning only — NO call sites migrated, no runtime change.**
+
+Findings: 10 repos/stores touch tenant-scoped tables; all read via `this.db.query`/`queryOne`
+(arbitrary pooled connection) EXCEPT `EventStore` and `ObjectGraphRepository.createWithClient`
+(already transaction-integrated). Live-wired with real `db`: `EventStore`, `ObjectGraphRepository`,
+`RelationshipRepository`, `ConsentRepository`; **`InMemoryProjectionStore` is wired (the DB
+projection store is not)**. Two by-id reads (EventStore idempotency, ObjectGraph post-insert
+re-fetch) intentionally omit the tenant predicate (allow-listed §3) → need RLS-aware handling before
+migration.
+
+**Recommended FIRST target: `DatabaseProjectionStore.get` + `listForSubject` (the `projections`
+table)** — read-only, single-statement, already tenant-filtered, dedicated + **disposable** table
+(ADR-016, isolated RLS blast radius), and **not live-wired** → zero production-read risk for
+establishing the adopter pattern + harness proof. First **live** adopter next: RelationshipRepository
+reads. Order then proceeds read-only dedicated tables → projection writes → journey → object-graph →
+event store (riskiest, has the cross-tenant by-id read). Harness extension required first: a
+`projections`-shaped real table + policy asserting per-tenant filtering under the non-superuser role
+(UPDATE 43 pattern), plus a behavior-preserving (RLS-inert) unit test.
