@@ -20,6 +20,7 @@ import { RelationshipRepository } from '../src/relationship-engine/repository';
 import { OrganizationalBrainRepository } from '../src/organizational-brain/repository';
 import { KnowledgeRepository } from '../src/knowledge-engine/repository';
 import { WorkforceRepository } from '../src/workforce-engine/repository';
+import { ConsentRepository } from '../src/consent-store/repository';
 import { AlaraId } from '../src/shared/types';
 
 const DB_URL = process.env.ALARA_TEST_DATABASE_URL;
@@ -61,6 +62,8 @@ describeIf('withTenantTransaction — real Postgres (opt-in via ALARA_TEST_DATAB
       await db.query('DROP ROLE IF EXISTS know_probe_role');
       await db.query('DROP TABLE IF EXISTS wf_rls_probe');
       await db.query('DROP ROLE IF EXISTS wf_probe_role');
+      // RLS step 2 — ConsentRepository fixture (central `objects` table, throwaway)
+      await db.query('DROP TABLE IF EXISTS objects');
     } catch { /* ignore cleanup errors */ }
     await db.end();
   });
@@ -422,6 +425,39 @@ describeIf('withTenantTransaction — real Postgres (opt-in via ALARA_TEST_DATAB
     const mapB = await repo.getAvailabilityForMembers('tenant-B', ['m-1', 'm-2'] as AlaraId[]);
     expect([...mapB.keys()]).toEqual(['m-1']);                   // m-2 belongs to tenant-A only
     expect(mapB.get('m-1')?.status).toBe('offline');             // cross-tenant rows cannot participate
+  });
+
+  // ── RLS step 2 — ConsentRepository (central `objects` table) ────────────────────────────────
+
+  test('ConsentRepository reads return only tenant-local Consent objects on real Postgres', async () => {
+    // Functional proof the MIGRATED reads of the shared `objects` table work end-to-end (the SELECTs,
+    // the set_config wrapping, the JSONB subjectId filter, the type guard). Throwaway `objects` table
+    // dropped in afterAll. NOTE: this does NOT enable RLS on `objects` — enablement stays gated on the
+    // other `objects` readers (ObjectGraph + the by-id idempotency special case).
+    await db.transaction(async (client) => {
+      await client.query('DROP TABLE IF EXISTS objects');
+      await client.query(`CREATE TABLE objects (
+        id text, tenant_id text NOT NULL, type text, state text, attributes jsonb, version int,
+        created_at text, updated_at text)`);
+      await client.query(`INSERT INTO objects (id,tenant_id,type,state,attributes,version) VALUES
+        ('c-a','tenant-A','Consent','active',
+          '{"subjectId":"subj-1","recipientId":"rec-1","consentId":"consent-a","status":"active"}',1),
+        ('c-b','tenant-B','Consent','active',
+          '{"subjectId":"subj-1","recipientId":"rec-2","consentId":"consent-b","status":"active"}',1),
+        ('p-a','tenant-A','Patient','active','{"subjectId":"subj-1"}',1)`);
+    });
+
+    const repo = new ConsentRepository(db);
+
+    // findForSubject: tenant-local only; cross-tenant rows cannot participate.
+    expect((await repo.findForSubject('tenant-A', 'subj-1')).map((f) => f.consentId)).toEqual(['consent-a']);
+    expect((await repo.findForSubject('tenant-B', 'subj-1')).map((f) => f.consentId)).toEqual(['consent-b']);
+    expect(await repo.findForSubject('tenant-A', 'no-such-subject')).toEqual([]);
+
+    // findById: tenant-local only, and a wrong-type row with a matching id → null.
+    expect((await repo.findById('tenant-A', 'c-a'))?.consentId).toBe('consent-a');
+    expect(await repo.findById('tenant-B', 'c-a')).toBeNull();        // wrong tenant → null
+    expect(await repo.findById('tenant-A', 'p-a')).toBeNull();        // non-Consent type → null
   });
 
   test('Batch A primary tables enforce RLS isolation under a NON-superuser role', async () => {

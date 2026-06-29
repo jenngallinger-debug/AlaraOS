@@ -296,6 +296,21 @@ These are **constraints, not technologies**. They are binding on all implementat
    proves each aggregate returns only tenant-local rows and cross-tenant rows can't participate. No
    production RLS/policy/writes. **Batch A fully adopted (20/20 reads); ConsentRepository remains.**
    See `code-concordance.md` UPDATE 49._
+   _RLS Step 2 — ConsentRepository (UPDATE 50 — Slice 36): the LAST read-side repo. Both reads of the
+   central shared `objects` table — `findForSubject` (subject-targeted JSONB `attributes->>'subjectId'`
+   read) and `findById` (by-id + tenant, null on absent OR `type !== 'Consent'`) — now run inside
+   `withTenantTransaction` (carry `app.tenant_id`). Byte-identical SQL (incl. original whitespace + the
+   distinct column lists + `findById`'s extra `created_at`/`updated_at`)/params/mapping/drop+null
+   behavior/signatures; only `this.db.query<T>()` → `(await client.query<T>()).rows`. Because `objects`
+   is SHARED (ObjectGraph + EventStore-adjacent paths), setting the GUC is behavior-preserving today
+   only because RLS is inert — **this slice adds NO policy/`FORCE`/`WITH CHECK` on `objects`. Actual
+   `objects` RLS enablement stays GATED on ObjectGraphRepository + the by-id-without-tenant idempotency
+   special case being handled together.** Unit (`consent-store-tenant.test.ts`, 6) proves txnCount===1
+   + GUC-once-and-first + identical SQL/params + malformed-row drop + wrong-type→null; harness +1
+   (opt-in real-PG on throwaway `objects`: tenant-local only, wrong-tenant→empty/null, non-Consent
+   id→null); `consent-subject-query.test.ts` SqlSpyDb updated to observe the txn client. No production
+   RLS/policy/writes. **All read-side repos adopted; write paths next.** See `code-concordance.md`
+   UPDATE 50._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

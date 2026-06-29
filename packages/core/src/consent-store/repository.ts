@@ -14,6 +14,7 @@
  */
 
 import { DatabaseClient } from '../shared/database';
+import { withTenantTransaction } from '../shared/tenant-scope';
 import {
   ConsentFact,
   ConsentPermissionType,
@@ -39,37 +40,46 @@ export class ConsentRepository {
    * expired / pending). The caller (ConsentFactSource) selects the relevant one;
    * the ConsentPolicyModule renders the ALLOW/DENY decision.
    */
+  // RLS step 2: these reads of the central `objects` table run inside a tenant-scoped transaction
+  // (carries `app.tenant_id`). Behavior-preserving today (RLS inert → same rows); identical
+  // SQL/params/mapping/returns. NOTE: actual RLS enablement on `objects` remains GATED on the other
+  // `objects` readers (ObjectGraphRepository + the by-id idempotency special case) being handled too
+  // — this slice does NOT add any policy/FORCE/WITH CHECK on `objects`. See tenancy-rls.md Appendix C.
   async findForSubject(tenantId: string, subjectId: string): Promise<ConsentFact[]> {
-    // Subject-targeted query (hot authorization read path): filter by tenant, type,
-    // AND the consent subject inside the JSONB — never load every Consent object in the
-    // tenant. Backed in production by the partial expression index
-    // idx_objects_consent_subject (migration 012) on (attributes->>'subjectId').
-    const rows = await this.db.query<ConsentObjectRow>(
-      `SELECT id, tenant_id, type, state, attributes, version
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      // Subject-targeted query (hot authorization read path): filter by tenant, type,
+      // AND the consent subject inside the JSONB — never load every Consent object in the
+      // tenant. Backed in production by the partial expression index
+      // idx_objects_consent_subject (migration 012) on (attributes->>'subjectId').
+      const r = await client.query<ConsentObjectRow>(
+        `SELECT id, tenant_id, type, state, attributes, version
          FROM objects
         WHERE tenant_id = $1 AND type = $2 AND attributes->>'subjectId' = $3`,
-      [tenantId, CONSENT_TYPE, subjectId],
-    );
-    const facts: ConsentFact[] = [];
-    for (const row of rows) {
-      const fact = rowToConsentFact(row);
-      // The query already scopes to this subject; map every well-formed consent
-      // (any status — the caller selects active/revoked/expired).
-      if (fact) facts.push(fact);
-    }
-    return facts;
+        [tenantId, CONSENT_TYPE, subjectId],
+      );
+      const facts: ConsentFact[] = [];
+      for (const row of r.rows) {
+        const fact = rowToConsentFact(row);
+        // The query already scopes to this subject; map every well-formed consent
+        // (any status — the caller selects active/revoked/expired).
+        if (fact) facts.push(fact);
+      }
+      return facts;
+    });
   }
 
   /** A single Consent fact by its Alara id (used to authorize withdrawal). */
   async findById(tenantId: string, consentId: string): Promise<ConsentFact | null> {
-    const rows = await this.db.query<ConsentObjectRow>(
-      `SELECT id, tenant_id, type, state, attributes, version, created_at, updated_at
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<ConsentObjectRow>(
+        `SELECT id, tenant_id, type, state, attributes, version, created_at, updated_at
          FROM objects WHERE id = $1 AND tenant_id = $2`,
-      [consentId, tenantId],
-    );
-    const row = rows[0];
-    if (!row || row.type !== CONSENT_TYPE) return null;
-    return rowToConsentFact(row);
+        [consentId, tenantId],
+      );
+      const row = r.rows[0];
+      if (!row || row.type !== CONSENT_TYPE) return null;
+      return rowToConsentFact(row);
+    });
   }
 }
 

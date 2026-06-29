@@ -42,7 +42,19 @@ class SqlSpyDb {
   async queryOne<T = unknown>(text: string, values?: unknown[]): Promise<T | null> {
     const rows = await this.query<T>(text, values); return rows[0] ?? null;
   }
-  async transaction<T>(fn: (c: PoolClient) => Promise<T>): Promise<T> { return this.inner.transaction(fn); }
+  async transaction<T>(fn: (c: PoolClient) => Promise<T>): Promise<T> {
+    // The repo now issues its reads on the transaction client (RLS step 2), so the spy must record
+    // SQL there too — wrap the client so its `query` is captured exactly like the direct `query` path.
+    return this.inner.transaction((client: PoolClient) => {
+      const spied = {
+        query: async (text: string, values?: unknown[]) => {
+          this.sql.push(text.replace(/\s+/g, ' ').trim());
+          return client.query(text, values as never[]);
+        },
+      } as unknown as PoolClient;
+      return fn(spied);
+    });
+  }
   async end(): Promise<void> {}
 }
 

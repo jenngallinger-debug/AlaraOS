@@ -192,7 +192,7 @@ re-fetch) and are allow-listed (§3) — they need RLS-aware analysis before mig
 | KnowledgeEngineRepository `knowledge-engine/repository.ts` | `observations`, `knowledge_entries` | read | yes | **✅ UPDATE 48** (reads) + **✅ UPDATE 49** (`query` aggregate — one transaction) | engine | LOW |
 | WorkforceEngineRepository `workforce-engine/repository.ts` | `workforce_members`, `workforce_availability`, `assignments`, `capacity_snapshots`, `workforce_teams` | read | yes | **✅ UPDATE 48** (reads) + **✅ UPDATE 49** (`getAvailabilityForMembers` aggregate — one transaction) | engine | LOW |
 | OrganizationalBrainRepository `organizational-brain/repository.ts` | `detected_patterns` | read | yes | **✅ UPDATE 48** (all 4 reads) | engine | LOW |
-| ConsentRepository `consent-store/repository.ts` | `objects` (type=Consent) | read | yes | no | yes | LOW-MED (reads central `objects`) |
+| ConsentRepository `consent-store/repository.ts` | `objects` (type=Consent) | read | yes | **✅ UPDATE 50** (`findForSubject` + `findById`; sets GUC only — NO `objects` policy) | yes | LOW-MED (reads central `objects`) |
 | IdentityResolutionRepository `identity-resolution/repository.ts` | (delegates to ObjectGraph) | read | yes | no | yes | LOW-MED (no own queries) |
 | JourneyEngineRepository `journey-engine/repository.ts` | `journey_*` | **mixed** (5 INSERT/7 UPDATE) | yes | no | engine | MED-HIGH (heaviest writes) |
 | ObjectGraphRepository `object-graph/repository.ts` | `objects`, `external_references` | **mixed** | mostly (1 by-id read allow-listed) | partial (`client.query`) | yes | HIGH (central canonical store) |
@@ -204,7 +204,12 @@ single-statement reads + `computeCareTeamView` aggregate ✅ UPDATE 47]** → (3
 dedicated-table repos **[✅ UPDATE 48 — Knowledge (5), Workforce (9), OrganizationalBrain (4)
 single-statement reads; ✅ UPDATE 49 — the two deferred aggregates `KnowledgeRepository.query` +
 `WorkforceRepository.getAvailabilityForMembers` now each run inside ONE tenant-scoped transaction
-(private `…On(client,…)` helpers, UPDATE 47 pattern); Consent coordinated with `objects` still pending]** →
+(private `…On(client,…)` helpers, UPDATE 47 pattern)]; **✅ UPDATE 50 — ConsentRepository reads
+(`findForSubject` + `findById`) now tenant-scoped. This sets `app.tenant_id` only; it does NOT add
+any policy/`FORCE`/`WITH CHECK` on `objects`. ALL read-side repos are now adopted.** Actual RLS
+ENABLEMENT on the shared `objects` table remains GATED on the other `objects` readers —
+ObjectGraphRepository and the **by-id-without-tenant idempotency special case** (ObjectGraph/EventStore)
+— being handled together; until then the `objects` GUC is inert** →
 (4) DatabaseProjectionStore writes → (5) JourneyEngineRepository → (6) ObjectGraphRepository
 (needs the by-id-without-tenant special case) → (7) EventStore (the cross-tenant by-id idempotency
 read needs RLS-aware handling).

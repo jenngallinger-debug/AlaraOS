@@ -1572,3 +1572,56 @@ plus `m9`/`m10.5`/`m11` consumers) still passing against InMemoryStore, which ex
 
 Next: ConsentRepository reads (coordinated with `objects`) — per the UPDATE 44 order — then the
 write paths (ProjectionStore writes → Journey → ObjectGraph → EventStore).
+
+## UPDATE 50 — RLS Step 2: ConsentRepository reads on the shared `objects` table (IMPLEMENTED)
+
+Migrates the **last read-side repository** onto `withTenantTransaction`. `ConsentRepository` reads the
+**central canonical `objects` table** (Consent is a canonical object type, not a dedicated table), so
+this is the read-side coordination point flagged in the UPDATE 44 inventory. Both methods are
+single-statement, already tenant-filtered reads — structurally identical to the Batch A
+single-statement migrations (UPDATE 48), no aggregate restructuring. **No functional change** — proven
+by the consent suites (`consent-store`, `consent-subject-query`, `consent-lifecycle`,
+`consent-authorization`, `consent-capture`, `consent-policy`, plus `apps/api consent.test.ts`) still
+passing against InMemoryStore / the real repo.
+
+- `packages/core/src/consent-store/repository.ts` — both reads migrated:
+  - `findForSubject(tenantId, subjectId)` — subject-targeted hot authorization read:
+    `SELECT id, tenant_id, type, state, attributes, version FROM objects WHERE tenant_id = $1 AND
+    type = $2 AND attributes->>'subjectId' = $3`. Maps every well-formed row via `rowToConsentFact`,
+    **dropping rows missing `subjectId`/`recipientId`** — unchanged.
+  - `findById(tenantId, consentId)` — `SELECT id, tenant_id, type, state, attributes, version,
+    created_at, updated_at FROM objects WHERE id = $1 AND tenant_id = $2`; returns null when absent
+    **or when `row.type !== 'Consent'`** — unchanged. (The extra `created_at`/`updated_at` columns and
+    the distinct column list vs `findForSubject` are pre-existing; preserved byte-identical, not
+    "fixed".)
+- **Preserved exactly:** SQL text (incl. original multi-line whitespace), params, row mapping, the
+  malformed-row drop and wrong-type → null behavior, return shapes (`ConsentFact[]` / `ConsentFact |
+  null`), and public signatures. Only `this.db.query<T>(...)` (returns `T[]`) →
+  `(await client.query<T>(...)).rows` on the transaction client. Was: pooled-connection reads → now:
+  one tenant-scoped transaction per call (one GUC set). No query rewrites, no schema/policy changes,
+  no writes, no wiring change.
+- **`objects` is shared** (ObjectGraphRepository + the EventStore-adjacent paths also read it). Setting
+  `app.tenant_id` here is behavior-preserving today because **RLS is inert** (no policy on `objects`).
+  **This slice does NOT add any policy / `FORCE` / `WITH CHECK` on `objects`.** Actual RLS
+  ENABLEMENT on `objects` remains GATED on the other readers — ObjectGraphRepository and the
+  **by-id-without-tenant idempotency special case** (ObjectGraph/EventStore) — being adopted together.
+- Unit (`consent-store-tenant.test.ts`, new, 6 tests): mocked `DatabaseClient` proving for both
+  methods — exactly ONE transaction, GUC set **once** and **first** (`SELECT set_config($1,$2,true)`
+  with `[TENANT_GUC, tenantId]`), byte-identical data SQL + params, identical mapping; plus
+  `findForSubject` drops malformed rows and `findById` returns null for a wrong-type row, both within
+  the single transaction. Default suite, Postgres-free.
+- Test-helper follow: `consent-subject-query.test.ts`'s local `SqlSpyDb` now records SQL issued on the
+  transaction client too (the repo's reads moved off `db.query` onto the txn client) — test intent
+  unchanged (targeted subject query issued; the old tenant-wide scan ending in `type = $2` is not).
+- Harness (`tenant-scope.integration.test.ts`, +1): real-Postgres proof on a throwaway `objects`
+  table — `findForSubject`/`findById` return only tenant-local Consent objects, wrong-tenant → empty/
+  null, and a non-`Consent` row with a matching id → null. Fixture dropped in `afterAll`. Opt-in /
+  self-skipping → default `verify` stays Postgres-free; CI executes the new assertions.
+- No production RLS enabled, no policy on `objects`. **ALL read-side repositories are now tenant-scoped
+  (RLS step 2 read phase complete).** Remaining: the write paths (ProjectionStore writes → Journey →
+  ObjectGraph → EventStore), with the `objects` by-id special case to be resolved before any `objects`
+  RLS policy is enabled.
+
+Next: RLS Step 2 **write paths**, starting with DatabaseProjectionStore writes (lowest risk) — per the
+UPDATE 44 order. The shared-`objects` RLS-enablement coordination (ObjectGraph + by-id special case)
+is a prerequisite for enabling RLS on `objects`, tracked separately.
