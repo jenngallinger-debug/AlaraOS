@@ -525,7 +525,7 @@ describeIf('withTenantTransaction — real Postgres (opt-in via ALARA_TEST_DATAB
 
   // ── RLS step 2 write phase — JourneyRepository writes (Slice 38) ────────────────────────────
 
-  test('JourneyRepository writes land under the GUC tenant and respect cross-tenant isolation', async () => {
+  test('JourneyRepository writes and reads land under the GUC tenant and respect cross-tenant isolation', async () => {
     // Functional proof the 11 migrated writes work end-to-end on real Postgres across all five
     // journey_* tables. Fixtures are faithful to migration 011: JSONB columns (coordination_state,
     // meta, payload, work_summary/next_step/human_handoff), the `merged_from` ARRAY column, and the
@@ -614,6 +614,20 @@ describeIf('withTenantTransaction — real Postgres (opt-in via ALARA_TEST_DATAB
     expect(await repo.resolveToken('tok1', 'tenant-B')).toBeNull();   // cross-tenant → null
     await repo.revokeToken('tok1', 'tenant-A', NOW);
     expect(await repo.resolveToken('tok1', 'tenant-A')).toBeNull();   // revoked → null
+
+    // ── reads (RLS step 2) return only tenant-local rows; wrong tenant → empty/null ──────────────
+    // same-tenant reads see jA's data…
+    expect((await repo.listByLifecycle('working', 'tenant-A')).map((j) => j.id)).toEqual(['jA']);
+    expect((await repo.getReferences('jA' as AlaraId, 'tenant-A')).map((x) => x.id)).toEqual(['ref1']);
+    expect((await repo.getEvents('jA' as AlaraId, 'tenant-A')).map((e) => e.id)).toEqual(['e1']);
+    expect((await repo.getProjection('jA' as AlaraId, 'tenant-A'))?.lifecycle).toBe('working');
+    expect((await repo.findJourneysReferencing('person', 'p1' as AlaraId, 'tenant-A')).map(String)).toEqual(['jA']);
+    // …wrong-tenant reads of jA's data return empty / null (cannot cross tenants).
+    expect(await repo.listByLifecycle('working', 'tenant-B')).toEqual([]);
+    expect(await repo.getReferences('jA' as AlaraId, 'tenant-B')).toEqual([]);
+    expect(await repo.getEvents('jA' as AlaraId, 'tenant-B')).toEqual([]);
+    expect(await repo.getProjection('jA' as AlaraId, 'tenant-B')).toBeNull();
+    expect(await repo.findJourneysReferencing('person', 'p1' as AlaraId, 'tenant-B')).toEqual([]);
   });
 
   test('Batch A primary tables enforce RLS isolation under a NON-superuser role', async () => {

@@ -1721,3 +1721,40 @@ reference), so zero production risk.
 Next: Journey READS (a small follow-up to complete the repository), then the remaining write paths —
 ObjectGraphRepository and EventStore (the by-id-without-tenant idempotency special case + the
 shared-`objects` RLS-enablement coordination).
+
+## UPDATE 53 — RLS Step 2: JourneyEngineRepository reads — JourneyRepository COMPLETE (IMPLEMENTED)
+
+Completes `JourneyRepository` by migrating the remaining **7 read methods** onto per-method
+`withTenantTransaction` — all 18 methods (11 writes UPDATE 52 + 7 reads here) are now tenant-scoped.
+**No functional change** — proven by the M10.5 engine suite (`m10-5-journey-engine.test.ts`) still
+passing against `InMemoryStore` (the engine drives these reads). Not API-wired → zero production risk.
+
+- `packages/core/src/journey-engine/repository.ts` — each read now
+  `withTenantTransaction(this.db, tenantId, client => …)`, `this.db.query<T>()` (→`T[]`) →
+  `(await client.query<T>()).rows`:
+  - `findById`, `listByLifecycle`, `getProjection` (single-statement, `null`/array returns);
+    `findJourneysReferencing` (scalar `journey_id[]`); `getReferences` (BOTH branches — kind /
+    no-kind); `getEvents` (BOTH branches — the `afterId` branch keeps its cursor subquery
+    `(SELECT occurred_at FROM journey_events WHERE id=$3)` verbatim); `resolveToken` (its per-call
+    `$3 = new Date().toISOString()` is preserved exactly, computed inside the transaction callback).
+- **Preserved exactly:** SQL text (both branches; the cursor subquery), params, `ORDER BY`
+  (created_at / linked_at / occurred_at,id), row mappers, and `null`/array/scalar returns. Single
+  statement per read → engine command sequences (read-then-write) stay non-atomic exactly as before;
+  no nested-transaction risk (engine opens no transaction). No reads/writes interleaving change.
+- **No RLS/policy/`FORCE`/`WITH CHECK`.** ⚠ Note for the RLS-enablement slice: `getEvents`' `afterId`
+  cursor subquery is NOT tenant-scoped today — it returns only a scalar timestamp (cannot leak rows,
+  the outer query still filters `journey_id`+`tenant_id`); under a future USING policy on
+  `journey_events` it becomes tenant-filtered (same-tenant cursor unaffected; cross-tenant cursor → no
+  row → empty result, a mild safety improvement).
+- Unit (`journey-reads-tenant.test.ts`, new, 13 tests): SQL-routing mocked `DatabaseClient` proving for
+  each read — exactly ONE transaction, GUC set **once and first**, normalized SQL + exact params for
+  **all 9 query forms** (both `getReferences`/`getEvents` branches; `resolveToken`'s dynamic ISO `$3`
+  asserted as a valid timestamp), and correct mapping / `null` / array / scalar returns. Postgres-free.
+- Harness (`tenant-scope.integration.test.ts`): the Journey integration test (renamed to "writes and
+  reads") now adds explicit cross-tenant read assertions — `listByLifecycle`/`getReferences`/
+  `getEvents`/`getProjection`/`findJourneysReferencing` return the tenant-local rows for the owning
+  tenant and **empty/null for the wrong tenant**. Opt-in / self-skipping.
+- Default verify green (core 710 pass/17 skip; API 218 pass; build:all clean).
+
+Next: the remaining write paths — ObjectGraphRepository and EventStore (the by-id-without-tenant
+idempotency special case + the shared-`objects` RLS-enablement coordination).

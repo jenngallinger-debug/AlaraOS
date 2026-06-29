@@ -341,6 +341,19 @@ These are **constraints, not technologies**. They are binding on all implementat
    wrong-tenant-update no-op, raw-array round-trip, DO-NOTHING idempotency, upsert without duplicating,
    cross-tenant token resolve/revoke. No production RLS/policy. **Journey writes done; Journey reads then
    ObjectGraph/EventStore next.** See `code-concordance.md` UPDATE 52._
+   _RLS Step 2 — JourneyEngineRepository READS (UPDATE 53 — Slice 39): the remaining 7 reads
+   (`findById`, `listByLifecycle`, `getReferences` [both branches], `findJourneysReferencing`,
+   `getEvents` [both branches, cursor subquery preserved], `getProjection`, `resolveToken` [per-call
+   `now` $3 preserved]) now run inside per-method `withTenantTransaction`. **JourneyRepository is now
+   FULLY tenant-scoped (18/18 methods).** Byte-identical SQL/params/ordering/mappers/returns; single
+   statement per read → engine read-then-write sequences stay non-atomic as before; no nested-txn risk.
+   No policy/`FORCE`/`WITH CHECK`. ⚠ `getEvents`' `afterId` cursor subquery is NOT tenant-scoped (scalar
+   lookup, can't leak rows) — flag for the RLS-enablement slice (becomes tenant-filtered under a USING
+   policy). Unit (`journey-reads-tenant.test.ts`, 13): each read proves one txn, GUC once-and-first,
+   normalized SQL + exact params (all 9 query forms incl. resolveToken's dynamic ISO $3), correct
+   null/array/scalar mapping. Harness: the Journey integration test now adds cross-tenant read
+   assertions (wrong tenant → empty/null). Not API-wired → zero production risk. **JourneyRepository
+   complete; ObjectGraph/EventStore next.** See `code-concordance.md` UPDATE 53._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

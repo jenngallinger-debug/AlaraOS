@@ -166,12 +166,18 @@ export class JourneyRepository {
     });
   }
 
+  // RLS step 2 (read phase, completes Journey adoption): each read runs inside a per-method
+  // tenant-scoped transaction (carries `app.tenant_id`). Behavior-preserving today — RLS is inert
+  // (no policy on journey_* tables); identical SQL/params/ordering/mapping/returns. Single statement
+  // per read (no engine-level transaction), so engine command sequences stay non-atomic as before.
   async findById(id: AlaraId, tenantId: string): Promise<Journey | null> {
-    const rows = await this.db.query<JourneyRow>(
-      `SELECT * FROM journeys WHERE id = $1 AND tenant_id = $2`,
-      [id, tenantId],
-    );
-    return rows[0] ? rowToJourney(rows[0]) : null;
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<JourneyRow>(
+        `SELECT * FROM journeys WHERE id = $1 AND tenant_id = $2`,
+        [id, tenantId],
+      );
+      return r.rows[0] ? rowToJourney(r.rows[0]) : null;
+    });
   }
 
   async updateLifecycle(
@@ -233,12 +239,14 @@ export class JourneyRepository {
   async listByLifecycle(
     lifecycle: JourneyLifecycle, tenantId: string, limit = 100,
   ): Promise<Journey[]> {
-    const rows = await this.db.query<JourneyRow>(
-      `SELECT * FROM journeys WHERE lifecycle=$1 AND tenant_id=$2
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<JourneyRow>(
+        `SELECT * FROM journeys WHERE lifecycle=$1 AND tenant_id=$2
        ORDER BY created_at LIMIT $3`,
-      [lifecycle, tenantId, limit],
-    );
-    return rows.map(rowToJourney);
+        [lifecycle, tenantId, limit],
+      );
+      return r.rows.map(rowToJourney);
+    });
   }
 
   // ── References ────────────────────────────────────────────────────────────
@@ -262,29 +270,33 @@ export class JourneyRepository {
   async getReferences(
     journeyId: AlaraId, tenantId: string, kind?: JourneyReferenceKind,
   ): Promise<JourneyReference[]> {
-    const rows = kind
-      ? await this.db.query<JourneyReferenceRow>(
-          `SELECT * FROM journey_references
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = kind
+        ? await client.query<JourneyReferenceRow>(
+            `SELECT * FROM journey_references
            WHERE journey_id=$1 AND tenant_id=$2 AND kind=$3 ORDER BY linked_at`,
-          [journeyId, tenantId, kind],
-        )
-      : await this.db.query<JourneyReferenceRow>(
-          `SELECT * FROM journey_references
+            [journeyId, tenantId, kind],
+          )
+        : await client.query<JourneyReferenceRow>(
+            `SELECT * FROM journey_references
            WHERE journey_id=$1 AND tenant_id=$2 ORDER BY linked_at`,
-          [journeyId, tenantId],
-        );
-    return rows.map(rowToReference);
+            [journeyId, tenantId],
+          );
+      return r.rows.map(rowToReference);
+    });
   }
 
   async findJourneysReferencing(
     kind: JourneyReferenceKind, refId: AlaraId, tenantId: string,
   ): Promise<AlaraId[]> {
-    const rows = await this.db.query<{ journey_id: string }>(
-      `SELECT journey_id FROM journey_references
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<{ journey_id: string }>(
+        `SELECT journey_id FROM journey_references
        WHERE kind=$1 AND ref_id=$2 AND tenant_id=$3 ORDER BY linked_at`,
-      [kind, refId, tenantId],
-    );
-    return rows.map(r => makeAlaraId(r.journey_id));
+        [kind, refId, tenantId],
+      );
+      return r.rows.map(row => makeAlaraId(row.journey_id));
+    });
   }
 
   // ── Events ────────────────────────────────────────────────────────────────
@@ -308,21 +320,23 @@ export class JourneyRepository {
   async getEvents(
     journeyId: AlaraId, tenantId: string, afterId?: string,
   ): Promise<JourneyEvent[]> {
-    const rows = afterId
-      ? await this.db.query<JourneyEventRow>(
-          `SELECT * FROM journey_events
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = afterId
+        ? await client.query<JourneyEventRow>(
+            `SELECT * FROM journey_events
            WHERE journey_id=$1 AND tenant_id=$2
              AND occurred_at > (SELECT occurred_at FROM journey_events WHERE id=$3)
            ORDER BY occurred_at, id`,
-          [journeyId, tenantId, afterId],
-        )
-      : await this.db.query<JourneyEventRow>(
-          `SELECT * FROM journey_events
+            [journeyId, tenantId, afterId],
+          )
+        : await client.query<JourneyEventRow>(
+            `SELECT * FROM journey_events
            WHERE journey_id=$1 AND tenant_id=$2
            ORDER BY occurred_at, id`,
-          [journeyId, tenantId],
-        );
-    return rows.map(rowToEvent);
+            [journeyId, tenantId],
+          );
+      return r.rows.map(rowToEvent);
+    });
   }
 
   // ── Projection ────────────────────────────────────────────────────────────
@@ -354,11 +368,13 @@ export class JourneyRepository {
   async getProjection(
     journeyId: AlaraId, tenantId: string,
   ): Promise<JourneyProjection | null> {
-    const rows = await this.db.query<JourneyProjectionRow>(
-      `SELECT * FROM journey_projections WHERE journey_id=$1 AND tenant_id=$2`,
-      [journeyId, tenantId],
-    );
-    return rows[0] ? rowToProjection(rows[0]) : null;
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<JourneyProjectionRow>(
+        `SELECT * FROM journey_projections WHERE journey_id=$1 AND tenant_id=$2`,
+        [journeyId, tenantId],
+      );
+      return r.rows[0] ? rowToProjection(r.rows[0]) : null;
+    });
   }
 
   // ── Capability tokens ─────────────────────────────────────────────────────
@@ -377,13 +393,15 @@ export class JourneyRepository {
   }
 
   async resolveToken(token: string, tenantId: string): Promise<AlaraId | null> {
-    const rows = await this.db.query<{ journey_id: string }>(
-      `SELECT journey_id FROM journey_capability_tokens
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<{ journey_id: string }>(
+        `SELECT journey_id FROM journey_capability_tokens
        WHERE token=$1 AND tenant_id=$2 AND revoked=false
          AND (expires_at IS NULL OR expires_at > $3)`,
-      [token, tenantId, new Date().toISOString()],
-    );
-    return rows[0] ? makeAlaraId(rows[0].journey_id) : null;
+        [token, tenantId, new Date().toISOString()],
+      );
+      return r.rows[0] ? makeAlaraId(r.rows[0].journey_id) : null;
+    });
   }
 
   async revokeToken(token: string, tenantId: string, now: Date): Promise<void> {
