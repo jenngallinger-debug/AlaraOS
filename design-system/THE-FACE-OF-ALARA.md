@@ -127,14 +127,14 @@ held feels like (3), then it shows who is accountable (4), only then does it sur
 proof and the practical truth a skeptic needs (5), and only at the very end does it ask
 for anything (6). By the time the ask comes, it is a relief to answer it.
 
-**Where the practical truth lives.** Programs, "most pay nothing," Medicare
-certification, EEOICPA / OWCP / VA — all of it is real and all of it matters, but **none
-of it is in the hero.** It is the reward for scrolling (stop 5), placed *after* trust is
-emotionally earned, where it confirms a feeling instead of competing with it. This is the
-one deliberate reconciliation in this work: the older "approved homepage copy" leads with
-the federal-benefits headline; the governing creative direction for this page says the
-hero may not educate. We honor both by moving the benefits truth down one screen, where
-it does more good. (See note at the end.)
+**Where the practical truth lives.** The hero now states the positioning plainly —
+*home health that knows your benefits* — and names the programs and "most patients pay
+nothing" in the subhead, per owner direction that this is home health and education, not
+therapy. The *depth* (per-program coverage, DON review, full credentials) is still the
+reward for scrolling (stop 5), where it confirms the hero's claim instead of crowding it.
+The earlier draft kept all benefits language out of the hero; that read as too soft, so
+the rule changed from "no education in the hero" to "lead with competence, keep the long
+proof below."
 
 ---
 
@@ -153,20 +153,22 @@ it creates, the Moment it serves, and the constitutional commitment it serves.*
 ┌─────────────────────────────────────────────────────────────────────────┐
 │ 1 · THE THRESHOLD  (hero — editorial split, near-full viewport)           │
 │   LEFT (paper)                          RIGHT (the arch photograph)        │
-│     eyebrow: FOR THE PERSON HOLDING      the staircase rising to the       │
-│             IT ALL TOGETHER              brass door, bottom-anchored so    │
-│     H1: "You've been holding             the full ascent + door read       │
-│         all of it.                                                          │
-│         You can set it down here."                                         │
-│     sub: "Tell us what's happening, in whatever words you have.            │
-│          From that point on, someone at Alara is already on it."           │
-│     [ Tell us your number ]   we answer, usually within the hour           │
+│     eyebrow: NURSE-LED HOME HEALTH ·     the staircase rising to the       │
+│             SOUTHERN NEVADA              brass door, bottom-anchored so    │
+│     H1: "Home health that knows          the full ascent + door read       │
+│         your benefits, and never                                           │
+│         lets things fall through."                                         │
+│     sub: "Skilled nursing at home for White Card, veteran, and Medicare    │
+│          families across Southern Nevada. We handle the claims, the        │
+│          authorizations, and the scheduling. Most patients pay nothing."   │
+│     [ See if you qualify ]   or call (702)… · a nurse calls back <1hr      │
 │                                                                            │
-│   Burden removed:   the burden of having to explain, qualify, or prove     │
-│                     yourself before being understood.                       │
-│   Experience:       recognition, relief, permission — nothing else.        │
-│   Moment served:    8 · "They had us" (the arrival) + 5 · burdens disappear │
-│   Commitment:       Human Primacy — it exists for the person, on sight.     │
+│   Burden removed:   doing the clinical coordination and the benefits       │
+│                     paperwork yourself; wondering if the agency is real.    │
+│   Experience:       recognition (this is built for my exact situation),     │
+│                     relief (they run it), permission (one normal ask).      │
+│   Moment served:    1 · nothing falls through + 8 · "They had us"           │
+│   Commitment:       Human Primacy + Accountability — competent, on sight.   │
 └─────────────────────────────────────────────────────────────────────────┘
 ┌─────────────────────────────────────────────────────────────────────────┐
 │ 2 · THE TANGLE  (paper → greige, one quiet statement, short measure)       │
@@ -238,10 +240,10 @@ it creates, the Moment it serves, and the constitutional commitment it serves.*
 └─────────────────────────────────────────────────────────────────────────┘
 ┌─────────────────────────────────────────────────────────────────────────┐
 │ 6 · THE INVITATION  (espresso, arched top — conversation earned)           │
-│   "Tell us what's happening. We'll carry it from here."                     │
-│   "No forms to figure out. No program you need to name. Just tell us,       │
-│    in your words, and someone takes it from there."                         │
-│   [ Tell us your number ]   (702) ……   ·   we answer within the hour        │
+│   "One call, and we get to work."                                          │
+│   "No forms to figure out and no program you need to name. Tell us what's   │
+│    going on, and a nurse takes it from there, including the paperwork."     │
+│   [ See if you qualify ]   or call (702) ……   ·   a nurse answers <1hr      │
 │                                                                            │
 │   Burden removed:   the burden of beginning — reduced to one sentence.      │
 │   Experience:       permission, finally acted on; the ask is a relief.      │
@@ -278,11 +280,15 @@ minimum, line-height 1.7, links underlined, focus-visible rings, everything legi
 from the typographic restraint and the space around the words, not from a display serif
 the brand doesn't use.
 
-**The hero does only its three jobs.** Recognition (eyebrow + first line), relief (first
-line + subhead), permission (second line + the single CTA + the response promise). It
-does **not** educate: no program, no Medicare, no credential, no benefit, no feature.
-*Burden removed:* having to qualify or decode anything to feel understood. Everything the
-hero is *not* allowed to say is the discipline that makes it work.
+**The hero does its three jobs in a competent register.** Recognition, relief, and
+permission — but stated as a capable home-health operator, not a grief counselor (owner
+direction: *"this isn't therapy, it's home health and education"*). Recognition now comes
+from naming the visitor's exact situation plainly — *home health that knows your
+benefits* — and relief from the reliability claim — *never lets things fall through.* The
+subhead names what it is (skilled nursing), who it's for (White Card, veteran, Medicare),
+and the hook (*most patients pay nothing*). *Burden removed:* the work of coordinating
+care and decoding benefits, plus the skeptic's "is this real." The discipline is no longer
+"say nothing concrete" — it is "say only what's true and load-bearing, in plain words."
 
 **One action per screen, and the action is small.** The primary CTA everywhere is *"Tell
 us your number"* with the phone as the calm alternative and *"we answer within the hour"*
