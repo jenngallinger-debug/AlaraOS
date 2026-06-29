@@ -1,15 +1,22 @@
 # AlaraOS — Core Spine
 
-Implementation-facing summary of the frozen core. The definitions below are
-authoritative **as written**; do not extend, narrow, or reinterpret them.
+This document describes the current architecture of AlaraOS. It derives from and must
+conform to the [Alara Constitution](../CONSTITUTION.md). The Constitution defines enduring
+commitments; this document describes one architecture for fulfilling them. Architectural
+evolution is expected. Constitutional amendment is exceptional.
 
-## Constitution
-The ratified **Build Constitution** and **Alara Decision Filter** are the supreme law
-of the system: architecture serves the Constitution, implementation serves the
-architecture. Every capability, cycle instance, and surface exists to honor it.
+## Conformance to the Constitution
+The supreme, frozen law is the **[Alara Constitution](../CONSTITUTION.md)** — five enduring
+commitments: Human Primacy, Accountability, Authority & Consent, Human Sovereignty, and
+Integrity. This document is one architecture for fulfilling them and must conform to them.
+When constitutional commitments appear to be in tension, **Organizational Judgment** (below)
+exists to reconcile them while preserving every commitment to the greatest extent possible.
 
-Operative engineering gate — the **Alara Decision Filter**. Every feature, screen,
-automation, agent, report, integration, or surface must answer all five:
+Operative engineering gate — the **Decision Filter**, an architectural instrument that
+operationalizes the commitments of the Alara Constitution. Its specific questions may evolve
+as the architecture matures, but it must always faithfully express the constitutional
+commitments it serves. Every feature, screen, automation, agent, report, integration, or
+surface must answer all five:
 1. Which life event does this improve?
 2. Which promise does it fulfill?
 3. Which uncertainty does it eliminate?
@@ -17,10 +24,6 @@ automation, agent, report, integration, or surface must answer all five:
 5. How does it improve outcomes?
 
 If it cannot answer all five, it does not belong in Alara.
-
-> Bridge note: the Constitution's canonical full text is **not yet in-repo**; it lives
-> in the ratified document (Notion / chat) and in project memory. See the bridge-report
-> gaps. It is referenced here, not reinterpreted.
 
 ## Reality Graph
 Canonical truth substrate. Owns identity, canonical objects, relationships, events,
