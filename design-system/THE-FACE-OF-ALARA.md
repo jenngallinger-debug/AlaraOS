@@ -156,8 +156,8 @@ it creates, the Moment it serves, and the constitutional commitment it serves.*
 │     eyebrow: NURSE-LED HOME HEALTH ·     the staircase rising to the       │
 │             SOUTHERN NEVADA              brass door, bottom-anchored so    │
 │     H1: "Home health that knows          the full ascent + door read       │
-│         your benefits, and never                                           │
-│         lets things fall through."                                         │
+│         your benefits, and handles                                         │
+│         the rest."                                                          │
 │     sub: "Skilled nursing at home for White Card, veteran, and Medicare    │
 │          families across Southern Nevada. We handle the claims, the        │
 │          authorizations, and the scheduling. Most patients pay nothing."   │
@@ -284,7 +284,7 @@ the brand doesn't use.
 permission — but stated as a capable home-health operator, not a grief counselor (owner
 direction: *"this isn't therapy, it's home health and education"*). Recognition now comes
 from naming the visitor's exact situation plainly — *home health that knows your
-benefits* — and relief from the reliability claim — *never lets things fall through.* The
+benefits* — and relief from the competence claim — *and handles the rest.* The
 subhead names what it is (skilled nursing), who it's for (White Card, veteran, Medicare),
 and the hook (*most patients pay nothing*). *Burden removed:* the work of coordinating
 care and decoding benefits, plus the skeptic's "is this real." The discipline is no longer
