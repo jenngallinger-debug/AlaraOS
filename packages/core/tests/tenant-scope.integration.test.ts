@@ -135,7 +135,7 @@ describeIf('withTenantTransaction — real Postgres (opt-in via ALARA_TEST_DATAB
       await client.query('DROP TABLE IF EXISTS projections');
       await client.query(`CREATE TABLE projections (
         id text, tenant_id text NOT NULL, projection_type text NOT NULL, subject_id text NOT NULL,
-        method_name text, method_version text, canonical_inputs jsonb, source_event_ids text[],
+        method_name text, method_version text, canonical_inputs jsonb, source_event_ids jsonb,
         confidence text, inference_basis text, ai_involved boolean, fresh_until text,
         last_built_at text, build_number int, value jsonb)`);
       await client.query(`INSERT INTO projections (id, tenant_id, projection_type, subject_id) VALUES
@@ -161,7 +161,7 @@ describeIf('withTenantTransaction — real Postgres (opt-in via ALARA_TEST_DATAB
       await client.query('DROP TABLE IF EXISTS projections');
       await client.query(`CREATE TABLE projections (
         id text, tenant_id text NOT NULL, projection_type text NOT NULL, subject_id text NOT NULL,
-        method_name text, method_version text, canonical_inputs jsonb, source_event_ids text[],
+        method_name text, method_version text, canonical_inputs jsonb, source_event_ids jsonb,
         confidence text, inference_basis text, ai_involved boolean, fresh_until text,
         last_built_at text, build_number int, value jsonb, updated_at timestamptz,
         UNIQUE (tenant_id, projection_type, subject_id))`);
