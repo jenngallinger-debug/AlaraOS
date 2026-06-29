@@ -200,7 +200,7 @@ re-fetch) and are allow-listed (§3) — they need RLS-aware analysis before mig
 
 **Recommended migration order (safest → riskiest):** (1) DatabaseProjectionStore reads
 **[✅ UPDATE 45]** → (2) RelationshipRepository reads (first LIVE adopter) **[✅ UPDATE 46 — the 7
-single-statement reads; `computeCareTeamView` aggregate deferred]** → (3) other read-only
+single-statement reads + `computeCareTeamView` aggregate ✅ UPDATE 47]** → (3) other read-only
 dedicated-table repos (Knowledge, Workforce, OrganizationalBrain; Consent coordinated with `objects`) →
 (4) DatabaseProjectionStore writes → (5) JourneyEngineRepository → (6) ObjectGraphRepository
 (needs the by-id-without-tenant special case) → (7) EventStore (the cross-tenant by-id idempotency

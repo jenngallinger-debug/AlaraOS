@@ -1445,3 +1445,35 @@ Reads only; no writes (this repo has none); no API wiring change.
 
 Next: `computeCareTeamView` single-transaction refactor, then the remaining read-only repos
 (Knowledge/Workforce/OrganizationalBrain/Consent) per the UPDATE 44 order.
+
+## UPDATE 47 — computeCareTeamView single-transaction refactor (RelationshipRepository adoption complete)
+
+Completes the RelationshipRepository RLS-step-2 adoption: the aggregate `computeCareTeamView` now
+runs its ENTIRE computation inside ONE `withTenantTransaction` (one `app.tenant_id`, all queries on
+one transaction client). **No functional change** — proven by `m6-relationship-engine.test.ts` (which
+exercises the real method against InMemoryStore) still passing.
+
+- `packages/core/src/relationship-engine/repository.ts`:
+  - Was: `computeCareTeamView` called `getActiveBySubject` (its own transaction) then looped N
+    `this.db.query` edge reads on arbitrary pooled connections — i.e. 1 txn + N non-transactional
+    queries, only partially tenant-scoped.
+  - Now: one `withTenantTransaction(this.db, tenantId, client => …)` runs the relationships read +
+    every edge read on the SAME `client`. To avoid a NESTED transaction, the relationships query was
+    extracted to a **private** `activeBySubjectOn(client, …)` helper (identical SQL/params/ordering)
+    used by both `getActiveBySubject` (wraps it in a txn) and `computeCareTeamView` (on its client).
+  - **Preserved exactly:** the relationships SQL, the (verbatim multi-line) edge SQL, params,
+    iteration order, member mapping, return shape (`subjectId`/`tenantId`/`members`/`computedAt`/
+    `sourceEdgeIds`), and the `.find(...)!` error behavior. Only `this.db.query(...)` → `client.query
+    (...).rows`. No public interface change.
+- Unit (`relationship-store-tenant.test.ts`, +1): proves ONE transaction (`txnCount===1`), GUC set
+  **once**, all queries recorded on the single client in order (the edge SQL matched **verbatim**),
+  and an identical returned view.
+- Harness (`tenant-scope.integration.test.ts`, extended): `computeCareTeamView` on real Postgres
+  returns only tenant-local relationships and its edge traversal cannot cross tenants (tenant-A's
+  view = edge `e-a`; tenant-B's = `e-b`). Non-superuser RLS isolation on a relationship-shaped table
+  remains covered (UPDATE 46). Opt-in / self-skipping.
+- No production RLS enabled, no policy on app schemas, no writes migrated, no wiring change.
+  **RelationshipRepository is now fully adopted.**
+
+Next: remaining read-only repos — Knowledge / Workforce / OrganizationalBrain, then Consent
+(coordinated with the central `objects` table) — per the UPDATE 44 order.

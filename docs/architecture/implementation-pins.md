@@ -260,6 +260,15 @@ These are **constraints, not technologies**. They are binding on all implementat
    a single-transaction refactor — stays behavior-identical. Unit test (mocked DB) + harness (+2
    opt-in real-PG: real relationships/edges reads + relationship-shaped RLS isolation under a
    non-superuser role). No production RLS/policy. See `code-concordance.md` UPDATE 46._
+   _computeCareTeamView single-transaction refactor (RelationshipRepository adoption COMPLETE):
+   `computeCareTeamView` now runs its whole computation in ONE `withTenantTransaction` (one GUC, all
+   queries on one client). Was 1 txn + N pooled edge queries; now the relationships read (via a new
+   private `activeBySubjectOn(client,…)` helper to avoid a nested txn) + every edge read run on the
+   same client. Identical SQL (incl. verbatim multi-line edge query)/params/ordering/mapping/returns/
+   errors; no public interface change. No functional change — `m6-relationship-engine.test.ts` still
+   passes. Unit test proves txnCount===1 + GUC-once + same-client + identical view; harness proves
+   tenant-local view + no cross-tenant edge traversal on real PG. No production RLS/policy/writes.
+   See `code-concordance.md` UPDATE 47._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

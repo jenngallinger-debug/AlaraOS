@@ -17,7 +17,9 @@ interface Captured { text: string; values?: unknown[] }
 /** Fake DB: `transaction` runs fn with a client returning canned rows by SQL; records queries. */
 function makeFakeDb(opts: { relRows?: Record<string, unknown>[]; edgeRows?: Record<string, unknown>[] }) {
   const queries: Captured[] = [];
-  const state = { committed: false };
+  const state = { committed: false, txnCount: 0 };
+  // A SINGLE client instance — so "every query ran on the same transaction client" is provable:
+  // all queries land in the one `queries` array and `txnCount` proves exactly one transaction.
   const client = {
     query: async (text: string, values?: unknown[]) => {
       queries.push({ text, values });
@@ -29,6 +31,7 @@ function makeFakeDb(opts: { relRows?: Record<string, unknown>[]; edgeRows?: Reco
   };
   const db = {
     async transaction<T>(fn: (c: never) => Promise<T>): Promise<T> {
+      state.txnCount += 1;
       const r = await fn(client as never);
       state.committed = true;
       return r;
@@ -95,5 +98,37 @@ describe('RelationshipRepository reads (RLS-step-2, tenant-scoped)', () => {
       'SELECT * FROM edges WHERE tenant_id = $1 AND relationship_id = $2 AND active = true ORDER BY started_at ASC',
     );
     expect(h.queries[1].values).toEqual(['tenant-A', 'r1']);
+  });
+});
+
+describe('RelationshipRepository.computeCareTeamView (RLS-step-2, ONE transaction)', () => {
+  test('runs the whole view in a single transaction with the GUC set once, all on one client', async () => {
+    const h = makeFakeDb({ relRows: [REL], edgeRows: [EDGE] }); // EDGE.relationship_id === REL.id ('r1')
+    const repo = new RelationshipRepository(h.db);
+    const view = await repo.computeCareTeamView('tenant-A', 'subj-1' as AlaraId);
+
+    // ── ONE transaction; GUC set exactly once ────────────────────────────────
+    expect(h.state.txnCount).toBe(1);
+    const gucSets = h.queries.filter((q) => /set_config/i.test(q.text));
+    expect(gucSets).toHaveLength(1);
+    expect(gucSets[0].values).toEqual([TENANT_GUC, 'tenant-A']);
+
+    // ── every query ran on the same client (the single `queries` array), in order ─
+    expect(h.queries.map((q) => q.text)).toEqual([
+      'SELECT set_config($1, $2, true)',
+      "SELECT * FROM relationships WHERE tenant_id = $1 AND subject_id = $2 AND status = 'active' ORDER BY created_at ASC",
+      // the edge query keeps its original multi-line SQL verbatim
+      `SELECT e.* FROM edges e\n          WHERE e.tenant_id = $1\n            AND e.relationship_id = $2\n            AND e.active = true`,
+    ]);
+    expect(h.queries[1].values).toEqual(['tenant-A', 'subj-1']);
+    expect(h.queries[2].values).toEqual(['tenant-A', 'r1']);
+
+    // ── identical returned view ──────────────────────────────────────────────
+    expect(view.subjectId).toBe('subj-1');
+    expect(view.tenantId).toBe('tenant-A');
+    expect(view.members.map((m) => m.relationshipId)).toEqual(['r1']);
+    expect(view.members[0].participantId).toBe('p1');
+    expect(view.members[0].relationshipType).toBe('care_team');
+    expect(view.sourceEdgeIds).toEqual(['e1']);
   });
 });

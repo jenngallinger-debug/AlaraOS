@@ -188,6 +188,14 @@ describeIf('withTenantTransaction — real Postgres (opt-in via ALARA_TEST_DATAB
     expect((await repo.getBySubject('tenant-A', 'subj-1' as AlaraId)).map((r) => r.id)).toEqual(['r-a']);
     expect((await repo.getActiveBySubject('tenant-A', 'subj-1' as AlaraId)).map((r) => r.id)).toEqual(['r-a']);
     expect((await repo.getActiveEdgesForRelationship('tenant-A', 'r-a' as AlaraId)).map((e) => e.id)).toEqual(['e-a']);
+
+    // computeCareTeamView (one transaction): only tenant-local relationships, and edge traversal
+    // cannot cross tenants (tenant-A's view never includes tenant-B's edge e-b, and vice versa).
+    const viewA = await repo.computeCareTeamView('tenant-A', 'subj-1' as AlaraId);
+    expect(viewA.members.map((m) => m.relationshipId)).toEqual(['r-a']);
+    expect(viewA.sourceEdgeIds).toEqual(['e-a']);
+    const viewB = await repo.computeCareTeamView('tenant-B', 'subj-1' as AlaraId);
+    expect(viewB.sourceEdgeIds).toEqual(['e-b']);
   });
 
   test('a relationship-shaped table enforces RLS isolation under a NON-superuser role', async () => {

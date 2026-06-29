@@ -6,6 +6,7 @@
  */
 
 import { DatabaseClient } from '../shared/database';
+import type { PoolClient } from '../shared/database';
 import { withTenantTransaction } from '../shared/tenant-scope';
 import { AlaraId } from '../shared/types';
 import {
@@ -75,13 +76,25 @@ export class RelationshipRepository {
   }
 
   async getActiveBySubject(tenantId: string, subjectId: AlaraId): Promise<Relationship[]> {
-    return withTenantTransaction(this.db, tenantId, async (client) => {
-      const r = await client.query<RelationshipRow>(
-        `SELECT * FROM relationships WHERE tenant_id = $1 AND subject_id = $2 AND status = 'active' ORDER BY created_at ASC`,
-        [tenantId, subjectId],
-      );
-      return r.rows.map(rowToRelationship);
-    });
+    return withTenantTransaction(this.db, tenantId, (client) => this.activeBySubjectOn(client, tenantId, subjectId));
+  }
+
+  /**
+   * Active relationships for a subject, run on a CALLER-SUPPLIED transaction client. Shared by
+   * `getActiveBySubject` (which wraps it in a tenant-scoped transaction) and `computeCareTeamView`
+   * (which runs it on its single transaction client) so the aggregate never opens a nested
+   * transaction. Identical SQL/params/ordering/mapping to the original `getActiveBySubject`.
+   */
+  private async activeBySubjectOn(
+    client: PoolClient,
+    tenantId: string,
+    subjectId: AlaraId,
+  ): Promise<Relationship[]> {
+    const r = await client.query<RelationshipRow>(
+      `SELECT * FROM relationships WHERE tenant_id = $1 AND subject_id = $2 AND status = 'active' ORDER BY created_at ASC`,
+      [tenantId, subjectId],
+    );
+    return r.rows.map(rowToRelationship);
   }
 
   async getEdgeById(tenantId: string, edgeId: AlaraId): Promise<ParticipationEdge | null> {
@@ -143,40 +156,46 @@ export class RelationshipRepository {
    * (ADR-014, Part XI Object Doctrine)
    */
   async computeCareTeamView(tenantId: string, subjectId: AlaraId): Promise<CareTeamView> {
-    const activeRelationships = await this.getActiveBySubject(tenantId, subjectId);
+    // RLS step 2 (final RelationshipRepository adoption): the ENTIRE view is computed inside ONE
+    // tenant-scoped transaction — the active-relationships read and every edge read run on the SAME
+    // client with a single `app.tenant_id`. Same SQL/params/ordering/mapping/returns as before;
+    // `getActiveBySubject` is inlined via `activeBySubjectOn` to avoid a nested transaction.
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const activeRelationships = await this.activeBySubjectOn(client, tenantId, subjectId);
 
-    const allEdges: EdgeRow[] = [];
-    for (const rel of activeRelationships) {
-      const rows = await this.db.query<EdgeRow>(
-        `SELECT e.* FROM edges e
+      const allEdges: EdgeRow[] = [];
+      for (const rel of activeRelationships) {
+        const r = await client.query<EdgeRow>(
+          `SELECT e.* FROM edges e
           WHERE e.tenant_id = $1
             AND e.relationship_id = $2
             AND e.active = true`,
-        [tenantId, rel.id],
-      );
-      allEdges.push(...rows);
-    }
+          [tenantId, rel.id],
+        );
+        allEdges.push(...r.rows);
+      }
 
-    const members: CareTeamMember[] = allEdges.map(e => {
-      const rel = activeRelationships.find(r => String(r.id) === e.relationship_id)!;
+      const members: CareTeamMember[] = allEdges.map(e => {
+        const rel = activeRelationships.find(r => String(r.id) === e.relationship_id)!;
+        return {
+          participantId: e.participant_id,
+          participantType: e.participant_type as ParticipationEdge['participantType'],
+          role: e.role as ParticipationRole,
+          relationshipId: e.relationship_id as AlaraId,
+          relationshipType: rel.type,
+          startedAt: new Date(e.started_at),
+          coverageExpiresAt: e.coverage_expires_at ? new Date(e.coverage_expires_at) : null,
+        };
+      });
+
       return {
-        participantId: e.participant_id,
-        participantType: e.participant_type as ParticipationEdge['participantType'],
-        role: e.role as ParticipationRole,
-        relationshipId: e.relationship_id as AlaraId,
-        relationshipType: rel.type,
-        startedAt: new Date(e.started_at),
-        coverageExpiresAt: e.coverage_expires_at ? new Date(e.coverage_expires_at) : null,
+        subjectId,
+        tenantId,
+        members,
+        computedAt: new Date().toISOString(),
+        sourceEdgeIds: allEdges.map(e => e.id),
       };
     });
-
-    return {
-      subjectId,
-      tenantId,
-      members,
-      computedAt: new Date().toISOString(),
-      sourceEdgeIds: allEdges.map(e => e.id),
-    };
   }
 }
 
