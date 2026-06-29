@@ -6,6 +6,7 @@
  */
 
 import { DatabaseClient } from '../shared/database';
+import { withTenantTransaction } from '../shared/tenant-scope';
 import { AlaraId } from '../shared/types';
 import {
   DetectedPattern,
@@ -63,12 +64,18 @@ function rowToPattern(row: PatternRow): DetectedPattern {
 export class OrganizationalBrainRepository {
   constructor(private readonly db: DatabaseClient) {}
 
+  // RLS step 2 (Batch A): single-statement, tenant-filtered reads run inside a tenant-scoped
+  // transaction so each read carries `app.tenant_id`. Behavior-preserving today (RLS inert →
+  // same rows); identical SQL/params/ordering/mapping. No writes on this repo.
   async getPatternById(tenantId: string, id: AlaraId): Promise<DetectedPattern | null> {
-    const row = await this.db.queryOne<PatternRow>(
-      `SELECT * FROM detected_patterns WHERE id = $1 AND tenant_id = $2`,
-      [id, tenantId],
-    );
-    return row ? rowToPattern(row) : null;
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<PatternRow>(
+        `SELECT * FROM detected_patterns WHERE id = $1 AND tenant_id = $2`,
+        [id, tenantId],
+      );
+      const row = r.rows[0] ?? null;
+      return row ? rowToPattern(row) : null;
+    });
   }
 
   async getActivePatternsForSubject(
@@ -76,26 +83,30 @@ export class OrganizationalBrainRepository {
     subjectId: string,
     category?: PatternCategory,
   ): Promise<DetectedPattern[]> {
-    if (category) {
-      const rows = await this.db.query<PatternRow>(
-        `SELECT * FROM detected_patterns WHERE tenant_id = $1 AND subject_id = $2 AND status = 'active' AND category = $3 ORDER BY first_detected_at DESC`,
-        [tenantId, subjectId, category],
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      if (category) {
+        const r = await client.query<PatternRow>(
+          `SELECT * FROM detected_patterns WHERE tenant_id = $1 AND subject_id = $2 AND status = 'active' AND category = $3 ORDER BY first_detected_at DESC`,
+          [tenantId, subjectId, category],
+        );
+        return r.rows.map(rowToPattern);
+      }
+      const r = await client.query<PatternRow>(
+        `SELECT * FROM detected_patterns WHERE tenant_id = $1 AND subject_id = $2 AND status = 'active' ORDER BY first_detected_at DESC`,
+        [tenantId, subjectId],
       );
-      return rows.map(rowToPattern);
-    }
-    const rows = await this.db.query<PatternRow>(
-      `SELECT * FROM detected_patterns WHERE tenant_id = $1 AND subject_id = $2 AND status = 'active' ORDER BY first_detected_at DESC`,
-      [tenantId, subjectId],
-    );
-    return rows.map(rowToPattern);
+      return r.rows.map(rowToPattern);
+    });
   }
 
   async getAllPatternsForSubject(tenantId: string, subjectId: string): Promise<DetectedPattern[]> {
-    const rows = await this.db.query<PatternRow>(
-      `SELECT * FROM detected_patterns WHERE tenant_id = $1 AND subject_id = $2 ORDER BY first_detected_at DESC`,
-      [tenantId, subjectId],
-    );
-    return rows.map(rowToPattern);
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<PatternRow>(
+        `SELECT * FROM detected_patterns WHERE tenant_id = $1 AND subject_id = $2 ORDER BY first_detected_at DESC`,
+        [tenantId, subjectId],
+      );
+      return r.rows.map(rowToPattern);
+    });
   }
 
   async getPatternByDetectorAndSubject(
@@ -103,10 +114,13 @@ export class OrganizationalBrainRepository {
     detectorId: string,
     subjectId: string,
   ): Promise<DetectedPattern | null> {
-    const row = await this.db.queryOne<PatternRow>(
-      `SELECT * FROM detected_patterns WHERE tenant_id = $1 AND detector_id = $2 AND subject_id = $3 AND status = 'active' LIMIT 1`,
-      [tenantId, detectorId, subjectId],
-    );
-    return row ? rowToPattern(row) : null;
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<PatternRow>(
+        `SELECT * FROM detected_patterns WHERE tenant_id = $1 AND detector_id = $2 AND subject_id = $3 AND status = 'active' LIMIT 1`,
+        [tenantId, detectorId, subjectId],
+      );
+      const row = r.rows[0] ?? null;
+      return row ? rowToPattern(row) : null;
+    });
   }
 }

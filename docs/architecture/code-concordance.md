@@ -1477,3 +1477,51 @@ exercises the real method against InMemoryStore) still passing.
 
 Next: remaining read-only repos — Knowledge / Workforce / OrganizationalBrain, then Consent
 (coordinated with the central `objects` table) — per the UPDATE 44 order.
+
+## UPDATE 48 — RLS Step 2 Batch A: read-only dedicated-table repositories (IMPLEMENTED)
+
+Migrates the three dedicated-table, read-only repos from the UPDATE 44 inventory order step (3) onto
+`withTenantTransaction`. **18 single-statement reads** now each run inside a tenant-scoped transaction
+(carrying `app.tenant_id`); the **two aggregate methods are deferred** because folding them into one
+transaction would require the kind of restructuring done in UPDATE 47, which this slice's scope
+explicitly excluded. **No functional change** — proven by the engine suites (`m7-knowledge-engine`,
+`m8-organizational-brain`, `m10-workforce-engine`, plus `m9`/`m10.5` consumers) still passing against
+InMemoryStore, which exercise the real repos (including the untouched aggregates that call the
+migrated sub-methods).
+
+- `packages/core/src/organizational-brain/repository.ts` — all **4** reads migrated:
+  `getPatternById`, `getActivePatternsForSubject` (both category branches), `getAllPatternsForSubject`,
+  `getPatternByDetectorAndSubject`. Table `detected_patterns`.
+- `packages/core/src/knowledge-engine/repository.ts` — **5** reads migrated: `getObservationById`,
+  `getObservationsForSubject` (both topic branches), `getEntryById`, `getActiveEntriesForSubject`
+  (both topic branches), `getAllEntriesForSubject`. Tables `observations`, `knowledge_entries`.
+  **Deferred:** `query` (aggregate — calls `getActiveEntriesForSubject` + `getObservationsForSubject`
+  then filters in memory; would need restructuring to share one transaction).
+- `packages/core/src/workforce-engine/repository.ts` — **9** reads migrated: `getMemberById`,
+  `getActiveMembersForTenant` (both role branches), `getAllMembersForTenant`, `getAvailability`,
+  `getAssignmentById`, `getAssignmentsForSubject`, `getActiveAssignmentsForMember`, `getLatestCapacity`,
+  `getTeamById`. Tables `workforce_members`, `workforce_availability`, `assignments`,
+  `capacity_snapshots`, `workforce_teams`. **Deferred:** `getAvailabilityForMembers` (aggregate —
+  loops `getAvailability`).
+- **Preserved exactly** in every migrated method: SQL text (byte-identical, including both branches of
+  the optional-filter reads), params, ordering, row mappers, return values (`… ?? null` / `.map(...)`),
+  and public signatures. The only change is `this.db.query(...)` → `(await client.query(...)).rows` /
+  `.rows[0] ?? null` on the transaction client. No query rewrites, no schema/policy changes, no
+  `FORCE`/`WITH CHECK`, no writes, no wiring change.
+- Unit (`batch-a-tenant.test.ts`, new, 9 tests): mocked `DatabaseClient` proving for representative
+  reads of each repo (incl. both optional-filter branches and the null/array paths) — exactly ONE
+  transaction, GUC set **once** and **first** (`SELECT set_config($1,$2,true)` with `[TENANT_GUC,
+  tenantId]`), byte-identical data SQL + params, identical mapping, identical returns. Default suite,
+  Postgres-free.
+- Harness (`tenant-scope.integration.test.ts`, extended): real-Postgres functional proofs across all
+  migrated methods on dedicated throwaway tables (`detected_patterns`; `observations` +
+  `knowledge_entries`; the five workforce tables) — correct-tenant rows, wrong-tenant → null. Plus
+  non-superuser RLS isolation (UPDATE 43 pattern) on Batch A primary-table shapes
+  (`brain_/know_/wf_rls_probe`). Fixtures dropped in `afterAll`. Opt-in / self-skipping → default
+  `verify` stays Postgres-free; CI executes the new assertions.
+- No production RLS enabled, no policy on app schemas. **18/20 dedicated-table reads adopted; 2
+  aggregates + Consent remain.**
+
+Next: the two deferred aggregates (`KnowledgeRepository.query`,
+`WorkforceRepository.getAvailabilityForMembers`) via the UPDATE 47 single-transaction-refactor
+pattern, then Consent (coordinated with the central `objects` table) — per the UPDATE 44 order.

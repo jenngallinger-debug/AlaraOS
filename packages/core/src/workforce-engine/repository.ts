@@ -6,6 +6,7 @@
  */
 
 import { DatabaseClient } from '../shared/database';
+import { withTenantTransaction } from '../shared/tenant-scope';
 import { AlaraId } from '../shared/types';
 import {
   Assignment,
@@ -132,45 +133,58 @@ export class WorkforceRepository {
 
   // ── Members ───────────────────────────────────────────────────────────────
 
+  // RLS step 2 (Batch A): single-statement, tenant-filtered reads run inside a tenant-scoped
+  // transaction (carries `app.tenant_id`). Behavior-preserving today (RLS inert → same rows);
+  // identical SQL/params/ordering/mapping. `getAvailabilityForMembers` aggregate is deferred.
   async getMemberById(tenantId: string, id: AlaraId): Promise<WorkforceMember | null> {
-    const row = await this.db.queryOne<MemberRow>(
-      `SELECT * FROM workforce_members WHERE id = $1 AND tenant_id = $2`,
-      [id, tenantId],
-    );
-    return row ? rowToMember(row) : null;
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<MemberRow>(
+        `SELECT * FROM workforce_members WHERE id = $1 AND tenant_id = $2`,
+        [id, tenantId],
+      );
+      const row = r.rows[0] ?? null;
+      return row ? rowToMember(row) : null;
+    });
   }
 
   async getActiveMembersForTenant(tenantId: string, role?: WorkforceRole): Promise<WorkforceMember[]> {
-    if (role) {
-      const rows = await this.db.query<MemberRow>(
-        `SELECT * FROM workforce_members WHERE tenant_id = $1 AND status = 'active' AND role = $2 ORDER BY display_name`,
-        [tenantId, role],
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      if (role) {
+        const r = await client.query<MemberRow>(
+          `SELECT * FROM workforce_members WHERE tenant_id = $1 AND status = 'active' AND role = $2 ORDER BY display_name`,
+          [tenantId, role],
+        );
+        return r.rows.map(rowToMember);
+      }
+      const r = await client.query<MemberRow>(
+        `SELECT * FROM workforce_members WHERE tenant_id = $1 AND status = 'active' ORDER BY display_name`,
+        [tenantId],
       );
-      return rows.map(rowToMember);
-    }
-    const rows = await this.db.query<MemberRow>(
-      `SELECT * FROM workforce_members WHERE tenant_id = $1 AND status = 'active' ORDER BY display_name`,
-      [tenantId],
-    );
-    return rows.map(rowToMember);
+      return r.rows.map(rowToMember);
+    });
   }
 
   async getAllMembersForTenant(tenantId: string): Promise<WorkforceMember[]> {
-    const rows = await this.db.query<MemberRow>(
-      `SELECT * FROM workforce_members WHERE tenant_id = $1 ORDER BY display_name`,
-      [tenantId],
-    );
-    return rows.map(rowToMember);
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<MemberRow>(
+        `SELECT * FROM workforce_members WHERE tenant_id = $1 ORDER BY display_name`,
+        [tenantId],
+      );
+      return r.rows.map(rowToMember);
+    });
   }
 
   // ── Availability ──────────────────────────────────────────────────────────
 
   async getAvailability(tenantId: string, memberId: AlaraId): Promise<Availability | null> {
-    const row = await this.db.queryOne<AvailabilityRow>(
-      `SELECT * FROM workforce_availability WHERE member_id = $1 AND tenant_id = $2`,
-      [memberId, tenantId],
-    );
-    return row ? rowToAvailability(row) : null;
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<AvailabilityRow>(
+        `SELECT * FROM workforce_availability WHERE member_id = $1 AND tenant_id = $2`,
+        [memberId, tenantId],
+      );
+      const row = r.rows[0] ?? null;
+      return row ? rowToAvailability(row) : null;
+    });
   }
 
   async getAvailabilityForMembers(tenantId: string, memberIds: readonly AlaraId[]): Promise<Map<string, Availability>> {
@@ -185,46 +199,59 @@ export class WorkforceRepository {
   // ── Assignments ───────────────────────────────────────────────────────────
 
   async getAssignmentById(tenantId: string, id: AlaraId): Promise<Assignment | null> {
-    const row = await this.db.queryOne<AssignmentRow>(
-      `SELECT * FROM assignments WHERE id = $1 AND tenant_id = $2`,
-      [id, tenantId],
-    );
-    return row ? rowToAssignment(row) : null;
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<AssignmentRow>(
+        `SELECT * FROM assignments WHERE id = $1 AND tenant_id = $2`,
+        [id, tenantId],
+      );
+      const row = r.rows[0] ?? null;
+      return row ? rowToAssignment(row) : null;
+    });
   }
 
   async getAssignmentsForSubject(tenantId: string, subjectId: string): Promise<Assignment[]> {
-    const rows = await this.db.query<AssignmentRow>(
-      `SELECT * FROM assignments WHERE tenant_id = $1 AND subject_id = $2 ORDER BY created_at DESC`,
-      [tenantId, subjectId],
-    );
-    return rows.map(rowToAssignment);
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<AssignmentRow>(
+        `SELECT * FROM assignments WHERE tenant_id = $1 AND subject_id = $2 ORDER BY created_at DESC`,
+        [tenantId, subjectId],
+      );
+      return r.rows.map(rowToAssignment);
+    });
   }
 
   async getActiveAssignmentsForMember(tenantId: string, memberId: AlaraId): Promise<Assignment[]> {
-    const rows = await this.db.query<AssignmentRow>(
-      `SELECT * FROM assignments WHERE tenant_id = $1 AND assignee_id = $2 AND status IN ('approved','accepted') ORDER BY created_at DESC`,
-      [tenantId, memberId],
-    );
-    return rows.map(rowToAssignment);
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<AssignmentRow>(
+        `SELECT * FROM assignments WHERE tenant_id = $1 AND assignee_id = $2 AND status IN ('approved','accepted') ORDER BY created_at DESC`,
+        [tenantId, memberId],
+      );
+      return r.rows.map(rowToAssignment);
+    });
   }
 
   // ── Capacity ──────────────────────────────────────────────────────────────
 
   async getLatestCapacity(tenantId: string, memberId: AlaraId): Promise<CapacitySnapshot | null> {
-    const row = await this.db.queryOne<CapacityRow>(
-      `SELECT * FROM capacity_snapshots WHERE tenant_id = $1 AND member_id = $2 ORDER BY snapshot_at DESC LIMIT 1`,
-      [tenantId, memberId],
-    );
-    return row ? rowToCapacity(row) : null;
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<CapacityRow>(
+        `SELECT * FROM capacity_snapshots WHERE tenant_id = $1 AND member_id = $2 ORDER BY snapshot_at DESC LIMIT 1`,
+        [tenantId, memberId],
+      );
+      const row = r.rows[0] ?? null;
+      return row ? rowToCapacity(row) : null;
+    });
   }
 
   // ── Teams ─────────────────────────────────────────────────────────────────
 
   async getTeamById(tenantId: string, id: AlaraId): Promise<Team | null> {
-    const row = await this.db.queryOne<TeamRow>(
-      `SELECT * FROM workforce_teams WHERE id = $1 AND tenant_id = $2`,
-      [id, tenantId],
-    );
-    return row ? rowToTeam(row) : null;
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<TeamRow>(
+        `SELECT * FROM workforce_teams WHERE id = $1 AND tenant_id = $2`,
+        [id, tenantId],
+      );
+      const row = r.rows[0] ?? null;
+      return row ? rowToTeam(row) : null;
+    });
   }
 }

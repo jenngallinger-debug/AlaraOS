@@ -17,6 +17,9 @@ import { withTenantTransaction, TENANT_GUC } from '../src/shared/tenant-scope';
 import { DatabaseProjectionStore } from '../src/projection-engine/store';
 import { ProjectionType } from '../src/projection-engine/types';
 import { RelationshipRepository } from '../src/relationship-engine/repository';
+import { OrganizationalBrainRepository } from '../src/organizational-brain/repository';
+import { KnowledgeRepository } from '../src/knowledge-engine/repository';
+import { WorkforceRepository } from '../src/workforce-engine/repository';
 import { AlaraId } from '../src/shared/types';
 
 const DB_URL = process.env.ALARA_TEST_DATABASE_URL;
@@ -43,6 +46,21 @@ describeIf('withTenantTransaction — real Postgres (opt-in via ALARA_TEST_DATAB
       await db.query('DROP TABLE IF EXISTS edges');
       await db.query('DROP TABLE IF EXISTS rel_rls_probe');
       await db.query('DROP ROLE IF EXISTS rel_probe_role');
+      // RLS step 2 Batch A — dedicated read-table fixtures + probes
+      await db.query('DROP TABLE IF EXISTS detected_patterns');
+      await db.query('DROP TABLE IF EXISTS observations');
+      await db.query('DROP TABLE IF EXISTS knowledge_entries');
+      await db.query('DROP TABLE IF EXISTS workforce_members');
+      await db.query('DROP TABLE IF EXISTS workforce_availability');
+      await db.query('DROP TABLE IF EXISTS assignments');
+      await db.query('DROP TABLE IF EXISTS capacity_snapshots');
+      await db.query('DROP TABLE IF EXISTS workforce_teams');
+      await db.query('DROP TABLE IF EXISTS brain_rls_probe');
+      await db.query('DROP ROLE IF EXISTS brain_probe_role');
+      await db.query('DROP TABLE IF EXISTS know_rls_probe');
+      await db.query('DROP ROLE IF EXISTS know_probe_role');
+      await db.query('DROP TABLE IF EXISTS wf_rls_probe');
+      await db.query('DROP ROLE IF EXISTS wf_probe_role');
     } catch { /* ignore cleanup errors */ }
     await db.end();
   });
@@ -224,5 +242,160 @@ describeIf('withTenantTransaction — real Postgres (opt-in via ALARA_TEST_DATAB
 
     expect(await visibleFor('tenant-A')).toEqual(['tenant-A']); // A cannot see B's rows
     expect(await visibleFor('tenant-B')).toEqual(['tenant-B']);
+  });
+
+  // ── RLS step 2 Batch A: dedicated read-table repositories ───────────────────
+
+  test('OrganizationalBrainRepository reads return the correct tenant rows on real Postgres', async () => {
+    // Functional proof the MIGRATED pattern reads work end-to-end on real Postgres (the SELECTs, the
+    // set_config wrapping, the mapping). Throwaway `detected_patterns` table dropped in afterAll.
+    await db.transaction(async (client) => {
+      await client.query('DROP TABLE IF EXISTS detected_patterns');
+      await client.query(`CREATE TABLE detected_patterns (
+        id text, tenant_id text NOT NULL, category text, title text, description text,
+        subject_id text NOT NULL, subject_type text, evidence jsonb, confidence text, severity text,
+        status text NOT NULL, detector_id text, detector_version text, superseded_by_id text,
+        first_detected_at text, last_confirmed_at text, resolved_at text, version int)`);
+      await client.query(`INSERT INTO detected_patterns
+        (id,tenant_id,category,subject_id,status,detector_id,first_detected_at,last_confirmed_at,version) VALUES
+        ('p-a','tenant-A','risk','subj-1','active','det1','2026-01-01T00:00:00Z','2026-01-01T00:00:00Z',1),
+        ('p-b','tenant-B','risk','subj-1','active','det1','2026-01-01T00:00:00Z','2026-01-01T00:00:00Z',1)`);
+    });
+
+    const repo = new OrganizationalBrainRepository(db);
+    expect((await repo.getPatternById('tenant-A', 'p-a' as AlaraId))?.tenantId).toBe('tenant-A');
+    expect(await repo.getPatternById('tenant-B', 'p-a' as AlaraId)).toBeNull();    // wrong tenant → null
+    expect((await repo.getActivePatternsForSubject('tenant-A', 'subj-1')).map((p) => p.id)).toEqual(['p-a']);
+    expect((await repo.getAllPatternsForSubject('tenant-A', 'subj-1')).map((p) => p.id)).toEqual(['p-a']);
+    expect((await repo.getPatternByDetectorAndSubject('tenant-A', 'det1', 'subj-1'))?.id).toBe('p-a');
+  });
+
+  test('KnowledgeRepository reads return the correct tenant rows on real Postgres', async () => {
+    // Functional proof the MIGRATED observation/entry reads work end-to-end on real Postgres.
+    // Throwaway `observations` + `knowledge_entries` tables dropped in afterAll.
+    await db.transaction(async (client) => {
+      await client.query('DROP TABLE IF EXISTS observations');
+      await client.query('DROP TABLE IF EXISTS knowledge_entries');
+      await client.query(`CREATE TABLE observations (
+        id text, tenant_id text NOT NULL, subject_id text NOT NULL, subject_type text, topic text,
+        statement text, facts jsonb, source text, confidence text, ai_involved boolean,
+        source_event_ids text[], source_observation_ids text[], observed_at text, actor text, version int)`);
+      await client.query(`CREATE TABLE knowledge_entries (
+        id text, tenant_id text NOT NULL, subject_id text NOT NULL, subject_type text, topic text,
+        kind text, status text NOT NULL, statement text, content jsonb, confidence text,
+        ai_involved boolean, supporting_observation_ids text[], superseded_by_id text,
+        asserted_at text, asserted_by text, expires_at text, version int)`);
+      await client.query(`INSERT INTO observations (id,tenant_id,subject_id,topic,observed_at,version) VALUES
+        ('o-a','tenant-A','subj-1','health','2026-01-01T00:00:00Z',1),
+        ('o-b','tenant-B','subj-1','health','2026-01-01T00:00:00Z',1)`);
+      await client.query(`INSERT INTO knowledge_entries
+        (id,tenant_id,subject_id,topic,status,asserted_at,version) VALUES
+        ('k-a','tenant-A','subj-1','health','active','2026-01-01T00:00:00Z',1),
+        ('k-b','tenant-B','subj-1','health','active','2026-01-01T00:00:00Z',1)`);
+    });
+
+    const repo = new KnowledgeRepository(db);
+    expect((await repo.getObservationById('tenant-A', 'o-a' as AlaraId))?.tenantId).toBe('tenant-A');
+    expect(await repo.getObservationById('tenant-B', 'o-a' as AlaraId)).toBeNull();
+    expect((await repo.getObservationsForSubject('tenant-A', 'subj-1')).map((o) => o.id)).toEqual(['o-a']);
+    expect((await repo.getEntryById('tenant-A', 'k-a' as AlaraId))?.tenantId).toBe('tenant-A');
+    expect((await repo.getActiveEntriesForSubject('tenant-A', 'subj-1')).map((e) => e.id)).toEqual(['k-a']);
+    expect((await repo.getAllEntriesForSubject('tenant-A', 'subj-1')).map((e) => e.id)).toEqual(['k-a']);
+  });
+
+  test('WorkforceRepository reads return the correct tenant rows on real Postgres', async () => {
+    // Functional proof the MIGRATED workforce reads work end-to-end across all dedicated tables.
+    // Throwaway tables dropped in afterAll.
+    await db.transaction(async (client) => {
+      await client.query('DROP TABLE IF EXISTS workforce_members');
+      await client.query('DROP TABLE IF EXISTS workforce_availability');
+      await client.query('DROP TABLE IF EXISTS assignments');
+      await client.query('DROP TABLE IF EXISTS capacity_snapshots');
+      await client.query('DROP TABLE IF EXISTS workforce_teams');
+      await client.query(`CREATE TABLE workforce_members (
+        id text, tenant_id text NOT NULL, display_name text, role text, status text NOT NULL,
+        team_id text, supervisor_id text, external_hr_id text, skill_profile jsonb, coverage_area jsonb,
+        escalation_path_id text, created_at text, updated_at text, version int)`);
+      await client.query(`CREATE TABLE workforce_availability (
+        member_id text NOT NULL, tenant_id text NOT NULL, status text, current_load int, max_load int,
+        next_available_at text, unavailable_until text, snapshot_at text)`);
+      await client.query(`CREATE TABLE assignments (
+        id text, tenant_id text NOT NULL, subject_id text NOT NULL, subject_type text, assignee_id text,
+        assignee_name text, priority text, status text NOT NULL, reason text, evidence jsonb,
+        confidence text, transferred_from_id text, rules_engine_approved boolean,
+        rules_engine_explanation text, due_at text, accepted_at text, completed_at text,
+        created_at text, version int)`);
+      await client.query(`CREATE TABLE capacity_snapshots (
+        id text, tenant_id text NOT NULL, member_id text NOT NULL, current_load int, max_load int,
+        utilization_rate real, active_assignment_ids text[], snapshot_at text, version int)`);
+      await client.query(`CREATE TABLE workforce_teams (
+        id text, tenant_id text NOT NULL, name text, description text, lead_id text,
+        member_ids text[], specializations text[], created_at text, version int)`);
+      await client.query(`INSERT INTO workforce_members
+        (id,tenant_id,display_name,role,status,created_at,updated_at,version) VALUES
+        ('m-a','tenant-A','Jane','care_guide','active','2026-01-01T00:00:00Z','2026-01-01T00:00:00Z',1),
+        ('m-b','tenant-B','John','care_guide','active','2026-01-01T00:00:00Z','2026-01-01T00:00:00Z',1)`);
+      await client.query(`INSERT INTO workforce_availability
+        (member_id,tenant_id,status,current_load,max_load,snapshot_at) VALUES
+        ('m-a','tenant-A','available',1,5,'2026-01-01T00:00:00Z')`);
+      await client.query(`INSERT INTO assignments
+        (id,tenant_id,subject_id,assignee_id,priority,status,created_at,version) VALUES
+        ('as-a','tenant-A','subj-1','m-a','high','approved','2026-01-01T00:00:00Z',1),
+        ('as-b','tenant-B','subj-1','m-b','high','approved','2026-01-01T00:00:00Z',1)`);
+      await client.query(`INSERT INTO capacity_snapshots
+        (id,tenant_id,member_id,current_load,max_load,utilization_rate,snapshot_at,version) VALUES
+        ('cap-a','tenant-A','m-a',1,5,0.2,'2026-01-01T00:00:00Z',1)`);
+      await client.query(`INSERT INTO workforce_teams (id,tenant_id,name,created_at,version) VALUES
+        ('t-a','tenant-A','Team A','2026-01-01T00:00:00Z',1)`);
+    });
+
+    const repo = new WorkforceRepository(db);
+    expect((await repo.getMemberById('tenant-A', 'm-a' as AlaraId))?.tenantId).toBe('tenant-A');
+    expect(await repo.getMemberById('tenant-B', 'm-a' as AlaraId)).toBeNull();
+    expect((await repo.getActiveMembersForTenant('tenant-A')).map((m) => m.id)).toEqual(['m-a']);
+    expect((await repo.getAllMembersForTenant('tenant-A')).map((m) => m.id)).toEqual(['m-a']);
+    expect((await repo.getAvailability('tenant-A', 'm-a' as AlaraId))?.memberId).toBe('m-a');
+    expect((await repo.getAssignmentById('tenant-A', 'as-a' as AlaraId))?.tenantId).toBe('tenant-A');
+    expect((await repo.getAssignmentsForSubject('tenant-A', 'subj-1')).map((a) => a.id)).toEqual(['as-a']);
+    expect((await repo.getActiveAssignmentsForMember('tenant-A', 'm-a' as AlaraId)).map((a) => a.id)).toEqual(['as-a']);
+    expect((await repo.getLatestCapacity('tenant-A', 'm-a' as AlaraId))?.memberId).toBe('m-a');
+    expect((await repo.getTeamById('tenant-A', 't-a' as AlaraId))?.tenantId).toBe('tenant-A');
+  });
+
+  test('Batch A primary tables enforce RLS isolation under a NON-superuser role', async () => {
+    // Mirrors the established RLS proof for each Batch A repo's primary table shape (tenant_id/
+    // subject_id). The probe SELECT runs under a fixture-local non-superuser role so FORCE RLS is not
+    // bypassed. Table + role names are hard-coded literals (not user input) → safe to interpolate.
+    const probes = [
+      ['brain_rls_probe', 'brain_probe_role'],
+      ['know_rls_probe', 'know_probe_role'],
+      ['wf_rls_probe', 'wf_probe_role'],
+    ] as const;
+
+    for (const [table, role] of probes) {
+      await db.transaction(async (client) => {
+        await client.query(`DROP TABLE IF EXISTS ${table}`);
+        await client.query(`DROP ROLE IF EXISTS ${role}`);
+        await client.query(`CREATE ROLE ${role} NOLOGIN`);
+        await client.query(`CREATE TABLE ${table} (tenant_id text NOT NULL, subject_id text, val text)`);
+        await client.query(`INSERT INTO ${table} VALUES ('tenant-A','s','a'), ('tenant-B','s','b')`);
+        await client.query(`ALTER TABLE ${table} ENABLE ROW LEVEL SECURITY`);
+        await client.query(`ALTER TABLE ${table} FORCE ROW LEVEL SECURITY`);
+        await client.query(
+          `CREATE POLICY tenant_isolation ON ${table} USING (tenant_id = current_setting('${TENANT_GUC}', true))`,
+        );
+        await client.query(`GRANT SELECT ON ${table} TO ${role}`);
+      });
+
+      const visibleFor = (tenant: string) =>
+        withTenantTransaction(db, tenant, async (client) => {
+          await client.query(`SET LOCAL ROLE ${role}`);
+          const r = await client.query(`SELECT tenant_id FROM ${table} ORDER BY tenant_id`);
+          return r.rows.map((x) => (x as { tenant_id: string }).tenant_id);
+        });
+
+      expect(await visibleFor('tenant-A')).toEqual(['tenant-A']); // A cannot see B's rows
+      expect(await visibleFor('tenant-B')).toEqual(['tenant-B']);
+    }
   });
 });

@@ -269,6 +269,20 @@ These are **constraints, not technologies**. They are binding on all implementat
    passes. Unit test proves txnCount===1 + GUC-once + same-client + identical view; harness proves
    tenant-local view + no cross-tenant edge traversal on real PG. No production RLS/policy/writes.
    See `code-concordance.md` UPDATE 47._
+   _RLS Step 2 Batch A — read-only dedicated-table repos (IMPLEMENTED): 18 single-statement,
+   tenant-filtered reads across OrganizationalBrainRepository (4 — `detected_patterns`),
+   KnowledgeRepository (5 — `observations`/`knowledge_entries`), and WorkforceRepository (9 —
+   `workforce_members`/`workforce_availability`/`assignments`/`capacity_snapshots`/`workforce_teams`)
+   now each run inside `withTenantTransaction` (carry `app.tenant_id`). Byte-identical SQL (both
+   optional-filter branches)/params/ordering/mapping/returns/signatures; only `this.db.query(...)` →
+   `client.query(...).rows`. The TWO aggregates (`KnowledgeRepository.query`,
+   `WorkforceRepository.getAvailabilityForMembers`) are DEFERRED — folding them into one transaction
+   needs the UPDATE 47 restructuring, out of this slice's scope. Behavior-preserving today (RLS inert
+   → same rows) — proven by the engine suites against InMemoryStore. Unit (`batch-a-tenant.test.ts`,
+   9) proves txnCount===1 + GUC-once-and-first + identical SQL/params/mapping/returns; harness extended
+   (opt-in real-PG: functional reads on all dedicated tables + non-superuser RLS isolation on Batch A
+   table shapes). No production RLS/policy/writes. 18/20 dedicated-table reads adopted; 2 aggregates +
+   Consent remain. See `code-concordance.md` UPDATE 48._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

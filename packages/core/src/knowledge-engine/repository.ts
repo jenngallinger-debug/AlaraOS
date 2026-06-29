@@ -6,6 +6,7 @@
  */
 
 import { DatabaseClient } from '../shared/database';
+import { withTenantTransaction } from '../shared/tenant-scope';
 import { AlaraId } from '../shared/types';
 import {
   CONFIDENCE_RANK,
@@ -67,12 +68,18 @@ export class KnowledgeRepository {
 
   // ── Observations ──────────────────────────────────────────────────────────
 
+  // RLS step 2 (Batch A): single-statement, tenant-filtered reads run inside a tenant-scoped
+  // transaction (carries `app.tenant_id`). Behavior-preserving today (RLS inert → same rows);
+  // identical SQL/params/ordering/mapping. The `query` aggregate is deferred (no restructuring here).
   async getObservationById(tenantId: string, id: AlaraId): Promise<Observation | null> {
-    const row = await this.db.queryOne<ObservationRow>(
-      `SELECT * FROM observations WHERE id = $1 AND tenant_id = $2`,
-      [id, tenantId],
-    );
-    return row ? rowToObservation(row) : null;
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<ObservationRow>(
+        `SELECT * FROM observations WHERE id = $1 AND tenant_id = $2`,
+        [id, tenantId],
+      );
+      const row = r.rows[0] ?? null;
+      return row ? rowToObservation(row) : null;
+    });
   }
 
   async getObservationsForSubject(
@@ -80,28 +87,33 @@ export class KnowledgeRepository {
     subjectId: string,
     topic?: ObservationTopic,
   ): Promise<Observation[]> {
-    if (topic) {
-      const rows = await this.db.query<ObservationRow>(
-        `SELECT * FROM observations WHERE tenant_id = $1 AND subject_id = $2 AND topic = $3 ORDER BY observed_at DESC`,
-        [tenantId, subjectId, topic],
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      if (topic) {
+        const r = await client.query<ObservationRow>(
+          `SELECT * FROM observations WHERE tenant_id = $1 AND subject_id = $2 AND topic = $3 ORDER BY observed_at DESC`,
+          [tenantId, subjectId, topic],
+        );
+        return r.rows.map(rowToObservation);
+      }
+      const r = await client.query<ObservationRow>(
+        `SELECT * FROM observations WHERE tenant_id = $1 AND subject_id = $2 ORDER BY observed_at DESC`,
+        [tenantId, subjectId],
       );
-      return rows.map(rowToObservation);
-    }
-    const rows = await this.db.query<ObservationRow>(
-      `SELECT * FROM observations WHERE tenant_id = $1 AND subject_id = $2 ORDER BY observed_at DESC`,
-      [tenantId, subjectId],
-    );
-    return rows.map(rowToObservation);
+      return r.rows.map(rowToObservation);
+    });
   }
 
   // ── Knowledge Entries ─────────────────────────────────────────────────────
 
   async getEntryById(tenantId: string, id: AlaraId): Promise<KnowledgeEntry | null> {
-    const row = await this.db.queryOne<KnowledgeEntryRow>(
-      `SELECT * FROM knowledge_entries WHERE id = $1 AND tenant_id = $2`,
-      [id, tenantId],
-    );
-    return row ? rowToEntry(row) : null;
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<KnowledgeEntryRow>(
+        `SELECT * FROM knowledge_entries WHERE id = $1 AND tenant_id = $2`,
+        [id, tenantId],
+      );
+      const row = r.rows[0] ?? null;
+      return row ? rowToEntry(row) : null;
+    });
   }
 
   async getActiveEntriesForSubject(
@@ -109,29 +121,33 @@ export class KnowledgeRepository {
     subjectId: string,
     topic?: ObservationTopic,
   ): Promise<KnowledgeEntry[]> {
-    if (topic) {
-      const rows = await this.db.query<KnowledgeEntryRow>(
-        `SELECT * FROM knowledge_entries WHERE tenant_id = $1 AND subject_id = $2 AND topic = $3 AND status = 'active' ORDER BY asserted_at DESC`,
-        [tenantId, subjectId, topic],
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      if (topic) {
+        const r = await client.query<KnowledgeEntryRow>(
+          `SELECT * FROM knowledge_entries WHERE tenant_id = $1 AND subject_id = $2 AND topic = $3 AND status = 'active' ORDER BY asserted_at DESC`,
+          [tenantId, subjectId, topic],
+        );
+        return r.rows.map(rowToEntry);
+      }
+      const r = await client.query<KnowledgeEntryRow>(
+        `SELECT * FROM knowledge_entries WHERE tenant_id = $1 AND subject_id = $2 AND status = 'active' ORDER BY asserted_at DESC`,
+        [tenantId, subjectId],
       );
-      return rows.map(rowToEntry);
-    }
-    const rows = await this.db.query<KnowledgeEntryRow>(
-      `SELECT * FROM knowledge_entries WHERE tenant_id = $1 AND subject_id = $2 AND status = 'active' ORDER BY asserted_at DESC`,
-      [tenantId, subjectId],
-    );
-    return rows.map(rowToEntry);
+      return r.rows.map(rowToEntry);
+    });
   }
 
   async getAllEntriesForSubject(
     tenantId: string,
     subjectId: string,
   ): Promise<KnowledgeEntry[]> {
-    const rows = await this.db.query<KnowledgeEntryRow>(
-      `SELECT * FROM knowledge_entries WHERE tenant_id = $1 AND subject_id = $2 ORDER BY asserted_at DESC`,
-      [tenantId, subjectId],
-    );
-    return rows.map(rowToEntry);
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<KnowledgeEntryRow>(
+        `SELECT * FROM knowledge_entries WHERE tenant_id = $1 AND subject_id = $2 ORDER BY asserted_at DESC`,
+        [tenantId, subjectId],
+      );
+      return r.rows.map(rowToEntry);
+    });
   }
 
   // ── Knowledge Query (the primary interface) ───────────────────────────────
