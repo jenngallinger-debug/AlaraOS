@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Alara Home Care</title>
-  <meta name="description" content="Nurse-led home health for White Card, veteran, and Medicare families in Southern Nevada. We handle the claims, the authorizations, and the scheduling. Most patients pay nothing." />
+  <meta name="description" content="Las Vegas home health built for White Card patients, veterans, and seniors who need more than a visit. DON-led. Locally owned. We handle all the paperwork. Most patients pay nothing." />
   <meta property="og:title" content="Alara Home Care" />
-  <meta property="og:description" content="Home health that knows your benefits, and handles the rest." />
+  <meta property="og:description" content="Las Vegas home health built for White Card patients, veterans, and seniors who need more than a visit." />
   <link rel="icon" href="logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -112,22 +112,22 @@
     }
     .hero__eyebrow { margin-bottom: 28px; }
     .hero__headline {
-      font-size: clamp(2.25rem, 4.6vw, 3.75rem);
+      font-size: clamp(2rem, 3.4vw, 2.875rem);
       font-weight: 500;
-      line-height: 1.08;
-      letter-spacing: -0.02em;
-      max-width: 16ch;
+      line-height: 1.1;
+      letter-spacing: -0.018em;
+      max-width: 19ch;
     }
-    .hero__headline .soft { display: block; color: var(--taupe-ink); font-weight: 400; margin-top: 0.12em; }
+    .hero__headline .soft { color: var(--taupe-ink); font-weight: 400; }
     .hero__sub {
-      margin-top: 32px;
+      margin-top: 28px;
       font-size: 1.1875rem;
       line-height: 1.6;
-      color: var(--taupe-ink);
-      max-width: 38ch;
+      color: var(--espresso);
+      max-width: 40ch;
     }
-    .hero__actions { margin-top: 44px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
-    .hero__reassure { font-size: 0.9375rem; color: var(--taupe); }
+    .hero__actions { margin-top: 40px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .hero__reassure { display: block; margin-top: 24px; font-size: 0.9375rem; color: var(--taupe); max-width: 46ch; line-height: 1.5; }
 
     .hero__image { position: relative; background: var(--greige); overflow: hidden; }
     .hero__image img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center bottom; }
@@ -146,6 +146,8 @@
     .btn:hover .arrow { transform: translateX(3px); }
     .btn--on-dark { background: var(--paper); color: var(--espresso); border-color: var(--paper); }
     .btn--on-dark:hover { background: var(--mist); border-color: var(--mist); }
+    .btn--ghost { background: transparent; color: var(--espresso); border-color: var(--taupe); }
+    .btn--ghost:hover { background: transparent; border-color: var(--espresso); }
 
     /* ---- 2 · The Tangle ------------------------------------------------- */
     .tangle { background: var(--greige); padding-block: var(--section-y); }
@@ -295,20 +297,19 @@
     <section class="hero" aria-label="Welcome">
       <div class="hero__grid">
         <div class="hero__text">
-          <p class="eyebrow hero__eyebrow">Nurse-led home health &middot; Southern Nevada</p>
+          <p class="eyebrow hero__eyebrow">Federal-benefit home health &middot; Southern Nevada</p>
           <h1 class="hero__headline">
-            Home health that knows your benefits,
-            <span class="soft">and handles the rest.</span>
+            Las Vegas home health built for White Card patients, veterans, and
+            <span class="soft">seniors who need more than a visit.</span>
           </h1>
           <p class="hero__sub">
-            Skilled nursing at home for White Card, veteran, and Medicare families across
-            Southern Nevada. We handle the claims, the authorizations, and the scheduling.
-            Most patients pay nothing.
+            DON-led. Locally owned. We handle all the paperwork. Most patients pay nothing.
           </p>
           <div class="hero__actions">
-            <a class="btn" href="#invite">See if you qualify <span class="arrow" aria-hidden="true">&rarr;</span></a>
-            <span class="hero__reassure">Or call <a href="tel:+17028149630">(702) 814-9630</a>. A nurse calls you back, usually within the hour.</span>
+            <a class="btn" href="#invite">Find out if you qualify <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <a class="btn btn--ghost" href="#invite">Refer a patient <span class="arrow" aria-hidden="true">&rarr;</span></a>
           </div>
+          <span class="hero__reassure">A free 10-minute call. Or call <a href="tel:+17028149630">(702) 814-9630</a> and a nurse calls you back, usually within the hour.</span>
         </div>
         <div class="hero__image">
           <img src="hero-arches.webp" alt="A wide stone staircase rising to a warm brass arched door." />
