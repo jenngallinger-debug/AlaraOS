@@ -325,6 +325,22 @@ These are **constraints, not technologies**. They are binding on all implementat
    key): save inserts, second save upserts without duplicating, cross-tenant row coexists, delete
    removes only the GUC tenant's row. No production RLS/policy. **Write phase begun; Journey/ObjectGraph/
    EventStore next.** See `code-concordance.md` UPDATE 51._
+   _RLS Step 2 — JourneyEngineRepository WRITES (UPDATE 52 — Slice 38): all 11 write methods (5 INSERT
+   incl. `insertReference` ON CONFLICT DO NOTHING + `upsertProjection` ON CONFLICT (journey_id) DO
+   UPDATE; 6 UPDATE incl. `revokeToken` soft-delete) across the five `journey_*` tables now run inside
+   per-method `withTenantTransaction` (GUC = row tenant). Byte-identical SQL/params/`void` returns; the
+   audit's encoding distinction is preserved — JSONB cols are JSON.stringify'd, `merged_from` is passed
+   as a RAW array (array column, not jsonb). The 7 READ methods are untouched (out of scope; follow-up).
+   Multi-write engine commands stay NON-ATOMIC exactly as before (no engine-level txn introduced —
+   deferred behavior-changing slice); no nested-txn risk (engine opens no transaction). Not API-wired →
+   zero production risk. No policy/`FORCE`/`WITH CHECK`; forward-compatible with future WITH CHECK
+   (GUC=tenant_id), with the `upsertProjection` `(journey_id)`-only conflict-key noted for that slice.
+   Unit (`journey-store-tenant.test.ts`, 12): each write proves one txn, GUC once-and-first, normalized
+   SQL + exact params (incl. JSONB-vs-raw-array), void return. Harness +1 (opt-in real-PG,
+   migration-011-faithful fixtures: JSONB + `merged_from` array + PK/UNIQUE constraints): insert,
+   wrong-tenant-update no-op, raw-array round-trip, DO-NOTHING idempotency, upsert without duplicating,
+   cross-tenant token resolve/revoke. No production RLS/policy. **Journey writes done; Journey reads then
+   ObjectGraph/EventStore next.** See `code-concordance.md` UPDATE 52._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

@@ -194,7 +194,7 @@ re-fetch) and are allow-listed (§3) — they need RLS-aware analysis before mig
 | OrganizationalBrainRepository `organizational-brain/repository.ts` | `detected_patterns` | read | yes | **✅ UPDATE 48** (all 4 reads) | engine | LOW |
 | ConsentRepository `consent-store/repository.ts` | `objects` (type=Consent) | read | yes | **✅ UPDATE 50** (`findForSubject` + `findById`; sets GUC only — NO `objects` policy) | yes | LOW-MED (reads central `objects`) |
 | IdentityResolutionRepository `identity-resolution/repository.ts` | (delegates to ObjectGraph) | read | yes | no | yes | LOW-MED (no own queries) |
-| JourneyEngineRepository `journey-engine/repository.ts` | `journey_*` | **mixed** (5 INSERT/7 UPDATE) | yes | no | engine | MED-HIGH (heaviest writes) |
+| JourneyEngineRepository `journey-engine/repository.ts` | `journey_*` | **mixed** (5 INSERT/6 UPDATE writes; 7 reads) | yes | **writes ✅ UPDATE 52** (11 writes, per-method txn; sets GUC only — NO policy/WITH CHECK; reads pending) | engine (not API-wired) | MED-HIGH (heaviest writes) |
 | ObjectGraphRepository `object-graph/repository.ts` | `objects`, `external_references` | **mixed** | mostly (1 by-id read allow-listed) | partial (`client.query`) | yes | HIGH (central canonical store) |
 | EventStore `events/store.ts` | `events` | **mixed** (append + loadStream/loadAll) | mostly (1 by-id read allow-listed) | **yes** (advisory lock) | yes | HIGH (core write path) |
 
@@ -214,9 +214,15 @@ ObjectGraphRepository and the **by-id-without-tenant idempotency special case** 
 DO UPDATE) + `delete`, each inside `withTenantTransaction`. Sets `app.tenant_id` only; NO policy /
 `FORCE` / `WITH CHECK` added. Forward-compatible with a future `WITH CHECK` because the GUC equals the
 written `tenant_id` and the upsert's DO UPDATE never changes `tenant_id`. Not live-wired (InMemory store
-is wired in the API), so zero production risk.]** → (5) JourneyEngineRepository → (6) ObjectGraphRepository
-(needs the by-id-without-tenant special case) → (7) EventStore (the cross-tenant by-id idempotency
-read needs RLS-aware handling).
+is wired in the API), so zero production risk.]** → (5) JourneyEngineRepository **[✅ UPDATE 52 —
+WRITES: all 11 write methods (5 INSERT incl. 2 ON CONFLICT, 6 UPDATE) wrapped in per-method
+`withTenantTransaction`. Behavior-preserving: byte-identical SQL/params/`void` returns, and multi-write
+engine commands stay NON-ATOMIC exactly as before (no engine-level transaction introduced — deferred).
+Sets GUC only; NO policy/`FORCE`/`WITH CHECK`. Forward-compatible with a future WITH CHECK (GUC =
+written/filtered tenant_id); ⚠ `upsertProjection`'s conflict key is `(journey_id)` alone — note for the
+WITH-CHECK slice. Not API-wired → zero production risk. Journey READS still pending (follow-up).]** →
+(6) ObjectGraphRepository (needs the by-id-without-tenant special case) → (7) EventStore (the
+cross-tenant by-id idempotency read needs RLS-aware handling).
 
 ### Decision — recommended FIRST RLS Step 2 target — ✅ IMPLEMENTED (UPDATE 45)
 

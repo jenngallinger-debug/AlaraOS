@@ -1670,3 +1670,54 @@ coverage because the in-memory store is a separate class, so these are the prima
 Next: continue the write phase — JourneyEngineRepository (heaviest writes), then ObjectGraphRepository
 and EventStore (which carry the by-id-without-tenant idempotency special case and the shared-`objects`
 RLS-enablement coordination).
+
+## UPDATE 52 — RLS Step 2: JourneyEngineRepository writes (IMPLEMENTED, writes-only)
+
+Continues the write phase by migrating all **11 `JourneyRepository` write methods** onto per-method
+`withTenantTransaction` across the five dedicated `journey_*` tables (migration 011). **No functional
+change** — proven by the M10.5 engine suite (`m10-5-journey-engine.test.ts`) still passing against
+`InMemoryStore`, which drives the engine → repo writes. Not API-wired (no `apps/api`/container
+reference), so zero production risk.
+
+- `packages/core/src/journey-engine/repository.ts` — each write now
+  `withTenantTransaction(this.db, <row tenant>, client => client.query(<same SQL>, <same params>))`:
+  - **5 INSERT:** `insert` (journeys), `insertReference` (`ON CONFLICT (tenant_id, journey_id, kind,
+    ref_id) DO NOTHING`), `appendEvent` (journey_events), `upsertProjection` (`ON CONFLICT (journey_id)
+    DO UPDATE`), `storeToken` (journey_capability_tokens).
+  - **6 UPDATE:** `updateLifecycle`, `updateIntent`, `updateCoordinationState`, `updateMergedFrom`,
+    `markIdentityResolved`, `revokeToken` (soft-delete). All carry `WHERE … AND tenant_id=$N`.
+  - GUC source = the row's own tenant (`j./ref./evt./proj.tenantId` or the `tenantId` arg).
+  - The **7 read methods** (`findById`, `listByLifecycle`, `getReferences`, `findJourneysReferencing`,
+    `getEvents`, `getProjection`, `resolveToken`) are UNCHANGED — out of this slice's scope (follow-up).
+- **Preserved exactly:** SQL text (incl. both `ON CONFLICT` clauses), params — notably the encoding
+  distinction the audit flagged: JSONB columns are `JSON.stringify`'d (`coordination_state`, `meta`,
+  `payload`, `work_summary`/`next_step`/`human_handoff`) while **`merged_from` is passed as a RAW JS
+  array** (it is a `uuid[]`/array column, NOT jsonb) — and `void` returns / public signatures. Only
+  `this.db.query(...)` → one tenant-scoped transaction per write.
+- **Multi-write atomicity unchanged (deferred).** The engine issues several repo writes per command and
+  opens NO transaction of its own, so those commands are NON-ATOMIC today; per-method wrapping keeps
+  each write an independent single statement → same (non-)atomicity. An engine-level transaction
+  (atomicity improvement) is a separate, behavior-changing slice and is explicitly NOT done here. No
+  nested-transaction risk (the engine never opens a transaction).
+- **No RLS/policy/`FORCE`/`WITH CHECK`** added. Forward-compatible with a future WITH CHECK because the
+  GUC equals the written/filtered `tenant_id`. ⚠ Note for that future slice: `upsertProjection`'s
+  conflict key is `(journey_id)` ALONE (unlike ProjectionStore's tenant-inclusive key); `DO UPDATE`
+  never changes `tenant_id` and `journey_id` is a global UUID, so it is safe in practice but is a
+  theoretical cross-tenant edge to handle when WITH CHECK is enabled.
+- Unit (`journey-store-tenant.test.ts`, new, 12 tests): mocked `DatabaseClient` proving for **each of
+  the 11 writes** — exactly ONE transaction, GUC set **once and first** (= row tenant), the same SQL
+  tokens (whitespace-normalized) + **exact params** (asserting JSONB-stringify vs raw-`merged_from`-array
+  encoding), and `void` return; plus a guard asserting exactly 11 write cases are covered. Default
+  suite, Postgres-free.
+- Harness (`tenant-scope.integration.test.ts`, +1): real-Postgres write proof on **migration-011-faithful**
+  throwaway tables (JSONB columns, `merged_from text[]` array, `journey_projections.journey_id` PK for
+  `ON CONFLICT (journey_id)`, `journey_references` UNIQUE `(tenant_id, journey_id, kind, ref_id)`,
+  `journey_capability_tokens.revoked` default) — insert + wrong-tenant-update no-op + correct-tenant
+  update, `merged_from` raw-array round-trip, `appendEvent`/`getEvents`, `insertReference` DO-NOTHING
+  idempotency, `upsertProjection` insert-then-update without duplicating, and `storeToken`/cross-tenant
+  `resolveToken`/`revokeToken`. Dropped in `afterAll`; self-skips without `ALARA_TEST_DATABASE_URL`.
+- Default verify green (core 697 pass/17 skip; API 218 pass; build:all clean).
+
+Next: Journey READS (a small follow-up to complete the repository), then the remaining write paths —
+ObjectGraphRepository and EventStore (the by-id-without-tenant idempotency special case + the
+shared-`objects` RLS-enablement coordination).

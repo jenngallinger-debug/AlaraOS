@@ -5,6 +5,7 @@
  */
 
 import { DatabaseClient } from '../shared/database';
+import { withTenantTransaction } from '../shared/tenant-scope';
 import { AlaraId, makeAlaraId } from '../shared/types';
 import {
   CapabilityToken,
@@ -141,20 +142,28 @@ export class JourneyRepository {
 
   // ── Journeys ──────────────────────────────────────────────────────────────
 
+  // RLS step 2 (write phase, Journey adoption): each write runs inside a per-method tenant-scoped
+  // transaction (carries `app.tenant_id` = the row's own tenant). Behavior-preserving today — RLS is
+  // inert (no policy on journey_* tables); identical SQL/params/returns. Each write stays a single
+  // statement, so multi-write engine commands remain non-atomic exactly as before (no engine-level
+  // transaction introduced). No policy / FORCE / WITH CHECK added; forward-compatible with a future
+  // WITH CHECK because the GUC equals the written/filtered tenant_id.
   async insert(j: Journey): Promise<void> {
-    await this.db.query(
-      `INSERT INTO journeys
+    await withTenantTransaction(this.db, j.tenantId, async (client) => {
+      await client.query(
+        `INSERT INTO journeys
         (id, tenant_id, intent, intent_inferred_at, lifecycle, lifecycle_changed_at,
          coordination_state, identity_resolved, merged_from, split_from, created_at, updated_at)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
-      [
-        j.id, j.tenantId, j.intent, j.intentInferredAt?.toISOString() ?? null,
-        j.lifecycle, j.lifecycleChangedAt.toISOString(),
-        JSON.stringify(j.coordinationState), j.identityResolved,
-        j.mergedFrom, j.splitFrom ?? null,
-        j.createdAt.toISOString(), j.updatedAt.toISOString(),
-      ],
-    );
+        [
+          j.id, j.tenantId, j.intent, j.intentInferredAt?.toISOString() ?? null,
+          j.lifecycle, j.lifecycleChangedAt.toISOString(),
+          JSON.stringify(j.coordinationState), j.identityResolved,
+          j.mergedFrom, j.splitFrom ?? null,
+          j.createdAt.toISOString(), j.updatedAt.toISOString(),
+        ],
+      );
+    });
   }
 
   async findById(id: AlaraId, tenantId: string): Promise<Journey | null> {
@@ -168,47 +177,57 @@ export class JourneyRepository {
   async updateLifecycle(
     id: AlaraId, tenantId: string, lifecycle: JourneyLifecycle, now: Date,
   ): Promise<void> {
-    await this.db.query(
-      `UPDATE journeys SET lifecycle=$1, lifecycle_changed_at=$2, updated_at=$3
+    await withTenantTransaction(this.db, tenantId, async (client) => {
+      await client.query(
+        `UPDATE journeys SET lifecycle=$1, lifecycle_changed_at=$2, updated_at=$3
        WHERE id=$4 AND tenant_id=$5`,
-      [lifecycle, now.toISOString(), now.toISOString(), id, tenantId],
-    );
+        [lifecycle, now.toISOString(), now.toISOString(), id, tenantId],
+      );
+    });
   }
 
   async updateIntent(
     id: AlaraId, tenantId: string, intent: string, now: Date,
   ): Promise<void> {
-    await this.db.query(
-      `UPDATE journeys SET intent=$1, intent_inferred_at=$2, updated_at=$3
+    await withTenantTransaction(this.db, tenantId, async (client) => {
+      await client.query(
+        `UPDATE journeys SET intent=$1, intent_inferred_at=$2, updated_at=$3
        WHERE id=$4 AND tenant_id=$5`,
-      [intent, now.toISOString(), now.toISOString(), id, tenantId],
-    );
+        [intent, now.toISOString(), now.toISOString(), id, tenantId],
+      );
+    });
   }
 
   async updateCoordinationState(
     id: AlaraId, tenantId: string, state: JourneyCoordinationState, now: Date,
   ): Promise<void> {
-    await this.db.query(
-      `UPDATE journeys SET coordination_state=$1, updated_at=$2
+    await withTenantTransaction(this.db, tenantId, async (client) => {
+      await client.query(
+        `UPDATE journeys SET coordination_state=$1, updated_at=$2
        WHERE id=$3 AND tenant_id=$4`,
-      [JSON.stringify(state), now.toISOString(), id, tenantId],
-    );
+        [JSON.stringify(state), now.toISOString(), id, tenantId],
+      );
+    });
   }
 
   async updateMergedFrom(
     id: AlaraId, tenantId: string, mergedFrom: readonly AlaraId[], now: Date,
   ): Promise<void> {
-    await this.db.query(
-      `UPDATE journeys SET merged_from=$1, updated_at=$2 WHERE id=$3 AND tenant_id=$4`,
-      [mergedFrom, now.toISOString(), id, tenantId],
-    );
+    await withTenantTransaction(this.db, tenantId, async (client) => {
+      await client.query(
+        `UPDATE journeys SET merged_from=$1, updated_at=$2 WHERE id=$3 AND tenant_id=$4`,
+        [mergedFrom, now.toISOString(), id, tenantId],
+      );
+    });
   }
 
   async markIdentityResolved(id: AlaraId, tenantId: string, now: Date): Promise<void> {
-    await this.db.query(
-      `UPDATE journeys SET identity_resolved=true, updated_at=$1 WHERE id=$2 AND tenant_id=$3`,
-      [now.toISOString(), id, tenantId],
-    );
+    await withTenantTransaction(this.db, tenantId, async (client) => {
+      await client.query(
+        `UPDATE journeys SET identity_resolved=true, updated_at=$1 WHERE id=$2 AND tenant_id=$3`,
+        [now.toISOString(), id, tenantId],
+      );
+    });
   }
 
   async listByLifecycle(
@@ -225,17 +244,19 @@ export class JourneyRepository {
   // ── References ────────────────────────────────────────────────────────────
 
   async insertReference(ref: JourneyReference): Promise<void> {
-    await this.db.query(
-      `INSERT INTO journey_references
+    await withTenantTransaction(this.db, ref.tenantId, async (client) => {
+      await client.query(
+        `INSERT INTO journey_references
         (id, tenant_id, journey_id, kind, ref_id, role, linked_at, linked_by, meta)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
        ON CONFLICT (tenant_id, journey_id, kind, ref_id) DO NOTHING`,
-      [
-        ref.id, ref.tenantId, ref.journeyId, ref.kind, ref.refId,
-        ref.role, ref.linkedAt.toISOString(), ref.linkedBy ?? null,
-        JSON.stringify(ref.meta),
-      ],
-    );
+        [
+          ref.id, ref.tenantId, ref.journeyId, ref.kind, ref.refId,
+          ref.role, ref.linkedAt.toISOString(), ref.linkedBy ?? null,
+          JSON.stringify(ref.meta),
+        ],
+      );
+    });
   }
 
   async getReferences(
@@ -269,17 +290,19 @@ export class JourneyRepository {
   // ── Events ────────────────────────────────────────────────────────────────
 
   async appendEvent(evt: JourneyEvent): Promise<void> {
-    await this.db.query(
-      `INSERT INTO journey_events
+    await withTenantTransaction(this.db, evt.tenantId, async (client) => {
+      await client.query(
+        `INSERT INTO journey_events
         (id, tenant_id, journey_id, event_type, payload, ref_kind, ref_id, occurred_at, caused_by)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
-      [
-        evt.id, evt.tenantId, evt.journeyId, evt.eventType,
-        JSON.stringify(evt.payload),
-        evt.refKind ?? null, evt.refId ?? null,
-        evt.occurredAt.toISOString(), evt.causedBy ?? null,
-      ],
-    );
+        [
+          evt.id, evt.tenantId, evt.journeyId, evt.eventType,
+          JSON.stringify(evt.payload),
+          evt.refKind ?? null, evt.refId ?? null,
+          evt.occurredAt.toISOString(), evt.causedBy ?? null,
+        ],
+      );
+    });
   }
 
   async getEvents(
@@ -305,8 +328,9 @@ export class JourneyRepository {
   // ── Projection ────────────────────────────────────────────────────────────
 
   async upsertProjection(proj: JourneyProjection): Promise<void> {
-    await this.db.query(
-      `INSERT INTO journey_projections
+    await withTenantTransaction(this.db, proj.tenantId, async (client) => {
+      await client.query(
+        `INSERT INTO journey_projections
         (journey_id, tenant_id, projection_type, lifecycle, intent, obstacle, actor,
          work_summary, next_step, human_handoff, last_event_id, projected_at)
        VALUES ($1,$2,'journey_state',$3,$4,$5,$6,$7,$8,$9,$10,$11)
@@ -315,15 +339,16 @@ export class JourneyRepository {
          lifecycle=$3, intent=$4, obstacle=$5, actor=$6,
          work_summary=$7, next_step=$8, human_handoff=$9,
          last_event_id=$10, projected_at=$11`,
-      [
-        proj.journeyId, proj.tenantId,
-        proj.lifecycle, proj.intent, proj.obstacle, proj.actor,
-        JSON.stringify(proj.workSummary),
-        proj.nextStep ? JSON.stringify(proj.nextStep) : null,
-        proj.humanHandoff ? JSON.stringify(proj.humanHandoff) : null,
-        proj.lastEventId, proj.projectedAt.toISOString(),
-      ],
-    );
+        [
+          proj.journeyId, proj.tenantId,
+          proj.lifecycle, proj.intent, proj.obstacle, proj.actor,
+          JSON.stringify(proj.workSummary),
+          proj.nextStep ? JSON.stringify(proj.nextStep) : null,
+          proj.humanHandoff ? JSON.stringify(proj.humanHandoff) : null,
+          proj.lastEventId, proj.projectedAt.toISOString(),
+        ],
+      );
+    });
   }
 
   async getProjection(
@@ -342,11 +367,13 @@ export class JourneyRepository {
     token: string, journeyId: AlaraId, tenantId: string,
     expiresAt: Date | null, now: Date,
   ): Promise<void> {
-    await this.db.query(
-      `INSERT INTO journey_capability_tokens (token, journey_id, tenant_id, issued_at, expires_at)
+    await withTenantTransaction(this.db, tenantId, async (client) => {
+      await client.query(
+        `INSERT INTO journey_capability_tokens (token, journey_id, tenant_id, issued_at, expires_at)
        VALUES ($1,$2,$3,$4,$5)`,
-      [token, journeyId, tenantId, now.toISOString(), expiresAt?.toISOString() ?? null],
-    );
+        [token, journeyId, tenantId, now.toISOString(), expiresAt?.toISOString() ?? null],
+      );
+    });
   }
 
   async resolveToken(token: string, tenantId: string): Promise<AlaraId | null> {
@@ -360,10 +387,12 @@ export class JourneyRepository {
   }
 
   async revokeToken(token: string, tenantId: string, now: Date): Promise<void> {
-    await this.db.query(
-      `UPDATE journey_capability_tokens SET revoked=true, revoked_at=$1
+    await withTenantTransaction(this.db, tenantId, async (client) => {
+      await client.query(
+        `UPDATE journey_capability_tokens SET revoked=true, revoked_at=$1
        WHERE token=$2 AND tenant_id=$3`,
-      [now.toISOString(), token, tenantId],
-    );
+        [now.toISOString(), token, tenantId],
+      );
+    });
   }
 }

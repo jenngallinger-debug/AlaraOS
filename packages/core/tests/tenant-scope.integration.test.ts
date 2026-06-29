@@ -21,6 +21,8 @@ import { OrganizationalBrainRepository } from '../src/organizational-brain/repos
 import { KnowledgeRepository } from '../src/knowledge-engine/repository';
 import { WorkforceRepository } from '../src/workforce-engine/repository';
 import { ConsentRepository } from '../src/consent-store/repository';
+import { JourneyRepository } from '../src/journey-engine/repository';
+import { Journey, JourneyEvent, JourneyProjection, JourneyReference } from '../src/journey-engine/types';
 import { AlaraId } from '../src/shared/types';
 
 const DB_URL = process.env.ALARA_TEST_DATABASE_URL;
@@ -64,6 +66,12 @@ describeIf('withTenantTransaction — real Postgres (opt-in via ALARA_TEST_DATAB
       await db.query('DROP ROLE IF EXISTS wf_probe_role');
       // RLS step 2 — ConsentRepository fixture (central `objects` table, throwaway)
       await db.query('DROP TABLE IF EXISTS objects');
+      // RLS step 2 — JourneyRepository write fixtures (journey_* tables, throwaway)
+      await db.query('DROP TABLE IF EXISTS journeys');
+      await db.query('DROP TABLE IF EXISTS journey_references');
+      await db.query('DROP TABLE IF EXISTS journey_events');
+      await db.query('DROP TABLE IF EXISTS journey_projections');
+      await db.query('DROP TABLE IF EXISTS journey_capability_tokens');
     } catch { /* ignore cleanup errors */ }
     await db.end();
   });
@@ -513,6 +521,99 @@ describeIf('withTenantTransaction — real Postgres (opt-in via ALARA_TEST_DATAB
     expect((await repo.findById('tenant-A', 'c-a'))?.consentId).toBe('consent-a');
     expect(await repo.findById('tenant-B', 'c-a')).toBeNull();        // wrong tenant → null
     expect(await repo.findById('tenant-A', 'p-a')).toBeNull();        // non-Consent type → null
+  });
+
+  // ── RLS step 2 write phase — JourneyRepository writes (Slice 38) ────────────────────────────
+
+  test('JourneyRepository writes land under the GUC tenant and respect cross-tenant isolation', async () => {
+    // Functional proof the 11 migrated writes work end-to-end on real Postgres across all five
+    // journey_* tables. Fixtures are faithful to migration 011: JSONB columns (coordination_state,
+    // meta, payload, work_summary/next_step/human_handoff), the `merged_from` ARRAY column, and the
+    // PRIMARY KEY / UNIQUE constraints the ON CONFLICT clauses require. Dropped in afterAll. NOTE: no
+    // RLS policy on journey_* here — GUC is inert; this proves the SQL/encoding, not enforcement.
+    await db.transaction(async (client) => {
+      await client.query('DROP TABLE IF EXISTS journeys');
+      await client.query('DROP TABLE IF EXISTS journey_references');
+      await client.query('DROP TABLE IF EXISTS journey_events');
+      await client.query('DROP TABLE IF EXISTS journey_projections');
+      await client.query('DROP TABLE IF EXISTS journey_capability_tokens');
+      await client.query(`CREATE TABLE journeys (
+        id text PRIMARY KEY, tenant_id text NOT NULL, intent text, intent_inferred_at text,
+        lifecycle text, lifecycle_changed_at text, coordination_state jsonb, identity_resolved boolean,
+        merged_from text[], split_from text, created_at text, updated_at text)`);
+      await client.query(`CREATE TABLE journey_references (
+        id text PRIMARY KEY, tenant_id text NOT NULL, journey_id text, kind text, ref_id text,
+        role text, linked_at text, linked_by text, meta jsonb,
+        UNIQUE (tenant_id, journey_id, kind, ref_id))`);
+      await client.query(`CREATE TABLE journey_events (
+        id text PRIMARY KEY, tenant_id text NOT NULL, journey_id text, event_type text, payload jsonb,
+        ref_kind text, ref_id text, occurred_at text, caused_by text)`);
+      await client.query(`CREATE TABLE journey_projections (
+        journey_id text PRIMARY KEY, tenant_id text NOT NULL, projection_type text, lifecycle text,
+        intent text, obstacle text, actor text, work_summary jsonb, next_step jsonb, human_handoff jsonb,
+        last_event_id text, projected_at text)`);
+      await client.query(`CREATE TABLE journey_capability_tokens (
+        token text PRIMARY KEY, journey_id text, tenant_id text NOT NULL, issued_at text,
+        expires_at text, revoked boolean NOT NULL DEFAULT false, revoked_at text)`);
+    });
+
+    const repo = new JourneyRepository(db);
+    const NOW = new Date('2026-06-28T00:00:00.000Z');
+    const mkJourney = (id: string, tenantId: string): Journey => ({
+      id: id as AlaraId, tenantId, intent: null, intentInferredAt: null, lifecycle: 'arrival',
+      lifecycleChangedAt: NOW, coordinationState: { a: 1 }, identityResolved: false,
+      mergedFrom: [], splitFrom: null, createdAt: NOW, updatedAt: NOW,
+    });
+
+    // insert: two journeys in different tenants.
+    await repo.insert(mkJourney('jA', 'tenant-A'));
+    await repo.insert(mkJourney('jB', 'tenant-B'));
+    expect((await repo.findById('jA' as AlaraId, 'tenant-A'))?.tenantId).toBe('tenant-A');
+    expect(await repo.findById('jA' as AlaraId, 'tenant-B')).toBeNull();   // wrong tenant → null
+
+    // updateLifecycle: wrong-tenant update affects nothing; correct-tenant update applies.
+    await repo.updateLifecycle('jA' as AlaraId, 'tenant-B', 'working', NOW);   // wrong tenant → no-op
+    expect((await repo.findById('jA' as AlaraId, 'tenant-A'))?.lifecycle).toBe('arrival');
+    await repo.updateLifecycle('jA' as AlaraId, 'tenant-A', 'working', NOW);   // correct tenant
+    expect((await repo.findById('jA' as AlaraId, 'tenant-A'))?.lifecycle).toBe('working');
+
+    // updateMergedFrom: the RAW array round-trips through the text[] column.
+    await repo.updateMergedFrom('jA' as AlaraId, 'tenant-A', ['x', 'y'] as AlaraId[], NOW);
+    expect((await repo.findById('jA' as AlaraId, 'tenant-A'))?.mergedFrom).toEqual(['x', 'y']);
+
+    // appendEvent + getEvents.
+    const EVT: JourneyEvent = {
+      id: 'e1', journeyId: 'jA' as AlaraId, tenantId: 'tenant-A', eventType: 'JourneyStarted',
+      payload: { p: 1 }, refKind: null, refId: null, occurredAt: NOW, causedBy: null,
+    };
+    await repo.appendEvent(EVT);
+    expect((await repo.getEvents('jA' as AlaraId, 'tenant-A')).map((e) => e.id)).toEqual(['e1']);
+
+    // insertReference is idempotent (ON CONFLICT (tenant_id, journey_id, kind, ref_id) DO NOTHING).
+    const REF: JourneyReference = {
+      id: 'ref1' as AlaraId, journeyId: 'jA' as AlaraId, tenantId: 'tenant-A', kind: 'person',
+      refId: 'p1' as AlaraId, role: 'subject', linkedAt: NOW, linkedBy: null, meta: { k: 'v' },
+    };
+    await repo.insertReference(REF);
+    await repo.insertReference({ ...REF, id: 'ref2' as AlaraId });   // same conflict key → DO NOTHING
+    expect((await repo.getReferences('jA' as AlaraId, 'tenant-A')).map((x) => x.id)).toEqual(['ref1']);
+
+    // upsertProjection inserts then updates (ON CONFLICT (journey_id)) without duplicating.
+    const mkProj = (lifecycle: JourneyProjection['lifecycle']): JourneyProjection => ({
+      PROJECTION_TYPE: 'journey_state', journeyId: 'jA' as AlaraId, tenantId: 'tenant-A',
+      lifecycle, intent: null, obstacle: null, actor: null, workSummary: [], nextStep: null,
+      humanHandoff: null, lastEventId: null, projectedAt: NOW,
+    });
+    await repo.upsertProjection(mkProj('arrival'));
+    await repo.upsertProjection(mkProj('working'));
+    expect((await repo.getProjection('jA' as AlaraId, 'tenant-A'))?.lifecycle).toBe('working');
+
+    // storeToken / resolveToken (cross-tenant) / revokeToken.
+    await repo.storeToken('tok1', 'jA' as AlaraId, 'tenant-A', null, NOW);
+    expect(String(await repo.resolveToken('tok1', 'tenant-A'))).toBe('jA');
+    expect(await repo.resolveToken('tok1', 'tenant-B')).toBeNull();   // cross-tenant → null
+    await repo.revokeToken('tok1', 'tenant-A', NOW);
+    expect(await repo.resolveToken('tok1', 'tenant-A')).toBeNull();   // revoked → null
   });
 
   test('Batch A primary tables enforce RLS isolation under a NON-superuser role', async () => {
