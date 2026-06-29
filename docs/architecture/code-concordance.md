@@ -1415,3 +1415,33 @@ only; not live-wired; default suite stays Postgres-free.
 
 Next: first **live** adopter — RelationshipRepository read methods (same pattern), then the rest of
 the inventory order (UPDATE 44).
+
+## UPDATE 46 — RLS Step 2 first LIVE adopter: RelationshipRepository reads (IMPLEMENTED)
+
+Migrates the first **live-wired** read repo (Slice 30 inventory) onto `withTenantTransaction()`.
+**No behavior change today** (RLS inert → GUC unread → same rows) — confirmed by the 7 pre-existing
+test files that exercise the real `RelationshipRepository` against the InMemoryStore all passing.
+Reads only; no writes (this repo has none); no API wiring change.
+
+- `packages/core/src/relationship-engine/repository.ts`: the **7 single-statement, tenant-filtered
+  reads** — `getById`, `getBySubject`, `getActiveBySubject`, `getEdgeById`,
+  `getActiveEdgesForRelationship`, `getAllEdgesForRelationship`, `getActiveEdgesForParticipant` —
+  now run their (unchanged) SELECT inside `withTenantTransaction(this.db, tenantId, …)`. Identical
+  SQL/params/ordering/mapping/return values; `db.query`/`queryOne` → `client.query(...).rows`.
+- **Deferred:** `computeCareTeamView` is an aggregate/multi-query method (it calls `getActiveBySubject`
+  then loops N edge queries); wrapping it as one transaction requires restructuring (inlining onto a
+  shared client), which would break "preserve identical SQL/structure" — left for a dedicated refactor.
+  It remains behavior-identical (calls the migrated `getActiveBySubject`).
+- **Why InMemoryStore-backed tests still pass:** the in-memory tx client returns the pg `{rows}`
+  shape and routes the new `set_config` statement to `store.query` (default `[]`), so the reads
+  return the same rows as before — just preceded by a no-op GUC set.
+- Unit (`packages/core/tests/relationship-store-tenant.test.ts`, +4, mocked DB — no PG): GUC-first +
+  byte-identical SELECT + mapping + null/list, for getById/getActiveBySubject/getActiveEdgesForRelationship.
+- Harness (`tenant-scope.integration.test.ts`, +2 opt-in real-PG): migrated reads return correct
+  tenant rows on real `relationships`+`edges` tables; a relationship-shaped table enforces RLS
+  isolation under a NON-superuser role (`rel_probe_role` + `SET LOCAL ROLE`) — tenant A cannot see
+  tenant B's rows. Self-skip without `ALARA_TEST_DATABASE_URL`; fixtures dropped in `afterAll`.
+- No production RLS enabled, no policy on app schemas, no writes migrated, no wiring change.
+
+Next: `computeCareTeamView` single-transaction refactor, then the remaining read-only repos
+(Knowledge/Workforce/OrganizationalBrain/Consent) per the UPDATE 44 order.

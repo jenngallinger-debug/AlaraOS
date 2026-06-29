@@ -6,6 +6,7 @@
  */
 
 import { DatabaseClient } from '../shared/database';
+import { withTenantTransaction } from '../shared/tenant-scope';
 import { AlaraId } from '../shared/types';
 import {
   CareTeamMember,
@@ -48,69 +49,89 @@ interface EdgeRow {
 export class RelationshipRepository {
   constructor(private readonly db: DatabaseClient) {}
 
+  // RLS step 2 (first live adopter): the single-statement, tenant-filtered reads below run inside a
+  // tenant-scoped transaction so each read carries `app.tenant_id`. Behavior-preserving today — RLS
+  // is inert (the GUC is unread), so the same SQL/params/ordering return the same rows.
+  // (computeCareTeamView is an aggregate/multi-query method — deferred to a dedicated refactor.)
   async getById(tenantId: string, id: AlaraId): Promise<Relationship | null> {
-    const row = await this.db.queryOne<RelationshipRow>(
-      `SELECT * FROM relationships WHERE id = $1 AND tenant_id = $2`,
-      [id, tenantId],
-    );
-    return row ? rowToRelationship(row) : null;
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<RelationshipRow>(
+        `SELECT * FROM relationships WHERE id = $1 AND tenant_id = $2`,
+        [id, tenantId],
+      );
+      const row = r.rows[0] ?? null;
+      return row ? rowToRelationship(row) : null;
+    });
   }
 
   async getBySubject(tenantId: string, subjectId: AlaraId): Promise<Relationship[]> {
-    const rows = await this.db.query<RelationshipRow>(
-      `SELECT * FROM relationships WHERE tenant_id = $1 AND subject_id = $2 ORDER BY created_at ASC`,
-      [tenantId, subjectId],
-    );
-    return rows.map(rowToRelationship);
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<RelationshipRow>(
+        `SELECT * FROM relationships WHERE tenant_id = $1 AND subject_id = $2 ORDER BY created_at ASC`,
+        [tenantId, subjectId],
+      );
+      return r.rows.map(rowToRelationship);
+    });
   }
 
   async getActiveBySubject(tenantId: string, subjectId: AlaraId): Promise<Relationship[]> {
-    const rows = await this.db.query<RelationshipRow>(
-      `SELECT * FROM relationships WHERE tenant_id = $1 AND subject_id = $2 AND status = 'active' ORDER BY created_at ASC`,
-      [tenantId, subjectId],
-    );
-    return rows.map(rowToRelationship);
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<RelationshipRow>(
+        `SELECT * FROM relationships WHERE tenant_id = $1 AND subject_id = $2 AND status = 'active' ORDER BY created_at ASC`,
+        [tenantId, subjectId],
+      );
+      return r.rows.map(rowToRelationship);
+    });
   }
 
   async getEdgeById(tenantId: string, edgeId: AlaraId): Promise<ParticipationEdge | null> {
-    const row = await this.db.queryOne<EdgeRow>(
-      `SELECT * FROM edges WHERE id = $1 AND tenant_id = $2`,
-      [edgeId, tenantId],
-    );
-    return row ? rowToEdge(row) : null;
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<EdgeRow>(
+        `SELECT * FROM edges WHERE id = $1 AND tenant_id = $2`,
+        [edgeId, tenantId],
+      );
+      const row = r.rows[0] ?? null;
+      return row ? rowToEdge(row) : null;
+    });
   }
 
   async getActiveEdgesForRelationship(
     tenantId: string,
     relationshipId: AlaraId,
   ): Promise<ParticipationEdge[]> {
-    const rows = await this.db.query<EdgeRow>(
-      `SELECT * FROM edges WHERE tenant_id = $1 AND relationship_id = $2 AND active = true ORDER BY started_at ASC`,
-      [tenantId, relationshipId],
-    );
-    return rows.map(rowToEdge);
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<EdgeRow>(
+        `SELECT * FROM edges WHERE tenant_id = $1 AND relationship_id = $2 AND active = true ORDER BY started_at ASC`,
+        [tenantId, relationshipId],
+      );
+      return r.rows.map(rowToEdge);
+    });
   }
 
   async getAllEdgesForRelationship(
     tenantId: string,
     relationshipId: AlaraId,
   ): Promise<ParticipationEdge[]> {
-    const rows = await this.db.query<EdgeRow>(
-      `SELECT * FROM edges WHERE tenant_id = $1 AND relationship_id = $2 ORDER BY started_at ASC`,
-      [tenantId, relationshipId],
-    );
-    return rows.map(rowToEdge);
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<EdgeRow>(
+        `SELECT * FROM edges WHERE tenant_id = $1 AND relationship_id = $2 ORDER BY started_at ASC`,
+        [tenantId, relationshipId],
+      );
+      return r.rows.map(rowToEdge);
+    });
   }
 
   async getActiveEdgesForParticipant(
     tenantId: string,
     participantId: string,
   ): Promise<ParticipationEdge[]> {
-    const rows = await this.db.query<EdgeRow>(
-      `SELECT * FROM edges WHERE tenant_id = $1 AND participant_id = $2 AND active = true ORDER BY started_at ASC`,
-      [tenantId, participantId],
-    );
-    return rows.map(rowToEdge);
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<EdgeRow>(
+        `SELECT * FROM edges WHERE tenant_id = $1 AND participant_id = $2 AND active = true ORDER BY started_at ASC`,
+        [tenantId, participantId],
+      );
+      return r.rows.map(rowToEdge);
+    });
   }
 
   /**

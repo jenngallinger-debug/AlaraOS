@@ -251,6 +251,15 @@ These are **constraints, not technologies**. They are binding on all implementat
    methods return correct tenant rows and a projection-shaped table isolates under a non-superuser
    role. No production RLS/policy, no writes migrated. Next: RelationshipRepository reads (first live
    adopter). See `code-concordance.md` UPDATE 45._
+   _RLS Step 2 first LIVE adopter (IMPLEMENTED): the 7 single-statement, tenant-filtered reads in
+   `relationship-engine/repository.ts` (getById/getBySubject/getActiveBySubject/getEdgeById/
+   getActiveEdgesForRelationship/getAllEdgesForRelationship/getActiveEdgesForParticipant) now run
+   inside `withTenantTransaction`. Behavior-preserving today (RLS inert → same rows) — proven by the
+   7 pre-existing test files exercising the real repo against InMemoryStore still passing. Reads only
+   (repo has no writes); no wiring change. `computeCareTeamView` (aggregate/multi-query) DEFERRED to
+   a single-transaction refactor — stays behavior-identical. Unit test (mocked DB) + harness (+2
+   opt-in real-PG: real relationships/edges reads + relationship-shaped RLS isolation under a
+   non-superuser role). No production RLS/policy. See `code-concordance.md` UPDATE 46._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

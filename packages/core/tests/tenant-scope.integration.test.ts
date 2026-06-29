@@ -16,6 +16,8 @@ import { DatabaseClient } from '../src/shared/database';
 import { withTenantTransaction, TENANT_GUC } from '../src/shared/tenant-scope';
 import { DatabaseProjectionStore } from '../src/projection-engine/store';
 import { ProjectionType } from '../src/projection-engine/types';
+import { RelationshipRepository } from '../src/relationship-engine/repository';
+import { AlaraId } from '../src/shared/types';
 
 const DB_URL = process.env.ALARA_TEST_DATABASE_URL;
 const describeIf = DB_URL ? describe : describe.skip;
@@ -37,6 +39,10 @@ describeIf('withTenantTransaction — real Postgres (opt-in via ALARA_TEST_DATAB
       await db.query('DROP TABLE IF EXISTS projections');
       await db.query('DROP TABLE IF EXISTS proj_rls_probe');
       await db.query('DROP ROLE IF EXISTS proj_probe_role');
+      await db.query('DROP TABLE IF EXISTS relationships');
+      await db.query('DROP TABLE IF EXISTS edges');
+      await db.query('DROP TABLE IF EXISTS rel_rls_probe');
+      await db.query('DROP ROLE IF EXISTS rel_probe_role');
     } catch { /* ignore cleanup errors */ }
     await db.end();
   });
@@ -149,6 +155,66 @@ describeIf('withTenantTransaction — real Postgres (opt-in via ALARA_TEST_DATAB
       });
 
     expect(await visibleFor('tenant-A')).toEqual(['tenant-A']);
+    expect(await visibleFor('tenant-B')).toEqual(['tenant-B']);
+  });
+
+  // ── RLS step 2 first LIVE adopter: RelationshipRepository read methods ──────
+
+  test('RelationshipRepository reads return the correct tenant rows on real Postgres', async () => {
+    // Functional proof the MIGRATED relationship/edge reads work end-to-end on real Postgres
+    // (the SELECTs, the set_config wrapping, the mapping). Throwaway tables dropped in afterAll.
+    await db.transaction(async (client) => {
+      await client.query('DROP TABLE IF EXISTS relationships');
+      await client.query('DROP TABLE IF EXISTS edges');
+      await client.query(`CREATE TABLE relationships (
+        id text, tenant_id text NOT NULL, type text, status text NOT NULL, subject_id text NOT NULL,
+        description text, version int, created_at text, updated_at text,
+        terminated_at text, termination_reason text)`);
+      await client.query(`CREATE TABLE edges (
+        id text, tenant_id text NOT NULL, relationship_id text NOT NULL, participant_id text,
+        participant_type text, role text, active boolean NOT NULL, started_at text,
+        ended_at text, coverage_expires_at text, version int)`);
+      await client.query(`INSERT INTO relationships (id,tenant_id,type,status,subject_id,created_at) VALUES
+        ('r-a','tenant-A','care_team','active','subj-1','2026-01-01T00:00:00Z'),
+        ('r-b','tenant-B','care_team','active','subj-1','2026-01-01T00:00:00Z')`);
+      await client.query(`INSERT INTO edges (id,tenant_id,relationship_id,active,started_at) VALUES
+        ('e-a','tenant-A','r-a',true,'2026-01-01T00:00:00Z'),
+        ('e-b','tenant-B','r-b',true,'2026-01-01T00:00:00Z')`);
+    });
+
+    const repo = new RelationshipRepository(db);
+    expect((await repo.getById('tenant-A', 'r-a' as AlaraId))?.tenantId).toBe('tenant-A');
+    expect(await repo.getById('tenant-B', 'r-a' as AlaraId)).toBeNull();          // wrong tenant → null
+    expect((await repo.getBySubject('tenant-A', 'subj-1' as AlaraId)).map((r) => r.id)).toEqual(['r-a']);
+    expect((await repo.getActiveBySubject('tenant-A', 'subj-1' as AlaraId)).map((r) => r.id)).toEqual(['r-a']);
+    expect((await repo.getActiveEdgesForRelationship('tenant-A', 'r-a' as AlaraId)).map((e) => e.id)).toEqual(['e-a']);
+  });
+
+  test('a relationship-shaped table enforces RLS isolation under a NON-superuser role', async () => {
+    // Tenant A must not see tenant B's relationship rows once RLS is enabled. Fixture-local table +
+    // role; probe SELECT runs under a non-superuser role so FORCE RLS is not bypassed.
+    await db.transaction(async (client) => {
+      await client.query('DROP TABLE IF EXISTS rel_rls_probe');
+      await client.query('DROP ROLE IF EXISTS rel_probe_role');
+      await client.query('CREATE ROLE rel_probe_role NOLOGIN');
+      await client.query('CREATE TABLE rel_rls_probe (tenant_id text NOT NULL, subject_id text, status text)');
+      await client.query("INSERT INTO rel_rls_probe VALUES ('tenant-A','s','active'), ('tenant-B','s','active')");
+      await client.query('ALTER TABLE rel_rls_probe ENABLE ROW LEVEL SECURITY');
+      await client.query('ALTER TABLE rel_rls_probe FORCE ROW LEVEL SECURITY');
+      await client.query(
+        `CREATE POLICY tenant_isolation ON rel_rls_probe USING (tenant_id = current_setting('${TENANT_GUC}', true))`,
+      );
+      await client.query('GRANT SELECT ON rel_rls_probe TO rel_probe_role');
+    });
+
+    const visibleFor = (tenant: string) =>
+      withTenantTransaction(db, tenant, async (client) => {
+        await client.query('SET LOCAL ROLE rel_probe_role');
+        const r = await client.query('SELECT tenant_id FROM rel_rls_probe ORDER BY tenant_id');
+        return r.rows.map((x) => (x as { tenant_id: string }).tenant_id);
+      });
+
+    expect(await visibleFor('tenant-A')).toEqual(['tenant-A']); // A cannot see B's rows
     expect(await visibleFor('tenant-B')).toEqual(['tenant-B']);
   });
 });
