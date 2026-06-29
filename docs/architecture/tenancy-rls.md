@@ -205,7 +205,7 @@ re-fetch) and are allow-listed (§3) — they need RLS-aware analysis before mig
 (needs the by-id-without-tenant special case) → (7) EventStore (the cross-tenant by-id idempotency
 read needs RLS-aware handling).
 
-### Decision — recommended FIRST RLS Step 2 target
+### Decision — recommended FIRST RLS Step 2 target — ✅ IMPLEMENTED (UPDATE 45)
 
 **`DatabaseProjectionStore.get` + `listForSubject` (the `projections` table).** It is read-only,
 single-statement, already tenant-filtered, on a **dedicated** table (isolated RLS blast radius), and

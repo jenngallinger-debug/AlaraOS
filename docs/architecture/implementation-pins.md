@@ -242,6 +242,15 @@ These are **constraints, not technologies**. They are binding on all implementat
    first LIVE adopter next = RelationshipRepository reads. Two by-id reads (EventStore idempotency,
    ObjectGraph re-fetch) need RLS-aware handling before migration. NO call sites migrated, no runtime
    change. See `code-concordance.md` UPDATE 44._
+   _RLS Step 2 first adopter (IMPLEMENTED): `DatabaseProjectionStore.get`/`listForSubject`
+   (`projection-engine/store.ts`) now run their unchanged tenant-filtered SELECT inside
+   `withTenantTransaction` (read carries `app.tenant_id`). Behavior-preserving today (RLS inert →
+   same rows); reads only; writes/constructor/schema/API wiring untouched; not live-wired
+   (`InMemoryProjectionStore` still wired) → zero live impact. Unit test (mocked DB, no PG) proves
+   GUC-first + byte-identical SELECT + mapping; harness (+2 opt-in real-PG) proves the migrated
+   methods return correct tenant rows and a projection-shaped table isolates under a non-superuser
+   role. No production RLS/policy, no writes migrated. Next: RelationshipRepository reads (first live
+   adopter). See `code-concordance.md` UPDATE 45._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

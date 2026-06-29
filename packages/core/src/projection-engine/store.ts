@@ -46,6 +46,7 @@ export class InMemoryProjectionStore implements IProjectionStore {
  * Reads/writes the `projections` table from migration 004.
  */
 import { DatabaseClient } from '../shared/database';
+import { withTenantTransaction } from '../shared/tenant-scope';
 import { newAlaraId } from '../shared/ids';
 
 interface ProjectionRow {
@@ -101,11 +102,17 @@ export class DatabaseProjectionStore implements IProjectionStore {
   }
 
   async get(tenantId: string, type: ProjectionType, subjectId: string): Promise<StoredProjection | null> {
-    const row = await this.db.queryOne<ProjectionRow>(
-      `SELECT * FROM projections WHERE tenant_id=$1 AND projection_type=$2 AND subject_id=$3`,
-      [tenantId, type, subjectId],
-    );
-    return row ? rowToProjection(row) : null;
+    // RLS step 2 (first adopter): run the read inside a tenant-scoped transaction so it carries
+    // `app.tenant_id`. Behavior-preserving today — RLS is inert (the GUC is unread), so the same
+    // tenant-filtered SELECT returns the same rows. Same SQL/params/mapping as before.
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<ProjectionRow>(
+        `SELECT * FROM projections WHERE tenant_id=$1 AND projection_type=$2 AND subject_id=$3`,
+        [tenantId, type, subjectId],
+      );
+      const row = r.rows[0] ?? null;
+      return row ? rowToProjection(row) : null;
+    });
   }
 
   async delete(tenantId: string, type: ProjectionType, subjectId: string): Promise<void> {
@@ -116,11 +123,14 @@ export class DatabaseProjectionStore implements IProjectionStore {
   }
 
   async listForSubject(tenantId: string, subjectId: string): Promise<StoredProjection[]> {
-    const rows = await this.db.query<ProjectionRow>(
-      `SELECT * FROM projections WHERE tenant_id=$1 AND subject_id=$2`,
-      [tenantId, subjectId],
-    );
-    return rows.map(rowToProjection);
+    // RLS step 2 (first adopter): tenant-scoped transaction; behavior-preserving (RLS inert).
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<ProjectionRow>(
+        `SELECT * FROM projections WHERE tenant_id=$1 AND subject_id=$2`,
+        [tenantId, subjectId],
+      );
+      return r.rows.map(rowToProjection);
+    });
   }
 }
 

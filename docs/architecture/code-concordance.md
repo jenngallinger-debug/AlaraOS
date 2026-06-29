@@ -1390,3 +1390,28 @@ reads. Order then proceeds read-only dedicated tables → projection writes → 
 event store (riskiest, has the cross-tenant by-id read). Harness extension required first: a
 `projections`-shaped real table + policy asserting per-tenant filtering under the non-superuser role
 (UPDATE 43 pattern), plus a behavior-preserving (RLS-inert) unit test.
+
+## UPDATE 45 — RLS Step 2 first adopter: DatabaseProjectionStore read methods (IMPLEMENTED)
+
+Migrates the first adopter from the Slice-30 inventory (UPDATE 44) — the lowest-risk path — onto
+`withTenantTransaction()`. **No behavior change today** (RLS inert → GUC unread → same rows); reads
+only; not live-wired; default suite stays Postgres-free.
+
+- `packages/core/src/projection-engine/store.ts`: `DatabaseProjectionStore.get` and
+  `listForSubject` now run their (unchanged) tenant-filtered SELECT inside
+  `withTenantTransaction(this.db, tenantId, …)` — the read carries `app.tenant_id`. Same SQL,
+  params, row→projection mapping, and null/array returns; `db.query`/`queryOne` → `client.query(...)
+  .rows`. **`save`/`delete` (writes), the constructor, schema, and API wiring are untouched**
+  (`InMemoryProjectionStore` remains what the container wires → zero live impact).
+- Unit (`packages/core/tests/projection-store-tenant.test.ts`, +3, mocked DatabaseClient — no PG):
+  proves both methods set `app.tenant_id` first (parameterized) inside a transaction, then issue the
+  byte-identical SELECT, map rows, and return null/array — i.e. behavior-preserving while RLS inert.
+- Harness (`tenant-scope.integration.test.ts`, +2 opt-in real-PG): the migrated `get`/`listForSubject`
+  return the correct tenant rows on a real throwaway `projections` table; and a projection-shaped
+  table enforces RLS isolation under a NON-superuser role (`proj_probe_role` + `SET LOCAL ROLE`,
+  reusing the UPDATE 43 pattern). Both self-skip without `ALARA_TEST_DATABASE_URL`; fixtures dropped
+  in `afterAll`.
+- No production RLS enabled, no policy on app schemas, no writes migrated, no live-wired repo touched.
+
+Next: first **live** adopter — RelationshipRepository read methods (same pattern), then the rest of
+the inventory order (UPDATE 44).
