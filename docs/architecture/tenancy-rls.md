@@ -187,7 +187,7 @@ re-fetch) and are allow-listed (§3) — they need RLS-aware analysis before mig
 
 | Path (file) | Table(s) | R/W | tenant-filtered | txn today | live-wired | risk |
 |---|---|---|---|---|---|---|
-| **DatabaseProjectionStore** `projection-engine/store.ts` | `projections` | get/list **read**; save/delete write | yes | no (1 stmt) | **no** (InMemory wired) | **LOW** (read) |
+| **DatabaseProjectionStore** `projection-engine/store.ts` | `projections` | get/list **read**; save/delete write | yes | reads **✅ UPDATE 45**; writes **✅ UPDATE 51** (first write adopter; sets GUC only — NO policy/WITH CHECK) | **no** (InMemory wired) | **LOW** |
 | RelationshipRepository `relationship-engine/repository.ts` | `relationships`, `edges` | read | yes | no | yes | LOW |
 | KnowledgeEngineRepository `knowledge-engine/repository.ts` | `observations`, `knowledge_entries` | read | yes | **✅ UPDATE 48** (reads) + **✅ UPDATE 49** (`query` aggregate — one transaction) | engine | LOW |
 | WorkforceEngineRepository `workforce-engine/repository.ts` | `workforce_members`, `workforce_availability`, `assignments`, `capacity_snapshots`, `workforce_teams` | read | yes | **✅ UPDATE 48** (reads) + **✅ UPDATE 49** (`getAvailabilityForMembers` aggregate — one transaction) | engine | LOW |
@@ -210,7 +210,11 @@ any policy/`FORCE`/`WITH CHECK` on `objects`. ALL read-side repos are now adopte
 ENABLEMENT on the shared `objects` table remains GATED on the other `objects` readers —
 ObjectGraphRepository and the **by-id-without-tenant idempotency special case** (ObjectGraph/EventStore)
 — being handled together; until then the `objects` GUC is inert** →
-(4) DatabaseProjectionStore writes → (5) JourneyEngineRepository → (6) ObjectGraphRepository
+(4) DatabaseProjectionStore writes **[✅ UPDATE 51 — first WRITE adopter: `save` (INSERT … ON CONFLICT
+DO UPDATE) + `delete`, each inside `withTenantTransaction`. Sets `app.tenant_id` only; NO policy /
+`FORCE` / `WITH CHECK` added. Forward-compatible with a future `WITH CHECK` because the GUC equals the
+written `tenant_id` and the upsert's DO UPDATE never changes `tenant_id`. Not live-wired (InMemory store
+is wired in the API), so zero production risk.]** → (5) JourneyEngineRepository → (6) ObjectGraphRepository
 (needs the by-id-without-tenant special case) → (7) EventStore (the cross-tenant by-id idempotency
 read needs RLS-aware handling).
 

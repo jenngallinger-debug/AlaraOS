@@ -311,6 +311,20 @@ These are **constraints, not technologies**. They are binding on all implementat
    id→null); `consent-subject-query.test.ts` SqlSpyDb updated to observe the txn client. No production
    RLS/policy/writes. **All read-side repos adopted; write paths next.** See `code-concordance.md`
    UPDATE 50._
+   _RLS Step 2 — FIRST WRITE adopter (UPDATE 51 — Slice 37): `DatabaseProjectionStore` writes `save`
+   (INSERT … ON CONFLICT (tenant_id,projection_type,subject_id) DO UPDATE … updated_at=NOW()) and
+   `delete` now run inside `withTenantTransaction` — `save` keys the GUC on `m.tenantId` (= written
+   `tenant_id` $2), `delete` on its `tenantId` arg. Byte-identical SQL (whitespace verbatim)/params/
+   `void` returns; only the call path changed. Chosen first because projections are DISPOSABLE cache
+   (ADR-016), the table is dedicated, and the class is **NOT live-wired** (API uses
+   `InMemoryProjectionStore`) → zero production risk. **No policy/`FORCE`/`WITH CHECK` added**; the
+   migration is forward-compatible with a future WITH CHECK because GUC == written tenant_id and the
+   upsert's DO UPDATE never changes tenant_id. Unit (`projection-store-tenant.test.ts`, +3): one txn,
+   GUC once-and-first, byte-identical INSERT/DELETE + params, void return, generated-id fallback at $1.
+   Harness +1 (opt-in real-PG, write-capable `projections` table with `updated_at` + UNIQUE conflict
+   key): save inserts, second save upserts without duplicating, cross-tenant row coexists, delete
+   removes only the GUC tenant's row. No production RLS/policy. **Write phase begun; Journey/ObjectGraph/
+   EventStore next.** See `code-concordance.md` UPDATE 51._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

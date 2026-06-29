@@ -1625,3 +1625,48 @@ passing against InMemoryStore / the real repo.
 Next: RLS Step 2 **write paths**, starting with DatabaseProjectionStore writes (lowest risk) — per the
 UPDATE 44 order. The shared-`objects` RLS-enablement coordination (ObjectGraph + by-id special case)
 is a prerequisite for enabling RLS on `objects`, tracked separately.
+
+## UPDATE 51 — RLS Step 2: DatabaseProjectionStore writes — FIRST WRITE ADOPTER (IMPLEMENTED)
+
+Opens the RLS-step-2 **write phase** by migrating the two `DatabaseProjectionStore` write methods onto
+`withTenantTransaction`. Chosen first because it is the **lowest-risk write path**: projections are
+DISPOSABLE cache (ADR-016, "deleting the store loses no truth"), the table is dedicated (`projections`,
+migration 004), and the class is **NOT live-wired** — `apps/api/src/shared/container.ts:86` instantiates
+`new InMemoryProjectionStore()`, so no production path exercises these writes. **No functional change** —
+proven by the dedicated unit + opt-in real-PG tests (the class has no engine-suite-against-InMemory
+coverage because the in-memory store is a separate class, so these are the primary correctness proof).
+
+- `packages/core/src/projection-engine/store.ts`:
+  - `save` — now `withTenantTransaction(this.db, m.tenantId, client => client.query(<same INSERT … ON
+    CONFLICT (tenant_id, projection_type, subject_id) DO UPDATE SET … updated_at = NOW()>, <same 15
+    params incl. `projection.id ?? newAlaraId()` at $1>))`. GUC = the row's own `tenant_id` ($2).
+  - `delete` — now `withTenantTransaction(this.db, tenantId, client => client.query(<same DELETE FROM
+    projections WHERE tenant_id=$1 AND projection_type=$2 AND subject_id=$3>, [tenantId, type,
+    subjectId]))`.
+  - `get` / `listForSubject` (reads) unchanged (already adopted UPDATE 45). Constructors, wiring,
+    schema, public APIs, and `void` return values unchanged.
+- **Preserved exactly:** the full INSERT … ON CONFLICT … `updated_at = NOW()` SQL (byte-identical,
+  whitespace verbatim), the DELETE SQL, all params, and the `void` returns. Only the call path changes
+  (`this.db.query(...)` → one tenant-scoped transaction running the same statement). Single-statement
+  autocommit ≡ single-statement transaction; rollback-on-throw is the same net effect.
+- **No RLS / policy / `FORCE` / `WITH CHECK` added** (this slice sets the GUC only). **Forward-compatible
+  with a future `WITH CHECK (tenant_id = current_setting('app.tenant_id'))`** because the GUC equals the
+  written `tenant_id`, and the upsert's DO UPDATE never changes `tenant_id` (it is the conflict key, not
+  in the SET list) — so both the INSERT and the UPDATE branch would satisfy WITH CHECK.
+- Unit (`projection-store-tenant.test.ts`, +3): mocked `DatabaseClient` proving for `save` and `delete`
+  — exactly ONE transaction, GUC set **once and first** (`= m.tenantId` for save), **byte-identical**
+  INSERT/DELETE SQL + exact params, and `void` return; plus a `save` case proving an absent
+  `projection.id` falls back to a generated id at param $1 with all other params unchanged. Default
+  suite, Postgres-free.
+- Harness (`tenant-scope.integration.test.ts`, +1): real-Postgres write proof on a write-capable
+  throwaway `projections` table faithful to migration 004 (**`updated_at` column + `UNIQUE
+  (tenant_id, projection_type, subject_id)`**) — `save` inserts; a second `save` on the same key
+  **upserts without duplicating** (count stays 1, value updated); a different tenant's row with the same
+  (type, subject) coexists; `delete` removes only the GUC tenant's row and the wrong-tenant row
+  survives. Dropped in `afterAll`. Opt-in / self-skipping → default `verify` stays Postgres-free; CI
+  executes the new assertions.
+- Default verify green (core 685 pass/16 skip; API 218 pass; build:all clean).
+
+Next: continue the write phase — JourneyEngineRepository (heaviest writes), then ObjectGraphRepository
+and EventStore (which carry the by-id-without-tenant idempotency special case and the shared-`objects`
+RLS-enablement coordination).

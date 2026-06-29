@@ -15,7 +15,7 @@
 import { DatabaseClient } from '../src/shared/database';
 import { withTenantTransaction, TENANT_GUC } from '../src/shared/tenant-scope';
 import { DatabaseProjectionStore } from '../src/projection-engine/store';
-import { ProjectionType } from '../src/projection-engine/types';
+import { ProjectionType, StoredProjection } from '../src/projection-engine/types';
 import { RelationshipRepository } from '../src/relationship-engine/repository';
 import { OrganizationalBrainRepository } from '../src/organizational-brain/repository';
 import { KnowledgeRepository } from '../src/knowledge-engine/repository';
@@ -148,6 +148,61 @@ describeIf('withTenantTransaction — real Postgres (opt-in via ALARA_TEST_DATAB
     expect(await store.get('tenant-A', 'Timeline' as ProjectionType, 'nope')).toBeNull();
     const list = await store.listForSubject('tenant-A', 'subj-1');
     expect(list.map((p) => p.metadata.tenantId)).toEqual(['tenant-A']);
+  });
+
+  // ── RLS step 2 first WRITE adopter (Slice 37): DatabaseProjectionStore save/delete ──────────
+
+  test('DatabaseProjectionStore.save/delete write/remove only the GUC tenant row on real Postgres', async () => {
+    // Functional proof the MIGRATED writes work end-to-end: the upsert inserts then updates without
+    // duplicating, writes under the correct tenant, and delete removes only the tenant-local row.
+    // Write-capable throwaway `projections` table (faithful to migration 004: UNIQUE conflict key +
+    // updated_at), dropped in afterAll. NOTE: no RLS policy on `projections` here — GUC is inert.
+    await db.transaction(async (client) => {
+      await client.query('DROP TABLE IF EXISTS projections');
+      await client.query(`CREATE TABLE projections (
+        id text, tenant_id text NOT NULL, projection_type text NOT NULL, subject_id text NOT NULL,
+        method_name text, method_version text, canonical_inputs jsonb, source_event_ids text[],
+        confidence text, inference_basis text, ai_involved boolean, fresh_until text,
+        last_built_at text, build_number int, value jsonb, updated_at timestamptz,
+        UNIQUE (tenant_id, projection_type, subject_id))`);
+    });
+
+    const store = new DatabaseProjectionStore(db);
+    const mkProj = (tenantId: string, buildNumber: number, value: Record<string, unknown>): StoredProjection => ({
+      id: `proj-${tenantId}` as AlaraId,
+      metadata: {
+        projectionType: 'Timeline' as ProjectionType, subjectId: 'subj-1', tenantId,
+        canonicalInputs: [], methodName: 'm', methodVersion: '1.0.0', freshUntil: null,
+        sourceEventIds: [], confidence: 'high', inferenceBasis: 'fact', aiInvolved: false,
+        lastBuiltAt: '2026-01-01', buildNumber,
+      },
+      value,
+    });
+    const countFor = async (tenantId: string) =>
+      Number((await db.query<{ n: string }>(
+        'SELECT count(*) AS n FROM projections WHERE tenant_id=$1 AND projection_type=$2 AND subject_id=$3',
+        [tenantId, 'Timeline', 'subj-1'],
+      ))[0].n);
+
+    // save inserts under the correct tenant.
+    await store.save(mkProj('tenant-A', 1, { v: 1 }));
+    expect(await countFor('tenant-A')).toBe(1);
+    expect((await store.get('tenant-A', 'Timeline' as ProjectionType, 'subj-1'))?.value).toEqual({ v: 1 });
+
+    // second save on the same (tenant, type, subject) UPSERTS — updates, does not duplicate.
+    await store.save(mkProj('tenant-A', 2, { v: 2 }));
+    expect(await countFor('tenant-A')).toBe(1);                          // still one row
+    expect((await store.get('tenant-A', 'Timeline' as ProjectionType, 'subj-1'))?.value).toEqual({ v: 2 });
+
+    // a different tenant's row with the same (type, subject) coexists (conflict key includes tenant_id).
+    await store.save(mkProj('tenant-B', 1, { v: 9 }));
+    expect(await countFor('tenant-A')).toBe(1);
+    expect(await countFor('tenant-B')).toBe(1);
+
+    // delete removes ONLY the GUC tenant's row; the other tenant's row survives.
+    await store.delete('tenant-A', 'Timeline' as ProjectionType, 'subj-1');
+    expect(await countFor('tenant-A')).toBe(0);
+    expect(await countFor('tenant-B')).toBe(1);                          // wrong-tenant row survives
   });
 
   test('a projection-like table enforces RLS isolation under a NON-superuser role', async () => {

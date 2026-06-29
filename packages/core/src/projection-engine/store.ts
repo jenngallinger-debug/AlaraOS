@@ -70,10 +70,16 @@ interface ProjectionRow {
 export class DatabaseProjectionStore implements IProjectionStore {
   constructor(private readonly db: DatabaseClient) {}
 
+  // RLS step 2 (first WRITE adopter): writes of the dedicated `projections` table run inside a
+  // tenant-scoped transaction (carries `app.tenant_id` = the row's own tenant). Behavior-preserving
+  // today — RLS is inert (no policy on `projections`); identical SQL/params/return. This adds NO
+  // policy / FORCE / WITH CHECK. It is forward-compatible with a future WITH CHECK because the GUC
+  // equals the written `tenant_id` ($2), and the upsert's DO UPDATE never changes `tenant_id`.
   async save(projection: StoredProjection): Promise<void> {
     const m = projection.metadata;
-    await this.db.query(
-      `INSERT INTO projections
+    await withTenantTransaction(this.db, m.tenantId, async (client) => {
+      await client.query(
+        `INSERT INTO projections
          (id, tenant_id, projection_type, subject_id, method_name, method_version,
           canonical_inputs, source_event_ids, confidence, inference_basis, ai_involved,
           fresh_until, last_built_at, build_number, value)
@@ -91,14 +97,15 @@ export class DatabaseProjectionStore implements IProjectionStore {
          build_number     = EXCLUDED.build_number,
          value            = EXCLUDED.value,
          updated_at       = NOW()`,
-      [
-        projection.id ?? newAlaraId(),
-        m.tenantId, m.projectionType, m.subjectId, m.methodName, m.methodVersion,
-        JSON.stringify(m.canonicalInputs), JSON.stringify(m.sourceEventIds),
-        m.confidence, m.inferenceBasis, m.aiInvolved,
-        m.freshUntil, m.lastBuiltAt, m.buildNumber, JSON.stringify(projection.value),
-      ],
-    );
+        [
+          projection.id ?? newAlaraId(),
+          m.tenantId, m.projectionType, m.subjectId, m.methodName, m.methodVersion,
+          JSON.stringify(m.canonicalInputs), JSON.stringify(m.sourceEventIds),
+          m.confidence, m.inferenceBasis, m.aiInvolved,
+          m.freshUntil, m.lastBuiltAt, m.buildNumber, JSON.stringify(projection.value),
+        ],
+      );
+    });
   }
 
   async get(tenantId: string, type: ProjectionType, subjectId: string): Promise<StoredProjection | null> {
@@ -116,10 +123,14 @@ export class DatabaseProjectionStore implements IProjectionStore {
   }
 
   async delete(tenantId: string, type: ProjectionType, subjectId: string): Promise<void> {
-    await this.db.query(
-      `DELETE FROM projections WHERE tenant_id=$1 AND projection_type=$2 AND subject_id=$3`,
-      [tenantId, type, subjectId],
-    );
+    // RLS step 2 (first WRITE adopter): tenant-scoped transaction; behavior-preserving (RLS inert).
+    // The DELETE predicate already filters `tenant_id`, so the GUC just mirrors it; same SQL/params.
+    await withTenantTransaction(this.db, tenantId, async (client) => {
+      await client.query(
+        `DELETE FROM projections WHERE tenant_id=$1 AND projection_type=$2 AND subject_id=$3`,
+        [tenantId, type, subjectId],
+      );
+    });
   }
 
   async listForSubject(tenantId: string, subjectId: string): Promise<StoredProjection[]> {
