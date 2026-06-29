@@ -203,8 +203,9 @@
       display: flex; align-items: center; justify-content: center;
     }
     .founder__frame svg { width: 88px; height: auto; color: var(--taupe); opacity: 0.55; }
-    .founder__quote { font-size: clamp(1.375rem, 2.4vw, 1.875rem); font-weight: 400; line-height: 1.45; letter-spacing: -0.01em; max-width: 24ch; color: var(--espresso); }
-    .founder__attr { margin-top: 28px; font-family: var(--display); letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.75rem; color: var(--taupe); }
+    .founder__eyebrow { margin-bottom: 18px; }
+    .founder__quote { font-size: clamp(1.25rem, 2.1vw, 1.625rem); font-weight: 400; line-height: 1.42; letter-spacing: -0.01em; max-width: 32ch; color: var(--espresso); }
+    .founder__body { margin-top: 22px; font-size: 1.0625rem; line-height: 1.65; color: var(--taupe-ink); max-width: 52ch; }
 
     /* ---- 5 · And it's real (legitimacy as reward) --------------------- */
     .real { padding-block: var(--section-y); }
@@ -351,10 +352,10 @@
       </div>
     </section>
 
-    <!-- 4 · THE PERSON BEHIND THE DOOR — trust begins. A named human, no stock photo. -->
-    <section class="founder" aria-label="The person behind Alara">
+    <!-- 4 · THE FOUNDER'S EXPERIENCE — anonymous by design. About the experience, never the person. -->
+    <section class="founder" aria-label="Our founder">
       <div class="container founder__grid reveal">
-        <div class="founder__frame" role="img" aria-label="Portrait of Jenn Gallinger (forthcoming)">
+        <div class="founder__frame" role="img" aria-label="Alara">
           <svg viewBox="0 0 100 92" aria-hidden="true">
             <path fill="currentColor" fill-rule="evenodd"
               d="M22,88 V34 L50,8 L78,34 V88 Z
@@ -363,12 +364,18 @@
           </svg>
         </div>
         <div>
+          <p class="eyebrow founder__eyebrow">Our founder</p>
           <p class="founder__quote">
-            &ldquo;When we walk through someone's door, they are letting us into their home at
-            the hardest moment of their lives. That is a responsibility I do not take lightly,
-            and neither does anyone on this team.&rdquo;
+            Alara was founded by a healthcare executive, clinician, and entrepreneur who has
+            spent more than two decades building and scaling healthcare systems across the country.
           </p>
-          <p class="founder__attr">Jenn Gallinger &middot; Director of Nursing &amp; Founder</p>
+          <p class="founder__body">
+            She has worked alongside providers, health plans, regulators, and policymakers;
+            helped shape programs serving vulnerable populations; built healthcare networks at
+            scale; and led operations that have reached more than one million patients. After
+            two decades improving healthcare at scale, she saw the center of care moving from
+            institutions to the home, and founded Alara to build for that future.
+          </p>
         </div>
       </div>
     </section>

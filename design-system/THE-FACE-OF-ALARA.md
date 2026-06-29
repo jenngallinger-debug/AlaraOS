@@ -205,22 +205,25 @@ it creates, the Moment it serves, and the constitutional commitment it serves.*
 │   Commitment:       Accountability + Integrity + Human Primacy together.    │
 └─────────────────────────────────────────────────────────────────────────┘
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ 4 · THE PERSON BEHIND THE DOOR  (named leadership — trust begins)          │
-│   arch-framed greige panel (the mark — never a stock portrait)             │
-│   beside the founder's own words:                                          │
-│     "When we walk through someone's door, they are letting us into their    │
-│      home at the hardest moment of their lives. That is a responsibility    │
-│      I do not take lightly, and neither does anyone on this team."          │
-│     — Jenn Gallinger, Director of Nursing & Founder                         │
+│ 4 · OUR FOUNDER  (the experience behind Alara — anonymous by design)       │
+│   arch-framed greige panel (the Alara mark — never a portrait, never a name)│
+│   beside the founder's EXPERIENCE, not her identity:                        │
+│     "Alara was founded by a healthcare executive, clinician, and            │
+│      entrepreneur who has spent more than two decades building and          │
+│      scaling healthcare systems across the country... led operations        │
+│      that have reached more than one million patients... she saw the        │
+│      center of care moving from institutions to the home, and founded       │
+│      Alara to build for that future."                                       │
 │                                                                            │
-│   Burden removed:   the fear of an anonymous institution; here is a name    │
-│                     and a face of responsibility you can hold to it.        │
-│   Experience:       trust begins — accountability has a person.            │
-│   Moment served:    6 · promises are kept · 3 · someone always remembers   │
-│   Commitment:       Human Sovereignty + Accountability — a person answers.  │
-│   (No fabricated portrait: the real photograph drops into the arch frame.   │
-│    A faked human would violate Integrity and the brand. So the frame holds  │
-│    the house mark until the real portrait exists.)                          │
+│   Burden removed:   doubt that this is run by someone who understands the   │
+│                     whole system — answered by scale of experience, not a   │
+│                     personality.                                            │
+│   Experience:       trust begins — the depth of experience is the proof.    │
+│   Moment served:    6 · promises are kept · 7 · one step ahead             │
+│   Commitment:       Accountability + Integrity — credible, never a cult of  │
+│                     personality.                                            │
+│   (The founder is ANONYMOUS by brand rule. No name, no portrait, ever. The  │
+│    section is about her experience and the founding insight, not about her.)│
 └─────────────────────────────────────────────────────────────────────────┘
 ┌─────────────────────────────────────────────────────────────────────────┐
 │ 5 · AND IT'S REAL  (legitimacy as reward — quiet, low, never a badge wall) │
@@ -302,11 +305,12 @@ no columns. *Burden removed:* the cognitive load of a feature grid; and the emot
 falseness of decorating grief with iconography. The reputation is stated as memory, the
 way it is actually earned.
 
-**The founder is rendered through words and an arch frame, not a stock photo.** Fabricating
-a portrait would violate Integrity and the brand's ban on imagery inconsistent with Alara.
-The real photograph drops into the arch frame when it exists. *Burden removed:* the
-suspicion that comes from generic "caregiver hugging patient" stock — its absence is a
-trust signal.
+**The founder is anonymous by brand rule — rendered through experience, never a name or
+a face.** No portrait, no name, ever. The arch frame holds the Alara mark, and the words
+describe her experience (two decades building and scaling healthcare systems, operations
+reaching more than a million patients, the insight that care is moving into the home) and
+the founding intent — not her identity. *Burden removed:* doubt that a serious operator
+stands behind this, answered by the depth of experience rather than a cult of personality.
 
 **Legitimacy is low and quiet, and it is the reward for scrolling.** A single paragraph
 and one hairline rule of typographic marks — never shiny badges. *Burden removed:* the
