@@ -196,7 +196,7 @@ re-fetch) and are allow-listed (§3) — they need RLS-aware analysis before mig
 | IdentityResolutionRepository `identity-resolution/repository.ts` | (delegates to ObjectGraph) | read | yes | no | yes | LOW-MED (no own queries) |
 | JourneyEngineRepository `journey-engine/repository.ts` | `journey_*` | **mixed** (5 INSERT/6 UPDATE writes; 7 reads) | yes | **✅ FULLY ADOPTED** — writes ✅ UPDATE 52, reads ✅ UPDATE 53 (all 18 methods per-method txn; sets GUC only — NO policy/WITH CHECK) | engine (not API-wired) | MED-HIGH (heaviest writes) |
 | ObjectGraphRepository `object-graph/repository.ts` | `objects`, `external_references` | **mixed** | mostly (1 by-id read allow-listed) | **reads ✅ UPDATE 54** (getById/getExternalReferences/findByExternalReference, per-method txn, GUC only); **writes DEFERRED** (handler-txn GUC + by-id readback, coordinated w/ EventStore) | yes (LIVE-WIRED in API) | HIGH (central canonical store) |
-| EventStore `events/store.ts` | `events` | **mixed** (append + loadStream/loadAll) | mostly (1 by-id read allow-listed) | **yes** (advisory lock) | yes | HIGH (core write path) |
+| EventStore `events/store.ts` | `events` | **mixed** (append + loadStream/loadAll) | mostly (1 by-id read allow-listed) | **reads + standalone-append ✅ UPDATE 55** (loadStream/loadAll/countInStream + the no-client append path; GUC only); **client-provided append DEFERRED** (caller owns the txn) | yes (LIVE-WIRED) | HIGH (core write path) |
 
 **Recommended migration order (safest → riskiest):** (1) DatabaseProjectionStore reads
 **[✅ UPDATE 45]** → (2) RelationshipRepository reads (first LIVE adopter) **[✅ UPDATE 46 — the 7
@@ -236,7 +236,17 @@ as RLS is inert. ⚠ `findByExternalReference`'s JOIN does not filter `er.tenant
 Slice 40b: `createWithClient` by-id readback `SELECT * FROM objects WHERE id=$1` + `create`/`update`/
 `addExternalReference` need the GUC set on the **`ObjectCommandHandler` transaction**, coordinated with
 EventStore (shared txn) — this is the prerequisite for ENABLING RLS on `objects`/`events`.]** →
-(7) EventStore (the cross-tenant by-id idempotency read needs RLS-aware handling).
+(7) EventStore (the cross-tenant by-id idempotency read needs RLS-aware handling) **[✅ UPDATE 55 —
+READS + STANDALONE APPEND: `loadStream`, `loadAll` (both branches), `countInStream` wrapped in
+per-method `withTenantTransaction`; the standalone `append` path (no caller `client`) now runs inside
+`withTenantTransaction(this.db, opts.tenantId, insert)` — covering all standalone append callers
+transparently. The CLIENT-PROVIDED `append({client})` path is UNCHANGED (no txn, no GUC — the caller
+owns it). Byte-identical SQL/params; advisory-lock/idempotency/seq/INSERT logic preserved. GUC only —
+NO policy/WITH CHECK. ⚠ by-id reads still un-tenant-scoped (idempotency `SELECT * FROM events WHERE
+id=$1`; `loadAll` cursor `pivot.id=$2`) — behavior-preserving now (idempotency is same-tenant in
+practice; pivot is a scalar bound), correct under RLS once the GUC is set on the owning txn. DEFERRED →
+the client-provided write path (ObjectCommandHandler + workflow-engine + task-engine + ObjectGraph
+writes), which together gate ENABLING RLS on `objects`/`events`.]**
 
 ### Decision — recommended FIRST RLS Step 2 target — ✅ IMPLEMENTED (UPDATE 45)
 

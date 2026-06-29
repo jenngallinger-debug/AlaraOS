@@ -13,6 +13,7 @@
 
 import { PoolClient } from 'pg';
 import { DatabaseClient } from '../shared/database';
+import { withTenantTransaction } from '../shared/tenant-scope';
 import { newEventId } from '../shared/ids';
 import { AlaraId } from '../shared/types';
 import { DomainEvent, EventType } from './types';
@@ -125,11 +126,16 @@ export class EventStore {
       return rowToEvent<TPayload>(row.rows[0]);
     };
 
+    // RLS step 2: the STANDALONE append path (no caller-provided client) now runs inside a
+    // tenant-scoped transaction so it carries `app.tenant_id`. Behavior-preserving today — RLS is
+    // inert (no policy on `events`); same advisory-lock/idempotency/seq/INSERT logic on one client.
+    // The client-provided path is UNCHANGED: it runs on the caller's transaction, and setting the
+    // GUC there is the caller's responsibility (handler/workflow/task) — a later coordinated slice.
     if (opts.client) {
       return insert(opts.client);
     }
 
-    return this.db.transaction(insert);
+    return withTenantTransaction(this.db, opts.tenantId, insert);
   }
 
   /**
@@ -141,17 +147,19 @@ export class EventStore {
     streamId: AlaraId,
     fromSeq = 1,
   ): Promise<DomainEvent[]> {
-    const rows = await this.db.query<EventRow>(
-      `SELECT *
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<EventRow>(
+        `SELECT *
          FROM events
         WHERE stream_id = $1
           AND tenant_id = $2
           AND seq >= $3
         ORDER BY seq ASC`,
-      [streamId, tenantId, fromSeq],
-    );
+        [streamId, tenantId, fromSeq],
+      );
 
-    return rows.map((r) => rowToEvent(r));
+      return r.rows.map((row) => rowToEvent(row));
+    });
   }
 
   /**
@@ -162,36 +170,41 @@ export class EventStore {
     tenantId: string,
     afterEventId?: string,
   ): Promise<DomainEvent[]> {
-    if (afterEventId) {
-      const rows = await this.db.query<EventRow>(
-        `SELECT e.*
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      if (afterEventId) {
+        const r = await client.query<EventRow>(
+          `SELECT e.*
            FROM events e
            JOIN events pivot ON pivot.id = $2
           WHERE e.tenant_id = $1
             AND e.occurred_at >= pivot.occurred_at
             AND e.id != $2
           ORDER BY e.occurred_at ASC, e.seq ASC`,
-        [tenantId, afterEventId],
-      );
-      return rows.map(rowToEvent);
-    }
+          [tenantId, afterEventId],
+        );
+        return r.rows.map(rowToEvent);
+      }
 
-    const rows = await this.db.query<EventRow>(
-      `SELECT * FROM events WHERE tenant_id = $1 ORDER BY occurred_at ASC, seq ASC`,
-      [tenantId],
-    );
-    return rows.map(rowToEvent);
+      const r = await client.query<EventRow>(
+        `SELECT * FROM events WHERE tenant_id = $1 ORDER BY occurred_at ASC, seq ASC`,
+        [tenantId],
+      );
+      return r.rows.map(rowToEvent);
+    });
   }
 
   /**
    * Count events in a stream (for diagnostics / tests).
    */
   async countInStream(tenantId: string, streamId: AlaraId): Promise<number> {
-    const result = await this.db.queryOne<{ cnt: string }>(
-      `SELECT COUNT(*) AS cnt FROM events WHERE stream_id = $1 AND tenant_id = $2`,
-      [streamId, tenantId],
-    );
-    return parseInt(result?.cnt ?? '0', 10);
+    return withTenantTransaction(this.db, tenantId, async (client) => {
+      const r = await client.query<{ cnt: string }>(
+        `SELECT COUNT(*) AS cnt FROM events WHERE stream_id = $1 AND tenant_id = $2`,
+        [streamId, tenantId],
+      );
+      const result = r.rows[0] ?? null;
+      return parseInt(result?.cnt ?? '0', 10);
+    });
   }
 }
 

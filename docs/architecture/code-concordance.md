@@ -1806,3 +1806,49 @@ internal `getById`) and the wider API/engine suites still passing.
 Next: Slice 40b — ObjectGraph WRITES coordinated with EventStore (handler-transaction GUC + by-id
 readback), which together gate enabling RLS on the shared `objects`/`events` tables. Audit EventStore
 first.
+
+## UPDATE 55 — RLS Step 2: EventStore reads + standalone append (IMPLEMENTED, split — Slice 40b-i)
+
+Tenant-scopes the **EventStore reads** and the **standalone `append`** path of the central append-only
+`events` log (migration 001). EventStore is LIVE-WIRED (`container.ts:53`) and `append` is THE write
+primitive used by ObjectCommandHandler and the projection/workflow/task/workforce/org-brain engines, so
+the audit split it: reads + the self-owned append path now (low-risk, GUC-inert); the client-provided
+(caller-owned-transaction) path deferred to the coordinated write slice. **No functional change** —
+proven by the existing `event-store.test.ts` (append/loadStream vs InMemoryStore) and the wider suites
+still passing.
+
+- `packages/core/src/events/store.ts`:
+  - Reads — `loadStream`, `loadAll` (BOTH branches, incl. the cursor `pivot.id=$2` JOIN), `countInStream`
+    now each `withTenantTransaction(this.db, tenantId, client => …)` (`this.db.query`/`queryOne` →
+    `(await client.query()).rows`).
+  - `append` — the **standalone** path (no `opts.client`) now `withTenantTransaction(this.db,
+    opts.tenantId, insert)` instead of `this.db.transaction(insert)`; this sets the GUC for all
+    standalone callers transparently. The **client-provided** path `if (opts.client) return
+    insert(opts.client)` is **UNCHANGED** — no new transaction, no GUC (the caller owns both).
+  - The 4-statement `insert` (advisory lock → idempotency `SELECT * FROM events WHERE id=$1` → seq
+    `MAX(seq)+1` → `INSERT … RETURNING *`) is byte-identical; only the standalone dispatch wrapper
+    changed.
+- **Preserved exactly:** SQL text/params, advisory-lock/idempotency/seq/INSERT behavior, row mapping,
+  return values, signatures, and the dual-mode contract. GUC only — NO policy/`FORCE`/`WITH CHECK`.
+  ⚠ The two by-id reads stay un-tenant-scoped (idempotency `WHERE id=$1`; `loadAll` cursor pivot) —
+  behavior-preserving now (idempotency is same-tenant in practice; pivot is a scalar bound that cannot
+  leak rows), and they resolve correctly under RLS once the GUC is set on their owning transaction.
+- **Deferred (the client-provided write path):** ObjectCommandHandler, workflow-engine, and task-engine
+  all pass a `client` to `append` (they own the transaction) and must set the GUC there; plus ObjectGraph
+  writes. That broad, multi-engine coordination is the prerequisite for ENABLING RLS on `objects`/`events`
+  and is a separate decomposed effort.
+- Unit (`event-store-tenant.test.ts`, new, 8 tests): mocked SQL-routing `DatabaseClient` proving the 3
+  reads (one txn, GUC once-and-first, byte-identical SQL incl. the pivot JOIN + params, mapping); the
+  **standalone** append (one txn, GUC first, all four statements on one client, byte-identical SQL/params,
+  + idempotency short-circuit before seq/INSERT); and the **client-provided** append (txnCount===0, NO
+  `set_config`, four statements on the caller's client) — locking in the dual-mode contract. Postgres-free.
+- Harness (`tenant-scope.integration.test.ts`, +1): real-PG on a migration-001-faithful `events` fixture
+  (`id TEXT PK`, `payload JSONB`, `UNIQUE (stream_id, seq)`, `occurred_at` default) — standalone append
+  writes under the GUC tenant, seq increments per stream (1,2,3), idempotent on a deterministic id
+  (count stays 3), and `loadStream`/`loadAll`/`countInStream` are tenant-local with cross-tenant
+  exclusion. Self-skipping.
+- Default verify green (core 724 pass/19 skip; API 218 pass; build:all clean).
+
+Next: the coordinated client-provided write path (40b-ii) — ObjectCommandHandler + workflow-engine +
+task-engine GUC-on-transaction + ObjectGraph writes — then the RLS-enablement slice (policies + FORCE +
+WITH CHECK + by-id special-case handling) on `objects`/`events`.

@@ -369,6 +369,22 @@ These are **constraints, not technologies**. They are binding on all implementat
    migration-001-faithful objects[JSONB+created/updated] + external_references PK): same-tenant rows,
    wrong-tenant empty/null, JOIN returns only caller-tenant object. **ObjectGraph reads done; writes
    (40b) + EventStore next.** See `code-concordance.md` UPDATE 54._
+   _RLS Step 2 — EventStore reads + standalone append (UPDATE 55 — Slice 40b-i): `loadStream`/`loadAll`
+   (both branches)/`countInStream` now run inside per-method `withTenantTransaction`; the STANDALONE
+   `append` path (no `opts.client`) now `withTenantTransaction(this.db, opts.tenantId, insert)` (was
+   `this.db.transaction`) — covering all standalone append callers transparently. The CLIENT-PROVIDED
+   `append({client})` path is UNCHANGED (no txn, no GUC — caller owns it). Byte-identical SQL/params;
+   advisory-lock/idempotency/seq/INSERT preserved. GUC only — NO policy/WITH CHECK. ⚠ by-id reads still
+   un-tenant-scoped (idempotency `WHERE id=$1`; loadAll cursor `pivot.id=$2`) — behavior-preserving now,
+   correct under RLS once the owning txn sets the GUC. DEFERRED: the client-provided write path
+   (ObjectCommandHandler + workflow-engine + task-engine + ObjectGraph writes) = prerequisite for
+   enabling RLS on objects/events. Unit (`event-store-tenant.test.ts`, 8): reads (one txn, GUC
+   once-and-first, byte-identical SQL incl. pivot JOIN); standalone append (one txn, GUC first, 4
+   statements on one client, idempotency short-circuit); client-provided append (txnCount 0, no
+   set_config) — dual-mode contract locked. Harness +1 (opt-in real-PG, migration-001-faithful events:
+   id TEXT PK, payload JSONB, UNIQUE(stream_id,seq)): append under GUC tenant, seq 1/2/3, idempotent by
+   id, tenant-local reads + cross-tenant exclusion. **EventStore reads/standalone-append done; the
+   coordinated client-owned write path + RLS-enablement next.** See `code-concordance.md` UPDATE 55._
    _HTTP security headers + CORS (Hardening P2, apps/api): `shared/http-security.ts`. A
    dependency-free `onSend` hook (no Helmet) sets a standard header set on every response
    (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`,

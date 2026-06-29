@@ -22,6 +22,8 @@ import { KnowledgeRepository } from '../src/knowledge-engine/repository';
 import { WorkforceRepository } from '../src/workforce-engine/repository';
 import { ConsentRepository } from '../src/consent-store/repository';
 import { ObjectGraphRepository } from '../src/object-graph/repository';
+import { EventStore } from '../src/events/store';
+import { EventType } from '../src/events/types';
 import { JourneyRepository } from '../src/journey-engine/repository';
 import { Journey, JourneyEvent, JourneyProjection, JourneyReference } from '../src/journey-engine/types';
 import { AlaraId } from '../src/shared/types';
@@ -68,6 +70,8 @@ describeIf('withTenantTransaction — real Postgres (opt-in via ALARA_TEST_DATAB
       // RLS step 2 — ConsentRepository / ObjectGraphRepository fixtures (central `objects` table)
       await db.query('DROP TABLE IF EXISTS external_references');
       await db.query('DROP TABLE IF EXISTS objects');
+      // RLS step 2 — EventStore fixture (central `events` table, throwaway)
+      await db.query('DROP TABLE IF EXISTS events');
       // RLS step 2 — JourneyRepository write fixtures (journey_* tables, throwaway)
       await db.query('DROP TABLE IF EXISTS journeys');
       await db.query('DROP TABLE IF EXISTS journey_references');
@@ -568,6 +572,52 @@ describeIf('withTenantTransaction — real Postgres (opt-in via ALARA_TEST_DATAB
     expect((await repo.findByExternalReference('tenant-B', 'Automynd', 'patient_id', 'AM-1')).map((o) => o.id))
       .toEqual(['o-b']);                                                            // cannot cross tenants
     expect(await repo.findByExternalReference('tenant-A', 'Automynd', 'patient_id', 'none')).toEqual([]);
+  });
+
+  // ── RLS step 2 — EventStore reads + standalone append (Slice 40b-i; central `events` table) ──
+
+  test('EventStore reads are tenant-local and standalone append writes under the GUC tenant', async () => {
+    // Functional proof on real Postgres: tenant-scoped reads + the standalone append path (advisory
+    // lock / idempotency / seq / INSERT) writing under the GUC tenant, idempotent on id, seq
+    // incrementing. Fixture faithful to migration 001: id TEXT PK, payload JSONB, UNIQUE(stream_id,seq);
+    // occurred_at defaults so the INSERT (which omits it) works. Dropped in afterAll. NOTE: the
+    // client-provided append path + its owning transactions are untouched here; no RLS policy on
+    // `events` (GUC inert).
+    await db.transaction(async (client) => {
+      await client.query('DROP TABLE IF EXISTS events');
+      await client.query(`CREATE TABLE events (
+        id text PRIMARY KEY, tenant_id text NOT NULL, stream_id text NOT NULL, seq int NOT NULL,
+        type text, payload jsonb, actor text, occurred_at timestamptz NOT NULL DEFAULT now(),
+        causation_id text, correlation_id text,
+        CONSTRAINT events_stream_seq_unique UNIQUE (stream_id, seq))`);
+    });
+
+    const store = new EventStore(db);
+
+    // standalone append: two events on tenant-A stream 'sa' (seq 1, 2), one on tenant-B stream 'sb'.
+    await store.append({ tenantId: 'tenant-A', streamId: 'sa' as AlaraId, type: 'ObjectCreated' as EventType, payload: { x: 1 }, actor: 'system' });
+    await store.append({ tenantId: 'tenant-A', streamId: 'sa' as AlaraId, type: 'ObjectUpdated' as EventType, payload: { x: 2 }, actor: 'system' });
+    await store.append({ tenantId: 'tenant-B', streamId: 'sb' as AlaraId, type: 'ObjectCreated' as EventType, payload: {}, actor: 'system' });
+
+    // idempotency: appending the same deterministic eventId twice yields one row (returns the stored event).
+    const d1 = await store.append({ tenantId: 'tenant-A', streamId: 'sa' as AlaraId, type: 'ObjectUpdated' as EventType, payload: {}, actor: 'system', eventId: 'dup-1' });
+    const d2 = await store.append({ tenantId: 'tenant-A', streamId: 'sa' as AlaraId, type: 'ObjectUpdated' as EventType, payload: {}, actor: 'system', eventId: 'dup-1' });
+    expect(d1.id).toBe('dup-1');
+    expect(d2.id).toBe('dup-1');
+
+    // seq increments per stream (1,2,3) and reads are tenant-local.
+    expect((await store.loadStream('tenant-A', 'sa' as AlaraId)).map((e) => e.seq)).toEqual([1, 2, 3]);
+    expect(await store.countInStream('tenant-A', 'sa' as AlaraId)).toBe(3);   // not 4 → idempotent
+
+    // cross-tenant exclusion: a tenant cannot read another tenant's stream.
+    expect(await store.loadStream('tenant-B', 'sa' as AlaraId)).toEqual([]);  // sa belongs to tenant-A
+    expect(await store.loadStream('tenant-A', 'sb' as AlaraId)).toEqual([]);  // sb belongs to tenant-B
+    expect(await store.countInStream('tenant-B', 'sa' as AlaraId)).toBe(0);
+
+    // loadAll is tenant-scoped (no cursor + cursor branch both return only the caller's tenant rows).
+    expect((await store.loadAll('tenant-A')).every((e) => e.tenantId === 'tenant-A')).toBe(true);
+    expect((await store.loadAll('tenant-A')).length).toBe(3);
+    expect((await store.loadAll('tenant-B')).map((e) => e.streamId)).toEqual(['sb']);
   });
 
   // ── RLS step 2 write phase — JourneyRepository writes (Slice 38) ────────────────────────────
