@@ -1,5 +1,9 @@
-# The Alara Website — Outline by user, hook-first
+# The Alara Website — Outline by user, hook-first (v2, pressure-tested)
 
+> v2, 2026-06-30: pressure-tested against gold-standard UX/conversion (Schwartz's stages of
+> awareness, StoryBrand, Krug/NN-g usability, conversion-centered design, YMYL trust). The fixes
+> are folded in below and turned into strengths — see the cross-cutting design laws in §7.
+>
 > Status: DRAFT for owner sign-off, 2026-06-30. Reworked: the website's job is to **pull in
 > people who are already searching for us, hook them immediately, prove why we're better, and
 > route each known user to their path to convert.** It is the front door and the router, not the
@@ -32,6 +36,16 @@
   the "why better."
 - **Two audiences, two front doors:** people who need care (for themselves/family), and
   professionals sending us a patient. Both are hooked in seconds, each in their own language.
+- **One engine, many front doors.** Most high-intent visitors search a *specific* term ("white
+  card home health," "does OWCP cover home care") and land on a **pillar**, not the hero. So every
+  pillar is a **self-sufficient mini-funnel** (hook → reveal-lite → educate → convert). We win
+  whether they enter at Home or a pillar. *(Triumph: the homepage is no longer a single point of
+  failure.)*
+- **The decided are never trapped.** The hero hooks, but a quiet, always-present wayfinder lets a
+  sure visitor fly straight to their lane while the unsure are seduced by the reveal. *(Triumph:
+  speed for the sure, story for the unsure.)*
+- **Professionals peel off in one move.** A persistent *Refer a patient* door lives in the nav on
+  every page, so a physician self-selects instantly without sitting through a patient reveal.
 
 ## 2. The hero (the hook — no path decision)
 
@@ -43,6 +57,33 @@ The hero's only job is to make them want us. It carries:
 
 That's it. **No path chooser in the hero**, no "which of these is you" yet. We hook first; routing
 comes after the AlaraOS reveal.
+
+Three rules the hero obeys (each a pressure-test fix made a strength):
+- **The reader is the hero; AlaraOS is their superpower.** AlaraOS is never the protagonist — it
+  is the guide's edge, in service of the person. Every line about it earns its place with a
+  *"which means, for you…"* (StoryBrand). *(Triumph: the visitor stars; the tech makes them win.)*
+- **Spoken to whoever is reading** — the patient *or* the daughter/spouse searching on their
+  behalf. The hook lands in both voices.
+- **Two quiet doors sit in the hero/nav from the first second:** *See what you qualify for* (the
+  decided patient's shortcut) and *Refer a patient* (the professional's fast lane). Neither
+  competes with the hook; both rescue the hurried.
+
+## 2A. The trust layer — the loudest proof, not an afterthought
+
+Healthcare is a your-money-your-life decision; skepticism is the default. So proof and truth are a
+**layer that runs from the hero to the handoff**, and we turn the canon's reputation — *"They had
+us"* — into something actually on the page. *(This was the biggest gap in v1; it becomes our edge.)*
+
+- **Real proof, early:** nurse-owned and DON-led; the only White Card agency in Las Vegas with
+  medical social work as a standard service; locally owned, all of Clark County. A patient/family
+  voice wherever compliance allows (anonymized outcomes if names cannot be used).
+- **Truth-telling as trust (Moment 4, made public).** We preempt the three fears head-on, as
+  confidence rather than fine print: *"Is it really no cost?"* (yes, and why), *"Will this affect
+  my claim?"* (no, and the boundary we keep), *"Are you legitimate?"* (credentials; what we do and
+  explicitly do **not** do). *(Triumph: owning the objection is the differentiator — the most
+  honest agency in the room wins the room.)*
+- **The promise of care (Moments 5–8) is shown as outcomes, never as claims**, and always paired
+  with proof, so desire stays believable.
 
 ## 3. Patient paths (they need care for themselves or family)
 
@@ -138,22 +179,44 @@ them**, and **exactly how to refer and how it will feel.**
   claim-boundary awareness · how to refer) → **Refer**.
 - **How it feels:** "I don't have to think about it — I send them to Alara and it's handled."
 
+## 4A. The two readers we almost missed (no dead ends)
+
+- **The caregiver is a first-class reader, not a footnote.** The decision-maker is often the adult
+  child or spouse, not the patient. The path chooser is **dual-voiced** — *"for yourself, or
+  someone you love"* — so the daughter sees herself in the first second. Every patient path's copy
+  carries the caregiver's voice alongside the patient's.
+- **Existing patients are never funneled into an acquisition flow** (Catalog row 10: a change in
+  condition). A quiet, persistent line — *"Already with Alara? Call your Care Guide."* — sits in the
+  footer of every page. *(Triumph: the no-dead-end rule becomes visible proof of continuity — a
+  prospect watching sees that the relationship doesn't end at admission.)*
+
 ## 5. How the homepage presents this (the order matters)
 
-1. **Hero — the hook.** Who we are, what we do, why we're better, in one line. No decisions. (§2)
+1. **Hero — the hook.** Who we are, what we do, why we're better, in one line. No decisions — but the
+   two quiet doors (qualify / refer) are present from the first second for the hurried. (§2)
 2. **The AlaraOS reveal — lock them in.** Reveal AlaraOS like Apple reveals its chip: the moat
    (knows before · everyone in concert · each person already informed), as light pre-education on
-   why we're unlike anyone else. This is the "fuck yeah" beat that closes them. → links deeper to
-   *The AlaraOS difference*.
-3. **Now find your lane.** Only here does the **path chooser** appear: the patient paths (A–D) and a
-   distinct **"Refer a patient"** door (E–H). Push them into one lane; minimal decisions.
-4. **In the lane** (on the pillar / path page, or a homepage preview): full-but-simplified education
+   why we're unlike anyone else. **Kept to one screen, not a long scroll** — it earns the route,
+   never blocks it; on mobile it stays compact so the lane chooser is reachable fast. → links
+   deeper to *The AlaraOS difference*.
+3. **A thin trust strip** — credentials + one real proof point — right as desire peaks, just before
+   we ask them to choose. (The §2A trust layer, surfaced at the decision point.)
+4. **Now find your lane.** Only here does the **path chooser** appear: the patient paths (A–D),
+   **dual-voiced for caregivers**, plus a distinct **"Refer a patient"** door (E–H). One lane,
+   minimal decisions.
+5. **In the lane** (on the pillar / path page, or a homepage preview): full-but-simplified education
    (the tea leaves and breadcrumbs) → the best clinical care → the founder's experience to solidify.
-5. **Convert** — per stakeholder: Begin / qualify (patients), Refer (professionals), and the family
-   never forgotten. Those unsure of their lane go through the **Navigator**.
+6. **Convert** — **one dominant CTA per lane** (Begin / qualify for patients, Refer for
+   professionals); secondaries stay quiet, and **"what happens next" (Moment 3) sits beside every
+   ask** to kill last-second anxiety. Those unsure of their lane go through the **Navigator**; the
+   footer always carries *"Already with Alara? Call your Care Guide."*
 
-So the spine is: **hook → reveal AlaraOS → choose lane → educate (or go straight to convert) →
-convert.** The hero hooks; AlaraOS locks; the lane carries them home.
+Every step is **instrumented** (`/api/event`): path-chooser clicks, reveal scroll-depth, CTA rates —
+so the contrarian *reveal-before-route* bet is validated and tuned, not assumed. *(Triumph: the
+Operating Cycle's "Learn," made real on the site.)*
+
+So the spine is: **hook → reveal AlaraOS → trust → choose lane → educate (or go straight to
+convert) → convert.** The hero hooks; AlaraOS locks; proof reassures; the lane carries them home.
 
 ## 6. Page inventory, mapped to the paths
 
@@ -173,10 +236,36 @@ convert.** The hero hooks; AlaraOS locks; the lane carries them home.
 | **Begin** | conversion for A–D | built |
 | **Refer** | conversion for E–H | to build (begin.html?who=referrer exists) |
 
-## 7. What I recommend we lock
+**Site-wide affordances (every page):** a persistent **"Refer a patient"** door in the nav
+(professional fast lane); a footer **"Already with Alara? Call your Care Guide"** (existing
+patients, no dead end); the **"See what you qualify for"** bridge. **Every pillar is built as a
+self-sufficient funnel** (its own hook → reveal-lite → proof → convert), because it is also the
+primary SEO entry for its reality.
 
-1. The homepage spine: **hook (hero) → reveal AlaraOS → choose lane → educate → convert** (§5).
+## 7. Cross-cutting design laws (the pressure-test, turned into triumphs)
+
+Each gap we found becomes a law the whole site obeys:
+
+1. **One engine, many front doors.** Every pillar is a complete funnel; the homepage is not the only
+   entrance.
+2. **The reader is the hero; AlaraOS is their superpower.** Never the protagonist; always "which
+   means, for you…"
+3. **Proof and truth run end to end.** Credentials early, objections owned out loud (Moment 4),
+   "They had us" expressed on the page — not bolted on at the close.
+4. **Speed for the sure, story for the unsure.** Persistent escape hatches; the reveal is one screen.
+5. **One dominant CTA per page.** Secondaries stay quiet; "what happens next" sits beside every ask.
+6. **Mobile-first reachability.** The lane is never buried; the phone is always one tap.
+7. **Two doors from second one.** Patients and professionals both self-select instantly.
+8. **No dead ends.** Existing patients and caregivers always have a path.
+9. **Simplify without lying.** Plain language, but sourced and drift-guarded (YMYL discipline; the
+   interface cannot lie).
+10. **Design that learns.** Instrumented to validate the contrarian bet, not assume it.
+
+## 8. What I recommend we lock
+
+1. The homepage spine: **hook (hero) → reveal AlaraOS → trust → choose lane → educate → convert** (§5).
 2. The patient paths A–D and the professional paths E–H as the site's organizing journeys (§3, §4).
-3. The conversion split: Begin (patients) vs Refer (professionals), Navigator as the bridge.
+3. The trust layer (§2A) and the cross-cutting laws (§7) as binding on every page.
+4. The conversion split: Begin (patients) vs Refer (professionals), Navigator as the bridge.
 
 Once locked, every page and line is written to move one known user along their path.
