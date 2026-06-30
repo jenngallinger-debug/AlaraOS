@@ -65,6 +65,43 @@
     .runs__links a .arrow { color: var(--taupe); transition: transform var(--dur) var(--ease); }
     .runs__links a:hover .arrow { transform: translateX(3px); color: var(--espresso); }
 
+    /* ── AlaraOS: the centerpiece. On espresso for contrast and life. A
+         before/after that shows the machine noticing first, then what it catches. ── */
+    .os { background: var(--espresso); color: var(--on-dark); }
+    .os .s-lede h2 { color: var(--on-dark); }
+    .os__sub { margin-top: 24px; font-size: 1.1875rem; line-height: 1.62; color: var(--on-dark-soft); max-width: 54ch; }
+    .os__contrast { margin-top: clamp(40px, 5vw, 68px); display: grid; grid-template-columns: 1fr 1fr; gap: clamp(18px, 2.4vw, 28px); }
+    .os__card { border: 1px solid rgba(251,251,251,0.18); border-radius: 6px; padding: clamp(24px, 3vw, 34px); }
+    .os__card--them { opacity: .66; }
+    .os__tag { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--on-dark-soft); }
+    .os__quote { margin-top: 16px; font-size: 1.3125rem; line-height: 1.38; color: var(--on-dark); letter-spacing: -0.012em; }
+    .os__when { margin-top: 16px; font-size: 0.875rem; color: var(--on-dark-soft); }
+    .os__catch { margin-top: clamp(44px, 5vw, 68px); border-top: 1px solid rgba(251,251,251,0.2); }
+    .os__catch-lead { margin-bottom: 8px; font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--on-dark-soft); padding-top: 24px; }
+    .os__catch-row { display: grid; grid-template-columns: 2.2rem 1fr; gap: 16px; padding-block: 18px; border-bottom: 1px solid rgba(251,251,251,0.14); align-items: baseline; }
+    .os__catch-k { font-family: var(--display); font-size: 0.8125rem; color: var(--on-dark-soft); font-variant-numeric: tabular-nums; }
+    .os__catch-t { font-size: 1.125rem; line-height: 1.4; color: var(--on-dark); }
+    .os__catch-t b { font-weight: 500; }
+
+    /* ── Benefit maximization: money and care left on the table. ── */
+    .maximize__grid { margin-top: clamp(40px, 5vw, 64px); display: grid; grid-template-columns: repeat(auto-fit, minmax(252px, 1fr)); gap: clamp(14px, 1.8vw, 22px); }
+    .max-card { border: 1px solid var(--hairline); border-radius: 6px; padding: clamp(24px, 3vw, 32px); background: var(--paper); transition: border-color var(--dur) var(--ease); }
+    .max-card:hover { border-color: var(--taupe); }
+    .max-card__k { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--taupe); }
+    .max-card h3 { margin-top: 12px; font-size: 1.1875rem; font-weight: 500; letter-spacing: -0.01em; line-height: 1.25; }
+    .max-card p { margin-top: 10px; font-size: 0.9375rem; line-height: 1.6; color: var(--taupe-ink); }
+
+    /* ── What Alara owns end to end (light hairline rows). ── */
+    .owns { margin-top: clamp(40px, 5vw, 64px); border-top: 1px solid var(--hairline); }
+    .owns__row { display: grid; grid-template-columns: 17ch 1fr; gap: clamp(12px, 3vw, 44px); padding-block: clamp(20px, 2.6vw, 30px); border-bottom: 1px solid var(--hairline); align-items: baseline; }
+    .owns__k { font-family: var(--display); font-size: 0.8125rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--espresso); }
+    .owns__t { font-size: 1.0625rem; line-height: 1.55; color: var(--taupe-ink); max-width: 58ch; }
+
+    @media (max-width: 760px) {
+      .os__contrast { grid-template-columns: 1fr; }
+      .owns__row { grid-template-columns: 1fr; gap: 6px; }
+    }
+
     @media (max-width: 640px) {
       .breadth__row { grid-template-columns: 1fr; gap: 6px; }
       .ask { flex-wrap: wrap; gap: 8px; }
@@ -160,7 +197,7 @@
 
   <main>
 
-    <!-- 1 · HERO -->
+    <!-- 1 · HERO — the real product: skilled care PLUS the system that catches what others miss. -->
     <section class="lede-hero" aria-label="Welcome">
       <div class="hero-amb" aria-hidden="true"><i></i><i></i><i></i></div>
       <div class="container">
@@ -168,11 +205,12 @@
           <div class="lede-hero__text">
             <p class="eyebrow lede-hero__eyebrow">Locally owned &middot; Nurse-led &middot; Las Vegas, Nevada</p>
             <h1 class="lede-hero__headline">
-              Specialized skilled home health <span class="soft">for complex patients on federal programs.</span>
+              Skilled home health <span class="soft">&mdash; and a system that catches what everyone else misses.</span>
             </h1>
             <p class="lede-hero__sub">
-              We specialize in patients who require more coordination, more advocacy, and more
-              expertise than traditional home health agencies are built to provide.
+              We bring expert care into the home for patients on federal benefit programs. Behind every
+              nurse is AlaraOS, which makes sure nothing you have earned, and nothing about your health,
+              quietly falls through.
             </p>
             <div class="lede-hero__actions">
               <a class="btn btn--lg" href="qualify.html">See what you qualify for <span class="arrow" aria-hidden="true">&rarr;</span></a>
@@ -181,6 +219,133 @@
           </div>
           <div class="lede-hero__media">
             <img src="hero-arches.webp" alt="A wide stone staircase rising to a warm arched doorway." />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 · ALARAOS — the centerpiece. The machine that notices first, and what it catches. -->
+    <section class="sec os" aria-label="AlaraOS">
+      <div class="container">
+        <div class="s-lede reveal">
+          <span class="eyebrow s-lede__eyebrow">Meet AlaraOS</span>
+          <h2>Most agencies react. AlaraOS sees it coming.</h2>
+          <p class="os__sub">AlaraOS is the expertise behind every Alara nurse &mdash; two decades of federal-benefits and clinical knowledge built into one system. It watches for what other agencies miss: a benefit you have not claimed, a new symptom that changes your coverage, a decline before it becomes a fall. Most healthcare documents what happened. AlaraOS decides what should happen because of it.</p>
+        </div>
+
+        <div class="os__contrast reveal">
+          <div class="os__card os__card--them">
+            <span class="os__tag">Most home health</span>
+            <p class="os__quote">&ldquo;Unfortunately, your father fell yesterday.&rdquo;</p>
+            <p class="os__when">A call after something has already gone wrong.</p>
+          </div>
+          <div class="os__card">
+            <span class="os__tag">Alara</span>
+            <p class="os__quote">&ldquo;We have noticed your father getting weaker this month. Let us bring in therapy before this becomes a fall.&rdquo;</p>
+            <p class="os__when">A call before it becomes a problem.</p>
+          </div>
+        </div>
+
+        <div class="os__catch reveal">
+          <p class="os__catch-lead">What it catches, so you do not have to</p>
+          <div class="os__catch-row"><span class="os__catch-k">01</span><span class="os__catch-t">A benefit you have <b>earned but never claimed</b>.</span></div>
+          <div class="os__catch-row"><span class="os__catch-k">02</span><span class="os__catch-t">A new condition your illness caused, and the <b>coverage it can add</b>.</span></div>
+          <div class="os__catch-row"><span class="os__catch-k">03</span><span class="os__catch-t"><b>Early decline</b>, before it becomes a fall or a hospital stay.</span></div>
+          <div class="os__catch-row"><span class="os__catch-k">04</span><span class="os__catch-t">An <b>authorization about to lapse</b>, before your care stops.</span></div>
+          <div class="os__catch-row"><span class="os__catch-k">05</span><span class="os__catch-t">The paperwork &mdash; <b>before it becomes your job</b>.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 · BENEFIT MAXIMIZATION — money and care left on the table. -->
+    <section class="sec sec--tint" aria-label="Benefits you may be missing">
+      <div class="container">
+        <div class="s-lede reveal">
+          <span class="eyebrow s-lede__eyebrow">Benefits you may be missing</span>
+          <h2>You have probably earned more than you are using.</h2>
+          <p class="s-lede__sub">Most people learn about their benefits in pieces, from different places, and no one ever assembles the whole picture. AlaraOS does. Four of the most valuable, and most missed:</p>
+        </div>
+        <div class="maximize__grid reveal">
+          <div class="max-card">
+            <span class="max-card__k">White Card</span>
+            <h3>A family member can be paid to care for you</h3>
+            <p>The spouse, son, or daughter already helping you every day can be put on payroll for that care, trained and nurse-supervised, at no cost to your family.</p>
+          </div>
+          <div class="max-card">
+            <span class="max-card__k">White Card</span>
+            <h3>A new condition can be added to your coverage</h3>
+            <p>When your accepted illness causes a second problem, it can be added to your card, and all the care for it becomes covered too.</p>
+          </div>
+          <div class="max-card">
+            <span class="max-card__k">White Card &middot; OWCP</span>
+            <h3>Every trip to an appointment is reimbursable</h3>
+            <p>Mileage to the doctor, the pharmacy, the lab, for a covered condition, adds up to hundreds a month that most people never claim.</p>
+          </div>
+          <div class="max-card">
+            <span class="max-card__k">Survivors</span>
+            <h3>Survivors may be owed benefits no one mentioned</h3>
+            <p>When a covered worker passes, a surviving spouse and children may be entitled to compensation their family was never told to pursue.</p>
+          </div>
+        </div>
+        <div class="breadth__cta reveal">
+          <a class="btn btn--lg" href="qualify.html">See what you qualify for <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 · WHAT ALARA OWNS — you never become the project manager. -->
+    <section class="sec" aria-label="What being a patient looks like">
+      <div class="container">
+        <div class="s-lede reveal">
+          <span class="eyebrow s-lede__eyebrow">What being a patient looks like</span>
+          <h2>You make one call. We become the team that holds it all together.</h2>
+          <p class="s-lede__sub">A federal-program patient is usually caught between institutions that do not talk to each other, and ends up running their own case. With Alara, you never do. Here is what we own, end to end.</p>
+        </div>
+        <div class="owns reveal">
+          <div class="owns__row"><span class="owns__k">Eligibility</span><span class="owns__t">We confirm everything you qualify for across every program you hold, including the benefits you were never told about.</span></div>
+          <div class="owns__row"><span class="owns__k">Approvals</span><span class="owns__t">We assemble the physician orders and the documentation each program requires, and we submit them.</span></div>
+          <div class="owns__row"><span class="owns__k">Coordination</span><span class="owns__t">Your physician, the DOL Resource Center, the VA and TriWest, your Authorized Representative &mdash; we are the messenger between them, so you are not.</span></div>
+          <div class="owns__row"><span class="owns__k">Billing</span><span class="owns__t">Across every payer, so coverage never lapses and no cost lands on you.</span></div>
+          <div class="owns__row"><span class="owns__k">Vigilance</span><span class="owns__t">Every visit, we watch for what is changing &mdash; and act before it becomes a crisis. You no longer have to be the first to notice when something is wrong.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · WHO RUNS THIS — proof, earned after desire. -->
+    <section class="sec sec--tint" aria-label="Who we are">
+      <div class="container">
+        <div class="s-lede reveal measure">
+          <span class="eyebrow s-lede__eyebrow">Who runs this</span>
+          <h2>Built by people who know these benefits cold.</h2>
+          <p class="s-lede__sub">Alara is a nurse-owned home health agency in Las Vegas, founded by a healthcare executive and clinician who spent two decades building care systems at scale. A Director of Nursing reviews every start of care. We built AlaraOS so the expertise is always ours to supply, never yours.</p>
+          <div class="runs__links">
+            <a href="services.html">What we do <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <a href="programs.html">Benefits we accept <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <a href="about.html">About Alara <span class="arrow" aria-hidden="true">&rarr;</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 · ONE DOOR — learn first, become a patient when it is right. -->
+    <section class="sec" aria-label="When you are ready">
+      <div class="container">
+        <div class="s-lede reveal">
+          <span class="eyebrow s-lede__eyebrow">When you are ready</span>
+          <h2>Get the answers first. Start care when it is right for you.</h2>
+        </div>
+        <div class="paths reveal">
+          <div class="path">
+            <span class="eyebrow path__k">Patients and families</span>
+            <h3>See what you qualify for</h3>
+            <p>Answer a few questions and see what your benefits generally cover, with the one next step to take. No form, no account.</p>
+            <div class="path__action"><a class="btn" href="qualify.html">See what you qualify for <span class="arrow" aria-hidden="true">&rarr;</span></a></div>
+          </div>
+          <div class="path">
+            <span class="eyebrow path__k">Physicians and providers</span>
+            <h3>Send a referral</h3>
+            <p>Send the patient and the program lane. We complete the in-home assessment and the authorization, and respond within one hour.</p>
+            <div class="path__action"><a class="btn btn--ghost" href="begin.html?who=referrer">Refer a patient <span class="arrow" aria-hidden="true">&rarr;</span></a></div>
           </div>
         </div>
       </div>
