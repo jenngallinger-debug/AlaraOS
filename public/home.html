@@ -181,6 +181,27 @@
       .lede-hero__eyebrow, .lede-hero__headline, .lede-hero__sub, .lede-hero__actions, .lede-hero__reassure, .lede-hero__media { opacity: 1; transform: none; animation: none; }
       .js-reveal .reveal { opacity: 1; transform: none; transition: none; }
     }
+
+    /* ── v2 spine additions ───────────────────────────────────────── */
+    /* Quiet hero escape hatch for professionals (the decided peel off fast). */
+    .lede-hero__ref { display: inline-flex; align-items: center; gap: 7px; font-size: 0.9375rem; color: var(--taupe-ink); }
+    .lede-hero__ref .arrow { color: var(--taupe); transition: transform var(--dur) var(--ease); }
+    .lede-hero__ref:hover { color: var(--espresso); }
+    .lede-hero__ref:hover .arrow { transform: translateX(3px); }
+
+    /* Trust strip — credentials + proof, thin, right as desire peaks. */
+    .trust { border-block: 1px solid var(--hairline); background: var(--paper); }
+    .trust__inner { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(20px, 3vw, 56px); padding-block: clamp(26px, 3vw, 38px); }
+    .trust__item { font-size: 0.9375rem; line-height: 1.5; color: var(--taupe-ink); }
+    .trust__item b { display: block; color: var(--espresso); font-weight: 500; font-size: 1rem; letter-spacing: -0.01em; margin-bottom: 4px; }
+    @media (max-width: 720px) { .trust__inner { grid-template-columns: 1fr; gap: 18px; text-align: left; } }
+
+    /* Professional door — a distinct callout under the patient lane chooser. */
+    .pro-door { margin-top: clamp(28px, 3.4vw, 44px); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 28px; border: 1px solid var(--hairline); border-radius: 8px; padding: clamp(22px, 2.8vw, 32px) clamp(24px, 3vw, 36px); background: var(--paper); }
+    .pro-door__text { max-width: 56ch; }
+    .pro-door__text h3 { font-size: 1.1875rem; font-weight: 500; letter-spacing: -0.01em; }
+    .pro-door__text p { margin-top: 6px; font-size: 0.9375rem; line-height: 1.55; color: var(--taupe-ink); }
+    .pro-door .btn { flex: none; }
   </style>
 </head>
 <body>
@@ -205,6 +226,7 @@
           <a class="site-nav__link" href="programs.html">Benefits</a>
           <a class="site-nav__link" href="learn.html">Library</a>
           <a class="site-nav__link" href="about.html">About</a>
+          <a class="site-nav__link" href="begin.html?who=referrer">Refer a patient</a>
           <a class="header-call" href="tel:+17028149630">
             <span class="header-call__label">Call us</span>
             <span class="header-call__num">(702) 814-9630</span>
@@ -222,6 +244,7 @@
         <a class="mobile-menu__link" href="programs.html">Benefits <span class="arrow" aria-hidden="true">&rarr;</span></a>
         <a class="mobile-menu__link" href="learn.html">Library <span class="arrow" aria-hidden="true">&rarr;</span></a>
         <a class="mobile-menu__link" href="about.html">About <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="begin.html?who=referrer">Refer a patient <span class="arrow" aria-hidden="true">&rarr;</span></a>
         <a class="btn btn--block mobile-menu__cta" href="qualify.html">See what you qualify for</a>
         <p class="mobile-menu__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></p>
       </div>
@@ -247,8 +270,9 @@
             </p>
             <div class="lede-hero__actions">
               <a class="btn btn--lg" href="qualify.html">See what you qualify for <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              <a class="lede-hero__ref" href="begin.html?who=referrer">Referring a patient? <span class="arrow" aria-hidden="true">&rarr;</span></a>
             </div>
-            <span class="lede-hero__reassure">No form, no account. Or call a nurse at <a href="tel:+17028149630">(702) 814-9630</a>.</span>
+            <span class="lede-hero__reassure">For yourself or someone you love. No form, no account. Or call a nurse at <a href="tel:+17028149630">(702) 814-9630</a>.</span>
           </div>
           <div class="lede-hero__media">
             <img src="hero-arches.webp" alt="A wide stone staircase rising to a warm arched doorway." />
@@ -257,8 +281,40 @@
       </div>
     </section>
 
-    <!-- 2 · REALITY RECOGNITION — the right person sees themselves and is routed. Derived from the
-         locked Reality Entry Catalog (rows 1-9, patient-facing). This is how the organization perceives them. -->
+    <!-- 2 · ALARAOS REVEAL — the lock-in, right after the hook. One screen, Apple/chip style. -->
+    <section class="sec os" aria-label="Why Alara is different">
+      <div class="container">
+        <div class="split reveal">
+          <div class="split__head">
+            <span class="eyebrow s-lede__eyebrow">Why we are different</span>
+            <h2>Long before a nurse knocks, AlaraOS has already gone to work.</h2>
+            <p>Alara runs on AlaraOS, the operating system that holds your whole situation and stays ahead of it. It is why we catch what others miss, keep everyone on your care moving as one, and stay a step ahead, the difference you feel from the very first call.</p>
+            <p style="margin-top: 22px;"><a href="inside-alaraos.html" style="color: var(--on-dark); display: inline-flex; align-items: center; gap: 8px;">The AlaraOS difference <span class="arrow" aria-hidden="true">&rarr;</span></a></p>
+          </div>
+          <div class="split__body">
+            <p class="os__quote" style="margin-top: 0;">&ldquo;Our team noticed your father getting weaker this month. We brought in therapy before it became a fall.&rdquo;</p>
+            <p class="os__when" style="margin-top: 14px;">The thing families say most often: how did you know?</p>
+            <div class="os__catch" style="margin-top: clamp(32px, 4vw, 48px);">
+              <p class="os__catch-lead">What that gets you</p>
+              <div class="os__catch-row"><span class="os__catch-k">01</span><span class="os__catch-t">It <b>knows before</b> you do, catching what is changing early.</span></div>
+              <div class="os__catch-row"><span class="os__catch-k">02</span><span class="os__catch-t">It keeps <b>everyone in concert</b>, so no one waits on a call no one made.</span></div>
+              <div class="os__catch-row"><span class="os__catch-k">03</span><span class="os__catch-t">It makes sure <b>each person already has</b> what they need.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 · TRUST STRIP — credentials + proof, right as desire peaks, before we ask them to choose. -->
+    <section class="trust" aria-label="Why families and physicians trust Alara">
+      <div class="container trust__inner reveal">
+        <span class="trust__item"><b>Nurse-owned and DON-led</b>A Director of Nursing reviews every start of care. Not standard in home health. Ours.</span>
+        <span class="trust__item"><b>The only one in Las Vegas</b>The only White Card home health agency here with medical social work as a standard service.</span>
+        <span class="trust__item"><b>Local, and accountable</b>Locally owned and nurse-led, serving all of Clark County, Nevada.</span>
+      </div>
+    </section>
+
+    <!-- 4 · FIND YOUR LANE — the path chooser (dual-voiced) + a distinct professional door. -->
     <section class="sec sec--tint" aria-label="Where you are starting from">
       <div class="container">
         <div class="s-lede reveal">
@@ -293,6 +349,13 @@
           </a>
         </div>
         <p class="realities__note reveal">Not sure which is you? <a href="qualify.html">See what you qualify for</a>. It takes a few questions, with no form and no account, and ends with a plain answer and the one next step to take.</p>
+        <div class="pro-door reveal">
+          <div class="pro-door__text">
+            <h3>Sending us a patient?</h3>
+            <p>Physicians, case managers, and partners: see why Alara is the agency to trust with your patient, and refer in under two minutes.</p>
+          </div>
+          <a class="btn btn--ghost" href="begin.html?who=referrer">Refer a patient <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        </div>
       </div>
     </section>
 
@@ -313,31 +376,6 @@
               <div class="owns__row"><span class="owns__k">The paperwork</span><span class="owns__t">We gather the physician orders and the documentation each program requires, and we submit them. The authorization is ours, not yours.</span></div>
               <div class="owns__row"><span class="owns__k">The coordination</span><span class="owns__t">Your physician, the DOL Resource Center, the VA and TriWest, your Authorized Representative. We are the messenger between them, so you are not.</span></div>
               <div class="owns__row"><span class="owns__k">The watching</span><span class="owns__t">Every visit, we watch for what is changing and act before it becomes a crisis. You are no longer the first to notice when something is wrong.</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 4 · WHY ALARAOS — the reveal (Apple/Tesla: benefit first, then the why). On espresso. -->
-    <section class="sec os" aria-label="Why Alara can promise that">
-      <div class="container">
-        <div class="split reveal">
-          <div class="split__head">
-            <span class="eyebrow s-lede__eyebrow">Why we can promise that</span>
-            <h2>Long before a nurse knocks, AlaraOS has already gone to work.</h2>
-            <p>Alara runs on AlaraOS, an operating system that holds your whole situation at once, the people, the benefits, the orders, and the promises, and keeps every thread connected. It is the reason one phone call is enough, and the reason nothing about your care is ever left for you to manage.</p>
-            <p style="margin-top: 22px;"><a href="inside-alaraos.html" style="color: var(--on-dark); display: inline-flex; align-items: center; gap: 8px;">The AlaraOS difference <span class="arrow" aria-hidden="true">&rarr;</span></a></p>
-          </div>
-          <div class="split__body">
-            <p class="os__quote" style="margin-top: 0;">&ldquo;Our team noticed your father getting weaker this month. We brought in therapy before it became a fall.&rdquo;</p>
-            <p class="os__when" style="margin-top: 14px;">Whole-person care. Not a philosophy. A practice.</p>
-            <div class="os__catch" style="margin-top: clamp(32px, 4vw, 48px);">
-              <p class="os__catch-lead">What an operating system for care does</p>
-              <div class="os__catch-row"><span class="os__catch-k">01</span><span class="os__catch-t">It <b>recognizes</b> what needs to happen.</span></div>
-              <div class="os__catch-row"><span class="os__catch-k">02</span><span class="os__catch-t">It <b>takes the action</b>.</span></div>
-              <div class="os__catch-row"><span class="os__catch-k">03</span><span class="os__catch-t">It <b>coordinates</b> everyone involved.</span></div>
-              <div class="os__catch-row"><span class="os__catch-k">04</span><span class="os__catch-t">It <b>tells you</b> what is happening, before you have to ask.</span></div>
             </div>
           </div>
         </div>
@@ -385,6 +423,7 @@
               <div class="owns__row" style="border-top: 1px solid var(--hairline);"><span class="owns__k">DON-reviewed</span><span class="owns__t">A Director of Nursing reviews every start of care. That is not standard practice in home health. It is ours.</span></div>
               <div class="owns__row"><span class="owns__k">Whole-person</span><span class="owns__t">We are the only White Card home health agency in Las Vegas offering medical social work as a standard service.</span></div>
               <div class="owns__row"><span class="owns__k">Local</span><span class="owns__t">Locally owned and nurse-led, serving all of Clark County, Nevada.</span></div>
+              <div class="owns__row"><span class="owns__k">Built to last</span><span class="owns__t">Founded by a healthcare executive who spent two decades building and running care systems across the country.</span></div>
             </div>
           </div>
         </div>
@@ -432,6 +471,7 @@
         </span>
       </a>
       <div class="site-footer__meta">
+        <span class="site-footer__patient">Already with Alara? Call your Care Guide.</span><br />
         Serving all of Clark County, Nevada<br />
         <a href="tel:+17028149630">(702) 814-9630</a>
       </div>
