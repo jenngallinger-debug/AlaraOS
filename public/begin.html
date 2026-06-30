@@ -84,7 +84,7 @@
       <div class="container">
         <span class="eyebrow" id="kicker">Begin</span>
         <h1 id="headline">Tell us what's going on. A nurse takes it from there.</h1>
-        <p class="page-hero__lead" id="lead">No forms to figure out and no program you need to name. Leave your name and a best number, and a nurse calls you, usually within the hour during business hours.</p>
+        <p class="page-hero__lead" id="lead">No forms to figure out, no program to name. Leave your name and a number, and a nurse calls you back.</p>
       </div>
     </section>
 
@@ -92,34 +92,24 @@
       <!-- INTAKE FORM (phone-first, minimal: name + phone, optional story + who) -->
       <form class="intake" id="intakeForm" novalidate>
         <div class="intake__field">
-          <label for="story">In your own words, what's going on? <span class="hint">(optional)</span></label>
-          <textarea id="story" name="story" placeholder="A few words is plenty. For example, 'my dad worked at the Test Site and his wound isn't healing.'"></textarea>
-        </div>
-        <div class="intake__field">
-          <label for="who">I am a&hellip;</label>
-          <select id="who" name="who">
-            <option value="patient">Patient or family member</option>
-            <option value="veteran">Veteran</option>
-            <option value="referrer">Physician or provider</option>
-            <option value="case_manager">Case manager or representative</option>
-            <option value="other">Someone else</option>
-          </select>
-        </div>
-        <div class="intake__field">
-          <label for="name">Your name <span class="hint">(required)</span></label>
+          <label for="name">Your name</label>
           <input id="name" name="name" type="text" autocomplete="name" placeholder="First and last" required aria-required="true" aria-describedby="nameError" />
           <p class="intake__error" id="nameError" hidden>Please add your name so a nurse knows who to ask for.</p>
         </div>
         <div class="intake__field">
-          <label for="phone">Best phone number <span class="hint">(required)</span></label>
+          <label for="phone">Best phone number</label>
           <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="(702) 814-9630" required aria-required="true" aria-describedby="phoneError" />
           <p class="intake__error" id="phoneError" hidden>Please add a phone number with at least 10 digits so a nurse can call you back.</p>
         </div>
+        <div class="intake__field">
+          <label for="story">Anything the nurse should know first? <span class="hint">(optional)</span></label>
+          <textarea id="story" name="story" placeholder="A few words is plenty. For example, 'my dad worked at the Test Site and his wound isn't healing.'"></textarea>
+        </div>
         <div class="intake__actions">
-          <button class="btn" type="submit">Have a nurse call me <span class="arrow" aria-hidden="true">&rarr;</span></button>
+          <button class="btn" type="submit" id="submitBtn">Have a nurse call me <span class="arrow" aria-hidden="true">&rarr;</span></button>
           <span class="intake__or">or call <a href="tel:+17028149630">(702) 814-9630</a></span>
         </div>
-        <p class="intake__reassure">We ask for only your name and number to start. A nurse calls you, usually within the hour during business hours. After 6 PM, first thing the next business day.</p>
+        <p class="intake__reassure">We ask only for your name and number. A nurse calls you back, usually within the hour during business hours; after 6 PM, first thing the next business day.</p>
       </form>
 
       <!-- CONFIRMATION (shown after submit) -->
@@ -207,7 +197,6 @@
       document.getElementById('kicker').textContent = 'For physicians & providers';
       document.getElementById('headline').textContent = 'Refer a patient. We handle the assessment and the authorization.';
       document.getElementById('lead').textContent = 'Send us the patient and the program lane. We complete the in-home assessment and handle the authorization, and we respond to every referral within one hour during business hours.';
-      document.getElementById('who').value = 'referrer';
     }
 
     // --- Intake validation + submit ---
@@ -239,6 +228,13 @@
     phoneInput.addEventListener('input', function () {
       if (phoneInput.value.replace(/\D/g, '').length >= 10) setFieldError(phoneInput, phoneError, '');
     });
+    // Validate on blur, so the user learns before reaching the button.
+    nameInput.addEventListener('blur', function () {
+      if (!nameInput.value.trim()) setFieldError(nameInput, nameError, 'Please add your name so a nurse knows who to ask for.');
+    });
+    phoneInput.addEventListener('blur', function () {
+      if (phoneInput.value.replace(/\D/g, '').length < 10) setFieldError(phoneInput, phoneError, 'Please add a phone number with at least 10 digits so a nurse can call you back.');
+    });
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -263,6 +259,13 @@
 
       if (firstInvalid) { firstInvalid.focus(); return; }
 
+      // Busy state: acknowledge the tap immediately and prevent a double submit.
+      var submitBtn = document.getElementById('submitBtn');
+      if (submitBtn.disabled) return;
+      submitBtn.disabled = true;
+      submitBtn.dataset.label = submitBtn.innerHTML;
+      submitBtn.textContent = 'Sending…';
+
       if (isReferrer) {
         document.getElementById('confirmTitle').textContent = 'Thank you. Your referral is logged.';
         document.getElementById('confirmBody').textContent = 'Here is what happens next.';
@@ -270,12 +273,17 @@
         document.getElementById('stepAsk').textContent = 'We complete the in-home assessment, handle the authorization, and coordinate the care, and we keep you updated on your patient.';
       }
 
-      form.setAttribute('hidden', '');
-      var c = document.getElementById('confirm');
-      c.removeAttribute('hidden');
-      window.scrollTo({ top: 0, behavior: prefersReduced ? 'auto' : 'smooth' });
-      c.focus();
+      var reveal = function () {
+        form.setAttribute('hidden', '');
+        var c = document.getElementById('confirm');
+        c.removeAttribute('hidden');
+        window.scrollTo({ top: 0, behavior: prefersReduced ? 'auto' : 'smooth' });
+        c.focus();
+      };
+      // A brief, honest "working" beat, then the confirmation.
+      if (prefersReduced) { reveal(); } else { window.setTimeout(reveal, 450); }
     });
   </script>
+  <script src="site-nav.js" defer></script>
 </body>
 </html>

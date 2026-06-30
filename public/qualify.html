@@ -57,6 +57,22 @@
     .ans-discover__item:hover { border-color: var(--espresso); background: #fff; }
     .ans-discover__item .arrow { color: var(--taupe); transition: transform var(--dur) var(--ease); }
     .ans-discover__item:hover .arrow { transform: translateX(3px); color: var(--espresso); }
+
+    /* The one obvious door: the "start another way" escape hatch is quieter than
+       the real questions above it. */
+    .wiz__option--secondary { color: var(--taupe-ink); font-size: 0.9375rem; }
+
+    /* One primary action on the answer screen; everything else is a quiet text
+       row underneath it. */
+    .ans__cta-sub {
+      margin-top: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px;
+      font-size: 0.9375rem;
+    }
+    .ans__cta-sub a, .ans__cta-sub .restart {
+      color: var(--taupe-ink); text-decoration: none; background: none; border: none;
+      padding: 0; cursor: pointer; font: inherit;
+    }
+    .ans__cta-sub a:hover, .ans__cta-sub .restart:hover { color: var(--espresso); }
   </style>
 </head>
 <body>
@@ -109,7 +125,7 @@
       <div class="container">
         <span class="eyebrow">Benefit Navigator</span>
         <h1>What your benefits cover at home.</h1>
-        <p class="page-hero__lead">Start wherever you are: your program, your situation, a condition, or a question. In about a minute, you will see what your benefits generally cover and the one next step to take. No form, no account.</p>
+        <p class="page-hero__lead" id="navHeroLead">Start with a question. In about a minute, you will see what your benefits generally cover and the one next step to take. No form, no account.</p>
       </div>
     </section>
 
@@ -117,7 +133,7 @@
       <!-- Orientation frame: legible purpose before any specific benefit is named.
            Shown only on the first step; the JS hides it once you choose a path. -->
       <div class="nav-orient" id="navOrient">
-        <p class="nav-orient__lead">Tell us where you are, and we will show what your benefits generally cover, <strong>including things most families are never told.</strong> Pick whichever starting point feels closest. You can change direction or go back at any point.</p>
+        <p class="nav-orient__lead">Pick the question closest to yours, and we will show what your benefits generally cover, <strong>including the coverage that is easy to miss.</strong> You can change direction or go back at any point.</p>
         <p class="nav-orient__note">This is general information, not a coverage determination. Nothing you choose is saved, and nothing here decides your claim.</p>
       </div>
 
@@ -179,12 +195,13 @@
       { "label": "Home health (overview)", "next": "ans-home-health" },
       { "label": "Wound care at home", "next": "cond-program-wound" },
       { "label": "Infusion therapy at home", "next": "cond-program-infusion" } ] },
-    "by-question": { "id": "by-question", "type": "branch", "question": "Pick the question closest to yours", "options": [
+    "by-question": { "id": "by-question", "type": "branch", "question": "What would you like to know?", "options": [
       { "label": "Does my White Card cover home health?", "next": "ans-eeoicpa-hh" },
       { "label": "Does OWCP cover home health?", "next": "ans-owcp-hh" },
       { "label": "Does the VA cover home health?", "next": "ans-va-hh" },
       { "label": "Can I have the White Card and Medicare?", "next": "ans-white-card-medicare" },
-      { "label": "Can I get paid to care for a family member?", "next": "ans-paid-caregiver" } ] },
+      { "label": "Can I get paid to care for a family member?", "next": "ans-paid-caregiver" },
+      { "label": "Start another way — by program, who I am, or a condition", "next": "start", "secondary": true } ] },
     "by-geo": { "id": "by-geo", "type": "branch", "question": "Where are you located?", "options": [
       { "label": "Las Vegas / Clark County / Southern Nevada", "next": "ans-local" },
       { "label": "Somewhere else", "next": "ans-local" } ] },
@@ -236,13 +253,19 @@
     var status = document.getElementById('wizStatus');
     var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var trail = [];   // our own back-stack (NOT window.history)
-    var currentId = 'start';
+    var HOME_NODE = 'by-question';  // the one obvious door
+    var currentId = HOME_NODE;
+    var heroLead = document.getElementById('navHeroLead');
 
     function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 
-    // Answers whose term belongs to the EEOICPA family route to the deep guide
-    // (white-card.html) instead of the shorter Library entry.
-    var WHITE_CARD_TERMS = { 'white-card': 1, 'eeoicpa': 1, 'consequential-condition': 1, 'impairment-evaluation': 1 };
+    // The deep guide a term routes to, if any. EEOICPA family -> white-card.html,
+    // OWCP family -> owcp.html. Everything else falls back to the Library.
+    var GUIDE_FOR = {
+      'white-card': 'white-card.html', 'eeoicpa': 'white-card.html',
+      'consequential-condition': 'white-card.html', 'impairment-evaluation': 'white-card.html',
+      'owcp': 'owcp.html', 'feca': 'owcp.html'
+    };
 
     function scrollTop(){ window.scrollTo({ top: 0, behavior: prefersReduced ? 'auto' : 'smooth' }); }
 
@@ -259,10 +282,11 @@
 
     function go(id, push){ if (push !== false) trail.push(currentId); currentId = id; render(); scrollTop(); focusHeading(); }
 
-    // The orientation frame belongs only to the very first step.
+    // The orientation frame and the hero lead belong only to the very first step.
     function setOrient(){
-      if (!orient) return;
-      orient.style.display = (currentId === 'start' && trail.length === 0) ? '' : 'none';
+      var first = (currentId === HOME_NODE && trail.length === 0);
+      if (orient) orient.style.display = first ? '' : 'none';
+      if (heroLead) heroLead.style.display = first ? '' : 'none';
     }
 
     function render(){
@@ -275,7 +299,7 @@
 
       if (node.type === 'branch') {
         var opts = node.options.map(function(o){
-          return '<button class="wiz__option" type="button" data-next="' + o.next + '">' + esc(o.label) +
+          return '<button class="wiz__option' + (o.secondary ? ' wiz__option--secondary' : '') + '" type="button" data-next="' + o.next + '">' + esc(o.label) +
                  ' <span class="arrow" aria-hidden="true">&rarr;</span></button>';
         }).join('');
         wiz.innerHTML = crumbs +
@@ -307,6 +331,13 @@
             '</div>';
         }
 
+        // The single primary action for this answer: a deep guide if one maps to
+        // the term, otherwise the Library entry. Null only if there is no term.
+        var guideHref = GUIDE_FOR[node.term];
+        var primary = guideHref
+          ? { href: guideHref, label: (guideHref.indexOf('white-card') >= 0 ? 'Read the complete White Card guide' : 'Read the complete OWCP guide') }
+          : (node.term ? { href: 'learn.html#' + node.term, label: 'See this in the Library' } : null);
+
         wiz.innerHTML = crumbs +
           '<article class="ans">' +
             '<div class="ans__head">' +
@@ -318,14 +349,17 @@
               (covered ? '<div><p class="ans__label">Generally included</p><ul class="ans__covered">' + covered + '</ul></div>' : '') +
               '<p class="ans__ack">This is a benefit you earned. Here is how to use it.</p>' +
               '<div><p class="ans__label">Your next step</p><div class="ans__next">' + esc(node.nextStep || '') + '</div></div>' +
-              '<div class="ans__links">' +
-                (node.source ? '<a href="' + esc(node.source.url) + '" target="_blank" rel="noopener">Source: ' + esc(node.source.label) + ' &nearr;</a>' : '') +
-                (WHITE_CARD_TERMS[node.term] ? '<a href="white-card.html">Read the complete White Card guide &rarr;</a>' : (node.term ? '<a href="learn.html#' + esc(node.term) + '">Learn more in the Library &rarr;</a>' : '')) +
-              '</div>' +
               discoverHtml +
+              // One primary action: keep learning. The deep guide if there is one,
+              // otherwise the Library. "Have a nurse call you" stays available, but
+              // quiet — the ethos is to inform, not to push a call.
               '<div class="ans__cta">' +
-                '<a class="btn" href="begin.html">Have a nurse call me <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
+                (primary ? '<a class="btn" href="' + primary.href + '">' + esc(primary.label) + ' <span class="arrow" aria-hidden="true">&rarr;</span></a>' : '') +
+              '</div>' +
+              '<div class="ans__cta-sub">' +
+                '<a href="begin.html">Have a nurse call you</a>' +
                 '<button class="restart" type="button" id="restart">Start over</button>' +
+                (node.source ? '<a href="' + esc(node.source.url) + '" target="_blank" rel="noopener">Source: ' + esc(node.source.label) + ' &nearr;</a>' : '') +
               '</div>' +
               (node.trust ? '<p class="ans__trust">' + esc(node.trust) + '</p>' : '') +
             '</div>' +
@@ -335,7 +369,7 @@
           b.addEventListener('click', function(){ go(b.getAttribute('data-next')); });
         });
         var r = document.getElementById('restart');
-        if (r) r.addEventListener('click', function(){ trail = []; currentId = 'start'; render(); scrollTop(); focusHeading(); });
+        if (r) r.addEventListener('click', function(){ trail = []; currentId = HOME_NODE; render(); scrollTop(); focusHeading(); });
       }
       var back = document.getElementById('back');
       if (back) back.addEventListener('click', function(){ currentId = trail.pop(); render(); scrollTop(); focusHeading(); });
@@ -368,5 +402,6 @@
       document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
     } else { document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('is-in'); }); }
   </script>
+  <script src="site-nav.js" defer></script>
 </body>
 </html>
