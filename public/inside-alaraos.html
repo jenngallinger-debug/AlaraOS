@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>The AlaraOS difference &middot; Alara Home Care</title>
-  <meta name="description" content="With Alara, everyone who cares for you already knows you. Your story, your benefits, and your providers stay with the whole team, so you are always known and always a step ahead. That is the difference AlaraOS makes." />
+  <meta name="description" content="Care that stays ahead of what's coming. AlaraOS reads the early signs in your care and keeps your nurse, doctor, pharmacy, and family moving in concert, so what is next is handled before it arrives and no one has to coordinate a thing." />
   <meta property="og:title" content="The AlaraOS difference" />
-  <meta property="og:description" content="Everyone who cares for you already knows you. The difference AlaraOS makes, felt from the first call." />
+  <meta property="og:description" content="Care that stays ahead of what's coming. AlaraOS knows before, keeps everyone in concert, and makes sure each person already has exactly what they need." />
   <meta property="og:type" content="website" />
   <link rel="icon" href="logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -37,13 +37,14 @@
 
     /* THE DIFFERENCE — felt outcomes, each with a concrete line. Fills width. */
     .io-feel { padding-block: var(--io-pad); }
-    .io-feel__head h2 { font-size: clamp(2rem, 4.4vw, 3.5rem); font-weight: 500; line-height: 1.02; letter-spacing: -0.03em; max-width: 18ch; }
+    .io-feel__head { text-align: center; }
+    .io-feel__head h2 { font-size: clamp(2rem, 4.4vw, 3.5rem); font-weight: 500; line-height: 1.02; letter-spacing: -0.03em; max-width: 24ch; margin-inline: auto; }
     .io-feel__head .eyebrow { display: block; margin-bottom: 18px; }
-    .feel-grid { margin-top: clamp(44px, 5.5vw, 80px); display: grid; grid-template-columns: 1fr 1fr; gap: clamp(36px, 4vw, 64px) clamp(40px, 6vw, 96px); }
+    .feel-grid { margin-top: clamp(44px, 5.5vw, 80px); display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(36px, 4vw, 56px); }
     .feel-item { border-top: 1px solid var(--hairline); padding-top: clamp(22px, 2.6vw, 32px); }
-    .feel-item h3 { font-size: clamp(1.5rem, 2.6vw, 2.125rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.08; }
-    .feel-item p { margin-top: 14px; font-size: clamp(1.0625rem, 1.45vw, 1.25rem); line-height: 1.55; color: var(--taupe-ink); max-width: 46ch; }
-    @media (max-width: 760px) { .feel-grid { grid-template-columns: 1fr; gap: 0; } .feel-item { padding-block: clamp(24px,5vw,30px); padding-top: clamp(24px,5vw,30px); } }
+    .feel-item h3 { font-size: clamp(1.375rem, 2vw, 1.875rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.1; }
+    .feel-item p { margin-top: 14px; font-size: clamp(1.0625rem, 1.4vw, 1.1875rem); line-height: 1.56; color: var(--taupe-ink); }
+    @media (max-width: 900px) { .feel-grid { grid-template-columns: 1fr; gap: 0; } .feel-item { padding-block: clamp(24px,5vw,30px); padding-top: clamp(24px,5vw,30px); } }
 
     /* WHY — dark, centered. Names AlaraOS, keeps the human in charge. Brief. */
     .io-why { background: var(--espresso); color: var(--on-dark); padding-block: var(--io-pad); text-align: center; }
@@ -117,11 +118,11 @@
       <div class="io-amb" aria-hidden="true"><i></i><i></i><i></i></div>
       <div class="container">
         <p class="io-hero__eyebrow">The AlaraOS difference</p>
-        <h1>Everything your benefits cover, handled for you.</h1>
+        <h1>Care that stays ahead of what&rsquo;s coming.</h1>
         <p class="io-hero__sub">
-          Alara runs on AlaraOS, one system that holds your whole picture: your White Card, your doctors,
-          your medications, your history. It is how we find the benefits you are owed, file the paperwork,
-          and keep your care moving, so you get all of it and run none of it.
+          Alara runs on AlaraOS, the intelligence that reads the early signs in your care and keeps everyone,
+          your nurse, your doctor, your pharmacy, your family, moving in concert. What is next gets handled
+          before it arrives, and no one has to coordinate a thing.
         </p>
       </div>
     </section>
@@ -130,25 +131,21 @@
     <section class="io-feel" aria-label="The difference you feel">
       <div class="container">
         <div class="io-feel__head io-reveal">
-          <span class="eyebrow">What you get</span>
-          <h2>What being an Alara patient actually gets you.</h2>
+          <span class="eyebrow">What sets it apart</span>
+          <h2>It doesn&rsquo;t keep up with your care. It stays ahead of it.</h2>
         </div>
         <div class="feel-grid">
           <div class="feel-item io-reveal">
-            <h3>Benefits you didn&rsquo;t know you had.</h3>
-            <p>A family member paid to care for you. Travel money you can claim. Medicare copays your White Card should cover. We find them and set them up, without you having to ask.</p>
+            <h3>They knew before you did.</h3>
+            <p>AlaraOS reads the early signs, a missed refill, a small decline, a lab value that drifted, and acts before any of it becomes a crisis. The thing families say most often is, &ldquo;How did you know?&rdquo;</p>
           </div>
           <div class="feel-item io-reveal">
-            <h3>The paperwork, off your plate.</h3>
-            <p>We assemble the physician orders, file the authorizations, and keep your coverage active, so you are never the one chasing an approval or decoding a denial.</p>
+            <h3>Everyone moves in concert.</h3>
+            <p>Your nurse, your doctor, your pharmacy, your benefits, and your family, all in sync, like a symphony no one has to conduct. Nothing waits on a call that no one made.</p>
           </div>
           <div class="feel-item io-reveal">
-            <h3>Changes caught between visits.</h3>
-            <p>When your father weakens one month, we start therapy before it becomes a fall. We watch what is happening between visits and act on it early.</p>
-          </div>
-          <div class="feel-item io-reveal">
-            <h3>Your family stops making calls.</h3>
-            <p>Everyone on your care works from the same picture of you, so no one has to make ten calls to find out what changed or who is handling it.</p>
+            <h3>Each person already knows their part.</h3>
+            <p>The right update reaches the right person on its own. Your doctor has what they need before they ask. Your daughter sees what changed. You hear what matters to you, and nothing you do not.</p>
           </div>
         </div>
       </div>
@@ -157,12 +154,11 @@
     <!-- WHY — names AlaraOS, keeps people in charge. Brief, felt, not a manual. -->
     <section class="io-why" aria-label="Why Alara is different">
       <div class="container">
-        <h2 class="io-reveal">One picture of you, shared by everyone who cares for you.</h2>
+        <h2 class="io-reveal">One living picture of you, read continuously.</h2>
         <p class="io-reveal">
-          Your nurse, your doctor, and the people handling your benefits all work from the same record,
-          kept current by AlaraOS. That is how we find what you are owed, move quickly, and answer your
-          questions without putting you on hold. Every decision still belongs to a person, and nothing
-          happens without your say.
+          AlaraOS keeps a single, current picture of your whole care and watches it without stopping. That
+          is how Alara sees what is next and keeps everyone in step, before anyone has to ask. Every decision
+          still belongs to a person, and nothing happens without your say.
         </p>
       </div>
     </section>
