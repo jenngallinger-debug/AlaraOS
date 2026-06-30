@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Alara Home Care &middot; Specialized home health for federal-program patients in Las Vegas</title>
-  <meta name="description" content="Home health in Las Vegas that goes beyond the visit. Skilled, whole-person care for White Card, federal-worker, and veteran families. We handle the benefits and the paperwork, and most care comes at no cost to you." />
+  <title>Alara Home Care &middot; Home health for White Card, federal-worker, and veteran families in Las Vegas</title>
+  <meta name="description" content="Home health in Las Vegas for White Card, federal-worker, and veteran families. You make one call; we handle the benefits, the paperwork, and the coordination. Most care comes at no cost to you." />
   <meta property="og:title" content="Alara Home Care" />
-  <meta property="og:description" content="Home health in Las Vegas that goes beyond the visit. We handle the benefits and the paperwork. DON-led, locally owned, and most care comes at no cost to you." />
+  <meta property="og:description" content="You make one call; Alara handles the benefits, the paperwork, and the people who never talk to each other. Nurse-led, locally owned in Las Vegas. Most care comes at no cost to you." />
   <meta property="og:type" content="website" />
   <link rel="icon" href="logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -32,6 +32,19 @@
     .breadth__name { font-family: var(--display); font-size: 0.8125rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--espresso); }
     .breadth__line { font-size: 1.0625rem; line-height: 1.55; color: var(--taupe-ink); max-width: 52ch; }
     .breadth__cta { margin-top: clamp(36px, 4vw, 56px); }
+
+    /* Reality recognition — let the right person see themselves in their own words. */
+    .realities { margin-top: clamp(36px, 4.5vw, 56px); display: grid; gap: 0; border-top: 1px solid var(--hairline); }
+    .reality { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-block: clamp(22px, 2.8vw, 32px); border-bottom: 1px solid var(--hairline); text-decoration: none; color: var(--espresso); transition: padding-left var(--dur) var(--ease); }
+    .reality:hover { padding-left: 10px; }
+    .reality__q { font-size: clamp(1.1875rem, 2vw, 1.5rem); font-weight: 500; letter-spacing: -0.014em; line-height: 1.22; max-width: 34ch; }
+    .reality__right { display: flex; align-items: center; gap: 18px; flex: none; }
+    .reality__tag { font-family: var(--display); font-size: 0.625rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--taupe); white-space: nowrap; }
+    .reality__right .arrow { color: var(--taupe); transition: transform var(--dur) var(--ease); }
+    .reality:hover .arrow { transform: translateX(4px); color: var(--espresso); }
+    .realities__note { margin-top: clamp(28px, 3vw, 40px); font-size: 0.9375rem; color: var(--taupe); max-width: 62ch; line-height: 1.6; }
+    .realities__note a { color: var(--espresso); }
+    @media (max-width: 560px) { .reality { flex-wrap: wrap; gap: 8px; } .reality__tag { display: none; } }
 
     /* What AlaraOS answers — curated, scoped questions that show the depth. */
     .asks { margin-top: clamp(40px, 5vw, 64px); display: grid; gap: 0; border-top: 1px solid var(--hairline); }
@@ -217,7 +230,7 @@
 
   <main>
 
-    <!-- 1 · HERO — the real product: skilled care PLUS the system that catches what others miss. -->
+    <!-- 1 · HERO — the promise of one intelligent organization: you make one call, the work becomes ours. -->
     <section class="lede-hero" aria-label="Welcome">
       <div class="hero-amb" aria-hidden="true"><i></i><i></i><i></i></div>
       <div class="container">
@@ -225,17 +238,17 @@
           <div class="lede-hero__text">
             <p class="eyebrow lede-hero__eyebrow">Locally owned &middot; Nurse-led &middot; Las Vegas, Nevada</p>
             <h1 class="lede-hero__headline">
-              Home health that goes <span class="soft">beyond the visit.</span>
+              You make one call. <span class="soft">The work becomes ours.</span>
             </h1>
             <p class="lede-hero__sub">
-              Skilled home health, done at its highest level, reaches further than the diagnosis. We
-              handle the benefits and the paperwork, coordinate the people who never talk to each other,
-              and make sure you never have to do any of it alone. Most care comes at no cost to you.
+              The benefits, the paperwork, and the people who never talk to each other become ours to manage,
+              from the first call. You answer the door to care that already understands your situation, and you
+              are never the one holding it together. Most care comes at no cost to you.
             </p>
             <div class="lede-hero__actions">
               <a class="btn btn--lg" href="qualify.html">See what you qualify for <span class="arrow" aria-hidden="true">&rarr;</span></a>
             </div>
-            <span class="lede-hero__reassure">See what your benefits cover. No form, no account. Or call a nurse at <a href="tel:+17028149630">(702) 814-9630</a>.</span>
+            <span class="lede-hero__reassure">No form, no account. Or call a nurse at <a href="tel:+17028149630">(702) 814-9630</a>.</span>
           </div>
           <div class="lede-hero__media">
             <img src="hero-arches.webp" alt="A wide stone staircase rising to a warm arched doorway." />
@@ -244,31 +257,94 @@
       </div>
     </section>
 
-    <!-- 2 · ALARAOS + WHOLE-PERSON — featured, filled two-column on espresso. -->
-    <section class="sec os" aria-label="AlaraOS and whole-person care">
+    <!-- 2 · REALITY RECOGNITION — the right person sees themselves and is routed. Derived from the
+         locked Reality Entry Catalog (rows 1-9, patient-facing). This is how the organization perceives them. -->
+    <section class="sec sec--tint" aria-label="Where you are starting from">
+      <div class="container">
+        <div class="s-lede reveal">
+          <span class="eyebrow s-lede__eyebrow">Start where you are</span>
+          <h2>Tell us your situation. We will already understand it.</h2>
+          <p class="s-lede__sub">Most people reach us in the middle of something confusing. You do not need to know the programs, the forms, or the words for any of it. Find the line that sounds like you.</p>
+        </div>
+        <div class="realities reveal">
+          <a class="reality" href="white-card.html">
+            <span class="reality__q">&ldquo;I have a White Card and need care.&rdquo;</span>
+            <span class="reality__right"><span class="reality__tag">White Card &middot; EEOICPA</span><span class="arrow" aria-hidden="true">&rarr;</span></span>
+          </a>
+          <a class="reality" href="white-card.html">
+            <span class="reality__q">&ldquo;I think I might qualify for a White Card.&rdquo;</span>
+            <span class="reality__right"><span class="reality__tag">Energy &amp; Test Site workers</span><span class="arrow" aria-hidden="true">&rarr;</span></span>
+          </a>
+          <a class="reality" href="owcp.html">
+            <span class="reality__q">&ldquo;I was hurt working for the government or postal service.&rdquo;</span>
+            <span class="reality__right"><span class="reality__tag">OWCP &middot; FECA</span><span class="arrow" aria-hidden="true">&rarr;</span></span>
+          </a>
+          <a class="reality" href="qualify.html">
+            <span class="reality__q">&ldquo;I&rsquo;m a veteran and need care at home.&rdquo;</span>
+            <span class="reality__right"><span class="reality__tag">VA Community Care</span><span class="arrow" aria-hidden="true">&rarr;</span></span>
+          </a>
+          <a class="reality" href="qualify.html">
+            <span class="reality__q">&ldquo;I&rsquo;m caring for my parent or my spouse.&rdquo;</span>
+            <span class="reality__right"><span class="reality__tag">For families</span><span class="arrow" aria-hidden="true">&rarr;</span></span>
+          </a>
+          <a class="reality" href="qualify.html">
+            <span class="reality__q">&ldquo;Our home health isn&rsquo;t working, and we want to switch.&rdquo;</span>
+            <span class="reality__right"><span class="reality__tag">Switching agencies</span><span class="arrow" aria-hidden="true">&rarr;</span></span>
+          </a>
+        </div>
+        <p class="realities__note reveal">Not sure which is you? <a href="qualify.html">See what you qualify for</a>. It takes a few questions, with no form and no account, and ends with a plain answer and the one next step to take.</p>
+      </div>
+    </section>
+
+    <!-- 3 · WHAT HAPPENS AFTER THAT CALL — the universal first commitment, rendered for patients
+         (outcomes, no SLA numbers, per the catalog's rendering rule). -->
+    <section class="sec" aria-label="What happens after you reach out">
       <div class="container">
         <div class="split reveal">
           <div class="split__head">
-            <span class="eyebrow s-lede__eyebrow">The intelligence behind everything we do</span>
-            <h2>Long before a nurse knocks, AlaraOS has already gone to work.</h2>
-            <p>AlaraOS is the intelligence that runs Alara. From your first call, it works out every benefit you qualify for, handles the authorizations, and coordinates the institutions that never talk to each other, so the hardest part is finished before anyone comes to your door. Then it keeps watch across your whole care, so nothing is forgotten and no thread is ever dropped.</p>
+            <span class="eyebrow s-lede__eyebrow">What happens after that call</span>
+            <h2>One call, and the work becomes ours.</h2>
+            <p>Around a federal-program patient sits a tangle of institutions that do not talk to each other. No one should have to connect them alone. From your first call, here is what becomes ours.</p>
           </div>
           <div class="split__body">
-            <p class="os__quote" style="margin-top: 0;">&ldquo;Our team noticed your father getting weaker this month. We brought in therapy before it became a fall.&rdquo;</p>
-            <p class="os__when" style="margin-top: 14px;">Whole-person care. Not a philosophy. A practice.</p>
-            <div class="os__catch" style="margin-top: clamp(32px, 4vw, 48px);">
-              <p class="os__catch-lead">What being an Alara patient means</p>
-              <div class="os__catch-row"><span class="os__catch-k">01</span><span class="os__catch-t">We <b>recognize</b> what needs to happen.</span></div>
-              <div class="os__catch-row"><span class="os__catch-k">02</span><span class="os__catch-t">We <b>take the action</b>.</span></div>
-              <div class="os__catch-row"><span class="os__catch-k">03</span><span class="os__catch-t">We <b>coordinate</b> everyone involved.</span></div>
-              <div class="os__catch-row"><span class="os__catch-k">04</span><span class="os__catch-t">We <b>inform</b> the people who need to know, before they have to ask.</span></div>
+            <div class="owns" style="margin-top: 0; border-top: none;">
+              <div class="owns__row" style="border-top: 1px solid var(--hairline);"><span class="owns__k">One owner</span><span class="owns__t">You get one Care Guide who owns your case by name, not a phone tree. They are who you reach, and who reaches you. You never explain your situation twice.</span></div>
+              <div class="owns__row"><span class="owns__k">The benefits</span><span class="owns__t">We confirm everything you qualify for across every program you hold, including the benefits you were never told about, and we put them to work.</span></div>
+              <div class="owns__row"><span class="owns__k">The paperwork</span><span class="owns__t">We gather the physician orders and the documentation each program requires, and we submit them. The authorization is ours, not yours.</span></div>
+              <div class="owns__row"><span class="owns__k">The coordination</span><span class="owns__t">Your physician, the DOL Resource Center, the VA and TriWest, your Authorized Representative. We are the messenger between them, so you are not.</span></div>
+              <div class="owns__row"><span class="owns__k">The watching</span><span class="owns__t">Every visit, we watch for what is changing and act before it becomes a crisis. You are no longer the first to notice when something is wrong.</span></div>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 3 · BENEFIT MAXIMIZATION — money and care left on the table. -->
+    <!-- 4 · WHY ALARAOS — the reveal (Apple/Tesla: benefit first, then the why). On espresso. -->
+    <section class="sec os" aria-label="Why Alara can promise that">
+      <div class="container">
+        <div class="split reveal">
+          <div class="split__head">
+            <span class="eyebrow s-lede__eyebrow">Why we can promise that</span>
+            <h2>Long before a nurse knocks, AlaraOS has already gone to work.</h2>
+            <p>Most agencies see a patient one visit at a time. Alara runs on AlaraOS, an operating system that holds your whole situation at once, the people, the benefits, the orders, and the promises, and keeps every thread connected. It is the reason one phone call is enough, and the reason nothing about your care is left for you to manage.</p>
+            <p style="margin-top: 22px;"><a href="about.html" style="color: var(--on-dark); display: inline-flex; align-items: center; gap: 8px;">How Alara works <span class="arrow" aria-hidden="true">&rarr;</span></a></p>
+          </div>
+          <div class="split__body">
+            <p class="os__quote" style="margin-top: 0;">&ldquo;Our team noticed your father getting weaker this month. We brought in therapy before it became a fall.&rdquo;</p>
+            <p class="os__when" style="margin-top: 14px;">Whole-person care. Not a philosophy. A practice.</p>
+            <div class="os__catch" style="margin-top: clamp(32px, 4vw, 48px);">
+              <p class="os__catch-lead">What an operating system for care does</p>
+              <div class="os__catch-row"><span class="os__catch-k">01</span><span class="os__catch-t">It <b>recognizes</b> what needs to happen.</span></div>
+              <div class="os__catch-row"><span class="os__catch-k">02</span><span class="os__catch-t">It <b>takes the action</b>.</span></div>
+              <div class="os__catch-row"><span class="os__catch-k">03</span><span class="os__catch-t">It <b>coordinates</b> everyone involved.</span></div>
+              <div class="os__catch-row"><span class="os__catch-k">04</span><span class="os__catch-t">It <b>tells you</b> what is happening, before you have to ask.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · BENEFIT MAXIMIZATION — the revelation. Backed by data/programs.json (the interface cannot lie). -->
     <section class="sec sec--tint" aria-label="Benefits you may be missing">
       <div class="container">
         <div class="split reveal">
@@ -290,30 +366,8 @@
       </div>
     </section>
 
-    <!-- 4 · WHAT ALARA OWNS — you never become the project manager. -->
-    <section class="sec" aria-label="What being a patient looks like">
-      <div class="container">
-        <div class="split reveal">
-          <div class="split__head">
-            <span class="eyebrow s-lede__eyebrow">What being a patient looks like</span>
-            <h2>You make one call. We handle everything else.</h2>
-            <p>Around a federal-program patient sits a tangle of institutions that do not talk to each other. No person should have to connect them alone. Here is what we hold, from the first call onward.</p>
-          </div>
-          <div class="split__body">
-            <div class="owns" style="margin-top: 0; border-top: none;">
-              <div class="owns__row" style="border-top: 1px solid var(--hairline);"><span class="owns__k">Eligibility</span><span class="owns__t">We confirm everything you qualify for across every program you hold, including the benefits you were never told about.</span></div>
-              <div class="owns__row"><span class="owns__k">Approvals</span><span class="owns__t">We assemble the physician orders and the documentation each program requires, and we submit them.</span></div>
-              <div class="owns__row"><span class="owns__k">Coordination</span><span class="owns__t">Your physician, the DOL Resource Center, the VA and TriWest, your Authorized Representative. We are the messenger between them, so you are not.</span></div>
-              <div class="owns__row"><span class="owns__k">Billing</span><span class="owns__t">Across every payer, so coverage never lapses and no cost lands on you.</span></div>
-              <div class="owns__row"><span class="owns__k">Vigilance</span><span class="owns__t">Every visit, we watch for what is changing, and we act before it becomes a crisis. You are no longer the first to notice when something is wrong.</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 5 · WHO RUNS THIS — proof, earned after desire. -->
-    <section class="sec sec--tint" aria-label="Who we are">
+    <!-- 6 · WHO RUNS THIS — proof, earned after desire. -->
+    <section class="sec" aria-label="Who we are">
       <div class="container">
         <div class="split reveal">
           <div class="split__head">
@@ -337,8 +391,8 @@
       </div>
     </section>
 
-    <!-- 6 · ONE DOOR — learn first, become a patient when it is right. -->
-    <section class="sec" aria-label="When you are ready">
+    <!-- 7 · DOORS — patients (outcome-rendered) and professionals (concrete SLA, per the rendering rule). -->
+    <section class="sec sec--tint" aria-label="When you are ready">
       <div class="container">
         <div class="s-lede reveal">
           <span class="eyebrow s-lede__eyebrow">When you are ready</span>
@@ -354,7 +408,7 @@
           <div class="path">
             <span class="eyebrow path__k">Physicians and providers</span>
             <h3>Send a referral</h3>
-            <p>Send the patient and the program lane. We complete the in-home assessment and the authorization, and respond within one hour.</p>
+            <p>Send the patient and the program. We complete the in-home assessment and the authorization, and respond to discharge referrals within one hour.</p>
             <div class="path__action"><a class="btn btn--ghost" href="begin.html?who=referrer">Refer a patient <span class="arrow" aria-hidden="true">&rarr;</span></a></div>
           </div>
         </div>
