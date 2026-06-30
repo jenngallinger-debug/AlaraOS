@@ -68,6 +68,9 @@
     @media (max-width: 640px) {
       .breadth__row { grid-template-columns: 1fr; gap: 6px; }
       .ask { flex-wrap: wrap; gap: 8px; }
+      /* Protect low-end phones: hold the ambient field still (no continuous
+         compositing) and lighten it. Parallax is also skipped in JS at this width. */
+      .hero-amb i { animation: none !important; opacity: .4; }
     }
 
     /* ── Motion layer (Apple-sleek direction): ambient drift, a staggered
@@ -75,8 +78,8 @@
          photography. Fully disabled under prefers-reduced-motion. ── */
     .lede-hero { position: relative; overflow: hidden; }
     .lede-hero > .container { position: relative; z-index: 2; }
-    .hero-amb { position: absolute; inset: -25% -15% -10%; z-index: 0; pointer-events: none; }
-    .hero-amb i { position: absolute; display: block; width: 46vw; height: 46vw; border-radius: 50%; filter: blur(64px); mix-blend-mode: multiply; }
+    .hero-amb { position: absolute; inset: -25% -15% -10%; z-index: 0; pointer-events: none; contain: paint; }
+    .hero-amb i { position: absolute; display: block; width: 46vw; height: 46vw; border-radius: 50%; filter: blur(52px); mix-blend-mode: multiply; }
     .hero-amb i:nth-child(1) { background: radial-gradient(circle, var(--greige), transparent 70%); top: -10%; left: 36%; opacity: .6; animation: drift1 24s ease-in-out infinite; }
     .hero-amb i:nth-child(2) { background: radial-gradient(circle, var(--mist), transparent 70%); top: 16%; left: 2%; opacity: .7; animation: drift2 28s ease-in-out infinite; }
     .hero-amb i:nth-child(3) { background: radial-gradient(circle, var(--taupe), transparent 72%); top: 34%; left: 58%; opacity: .16; animation: drift3 32s ease-in-out infinite; }
@@ -86,12 +89,12 @@
 
     .lede-hero__eyebrow, .lede-hero__headline, .lede-hero__sub, .lede-hero__actions, .lede-hero__reassure, .lede-hero__media {
       opacity: 0; transform: translateY(16px); animation: rise .9s cubic-bezier(.2,.7,.2,1) forwards; }
-    .lede-hero__eyebrow { animation-delay: .05s; }
-    .lede-hero__headline { animation-delay: .16s; }
-    .lede-hero__sub { animation-delay: .30s; }
-    .lede-hero__actions { animation-delay: .42s; }
-    .lede-hero__reassure { animation-delay: .52s; }
-    .lede-hero__media { animation-delay: .22s; transform: translateY(24px) scale(1.015); }
+    .lede-hero__eyebrow { animation-delay: .04s; }
+    .lede-hero__headline { animation-delay: .10s; }
+    .lede-hero__actions { animation-delay: .16s; }  /* primary action arrives early, never withheld */
+    .lede-hero__sub { animation-delay: .24s; }
+    .lede-hero__reassure { animation-delay: .30s; }
+    .lede-hero__media { animation-delay: .12s; transform: translateY(24px) scale(1.015); }
     .lede-hero__media img { will-change: transform; transition: transform .1s linear; }
     @keyframes rise { to { opacity: 1; transform: none; } }
 
@@ -355,7 +358,8 @@
     var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     // Hero parallax: the arch drifts slightly slower than the page. rAF-throttled.
     var heroImg = document.querySelector('.lede-hero__media img');
-    if (heroImg && !prefersReduced) {
+    var smallScreen = window.matchMedia('(max-width: 640px)').matches;
+    if (heroImg && !prefersReduced && !smallScreen) {
       var ticking = false;
       var applyP = function () { var y = window.scrollY || 0; if (y < 1000) heroImg.style.transform = 'translateY(' + (y * 0.07).toFixed(1) + 'px)'; ticking = false; };
       window.addEventListener('scroll', function () { if (!ticking) { ticking = true; window.requestAnimationFrame(applyP); } }, { passive: true });
@@ -368,5 +372,6 @@
       document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
     } else { document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('is-in'); }); }
   </script>
+  <script src="site-nav.js" defer></script>
 </body>
 </html>
