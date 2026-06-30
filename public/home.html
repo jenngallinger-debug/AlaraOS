@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Alara Home Care &middot; Nurse-led home health in Las Vegas</title>
-  <meta name="description" content="Nurse-owned home health in Las Vegas, built for the benefits you have earned. Skilled nursing and therapy at home for White Card, federal worker, veteran, and Medicare patients. We handle the authorizations, claims, and paperwork. Most patients pay nothing." />
+  <title>Alara Home Care &middot; Nurse-owned home health in Las Vegas</title>
+  <meta name="description" content="You are owed more care than anyone has told you. Alara is a nurse-owned home health team in Las Vegas for families on federal benefits. We bring the care home, find everything you have earned, and handle the forms and the calls. You just tell us what is happening." />
   <meta property="og:title" content="Alara Home Care" />
-  <meta property="og:description" content="Skilled home health in Las Vegas, built for the benefits you have earned. We bring nursing and therapy into the home and handle the authorizations, claims, and paperwork." />
+  <meta property="og:description" content="You are owed more care than anyone has told you. We find it, bring it home, and handle the rest." />
   <meta property="og:type" content="website" />
   <link rel="icon" href="logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -14,26 +14,57 @@
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="site.css" />
   <style>
-    /* Page-scoped helpers — calm spacing only; no new colors, no shadows. */
-    .home-section { padding-block: var(--section-y); }
-    .home-section--tint { background: var(--mist); }
-    .section-foot { margin-top: clamp(28px, 3.4vw, 44px); }
-    .disclaimer-line { margin-top: clamp(22px, 2.6vw, 32px); font-size: 0.8125rem; line-height: 1.55; color: var(--taupe-ink); max-width: 72ch; }
-    /* Navigator teaser entry points — recognition-first, the visitor's own words. */
-    .entry-points { margin-top: clamp(28px, 3.4vw, 44px); display: grid; gap: 12px; max-width: 720px; }
-    .entry-point {
-      display: flex; align-items: center; justify-content: space-between; gap: 18px;
-      text-decoration: none; background: var(--paper); border: 1px solid var(--hairline);
-      border-radius: 4px; padding: 18px 22px; min-height: 56px;
-      color: var(--espresso); font-size: 1.0625rem; line-height: 1.4;
-      transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+    /* ── THE REVELATION — the homepage as an experience ──────────────────
+       A calm, accumulating sequence of things families are owed but never
+       told. Each beat is one idea, generously spaced, revealed on scroll.
+       Five neutral swatches, hairlines, no new color. Education as feeling. */
+    .reveal-intro { padding-block: clamp(48px, 7vw, 96px) 0; }
+    .reveal-intro__eyebrow { display: block; margin-bottom: 20px; }
+    .reveal-intro h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 500; letter-spacing: -0.016em; max-width: 22ch; }
+    .reveal-intro p { margin-top: 18px; font-size: 1.1875rem; line-height: 1.6; color: var(--taupe-ink); max-width: 54ch; }
+
+    .revelations { padding-block: clamp(24px, 4vw, 48px) 0; }
+    .revelation {
+      border-top: 1px solid var(--hairline);
+      padding-block: clamp(44px, 6.5vw, 96px);
+      display: grid; grid-template-columns: 84px 1fr; gap: clamp(8px, 2vw, 32px);
+      align-items: start;
     }
-    .entry-point:hover, .entry-point:focus-visible { border-color: var(--espresso); background: #fff; }
-    .entry-point .arrow { flex: none; color: var(--taupe); transition: transform var(--dur) var(--ease); }
-    .entry-point:hover .arrow, .entry-point:focus-visible .arrow { transform: translateX(3px); color: var(--espresso); }
-    /* The earned payoff: reuse the home moments treatment, placed late. */
+    .revelation__num { font-family: var(--display); font-weight: 300; font-size: 1.0625rem; color: var(--taupe); font-variant-numeric: tabular-nums; padding-top: 6px; }
+    .revelation__label { display: block; margin-bottom: 18px; }
+    .revelation__statement { font-size: clamp(1.625rem, 3.2vw, 2.625rem); font-weight: 500; line-height: 1.12; letter-spacing: -0.02em; max-width: 18ch; color: var(--espresso); }
+    .revelation__detail { margin-top: 22px; font-size: 1.1875rem; line-height: 1.62; color: var(--taupe-ink); max-width: 52ch; }
+    .revelation__proof { margin-top: 22px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; font-size: 0.875rem; color: var(--taupe); }
+    .revelation__tag { font-family: var(--display); letter-spacing: 0.14em; text-transform: uppercase; font-size: 0.6875rem; color: var(--taupe); }
+    .revelation__tag::after { content: ""; display: inline-block; width: 18px; height: 1px; background: var(--hairline); margin-left: 16px; vertical-align: middle; }
+    .revelation__link { color: var(--espresso); font-size: 0.9375rem; display: inline-flex; align-items: center; gap: 8px; }
+    .revelation__link .arrow { color: var(--taupe); transition: transform var(--dur) var(--ease); }
+    .revelation__link:hover .arrow { transform: translateX(3px); color: var(--espresso); }
+
+    /* The turn — relief + relationship, on greige. */
+    .turn { background: var(--greige); padding-block: var(--section-y); }
+    .turn__eyebrow { display: block; margin-bottom: 22px; }
+    .turn h2 { font-size: clamp(1.875rem, 3.6vw, 3rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.1; max-width: 16ch; }
+    .turn p { margin-top: 26px; font-size: 1.25rem; line-height: 1.55; color: var(--espresso); max-width: 46ch; }
+    .turn__actions { margin-top: 38px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+    .turn__call { color: var(--espresso); font-variant-numeric: tabular-nums; font-size: 1.0625rem; }
+
+    /* Who runs this — compact substance, secondary to the revelation. */
+    .runs { padding-block: var(--section-y); }
+    .runs__eyebrow { display: block; margin-bottom: 20px; }
+    .runs h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 500; letter-spacing: -0.016em; max-width: 20ch; }
+    .runs p { margin-top: 20px; font-size: 1.1875rem; line-height: 1.62; color: var(--taupe-ink); max-width: 58ch; }
+    .runs__links { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 14px 32px; }
+    .runs__links a { font-size: 0.9375rem; color: var(--espresso); display: inline-flex; align-items: center; gap: 8px; }
+    .runs__links a .arrow { color: var(--taupe); transition: transform var(--dur) var(--ease); }
+    .runs__links a:hover .arrow { transform: translateX(3px); color: var(--espresso); }
+    .runs__marks { margin-top: 40px; padding-top: 26px; border-top: 1px solid var(--hairline); display: flex; flex-wrap: wrap; gap: 10px 22px; font-family: var(--display); font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--taupe); }
+    .runs__marks span + span::before { content: "\00b7"; margin-right: 22px; color: var(--hairline); }
+
     @media (max-width: 600px) {
-      .entry-point { flex-wrap: wrap; }
+      .revelation { grid-template-columns: 1fr; gap: 4px; }
+      .revelation__num { padding-top: 0; }
+      .runs__marks span + span::before { content: none; margin: 0; }
     }
   </style>
 </head>
@@ -54,7 +85,6 @@
           <span class="brand__sub">Home Care</span>
         </span>
       </a>
-
       <div class="site-header__actions">
         <nav class="site-nav site-nav--primary" aria-label="Primary">
           <a class="site-nav__link" href="services.html">Services</a>
@@ -72,8 +102,6 @@
         </button>
       </div>
     </div>
-
-    <!-- Slide-down mobile panel, controlled by #navToggle. -->
     <nav class="mobile-menu" id="site-menu" data-open="false" aria-label="Primary (mobile)">
       <div class="container mobile-menu__inner">
         <a class="mobile-menu__link" href="services.html">Services <span class="arrow" aria-hidden="true">&rarr;</span></a>
@@ -88,26 +116,23 @@
 
   <main>
 
-    <!-- ============================================================= -->
-    <!-- 1 · HERO — THE THRESHOLD. What Alara is and does, on sight.   -->
-    <!-- ============================================================= -->
+    <!-- 1 · HERO — the thesis of the revelation. -->
     <section class="lede-hero" aria-label="Welcome">
       <div class="container">
         <div class="lede-hero__grid">
           <div class="lede-hero__text">
-            <p class="eyebrow lede-hero__eyebrow">Nurse-owned home health &middot; Las Vegas, Nevada</p>
+            <p class="eyebrow lede-hero__eyebrow">Locally owned &middot; Nurse-led &middot; Las Vegas, Nevada</p>
             <h1 class="lede-hero__headline">
-              You&rsquo;re owed more care <span class="soft">than anyone has told you.</span>
+              Specialized skilled home health <span class="soft">for complex patients on federal programs.</span>
             </h1>
             <p class="lede-hero__sub">
-              Most families are never told the full scope of the care they have earned. We make
-              sure you are. Alara brings skilled nursing and therapy into the home and handles the
-              forms, the calls, and the programs no one explains. You just tell us what is happening.
+              We specialize in patients who require more coordination, more advocacy, and more
+              expertise than traditional home health agencies are built to provide.
             </p>
             <div class="lede-hero__actions">
-              <a class="btn btn--lg" href="begin.html">Talk to a nurse <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              <a class="btn btn--lg" href="qualify.html">See what you qualify for <span class="arrow" aria-hidden="true">&rarr;</span></a>
             </div>
-            <span class="lede-hero__reassure">No forms, and no program you need to name. Just tell us what is happening. Or call <a href="tel:+17028149630">(702) 814-9630</a>, a nurse answers within the hour.</span>
+            <span class="lede-hero__reassure">Or talk to a nurse: <a href="tel:+17028149630">(702) 814-9630</a>.</span>
           </div>
           <div class="lede-hero__media">
             <img src="hero-arches.webp" alt="A wide stone staircase rising to a warm arched doorway." />
@@ -116,210 +141,133 @@
       </div>
     </section>
 
-    <!-- ============================================================= -->
-    <!-- 2 · WHAT WE DO — services strip. Answers "what do you offer". -->
-    <!-- ============================================================= -->
-    <section class="home-section" aria-label="What we do">
+    <!-- 2 · THE REVELATIONS — education as experience. Each beat is real, sourced,
+            and most families have never been told it. They accumulate as you scroll. -->
+    <section aria-label="What you may already be owed">
       <div class="container">
-        <div class="s-head reveal">
-          <span class="eyebrow">What we do</span>
-          <h2 class="s-head__title">Skilled care at home, and the coordination that makes it work.</h2>
-          <p class="s-head__lead">A registered nurse holds the clinical care and the paperwork together, so nothing falls between them.</p>
+        <div class="reveal-intro reveal">
+          <span class="eyebrow reveal-intro__eyebrow">What you may already be owed</span>
+          <h2>A few of the benefits families come to us never knowing.</h2>
+          <p>Each one is real, and each applies to specific situations. Most families are told a fraction of it. Identifying what applies to you and getting it authorized is the work we specialize in.</p>
         </div>
 
-        <div class="editorial-rows reveal">
-          <div class="editorial-row">
-            <div class="editorial-row__index">01</div>
-            <h3 class="editorial-row__title">Skilled nursing</h3>
-            <div class="editorial-row__body">
-              Registered and licensed nurses care for medically complex patients at home: assessment,
-              wound care, medication management, IV and infusion therapy, and disease management for
-              conditions like COPD, CHF, diabetes, cancer, and stroke. The kind of close watching that
-              catches a problem before it becomes a hospital stay.
+        <div class="revelations">
+          <article class="revelation reveal">
+            <span class="revelation__num" aria-hidden="true">01</span>
+            <div>
+              <span class="eyebrow revelation__label">Most families are never told</span>
+              <h3 class="revelation__statement">You can be paid to care for your own mother or father.</h3>
+              <p class="revelation__detail">Under the White Card&rsquo;s in-home care benefit, the family member who already provides the daily care can be hired and paid for it as an employee, with a registered nurse&rsquo;s supervision.</p>
+              <p class="revelation__proof">
+                <span class="revelation__tag">White Card &middot; EEOICPA</span>
+                <a class="revelation__link" href="qualify.html?node=ans-paid-caregiver">See how this works <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              </p>
             </div>
-          </div>
-          <div class="editorial-row">
-            <div class="editorial-row__index">02</div>
-            <h3 class="editorial-row__title">Wound care</h3>
-            <div class="editorial-row__body">
-              A nurse treats chronic and non-healing wounds at home, including staging, sterile dressing
-              changes, infection monitoring, and advanced or negative-pressure therapy when a physician
-              orders it.
-            </div>
-          </div>
-          <div class="editorial-row">
-            <div class="editorial-row__index">03</div>
-            <h3 class="editorial-row__title">Physical and occupational therapy</h3>
-            <div class="editorial-row__body">
-              Therapists rebuild strength, balance, and daily independence in the home where function has
-              to happen: gait training, fall prevention, ADL retraining, adaptive equipment, and caregiver
-              training, built around the goal the patient names.
-            </div>
-          </div>
-          <div class="editorial-row">
-            <div class="editorial-row__index">04</div>
-            <h3 class="editorial-row__title">Coordination and case management</h3>
-            <div class="editorial-row__body">
-              We identify uncovered consequential conditions, track authorizations and renewals in advance,
-              and coordinate billing across payers, so care is never interrupted by a paperwork gap.
-            </div>
-          </div>
-        </div>
+          </article>
 
-        <p class="section-foot reveal">
-          <a class="link-arrow" href="services.html">See everything we do <span class="arrow" aria-hidden="true">&rarr;</span></a>
-        </p>
+          <article class="revelation reveal">
+            <span class="revelation__num" aria-hidden="true">02</span>
+            <div>
+              <span class="eyebrow revelation__label">Hardly anyone is told this</span>
+              <h3 class="revelation__statement">A new problem your illness caused can be covered too.</h3>
+              <p class="revelation__detail">When an accepted condition leads to something else, a wound that will not heal, an infection, a decline, that consequential condition can be covered once the Department of Labor accepts it. The documentation is the hard part, and the hard part is ours.</p>
+              <p class="revelation__proof">
+                <span class="revelation__tag">White Card &middot; EEOICPA</span>
+                <a class="revelation__link" href="qualify.html?node=ans-consequential">See how this works <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              </p>
+            </div>
+          </article>
+
+          <article class="revelation reveal">
+            <span class="revelation__num" aria-hidden="true">03</span>
+            <div>
+              <span class="eyebrow revelation__label">You do not have to choose</span>
+              <h3 class="revelation__statement">Your White Card and your Medicare work together.</h3>
+              <p class="revelation__detail">Having one does not cancel the other. For care tied to your accepted condition, the White Card generally pays, with nothing out of your pocket, and we coordinate the billing across both so you never have to.</p>
+              <p class="revelation__proof">
+                <span class="revelation__tag">White Card + Medicare</span>
+                <a class="revelation__link" href="qualify.html?node=ans-white-card-medicare">See how this works <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              </p>
+            </div>
+          </article>
+
+          <article class="revelation reveal">
+            <span class="revelation__num" aria-hidden="true">04</span>
+            <div>
+              <span class="eyebrow revelation__label">For veterans</span>
+              <h3 class="revelation__statement">You can get skilled care at home without waiting on the VA.</h3>
+              <p class="revelation__detail">Through VA Community Care, an eligible veteran receives home health from an approved community provider, often sooner than waiting for a VA appointment. You do not need Medicare to use it.</p>
+              <p class="revelation__proof">
+                <span class="revelation__tag">VA Community Care</span>
+                <a class="revelation__link" href="qualify.html?node=ans-va-hh">See how this works <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              </p>
+            </div>
+          </article>
+
+          <article class="revelation reveal">
+            <span class="revelation__num" aria-hidden="true">05</span>
+            <div>
+              <span class="eyebrow revelation__label">For federal and postal workers</span>
+              <h3 class="revelation__statement">An accepted on-the-job injury can cover care at home.</h3>
+              <p class="revelation__detail">If OWCP has accepted your injury and a physician orders home health, it can be authorized at no out-of-pocket cost. Postal workers are covered the same as other federal employees.</p>
+              <p class="revelation__proof">
+                <span class="revelation__tag">OWCP &middot; FECA</span>
+                <a class="revelation__link" href="qualify.html?node=ans-owcp-hh">See how this works <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              </p>
+            </div>
+          </article>
+        </div>
       </div>
     </section>
 
-    <!-- ============================================================= -->
-    <!-- 3 · PROGRAMS WE ACCEPT — benefits strip. Answers "what do you take". -->
-    <!-- ============================================================= -->
-    <section class="home-section home-section--tint" aria-label="Programs we accept">
+    <!-- 3 · THE TURN — relief and relationship. The revelations resolve into Alara. -->
+    <section class="turn" aria-label="What this means">
       <div class="container">
-        <div class="s-head reveal">
-          <span class="eyebrow">Programs we accept</span>
-          <h2 class="s-head__title">The benefit programs we specialize in, and most patients pay nothing.</h2>
-          <p class="s-head__lead">When a physician orders care for a covered condition, these programs generally pay for it in full. We confirm what applies to you and handle the authorizations.</p>
-        </div>
-
-        <div class="trust-strip reveal">
-          <div class="trust-strip__inner">
-            <span class="trust-strip__label">We work with</span>
-            <div class="trust-strip__items">
-              <span class="trust-strip__item">White Card (EEOICPA)</span>
-              <span class="trust-strip__item">OWCP / FECA</span>
-              <span class="trust-strip__item">VA Community Care</span>
-              <span class="trust-strip__item">Medicare</span>
-              <span class="trust-strip__item">Black Lung (DCMWC)</span>
-            </div>
+        <div class="reveal">
+          <span class="eyebrow turn__eyebrow">Where the expertise comes in</span>
+          <h2>Knowing which of these apply, and getting them authorized, is the hard part.</h2>
+          <p>It is the part we specialize in. Tell us the situation, and we map what applies, what is covered, and the next step, then we handle the authorizations.</p>
+          <div class="turn__actions">
+            <a class="btn btn--lg" href="begin.html">Talk to a nurse <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <a class="turn__call" href="tel:+17028149630">or call (702) 814-9630</a>
           </div>
         </div>
-
-        <p class="disclaimer-line reveal">
-          This is general information, not a coverage determination. Your DOL Resource Center, the VA,
-          and your physician confirm what applies to your claim.
-        </p>
-
-        <p class="section-foot reveal">
-          <a class="link-arrow" href="programs.html">See programs and what they cover <span class="arrow" aria-hidden="true">&rarr;</span></a>
-        </p>
       </div>
     </section>
 
-    <!-- ============================================================= -->
-    <!-- 4 · THE EDGE — the Tangle + what Alara holds. The differentiator. -->
-    <!-- ============================================================= -->
-    <section class="tangle" aria-label="What makes Alara different">
-      <div class="container tangle__inner reveal">
-        <p>
-          <span class="lede-rest">A family should not have to coordinate nurses, track down
-          authorizations, and decode benefits on top of caring for someone.</span>
-          <span class="hold"> Alara runs both the clinical care and the paperwork.</span>
-        </p>
-      </div>
-    </section>
-
-    <!-- ============================================================= -->
-    <!-- 5 · SEE WHAT YOU QUALIFY FOR — the navigator teaser. The proof. -->
-    <!-- ============================================================= -->
-    <section class="home-section" aria-label="See what you qualify for">
+    <!-- 4 · WHO RUNS THIS — compact substance, secondary to the experience. -->
+    <section class="runs" aria-label="Who we are">
       <div class="container">
-        <div class="s-head reveal">
-          <span class="eyebrow">See what you qualify for</span>
-          <h2 class="s-head__title">Tell us where you are, and we will show what your benefits cover.</h2>
-          <p class="s-head__lead">No form and no program you need to name. Start anywhere, and the answer comes back in plain language, with the source it is based on.</p>
-        </div>
-
-        <div class="entry-points reveal">
-          <a class="entry-point" href="qualify.html?node=by-who">
-            <span>My dad worked at the Test Site</span>
-            <span class="arrow" aria-hidden="true">&rarr;</span>
-          </a>
-          <a class="entry-point" href="qualify.html?node=by-condition">
-            <span>A wound that will not heal</span>
-            <span class="arrow" aria-hidden="true">&rarr;</span>
-          </a>
-          <a class="entry-point" href="qualify.html?node=va-need">
-            <span>I am a veteran and need care at home</span>
-            <span class="arrow" aria-hidden="true">&rarr;</span>
-          </a>
-        </div>
-
-        <p class="section-foot reveal">
-          <a class="link-arrow" href="qualify.html">Start the benefit navigator <span class="arrow" aria-hidden="true">&rarr;</span></a>
-        </p>
-      </div>
-    </section>
-
-    <!-- ============================================================= -->
-    <!-- 6 · HOW WE WORK — Alara's own commitments, in plain voice.     -->
-    <!-- ============================================================= -->
-    <section class="moments" aria-label="How we work">
-      <div class="container">
-        <div class="moments__head reveal">
-          <span class="eyebrow">How we work, day to day</span>
-          <h2>One team holds the care and the paperwork.</h2>
-        </div>
-        <div class="moments__list">
-          <p class="moment reveal">A registered nurse owns each case and stays your point of contact.</p>
-          <p class="moment reveal">We track every authorization and renewal in advance, so care is not interrupted.</p>
-          <p class="moment reveal">We identify consequential conditions and benefits you may have missed.</p>
-          <p class="moment reveal">When something changes in the plan of care, we tell you directly and early.</p>
-          <p class="moment reveal">We coordinate billing across payers, so most families pay nothing out of pocket.</p>
+        <div class="reveal measure">
+          <span class="eyebrow runs__eyebrow">Who runs this</span>
+          <h2>Nurse-owned, DON-led, and built to carry all of it.</h2>
+          <p>Alara is a nurse-owned, Medicare-certified home health agency in Las Vegas, founded by a healthcare executive and clinician who spent two decades building care systems before bringing it home. A Director of Nursing reviews every start of care. We bring the skilled nursing and therapy, and we hold the programs, the authorizations, and the paperwork so your family never has to.</p>
+          <div class="runs__links">
+            <a href="services.html">What we do <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <a href="programs.html">Benefits we accept <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <a href="about.html">About Alara <span class="arrow" aria-hidden="true">&rarr;</span></a>
+          </div>
+          <div class="runs__marks" aria-label="Credentials">
+            <span>Nurse-owned</span>
+            <span>DON reviews every case</span>
+            <span>Medicare-certified</span>
+            <span>White Card &middot; OWCP &middot; VA</span>
+            <span>Clark County, Nevada</span>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- ============================================================= -->
-    <!-- 7 · WHO WE ARE — credibility. The feeling confirmed with fact. -->
-    <!-- ============================================================= -->
-    <section class="founder" aria-label="Who we are">
-      <div class="container founder__grid reveal">
-        <div class="founder__frame" role="img" aria-label="Alara">
-          <svg viewBox="0 0 100 92" aria-hidden="true">
-            <path fill="currentColor" fill-rule="evenodd"
-              d="M22,88 V34 L50,8 L78,34 V88 Z
-                 M37,88 V66 A13,13 0 0 1 63,66 V88 Z
-                 M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
-          </svg>
-        </div>
-        <div>
-          <p class="eyebrow founder__eyebrow">Who we are</p>
-          <p class="founder__quote">
-            Nurse-owned, DON-led, and Medicare-certified home health, serving all of Clark County, Nevada.
-          </p>
-          <p class="founder__body">
-            A Director of Nursing reviews every start of care before it is submitted. Alara was founded by
-            a healthcare executive, clinician, and entrepreneur who has spent more than two decades building
-            and scaling healthcare systems across the country. She saw the center of care moving from
-            institutions into the home, and founded Alara to build for that future. We work with
-            White Card (EEOICPA), federal-worker (OWCP), veteran (VA
-            Community Care), Black Lung (DCMWC), and Medicare benefits, and most families pay nothing out
-            of pocket.
-          </p>
-          <p class="section-foot">
-            <a class="link-arrow" href="about.html">More about Alara <span class="arrow" aria-hidden="true">&rarr;</span></a>
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================================= -->
-    <!-- 8 · THE INVITATION — one honest, low-cost way to begin.        -->
-    <!-- ============================================================= -->
-    <section class="invite" id="invite" aria-label="Begin">
+    <!-- 5 · THE INVITATION — you do nothing. -->
+    <section class="invite" aria-label="Begin">
       <div class="container invite__inner reveal">
-        <h2>Tell us what is going on. A nurse takes it from there.</h2>
-        <p>No forms to figure out and no program you need to name. Leave your number, and a nurse calls you about what is happening and what is covered, including the benefits paperwork.</p>
+        <h2>Tell us the situation.</h2>
+        <p>No forms to decode, and no program you need to name. A nurse reviews it, tells you what applies, and starts the authorizations.</p>
         <div class="invite__actions">
-          <a class="btn btn--on-dark" href="qualify.html">Find out if you qualify <span class="arrow" aria-hidden="true">&rarr;</span></a>
-          <a class="btn btn--on-dark" href="begin.html?who=referrer">Refer a patient <span class="arrow" aria-hidden="true">&rarr;</span></a>
+          <a class="btn btn--on-dark btn--lg" href="begin.html">Talk to a nurse <span class="arrow" aria-hidden="true">&rarr;</span></a>
+          <a class="invite__call" href="tel:+17028149630">or call (702) 814-9630</a>
         </div>
-        <p class="invite__reassure">
-          Or call <a class="invite__call" href="tel:+17028149630">(702) 814-9630</a>.
-          A nurse answers, usually within the hour during business hours.
-        </p>
+        <p class="invite__reassure">A nurse answers, usually within the hour during business hours.</p>
       </div>
     </section>
 
@@ -347,37 +295,23 @@
   </footer>
 
   <script>
-    // Sticky-header hairline on scroll.
     var header = document.getElementById('siteHeader');
     var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 24); };
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-
-    // Accessible mobile menu: flip aria-expanded + data-open.
-    var toggle = document.getElementById('navToggle');
-    var menu = document.getElementById('site-menu');
-    if (toggle && menu) {
-      toggle.addEventListener('click', function () {
-        var open = toggle.getAttribute('aria-expanded') === 'true';
-        toggle.setAttribute('aria-expanded', String(!open));
-        toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
-        menu.setAttribute('data-open', String(!open));
-      });
-    }
-
-    // Quiet reveal: one slow fade, reduced-motion safe.
+    onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+    var toggle = document.getElementById('navToggle'); var menu = document.getElementById('site-menu');
+    if (toggle && menu) { toggle.addEventListener('click', function () {
+      var open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!open));
+      toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+      menu.setAttribute('data-open', String(!open)); }); }
     var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!prefersReduced && 'IntersectionObserver' in window) {
       document.documentElement.classList.add('js-reveal');
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) {
-          if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
-        });
+      var io = new IntersectionObserver(function (entries) { entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
       }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
       document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
-    } else {
-      document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('is-in'); });
-    }
+    } else { document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('is-in'); }); }
   </script>
 </body>
 </html>
