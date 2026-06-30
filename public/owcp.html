@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OWCP / FECA home health, explained &middot; Alara Home Care</title>
+  <meta name="description" content="If you are a federal or postal worker with an accepted OWCP/FECA injury, your physician can order home health and it is covered at no cost to you. How the coverage works, where authorizations break, who is who in your claim, and what you should never have to manage yourself." />
+  <link rel="icon" href="logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="site.css" />
+  <style>
+    /* Same long-form education template as the White Card pillar. Five neutral
+       swatches, hairlines, generous measure, no new color. */
+    .guide { padding-block: clamp(32px, 4vw, 56px) var(--section-y); }
+    .guide__grid { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: clamp(32px, 5vw, 72px); align-items: start; }
+    .toc { position: sticky; top: 100px; }
+    .toc__label { display: block; margin-bottom: 16px; }
+    .toc ol { list-style: none; display: grid; gap: 2px; }
+    .toc a { display: block; padding: 7px 0; font-size: 0.9375rem; color: var(--taupe-ink); text-decoration: none; border-left: 2px solid var(--hairline); padding-left: 16px; transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease); }
+    .toc a:hover, .toc a.is-active { color: var(--espresso); border-left-color: var(--espresso); }
+    .toc__print { margin-top: 20px; padding-left: 16px; }
+    .toc__print button { font-family: var(--display); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--taupe); background: none; border: none; padding: 0; cursor: pointer; }
+    .toc__print button:hover { color: var(--espresso); }
+
+    .crumbs { font-size: 0.8125rem; color: var(--taupe); margin-bottom: 18px; }
+    .crumbs a { color: var(--taupe-ink); text-decoration: none; }
+    .crumbs a:hover { color: var(--espresso); }
+    .crumbs span { margin: 0 8px; color: var(--taupe); }
+
+    .page-hero__actions { margin-top: clamp(22px, 3vw, 30px); display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; }
+    .page-hero__aside { margin-top: 14px; font-size: 0.9375rem; color: var(--taupe-ink); }
+    .page-hero__aside a { color: var(--espresso); }
+
+    .prose { max-width: 720px; }
+    .prose section { padding-top: clamp(40px, 4.5vw, 64px); }
+    .prose section:first-child { padding-top: 0; }
+    .prose h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 500; letter-spacing: -0.018em; line-height: 1.16; max-width: 26ch; }
+    .prose h3 { margin-top: 28px; font-size: 1.1875rem; font-weight: 500; letter-spacing: -0.01em; }
+    .prose p { margin-top: 16px; font-size: 1.0625rem; line-height: 1.7; color: var(--taupe-ink); }
+    .prose p strong, .prose li strong { color: var(--espresso); font-weight: 500; }
+    .prose .lede { font-size: 1.25rem; line-height: 1.5; color: var(--espresso); max-width: 32ch; margin-top: 18px; }
+    .prose .section-intro { font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); margin-top: 14px; max-width: 60ch; }
+    .prose ul { margin-top: 16px; padding-left: 0; list-style: none; display: grid; gap: 10px; }
+    .prose ul li { position: relative; padding-left: 26px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); }
+    .prose ul li::before { content: ""; position: absolute; left: 4px; top: 11px; width: 7px; height: 7px; border: 1px solid var(--taupe); border-radius: 50%; }
+
+    .defs { margin-top: 22px; border-top: 1px solid var(--hairline); }
+    .defs__row { display: grid; grid-template-columns: 16ch 1fr; gap: 20px; padding-block: 16px; border-bottom: 1px solid var(--hairline); align-items: baseline; }
+    .defs__term { font-family: var(--display); font-size: 0.9375rem; letter-spacing: 0.01em; color: var(--espresso); font-weight: 500; }
+    .defs__desc { font-size: 1rem; line-height: 1.6; color: var(--taupe-ink); }
+    .defs__desc strong { color: var(--espresso); font-weight: 500; }
+
+    .steps { margin-top: 24px; list-style: none; padding: 0; counter-reset: s; border-top: 1px solid var(--hairline); }
+    .steps li { counter-increment: s; border-bottom: 1px solid var(--hairline); padding: 18px 0 18px 56px; position: relative; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); }
+    .steps li::before { content: counter(s, decimal-leading-zero); position: absolute; left: 0; top: 18px; font-family: var(--display); font-size: 0.875rem; color: var(--taupe); letter-spacing: 0.08em; }
+    .steps li strong { color: var(--espresso); font-weight: 500; }
+
+    .do { margin-top: 14px; padding: 14px 18px; background: var(--mist); border-radius: 4px; font-size: 1rem; line-height: 1.55; color: var(--espresso); }
+    .do b { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--taupe); display: block; margin-bottom: 6px; }
+
+    .callout { margin-top: 24px; border: 1px solid var(--hairline); border-left: 2px solid var(--espresso); border-radius: 0 4px 4px 0; padding: 22px 24px; }
+    .callout h3 { margin-top: 0; }
+    .callout p { margin-top: 8px; font-size: 1rem; }
+    .callout .num { font-variant-numeric: tabular-nums; color: var(--espresso); font-weight: 500; }
+
+    .boundary { margin-top: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--hairline); border-radius: 4px; overflow: hidden; }
+    .boundary > div { padding: 22px 24px; }
+    .boundary > div + div { border-left: 1px solid var(--hairline); }
+    .boundary h3 { margin-top: 0; font-size: 1rem; }
+    .boundary ul { margin-top: 12px; }
+    .boundary ul li { font-size: 0.9375rem; padding-left: 22px; }
+    .boundary ul li::before { top: 9px; }
+
+    .faq { margin-top: 8px; border-top: 1px solid var(--hairline); }
+    .faq details { border-bottom: 1px solid var(--hairline); }
+    .faq summary { cursor: pointer; list-style: none; padding: 20px 0; font-size: 1.125rem; font-weight: 500; color: var(--espresso); display: flex; justify-content: space-between; gap: 16px; }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::after { content: "+"; color: var(--taupe); font-weight: 400; }
+    .faq details[open] summary::after { content: "\2212"; }
+    .faq details p { margin-top: 0; padding-bottom: 20px; max-width: 64ch; }
+
+    .wc-next { margin-top: clamp(44px, 5vw, 64px); padding-top: 28px; border-top: 1px solid var(--hairline); }
+    .wc-next__title { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--taupe); }
+    .wc-next__grid { margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1px solid var(--hairline); }
+    .wc-next__item { display: block; padding: 20px 0; padding-right: 24px; border-bottom: 1px solid var(--hairline); text-decoration: none; }
+    .wc-next__item:nth-child(odd) { border-right: 1px solid var(--hairline); padding-right: 28px; }
+    .wc-next__item:nth-child(even) { padding-left: 28px; }
+    .wc-next__h { font-size: 1.0625rem; font-weight: 500; color: var(--espresso); }
+    .wc-next__p { margin-top: 6px; font-size: 0.9375rem; line-height: 1.5; color: var(--taupe-ink); }
+    .wc-next__h .arrow { color: var(--taupe); }
+
+    .wc-contact { margin-top: 28px; font-size: 1rem; line-height: 1.6; color: var(--taupe-ink); }
+    .wc-contact a { color: var(--espresso); }
+
+    .review { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--hairline); font-size: 0.8125rem; line-height: 1.6; color: var(--taupe); }
+
+    @media (max-width: 860px) {
+      .guide__grid { grid-template-columns: 1fr; }
+      .toc { display: none; }
+      .boundary, .wc-next__grid { grid-template-columns: 1fr; }
+      .boundary > div + div { border-left: none; border-top: 1px solid var(--hairline); }
+      .wc-next__item:nth-child(odd) { border-right: none; padding-right: 0; }
+      .wc-next__item:nth-child(even) { padding-left: 0; }
+      .defs__row { grid-template-columns: 1fr; gap: 6px; }
+    }
+
+    @media print {
+      .site-header, .site-footer, .toc, .crumbs, .page-hero__actions, .page-hero__aside, .wc-next, .wc-contact { display: none !important; }
+      .guide__grid { display: block; }
+      .prose { max-width: none; }
+      body { color: #000; }
+      a { color: #000; text-decoration: none; }
+      .do, .callout, .boundary, .defs__row { break-inside: avoid; }
+      .faq details { break-inside: avoid; }
+      .faq details:not([open]) p { display: block !important; padding-bottom: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header" id="siteHeader">
+    <div class="container site-header__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care, home">
+        <svg class="brand__mark" viewBox="0 0 100 92" role="img" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
+      </a>
+      <div class="site-header__actions">
+        <nav class="site-nav site-nav--primary" aria-label="Primary">
+          <a class="site-nav__link" href="services.html">Services</a>
+          <a class="site-nav__link" href="programs.html" aria-current="page">Benefits</a>
+          <a class="site-nav__link" href="learn.html">Library</a>
+          <a class="site-nav__link" href="about.html">About</a>
+          <a class="header-call" href="tel:+17028149630"><span class="header-call__label">Call us</span><span class="header-call__num">(702) 814-9630</span></a>
+        </nav>
+        <a class="btn btn--sm" href="qualify.html">See if you qualify</a>
+        <button class="nav-toggle" type="button" id="navToggle" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu"><span class="nav-toggle__bar" aria-hidden="true"></span></button>
+      </div>
+    </div>
+    <nav class="mobile-menu" id="site-menu" data-open="false" aria-label="Primary (mobile)">
+      <div class="container mobile-menu__inner">
+        <a class="mobile-menu__link" href="services.html">Services <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="programs.html">Benefits <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="learn.html">Library <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="about.html">About <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="btn btn--block mobile-menu__cta" href="qualify.html">See if you qualify</a>
+        <p class="mobile-menu__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></p>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href="programs.html">Benefits</a><span aria-hidden="true">/</span>OWCP / FECA
+        </nav>
+        <span class="eyebrow">A complete guide &middot; OWCP / FECA</span>
+        <h1>Federal workers&rsquo; comp can bring your care home &mdash; without making you manage the claim.</h1>
+        <p class="page-hero__lead">If you are a federal or postal employee with an accepted OWCP injury or illness, and your physician orders home health, your care is covered at no cost to you. You have already spent enough time inside this system. This guide explains how the home-health side works, where the authorizations go wrong, and what we take off your hands.</p>
+        <div class="page-hero__actions">
+          <a class="btn btn--primary btn--lg" href="#covers">See what OWCP covers at home <span class="arrow" aria-hidden="true">&darr;</span></a>
+          <button class="btn btn--ghost" type="button" id="printGuide">Print or save this guide</button>
+        </div>
+        <p class="page-hero__aside">This guide is for people with an <strong>accepted OWCP claim</strong>. Injured at work but your claim is not established yet? <a href="#new">That is a different path &rarr;</a></p>
+      </div>
+    </section>
+
+    <div class="container guide">
+      <div class="guide__grid">
+
+        <nav class="toc" aria-label="On this page">
+          <span class="eyebrow toc__label">On this page</span>
+          <ol id="tocList">
+            <li><a href="#covers">What it covers at home</a></li>
+            <li><a href="#authorization">How authorization works</a></li>
+            <li><a href="#stakeholders">Who is who in your claim</a></li>
+            <li><a href="#burden">What you should never have to do</a></li>
+            <li><a href="#new">If your claim is not established yet</a></li>
+            <li><a href="#scope">What we do, and do not do</a></li>
+            <li><a href="#faq">Common questions</a></li>
+          </ol>
+          <p class="toc__print"><button type="button" id="printGuide2">&#8595;&nbsp; Print / save as PDF</button></p>
+        </nav>
+
+        <div class="prose">
+
+          <section id="covers">
+            <h2>What OWCP covers at home.</h2>
+            <p class="lede">If your claim is accepted and your physician orders it, your care can come home.</p>
+            <p class="section-intro">For the injury or illness accepted under your claim, OWCP can cover skilled care in your own home, at no cost to you:</p>
+            <ul>
+              <li><strong>Skilled nursing</strong> &mdash; assessment, wound care, medication management, and disease management.</li>
+              <li><strong>Physical therapy</strong> &mdash; strength, mobility, and balance, toward your own recovery goals.</li>
+              <li><strong>Occupational therapy</strong> &mdash; returning to daily activities and, where it applies, toward work.</li>
+              <li><strong>Home health aide services</strong> &mdash; personal care under nursing supervision.</li>
+              <li><strong>Medical social work</strong> &mdash; connecting you to resources and coordinating the people involved in your claim.</li>
+            </ul>
+            <p>Tied to your accepted injury, your benefits can also include durable medical equipment, medically necessary home-safety modifications, and travel reimbursement for covered care.</p>
+            <p><strong>One point worth making plainly:</strong> home health under OWCP is not only for right after a hospital stay. When your physician orders it and OWCP authorizes it, it is covered on an ongoing basis for as long as it is medically necessary.</p>
+          </section>
+
+          <section id="authorization">
+            <h2>How authorization works &mdash; and where home care usually breaks.</h2>
+            <p class="section-intro">OWCP pays for care only when three things line up: it is for your <strong>accepted</strong> injury, it is <strong>ordered by your treating physician</strong>, and it is <strong>authorized by OWCP</strong>. The documentation has to match the accepted diagnosis and meet FECA standards. That is the whole game, and it is where care most often stalls.</p>
+            <ol class="steps">
+              <li>Your treating physician documents the need and writes the order, tied to your <strong>accepted injury</strong>.</li>
+              <li>The request goes to OWCP with <strong>FECA-compliant documentation</strong> and the accepted diagnosis, for the specific services and frequency.</li>
+              <li>OWCP <strong>authorizes</strong> the services. Care begins, billed to OWCP &mdash; at no cost to you.</li>
+              <li>Before the authorization period ends, it is <strong>renewed</strong> with updated documentation, so care does not stop.</li>
+            </ol>
+            <div class="do"><b>Where it breaks</b>Authorizations stall when paperwork is submitted incorrectly, when a physician is unfamiliar with FECA documentation, or when an authorization is allowed to lapse and a visit gets cancelled before anyone notices. An agency that does not actually know OWCP can interrupt your care without realizing it. Knowing this system cold is the difference, and it is the part we own.</div>
+          </section>
+
+          <section id="stakeholders">
+            <h2>Who is who in your claim.</h2>
+            <p class="section-intro">You have probably met all of these people already. Here is how they fit together, so the names stop being a source of confusion.</p>
+            <div class="defs">
+              <div class="defs__row"><span class="defs__term">Claims Examiner</span><span class="defs__desc">The OWCP official who manages your claim and approves authorizations. Decisions about what is covered run through them.</span></div>
+              <div class="defs__row"><span class="defs__term">Nurse Case Manager</span><span class="defs__desc">A nurse OWCP may assign to help coordinate your care. They are kept informed at the right milestones &mdash; that coordination is ours to manage, not yours.</span></div>
+              <div class="defs__row"><span class="defs__term">Treating physician</span><span class="defs__desc">Orders your care and owns every clinical decision. Their documentation has to meet FECA standards for OWCP to authorize the services.</span></div>
+              <div class="defs__row"><span class="defs__term">Where Alara fits</span><span class="defs__desc">We coordinate all of the above &mdash; the physician, the Claims Examiner, and the Nurse Case Manager &mdash; provide the covered care, and own the authorizations so nothing about your care depends on you chasing paperwork.</span></div>
+            </div>
+          </section>
+
+          <section id="burden">
+            <h2>What you should never have to do.</h2>
+            <p class="section-intro">You have already been the coordinator long enough. None of the following should be your job, and with the right agency it is not.</p>
+            <ul>
+              <li>Chase an authorization, or find out it lapsed only when a visit gets cancelled.</li>
+              <li>Move paperwork back and forth between your physician and OWCP.</li>
+              <li>Explain your claim from the beginning to every new person.</li>
+              <li>Keep your Nurse Case Manager and Claims Examiner updated yourself.</li>
+            </ul>
+            <div class="do"><b>What Alara owns</b>We verify your claim and authorizations, coordinate your physician and Nurse Case Manager, track every authorization and renew it before it lapses, and keep you informed at each step. The goal is simple: you focus on recovery, not on managing a federal claim.</div>
+          </section>
+
+          <section id="new">
+            <h2>Injured at work, but your claim is not established yet? That is a different path.</h2>
+            <p class="section-intro">Everything above assumes you already have an <strong>accepted</strong> OWCP claim. Getting one accepted is a separate, longer process, and it comes first &mdash; home health can be authorized only after the injury is accepted.</p>
+            <p>In broad terms, a federal or postal worker files a claim with OWCP through their employer &mdash; a <strong>Form CA-1</strong> for a traumatic injury, or a <strong>Form CA-2</strong> for an occupational disease. Once OWCP accepts the claim and a physician orders care, the home-health coverage in this guide applies.</p>
+            <p>We do not establish or adjudicate claims, but we will tell you honestly where your situation stands and point you toward the right resources to get the claim moving.</p>
+          </section>
+
+          <section id="scope">
+            <h2>What we do, and what we do not.</h2>
+            <p class="section-intro">Being clear about the line is part of being the expert. Everything short of the claim itself is ours to handle.</p>
+            <div class="boundary">
+              <div>
+                <h3>Alara does</h3>
+                <ul>
+                  <li>Provide the home health care your claim covers</li>
+                  <li>Verify the claim and own the authorizations and renewals</li>
+                  <li>Coordinate your physician, Nurse Case Manager, and Claims Examiner</li>
+                  <li>Keep you informed, so nothing depends on you chasing paperwork</li>
+                </ul>
+              </div>
+              <div>
+                <h3>Alara does not</h3>
+                <ul>
+                  <li>Establish or adjudicate your OWCP claim</li>
+                  <li>Determine your benefits &mdash; that is OWCP&rsquo;s role</li>
+                  <li>Direct your physician&rsquo;s clinical decisions</li>
+                  <li>Act as your attorney or representative</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section id="faq">
+            <h2>Common questions.</h2>
+            <div class="faq">
+              <details><summary>Does OWCP cover home health care?</summary><p>Yes. When your injury or illness is accepted, your physician orders home health, and OWCP authorizes it, covered services include skilled nursing, physical and occupational therapy, home health aide services, and medical social work &mdash; at no cost to you.</p></details>
+              <details><summary>Do I pay anything for OWCP home health?</summary><p>No. Authorized care for your accepted injury has no cost to you. OWCP pays your provider directly.</p></details>
+              <details><summary>Why do authorizations get delayed?</summary><p>Usually because the documentation does not meet FECA standards or does not match the accepted diagnosis, or because an agency unfamiliar with OWCP submits the request incorrectly. Knowing the system prevents most delays.</p></details>
+              <details><summary>What is a Nurse Case Manager?</summary><p>A nurse OWCP may assign to help coordinate your care. They are kept informed at appropriate milestones. Managing that communication is the agency&rsquo;s job, not yours.</p></details>
+              <details><summary>Can home health continue long-term?</summary><p>Yes, when it remains medically necessary and is re-authorized. Authorizations are renewed before they lapse so your care does not stop.</p></details>
+              <details><summary>What if I am trying to return to work?</summary><p>Care can support functional recovery and a safe return to work where it applies, with any work restrictions respected as part of the plan of care.</p></details>
+            </div>
+          </section>
+
+          <nav class="wc-next" aria-label="Where to go next">
+            <span class="wc-next__title">You are equipped. Where to go next</span>
+            <div class="wc-next__grid">
+              <a class="wc-next__item" href="qualify.html">
+                <span class="wc-next__h">See exactly what applies to you <span class="arrow" aria-hidden="true">&rarr;</span></span>
+                <span class="wc-next__p">Answer a few questions and get a plain-language answer, with the source and your next step.</span>
+              </a>
+              <a class="wc-next__item" href="learn.html#owcp">
+                <span class="wc-next__h">Look up a term <span class="arrow" aria-hidden="true">&rarr;</span></span>
+                <span class="wc-next__p">Clinician-reviewed, source-cited definitions: OWCP, FECA, and home health.</span>
+              </a>
+              <a class="wc-next__item" href="programs.html">
+                <span class="wc-next__h">Other federal benefits we accept <span class="arrow" aria-hidden="true">&rarr;</span></span>
+                <span class="wc-next__p">The White Card (EEOICPA) for energy workers, and VA Community Care for veterans.</span>
+              </a>
+              <a class="wc-next__item" href="#" id="printGuide3">
+                <span class="wc-next__h">Print this guide, or keep it <span class="arrow" aria-hidden="true">&darr;</span></span>
+                <span class="wc-next__p">Save it as a PDF to read later or hand to a family member.</span>
+              </a>
+            </div>
+            <p class="wc-contact">When you want skilled care started, we verify your claim and authorizations, coordinate your physician and Nurse Case Manager, and handle the paperwork so you do not have to. Reach Alara at <a href="tel:+17028149630">(702) 814-9630</a>, or <a href="begin.html">have a nurse call you</a>.</p>
+          </nav>
+
+          <p class="review">Reviewed by Alara&rsquo;s Director of Nursing, RN. Sources: U.S. Department of Labor, Office of Workers&rsquo; Compensation Programs (OWCP), Federal Employees&rsquo; Compensation Act (FECA), dol.gov/agencies/owcp/FECA. General information, not a determination of your eligibility or coverage. Your accepted claim, your physician, and OWCP determine what applies.</p>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care">
+        <svg class="brand__mark" viewBox="0 0 100 92" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
+      </a>
+      <div class="site-footer__meta">Serving all of Clark County, Nevada<br /><a href="tel:+17028149630">(702) 814-9630</a></div>
+    </div>
+  </footer>
+
+  <script>
+    var header = document.getElementById('siteHeader');
+    var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 24); };
+    onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+    var toggle = document.getElementById('navToggle'); var menu = document.getElementById('site-menu');
+    if (toggle && menu) { toggle.addEventListener('click', function () {
+      var open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!open));
+      toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+      menu.setAttribute('data-open', String(!open)); }); }
+    function doPrint(e){ if (e) e.preventDefault(); window.print(); }
+    ['printGuide','printGuide2','printGuide3'].forEach(function(id){
+      var b = document.getElementById(id); if (b) b.addEventListener('click', doPrint);
+    });
+    var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+    if ('IntersectionObserver' in window && links.length) {
+      var map = {};
+      links.forEach(function (a) { var id = a.getAttribute('href').slice(1); var s = document.getElementById(id); if (s) map[id] = a; });
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { links.forEach(function (l) { l.classList.remove('is-active'); }); if (map[e.target.id]) map[e.target.id].classList.add('is-active'); }
+        });
+      }, { rootMargin: '-20% 0px -70% 0px' });
+      Object.keys(map).forEach(function (id) { io.observe(document.getElementById(id)); });
+    }
+  </script>
+</body>
+</html>
