@@ -28,6 +28,10 @@
 
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
   --dur:  220ms;
+
+  /* Arch motif radii — one intentional curve, reusable. */
+  --arch-lg:   clamp(80px, 14vw, 220px);  /* large arched bands / CTA closes */
+  --arch-card: clamp(120px, 22vw, 220px); /* arched-top cards & media frames */
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -82,7 +86,7 @@ h1, h2, h3 { font-family: var(--text); font-weight: 500; line-height: 1.18; lett
 .site-nav__link { text-decoration: none; color: var(--taupe-ink); font-size: 0.9375rem; white-space: nowrap; transition: color var(--dur) var(--ease); }
 .site-nav__link:hover, .site-nav__link[aria-current="page"] { color: var(--espresso); }
 
-.header-call { display: inline-flex; align-items: baseline; gap: 10px; text-decoration: none; color: var(--espresso); font-size: 0.9375rem; }
+.header-call { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding-block: 11px; text-decoration: none; color: var(--espresso); font-size: 0.9375rem; }
 .header-call__label { font-family: var(--display); letter-spacing: 0.14em; text-transform: uppercase; font-size: 0.6875rem; color: var(--taupe); }
 .header-call__num { font-variant-numeric: tabular-nums; }
 .header-call:hover .header-call__num { text-decoration: underline; }
@@ -178,7 +182,7 @@ h1, h2, h3 { font-family: var(--text); font-weight: 500; line-height: 1.18; lett
    ===================================================================== */
 .wiz { max-width: 720px; margin-inline: auto; padding-block: clamp(40px, 6vw, 72px); }
 .wiz__crumbs { display: flex; align-items: center; gap: 12px; min-height: 24px; margin-bottom: 28px; }
-.wiz__back { display: inline-flex; align-items: center; gap: 8px; background: none; border: none; cursor: pointer; font-family: var(--text); font-size: 0.9375rem; color: var(--taupe-ink); padding: 0; }
+.wiz__back { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; background: none; border: none; cursor: pointer; font-family: var(--text); font-size: 0.9375rem; color: var(--taupe-ink); padding: 11px 8px; margin-left: -8px; }
 .wiz__back:hover { color: var(--espresso); text-decoration: underline; }
 .wiz__step { font-family: var(--display); font-size: 0.6875rem; letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--taupe); margin-left: auto; }
 .wiz__question { font-size: clamp(1.5rem, 2.8vw, 2rem); font-weight: 500; letter-spacing: -0.015em; line-height: 1.18; margin-bottom: 28px; max-width: 20ch; }
@@ -212,7 +216,7 @@ h1, h2, h3 { font-family: var(--text); font-weight: 500; line-height: 1.18; lett
 .ans__links a { font-size: 0.9375rem; color: var(--espresso); }
 .ans__trust { font-size: 0.8125rem; line-height: 1.55; color: var(--taupe); border-top: 1px solid var(--hairline); padding-top: 20px; }
 .ans__cta { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
-.ans__cta .restart { background: none; border: none; cursor: pointer; font-family: var(--text); font-size: 0.9375rem; color: var(--taupe-ink); text-decoration: underline; text-underline-offset: 3px; }
+.ans__cta .restart { display: inline-flex; align-items: center; min-height: 44px; padding-block: 11px; background: none; border: none; cursor: pointer; font-family: var(--text); font-size: 0.9375rem; color: var(--taupe-ink); text-decoration: underline; text-underline-offset: 3px; }
 .ans__cta .restart:hover { color: var(--espresso); }
 
 /* ========================================================================
@@ -243,7 +247,7 @@ h1, h2, h3 { font-family: var(--text); font-weight: 500; line-height: 1.18; lett
   background: var(--paper); border: 1px solid var(--hairline); border-radius: 4px; padding: 14px 16px;
   transition: border-color var(--dur) var(--ease);
 }
-.intake input:focus, .intake textarea:focus, .intake select:focus { outline: none; border-color: var(--espresso); }
+.intake input:focus, .intake textarea:focus, .intake select:focus { border-color: var(--espresso); }
 .intake textarea { min-height: 96px; resize: vertical; line-height: 1.6; }
 .intake__actions { margin-top: 28px; display: flex; flex-wrap: wrap; align-items: center; gap: 18px; }
 .intake__or { color: var(--taupe); font-size: 0.9375rem; }
@@ -274,7 +278,7 @@ h1, h2, h3 { font-family: var(--text); font-weight: 500; line-height: 1.18; lett
 .site-footer .brand__sub { color: var(--on-dark-soft); }
 .site-footer .brand__mark { color: var(--on-dark); }
 .site-footer__meta { font-size: 0.875rem; color: var(--on-dark-soft); text-align: right; line-height: 1.7; }
-.site-footer__meta a { color: var(--on-dark); text-decoration: none; }
+.site-footer__meta a { display: inline-flex; align-items: center; min-height: 44px; padding-block: 11px; color: var(--on-dark); text-decoration: none; }
 .site-footer__meta a:hover { text-decoration: underline; }
 
 /* ---- Quiet reveal: one slow fade, reduced-motion safe ------------------- */
@@ -303,6 +307,11 @@ html.js-reveal .reveal.is-in { opacity: 1; transform: none; }
   .real__marks span + span::before { content: none; margin: 0; }
   .real__marks { gap: 8px 16px; }
 }
+@media (max-width: 375px) {
+  /* Collapse the doubled gap where the navigator orientation block stacks
+     its bottom margin onto the wizard's top padding-block on small screens. */
+  .nav-orient + .wiz { padding-top: 0; }
+}
 
 /* ============================================================================
    ════════════════════════════════════════════════════════════════════════
@@ -329,6 +338,7 @@ html.js-reveal .reveal.is-in { opacity: 1; transform: none; }
 /* A calm, repeatable section head: eyebrow + title + optional lead. */
 .s-head { max-width: 64ch; margin-bottom: clamp(36px, 5vw, 64px); }
 .s-head--center { margin-inline: auto; text-align: center; }
+.s-head--tight { margin-bottom: clamp(24px, 3vw, 36px); }
 .s-head .eyebrow { display: block; margin-bottom: 18px; }
 .s-head__title { font-size: clamp(1.625rem, 3vw, 2.375rem); font-weight: 500; letter-spacing: -0.018em; line-height: 1.14; max-width: 20ch; }
 .s-head--center .s-head__title { margin-inline: auto; }
