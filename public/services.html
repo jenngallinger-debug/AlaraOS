@@ -53,14 +53,13 @@
           </a>
         </nav>
         <a class="btn btn--sm" href="qualify.html">See if you qualify</a>
-        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu">
+        <button class="nav-toggle" type="button" id="navToggle" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu">
           <span class="nav-toggle__bar" aria-hidden="true"></span>
         </button>
       </div>
     </div>
 
-    <!-- Mobile slide-down panel -->
-    <div class="mobile-menu" id="site-menu" data-open="false">
+    <nav class="mobile-menu" id="site-menu" data-open="false" aria-label="Primary (mobile)">
       <div class="container mobile-menu__inner">
         <a class="mobile-menu__link" href="services.html" aria-current="page">Services <span class="arrow" aria-hidden="true">&rarr;</span></a>
         <a class="mobile-menu__link" href="programs.html">Benefits <span class="arrow" aria-hidden="true">&rarr;</span></a>
@@ -69,15 +68,16 @@
         <a class="btn btn--block mobile-menu__cta" href="qualify.html">See if you qualify</a>
         <p class="mobile-menu__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></p>
       </div>
-    </div>
+    </nav>
   </header>
 
   <main>
 
     <!-- HERO — what we do, in one plain line, with the edge named in the subhead. -->
     <section class="lede-hero" aria-label="Services">
-      <div class="container lede-hero__grid">
-        <div class="lede-hero__text">
+      <div class="container">
+        <div class="lede-hero__grid">
+          <div class="lede-hero__text">
           <p class="eyebrow lede-hero__eyebrow">What we do &middot; Serving all of Clark County, Nevada</p>
           <h1 class="lede-hero__headline">
             Skilled care at home, <span class="soft">and the coordination that makes it work.</span>
@@ -92,9 +92,10 @@
             <a class="btn btn--ghost" href="tel:+17028149630">Call us (702) 814-9630</a>
           </div>
           <span class="lede-hero__reassure">A nurse answers, usually within the hour during business hours.</span>
-        </div>
-        <div class="lede-hero__media">
-          <img src="hero-arches.webp" alt="A wide stone staircase rising to a warm arched doorway." />
+          </div>
+          <div class="lede-hero__media">
+            <img src="hero-arches.webp" alt="A wide stone staircase rising to a warm arched doorway." />
+          </div>
         </div>
       </div>
     </section>
@@ -102,7 +103,7 @@
     <!-- ORDERED & SUPERVISED — stated once, plainly, up front. -->
     <section class="section section--mist" aria-label="How care is ordered and supervised">
       <div class="container">
-        <div class="s-head" style="margin-bottom: clamp(28px, 4vw, 44px);">
+        <div class="s-head s-head--tight">
           <span class="eyebrow">Physician-ordered, DON-supervised</span>
           <h2 class="s-head__title">Every service starts with a physician order and is supervised by a nurse.</h2>
         </div>
@@ -244,7 +245,7 @@
       </div>
     </section>
 
-    <!-- THE EDGE — the coordination competitors lack. This is "we handle the rest." -->
+    <!-- THE EDGE: the coordination competitors lack. This is the coordination we run for you. -->
     <section class="section section--greige" aria-label="Coordination and advocacy">
       <div class="container">
         <div class="s-head">
@@ -252,8 +253,8 @@
           <h2 class="s-head__title">The coordination that makes the care actually work.</h2>
           <p class="s-head__lead">
             Skilled care is only half of it. The other half is the authorizations, the
-            claims, and the benefits no one told you about. This is what we mean when we
-            say we handle the rest.
+            claims, and the benefits no one told you about. This is the coordination we
+            run for you.
           </p>
         </div>
 
@@ -303,7 +304,7 @@
                 the White Card and Medicare together.
               </p>
               <p class="editorial-row__more">
-                <a class="link-arrow" href="qualify.html">See what you may be missing <span class="arrow" aria-hidden="true">&rarr;</span></a>
+                <a class="link-arrow" href="qualify.html?node=ans-consequential">See what you may be missing <span class="arrow" aria-hidden="true">&rarr;</span></a>
               </p>
             </div>
           </div>
@@ -323,9 +324,11 @@
             <div class="editorial-row__body">
               <p>
                 Our Director of Nursing reviews every start-of-care assessment before it
-                is submitted. Not a coordinator, not a supervisor. The most clinically
-                accountable person in the agency looks at every admission. This is not
-                standard practice in home health. It is ours.
+                is submitted, so the most clinically accountable person in the agency has
+                looked at every admission.
+              </p>
+              <p class="editorial-row__more">
+                <a class="link-arrow" href="about.html">Why the DON reviews every admission <span class="arrow" aria-hidden="true">&rarr;</span></a>
               </p>
             </div>
           </div>
@@ -370,7 +373,7 @@
     <!-- PROGRAMS — quiet typographic row, with the honest disclaimer. -->
     <section class="section section--mist" aria-label="Programs we accept">
       <div class="container">
-        <div class="s-head" style="margin-bottom: clamp(24px, 3vw, 36px);">
+        <div class="s-head s-head--tight">
           <span class="eyebrow">Who pays for this</span>
           <h2 class="s-head__title">The benefit programs we specialize in, and most patients pay nothing.</h2>
           <p class="s-head__lead">
@@ -414,7 +417,7 @@
         </p>
         <div class="cta-band__actions">
           <a class="btn btn--on-dark btn--lg" href="qualify.html">See if you qualify <span class="arrow" aria-hidden="true">&rarr;</span></a>
-          <a class="cta-band__call" href="tel:+17028149630">or call (702) 814-9630</a>
+          <a class="cta-band__call" href="tel:+17028149630">Or call (702) 814-9630</a>
         </div>
         <p class="cta-band__reassure">A nurse answers, usually within the hour during business hours.</p>
       </div>
@@ -444,23 +447,23 @@
   </footer>
 
   <script>
-    // Sticky header hairline on scroll.
     var header = document.getElementById('siteHeader');
     var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 24); };
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-
-    // Accessible mobile menu: flip aria-expanded + data-open.
-    var toggle = document.querySelector('.nav-toggle');
-    var menu = document.getElementById('site-menu');
-    if (toggle && menu) {
-      toggle.addEventListener('click', function () {
-        var open = toggle.getAttribute('aria-expanded') === 'true';
-        toggle.setAttribute('aria-expanded', String(!open));
-        toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
-        menu.setAttribute('data-open', String(!open));
-      });
-    }
+    onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+    var toggle = document.getElementById('navToggle'); var menu = document.getElementById('site-menu');
+    if (toggle && menu) { toggle.addEventListener('click', function () {
+      var open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!open));
+      toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+      menu.setAttribute('data-open', String(!open)); }); }
+    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!prefersReduced && 'IntersectionObserver' in window) {
+      document.documentElement.classList.add('js-reveal');
+      var io = new IntersectionObserver(function (entries) { entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+    } else { document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('is-in'); }); }
   </script>
 </body>
 </html>

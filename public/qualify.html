@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Benefit Navigator | See what your benefits cover at home | Alara Home Care</title>
+  <title>Benefit Navigator &middot; See what your benefits cover at home &middot; Alara Home Care</title>
   <meta name="description" content="Start anywhere and, in about a minute, see what your home health benefits generally cover, including things most families are never told. White Card (EEOICPA), OWCP, and VA. General information, not a coverage determination." />
   <link rel="icon" href="logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -13,6 +13,18 @@
   <style>
     /* Page-scoped additions for the Navigator only. Five swatches, hairlines,
        no new color. These extend the existing .wiz / .ans vocabulary. */
+
+    /* Visually-hidden status node for the navigator live region. */
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+    }
+
+    /* Calm acknowledgment line above "Your next step" on answer cards. */
+    .ans__ack {
+      margin: 0 0 18px; padding-bottom: 18px; border-bottom: 1px solid var(--hairline);
+      font-size: 1rem; line-height: 1.6; color: var(--espresso);
+    }
 
     /* Orientation panel above the very first step: calm "here is what this does". */
     .nav-orient { max-width: 720px; margin-inline: auto; margin-bottom: clamp(28px, 4vw, 44px); }
@@ -49,31 +61,47 @@
 </head>
 <body>
 
-  <header class="site-header is-scrolled" id="siteHeader">
+  <header class="site-header" id="siteHeader">
     <div class="container site-header__inner">
       <a class="brand" href="home.html" aria-label="Alara Home Care, home">
-        <svg class="brand__mark" viewBox="0 0 100 92" aria-hidden="true">
-          <path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        <svg class="brand__mark" viewBox="0 0 100 92" role="img" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd"
+            d="M22,88 V34 L50,8 L78,34 V88 Z
+               M37,88 V66 A13,13 0 0 1 63,66 V88 Z
+               M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
         </svg>
-        <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
+        <span class="brand__word">
+          <span class="brand__name">ALARA</span>
+          <span class="brand__sub">Home Care</span>
+        </span>
       </a>
-      <nav class="site-nav" aria-label="Primary">
-        <a class="site-nav__link" href="qualify.html" aria-current="page">See what you qualify for</a>
-        <a class="site-nav__link" href="learn.html">Learn</a>
-        <a class="header-call" href="tel:+17028149630"><span class="header-call__label">Call us</span><span class="header-call__num">(702) 814-9630</span></a>
-      </nav>
-      <button class="nav-toggle" type="button" id="navToggle" aria-expanded="false" aria-controls="site-menu" aria-label="Menu">
-        <span class="nav-toggle__bar" aria-hidden="true"></span>
-      </button>
-    </div>
-    <div class="mobile-menu" id="site-menu" data-open="false">
-      <div class="container mobile-menu__inner">
-        <a class="mobile-menu__link" href="qualify.html" aria-current="page">See what you qualify for <span class="arrow" aria-hidden="true">&rarr;</span></a>
-        <a class="mobile-menu__link" href="learn.html">Learn <span class="arrow" aria-hidden="true">&rarr;</span></a>
-        <a class="btn mobile-menu__cta" href="begin.html">Have a nurse call me <span class="arrow" aria-hidden="true">&rarr;</span></a>
-        <p class="mobile-menu__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></p>
+      <div class="site-header__actions">
+        <nav class="site-nav site-nav--primary" aria-label="Primary">
+          <a class="site-nav__link" href="services.html">Services</a>
+          <a class="site-nav__link" href="programs.html">Benefits</a>
+          <a class="site-nav__link" href="learn.html">Library</a>
+          <a class="site-nav__link" href="about.html">About</a>
+          <a class="header-call" href="tel:+17028149630">
+            <span class="header-call__label">Call us</span>
+            <span class="header-call__num">(702) 814-9630</span>
+          </a>
+        </nav>
+        <a class="btn btn--sm" href="qualify.html">See if you qualify</a>
+        <button class="nav-toggle" type="button" id="navToggle" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu">
+          <span class="nav-toggle__bar" aria-hidden="true"></span>
+        </button>
       </div>
     </div>
+    <nav class="mobile-menu" id="site-menu" data-open="false" aria-label="Primary (mobile)">
+      <div class="container mobile-menu__inner">
+        <a class="mobile-menu__link" href="services.html">Services <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="programs.html">Benefits <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="learn.html">Library <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="about.html">About <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="btn btn--block mobile-menu__cta" href="qualify.html">See if you qualify</a>
+        <p class="mobile-menu__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></p>
+      </div>
+    </nav>
   </header>
 
   <main>
@@ -93,7 +121,8 @@
         <p class="nav-orient__note">This is general information, not a coverage determination. Nothing you choose is saved, and nothing here decides your claim.</p>
       </div>
 
-      <div class="wiz" id="wiz" aria-live="polite"><!-- rendered by JS --></div>
+      <p class="sr-only" id="wizStatus" role="status" aria-live="polite"></p>
+      <div class="wiz" id="wiz"><!-- rendered by JS --></div>
     </div>
 
     <section class="disclaimer">
@@ -182,21 +211,21 @@
       { "label": "EEOICPA / White Card", "next": "ans-eeoicpa-hh" },
       { "label": "OWCP / FECA", "next": "ans-owcp-nursing" },
       { "label": "VA / Veteran", "next": "ans-va-hh" } ] },
-    "ans-eeoicpa-hh": { "id": "ans-eeoicpa-hh", "type": "answer", "title": "Yes — the White Card generally covers home health", "answer": "If you have an accepted EEOICPA condition and a physician orders home health, your White Card generally covers skilled nursing, wound care, therapy, and home health aide services for that condition at no out-of-pocket cost.", "covered": ["Skilled nursing", "Wound care", "Physical & occupational therapy", "Home health aide", "Caregiver training"], "term": "white-card", "source": { "label": "U.S. Department of Labor — EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "Bring your accepted condition(s) and your physician's order. A nurse can verify your authorization and explain what's covered.", "trust": "This is general information, not a coverage determination. Your DOL Resource Center and physician confirm what applies to your claim.", "discover": ["ans-consequential", "ans-paid-caregiver", "ans-white-card-medicare"] },
-    "ans-eeoicpa-wound": { "id": "ans-eeoicpa-wound", "type": "answer", "title": "Yes — home wound care is generally covered", "answer": "For approved EEOICPA beneficiaries, skilled home wound care ordered by a physician is generally covered at no out-of-pocket cost, including assessment, dressing changes, infection monitoring, and advanced wound therapy.", "covered": ["Wound assessment & staging", "Sterile dressing changes", "Infection monitoring", "Advanced/negative-pressure therapy when ordered"], "term": "wound-care", "source": { "label": "U.S. Department of Labor — EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "If the wound results from a consequential condition, it may need DOL acceptance first. A nurse can help document it.", "trust": "General information only. Your Resource Center and physician confirm coverage for your accepted condition.", "discover": ["ans-consequential", "ans-paid-caregiver", "ans-white-card-medicare"] },
-    "ans-eeoicpa-infusion": { "id": "ans-eeoicpa-infusion", "type": "answer", "title": "Home infusion therapy is generally covered", "answer": "When ordered by a physician for an accepted EEOICPA condition, home infusion / IV therapy is generally covered at no out-of-pocket cost, with a nurse managing the line and treatment in your home.", "covered": ["IV antibiotics", "Hydration & nutrition support", "PICC/line management", "Nurse-administered infusions"], "term": "home-health", "source": { "label": "U.S. Department of Labor — EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "Have your physician's order and accepted condition ready for verification.", "trust": "General information only. Confirm specifics with your Resource Center and physician.", "discover": ["ans-consequential", "ans-paid-caregiver", "ans-white-card-medicare"] },
-    "ans-consequential": { "id": "ans-consequential", "type": "answer", "title": "A consequential condition may also be covered", "answer": "A consequential condition is a new problem caused by your already-accepted EEOICPA condition or its treatment. Once the Department of Labor accepts it as consequential, related care, including home health, may also be covered.", "covered": ["Documentation support", "Physician coordination", "Home health for the accepted consequential condition"], "term": "consequential-condition", "source": { "label": "U.S. Department of Labor — EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "Documentation is key. A clinician can help link the new condition to your accepted one for DOL review.", "trust": "Acceptance is determined by the Department of Labor, not by Alara." },
-    "ans-paid-caregiver": { "id": "ans-paid-caregiver", "type": "answer", "title": "You may be able to be paid to care for your family member", "answer": "Under EEOICPA in-home care benefits, a family member who already provides daily care may be able to be employed and paid (as a W-2 employee) to provide that care, with RN supervision, when authorized.", "covered": ["W-2 employment", "RN supervision", "Training", "Workers' comp coverage"], "term": "white-card", "source": { "label": "U.S. Department of Labor — EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "Eligibility depends on the authorized level of in-home care. A nurse can walk you through requirements.", "trust": "General information only; authorization is determined through your claim." },
-    "ans-white-card-medicare": { "id": "ans-white-card-medicare", "type": "answer", "title": "Yes — you can have the White Card and Medicare", "answer": "The White Card and Medicare operate independently. Having one does not cancel the other. For care tied to your accepted EEOICPA condition, the White Card generally pays with no out-of-pocket cost.", "covered": ["No loss of Medicare", "No premiums/copays for covered EEOICPA care"], "term": "white-card", "source": { "label": "U.S. Department of Labor — EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "Keep both. They cover different things and can work together.", "trust": "General information only. Confirm coordination details with your Resource Center." },
-    "ans-get-white-card": { "id": "ans-get-white-card", "type": "answer", "title": "How to get a White Card (EEOICPA)", "answer": "You file an EEOICPA claim (Form EE-1 as a worker, or EE-2 as a survivor) with the Department of Labor. When a condition is accepted, you receive a White Card for covered medical care. The DOL Las Vegas Resource Center can help you file.", "covered": ["Eligibility screening", "Help understanding EE-1 / EE-2", "Resource Center referral"], "term": "eeoicpa", "source": { "label": "U.S. Department of Labor — EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "Contact the DOL Resource Center to file. Alara can help you understand the steps and what care follows acceptance.", "trust": "Alara does not file claims or determine eligibility. The Department of Labor does." },
-    "ans-nts": { "id": "ans-nts", "type": "answer", "title": "Nevada Test Site & DOE workers may qualify for EEOICPA", "answer": "Workers at the Nevada Test Site / Nevada National Security Site, the Tonopah Test Range, and Atomic Weapons Employer facilities may qualify for EEOICPA benefits, including a White Card and covered home health, depending on their work history and condition.", "covered": ["Eligibility overview", "Covered conditions", "What the White Card covers"], "term": "eeoicpa", "source": { "label": "U.S. Department of Labor — EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "The DOL Resource Center can review your specific facility and dates of employment.", "trust": "Eligibility is determined by the Department of Labor.", "discover": ["ans-eeoicpa-hh", "ans-consequential", "ans-paid-caregiver"] },
-    "ans-survivor": { "id": "ans-survivor", "type": "answer", "title": "Survivors may qualify for EEOICPA benefits", "answer": "Eligible survivors of a worker who would have qualified under EEOICPA may file a claim (Form EE-2) and may receive compensation. A representative or the DOL Resource Center can help determine eligibility.", "covered": ["Survivor eligibility overview", "Form EE-2 guidance"], "term": "eeoicpa", "source": { "label": "U.S. Department of Labor — EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "Gather the worker's employment and medical history; contact the Resource Center to file.", "trust": "Alara provides information; the Department of Labor determines survivor eligibility." },
-    "ans-owcp-hh": { "id": "ans-owcp-hh", "type": "answer", "title": "Yes — OWCP can cover home health when authorized", "answer": "If you are a federal or postal worker with an OWCP-accepted injury or illness, and a physician orders home health, OWCP can authorize it at no out-of-pocket cost.", "covered": ["Skilled nursing", "Wound care", "Physical & occupational therapy", "Home health aide"], "term": "owcp", "source": { "label": "U.S. Department of Labor — OWCP/FECA", "url": "https://www.dol.gov/agencies/owcp/FECA" }, "nextStep": "Your physician's order plus OWCP authorization start care. A nurse can help track the authorization.", "trust": "Coverage depends on OWCP acceptance and authorization for your claim." },
-    "ans-owcp-nursing": { "id": "ans-owcp-nursing", "type": "answer", "title": "Skilled nursing & wound care under OWCP", "answer": "OWCP can authorize skilled nursing and home wound care for an accepted federal/postal work injury when a physician orders it. Postal (USPS) workers are covered the same way as other federal employees.", "covered": ["RN skilled nursing", "Wound care", "Medication management", "Post-surgical care"], "term": "feca", "source": { "label": "U.S. Department of Labor — OWCP/FECA", "url": "https://www.dol.gov/agencies/owcp/FECA" }, "nextStep": "Confirm your accepted conditions and obtain a physician order; Alara can explain the authorization path.", "trust": "Authorization is determined by OWCP." },
-    "ans-va-hh": { "id": "ans-va-hh", "type": "answer", "title": "The VA can cover home health for eligible veterans", "answer": "Enrolled veterans can receive home health through VA Community Care when the VA cannot readily provide it. A VA referral/authorization and a provider order are required. In Region 4 (including Nevada), the network is administered by TriWest.", "covered": ["Skilled nursing", "Wound care", "Therapy", "Home health aide"], "term": "community-care", "source": { "label": "U.S. Department of Veterans Affairs — Community Care", "url": "https://www.va.gov/communitycare/" }, "nextStep": "Ask your VA care team for a community-care referral; a provider can begin once authorized.", "trust": "Eligibility and referrals are determined by the VA." },
-    "ans-va-wound": { "id": "ans-va-wound", "type": "answer", "title": "Home wound care for veterans through VA Community Care", "answer": "Eligible veterans can receive skilled home wound care through VA Community Care when referred and authorized by the VA, delivered by an approved community provider.", "covered": ["Wound assessment", "Dressing changes", "Infection monitoring", "Advanced wound therapy"], "term": "wound-care", "source": { "label": "U.S. Department of Veterans Affairs — Community Care", "url": "https://www.va.gov/communitycare/" }, "nextStep": "Request a community-care referral from your VA care team.", "trust": "Referral and eligibility are determined by the VA." },
+    "ans-eeoicpa-hh": { "id": "ans-eeoicpa-hh", "type": "answer", "title": "Yes. The White Card generally covers home health", "answer": "If you have an accepted EEOICPA condition and a physician orders home health, your White Card generally covers skilled nursing, wound care, therapy, and home health aide services for that condition at no out-of-pocket cost.", "covered": ["Skilled nursing", "Wound care", "Physical & occupational therapy", "Home health aide", "Caregiver training"], "term": "white-card", "source": { "label": "U.S. Department of Labor, EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "Bring your accepted condition(s) and your physician's order. A nurse can verify your authorization and explain what's covered.", "trust": "This is general information, not a coverage determination. Your DOL Resource Center and physician confirm what applies to your claim.", "discover": ["ans-consequential", "ans-paid-caregiver", "ans-white-card-medicare"] },
+    "ans-eeoicpa-wound": { "id": "ans-eeoicpa-wound", "type": "answer", "title": "Yes. Home wound care is generally covered", "answer": "For approved EEOICPA beneficiaries, skilled home wound care ordered by a physician is generally covered at no out-of-pocket cost, including assessment, dressing changes, infection monitoring, and advanced wound therapy.", "covered": ["Wound assessment & staging", "Sterile dressing changes", "Infection monitoring", "Advanced/negative-pressure therapy when ordered"], "term": "wound-care", "source": { "label": "U.S. Department of Labor, EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "If the wound results from a consequential condition, it may need DOL acceptance first. A nurse can help document it.", "trust": "General information only. Your Resource Center and physician confirm coverage for your accepted condition.", "discover": ["ans-consequential", "ans-paid-caregiver", "ans-white-card-medicare"] },
+    "ans-eeoicpa-infusion": { "id": "ans-eeoicpa-infusion", "type": "answer", "title": "Home infusion therapy is generally covered", "answer": "When ordered by a physician for an accepted EEOICPA condition, home infusion / IV therapy is generally covered at no out-of-pocket cost, with a nurse managing the line and treatment in your home.", "covered": ["IV antibiotics", "Hydration & nutrition support", "PICC/line management", "Nurse-administered infusions"], "term": "home-health", "source": { "label": "U.S. Department of Labor, EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "Have your physician's order and accepted condition ready for verification.", "trust": "General information only. Confirm specifics with your Resource Center and physician.", "discover": ["ans-consequential", "ans-paid-caregiver", "ans-white-card-medicare"] },
+    "ans-consequential": { "id": "ans-consequential", "type": "answer", "title": "A consequential condition may also be covered", "answer": "A consequential condition is a new problem caused by your already-accepted EEOICPA condition or its treatment. Once the Department of Labor accepts it as consequential, related care, including home health, may also be covered.", "covered": ["Documentation support", "Physician coordination", "Home health for the accepted consequential condition"], "term": "consequential-condition", "source": { "label": "U.S. Department of Labor, EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "Documentation is key. A clinician can help link the new condition to your accepted one for DOL review.", "trust": "Acceptance is determined by the Department of Labor, not by Alara." },
+    "ans-paid-caregiver": { "id": "ans-paid-caregiver", "type": "answer", "title": "You may be able to be paid to care for your family member", "answer": "Under EEOICPA in-home care benefits, a family member who already provides daily care may be able to be employed and paid (as a W-2 employee) to provide that care, with RN supervision, when authorized.", "covered": ["W-2 employment", "RN supervision", "Training", "Workers' comp coverage"], "term": "white-card", "source": { "label": "U.S. Department of Labor, EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "Eligibility depends on the authorized level of in-home care. A nurse can walk you through requirements.", "trust": "General information only; authorization is determined through your claim." },
+    "ans-white-card-medicare": { "id": "ans-white-card-medicare", "type": "answer", "title": "Yes. You can have the White Card and Medicare", "answer": "The White Card and Medicare operate independently. Having one does not cancel the other. For care tied to your accepted EEOICPA condition, the White Card generally pays with no out-of-pocket cost.", "covered": ["No loss of Medicare", "No premiums/copays for covered EEOICPA care"], "term": "white-card", "source": { "label": "U.S. Department of Labor, EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "Keep both. They cover different things and can work together.", "trust": "General information only. Confirm coordination details with your Resource Center." },
+    "ans-get-white-card": { "id": "ans-get-white-card", "type": "answer", "title": "How to get a White Card (EEOICPA)", "answer": "You file an EEOICPA claim (Form EE-1 as a worker, or EE-2 as a survivor) with the Department of Labor. When a condition is accepted, you receive a White Card for covered medical care. The DOL Las Vegas Resource Center can help you file.", "covered": ["Eligibility screening", "Help understanding EE-1 / EE-2", "Resource Center referral"], "term": "eeoicpa", "source": { "label": "U.S. Department of Labor, EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "Contact the DOL Resource Center to file. Alara can help you understand the steps and what care follows acceptance.", "trust": "Alara does not file claims or determine eligibility. The Department of Labor does." },
+    "ans-nts": { "id": "ans-nts", "type": "answer", "title": "Nevada Test Site & DOE workers may qualify for EEOICPA", "answer": "Workers at the Nevada Test Site / Nevada National Security Site, the Tonopah Test Range, and Atomic Weapons Employer facilities may qualify for EEOICPA benefits, including a White Card and covered home health, depending on their work history and condition.", "covered": ["Eligibility overview", "Covered conditions", "What the White Card covers"], "term": "eeoicpa", "source": { "label": "U.S. Department of Labor, EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "The DOL Resource Center can review your specific facility and dates of employment.", "trust": "Eligibility is determined by the Department of Labor.", "discover": ["ans-eeoicpa-hh", "ans-consequential", "ans-paid-caregiver"] },
+    "ans-survivor": { "id": "ans-survivor", "type": "answer", "title": "Survivors may qualify for EEOICPA benefits", "answer": "Eligible survivors of a worker who would have qualified under EEOICPA may file a claim (Form EE-2) and may receive compensation. A representative or the DOL Resource Center can help determine eligibility.", "covered": ["Survivor eligibility overview", "Form EE-2 guidance"], "term": "eeoicpa", "source": { "label": "U.S. Department of Labor, EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "Gather the worker's employment and medical history; contact the Resource Center to file.", "trust": "Alara provides information; the Department of Labor determines survivor eligibility." },
+    "ans-owcp-hh": { "id": "ans-owcp-hh", "type": "answer", "title": "Yes. OWCP can cover home health when authorized", "answer": "If you are a federal or postal worker with an OWCP-accepted injury or illness, and a physician orders home health, OWCP can authorize it at no out-of-pocket cost.", "covered": ["Skilled nursing", "Wound care", "Physical & occupational therapy", "Home health aide"], "term": "owcp", "source": { "label": "U.S. Department of Labor, OWCP/FECA", "url": "https://www.dol.gov/agencies/owcp/FECA" }, "nextStep": "Your physician's order plus OWCP authorization start care. A nurse can help track the authorization.", "trust": "Coverage depends on OWCP acceptance and authorization for your claim." },
+    "ans-owcp-nursing": { "id": "ans-owcp-nursing", "type": "answer", "title": "Skilled nursing & wound care under OWCP", "answer": "OWCP can authorize skilled nursing and home wound care for an accepted federal/postal work injury when a physician orders it. Postal (USPS) workers are covered the same way as other federal employees.", "covered": ["RN skilled nursing", "Wound care", "Medication management", "Post-surgical care"], "term": "feca", "source": { "label": "U.S. Department of Labor, OWCP/FECA", "url": "https://www.dol.gov/agencies/owcp/FECA" }, "nextStep": "Confirm your accepted conditions and obtain a physician order; Alara can explain the authorization path.", "trust": "Authorization is determined by OWCP." },
+    "ans-va-hh": { "id": "ans-va-hh", "type": "answer", "title": "The VA can cover home health for eligible veterans", "answer": "Enrolled veterans can receive home health through VA Community Care when the VA cannot readily provide it. A VA referral/authorization and a provider order are required. In Region 4 (including Nevada), the network is administered by TriWest.", "covered": ["Skilled nursing", "Wound care", "Therapy", "Home health aide"], "term": "community-care", "source": { "label": "U.S. Department of Veterans Affairs, Community Care", "url": "https://www.va.gov/communitycare/" }, "nextStep": "Ask your VA care team for a community-care referral; a provider can begin once authorized.", "trust": "Eligibility and referrals are determined by the VA." },
+    "ans-va-wound": { "id": "ans-va-wound", "type": "answer", "title": "Home wound care for veterans through VA Community Care", "answer": "Eligible veterans can receive skilled home wound care through VA Community Care when referred and authorized by the VA, delivered by an approved community provider.", "covered": ["Wound assessment", "Dressing changes", "Infection monitoring", "Advanced wound therapy"], "term": "wound-care", "source": { "label": "U.S. Department of Veterans Affairs, Community Care", "url": "https://www.va.gov/communitycare/" }, "nextStep": "Request a community-care referral from your VA care team.", "trust": "Referral and eligibility are determined by the VA." },
     "ans-home-health": { "id": "ans-home-health", "type": "answer", "title": "What home health is", "answer": "Home health is skilled, physician-ordered medical care delivered in your home: nursing, wound care, infusion, and rehabilitation. It is different from non-medical home care, and federal programs (EEOICPA, OWCP, VA) can cover it.", "covered": ["Skilled nursing", "Wound care", "Infusion therapy", "Therapy", "Care coordination"], "term": "home-health", "source": { "label": "Centers for Medicare & Medicaid Services", "url": "https://www.cms.gov/" }, "nextStep": "Tell us your program and we'll show what's covered and how to start.", "trust": "General information only." },
-    "ans-local": { "id": "ans-local", "type": "answer", "title": "Federal-benefits home health in Southern Nevada", "answer": "In Las Vegas, Clark County, and Southern Nevada, EEOICPA White Card holders, OWCP-covered federal/postal workers, and VA Community Care veterans can receive covered home health. Local resources include the DOL Las Vegas Resource Center and the VA Southern Nevada Healthcare System.", "covered": ["Local eligibility overview", "Resource Center & VA pointers", "Covered services"], "term": "home-health", "source": { "label": "U.S. Department of Labor — EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "We can connect your program to local, covered care and the right Resource Center.", "trust": "Alara complements your Resource Center, physician, and the VA. It does not replace them." }
+    "ans-local": { "id": "ans-local", "type": "answer", "title": "Federal-benefits home health in Southern Nevada", "answer": "In Las Vegas, Clark County, and Southern Nevada, EEOICPA White Card holders, OWCP-covered federal/postal workers, and VA Community Care veterans can receive covered home health. Local resources include the DOL Las Vegas Resource Center and the VA Southern Nevada Healthcare System.", "covered": ["Local eligibility overview", "Resource Center & VA pointers", "Covered services"], "term": "home-health", "source": { "label": "U.S. Department of Labor, EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "We can connect your program to local, covered care and the right Resource Center.", "trust": "Alara complements your Resource Center, physician, and the VA. It does not replace them." }
   }
   </script>
 
@@ -204,12 +233,27 @@
     var TREE = JSON.parse(document.getElementById('nav-data').textContent);
     var wiz = document.getElementById('wiz');
     var orient = document.getElementById('navOrient');
+    var status = document.getElementById('wizStatus');
+    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var trail = [];   // our own back-stack (NOT window.history)
     var currentId = 'start';
 
     function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 
-    function go(id, push){ if (push !== false) trail.push(currentId); currentId = id; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+    function scrollTop(){ window.scrollTo({ top: 0, behavior: prefersReduced ? 'auto' : 'smooth' }); }
+
+    // Move focus to the new question/answer heading and announce it via the
+    // small status node, instead of re-reading the whole .wiz on every step.
+    function focusHeading(){
+      var h = wiz.querySelector('.wiz__question, .ans__title');
+      if (h) {
+        if (!h.hasAttribute('tabindex')) h.setAttribute('tabindex', '-1');
+        h.focus();
+        if (status) status.textContent = h.textContent;
+      }
+    }
+
+    function go(id, push){ if (push !== false) trail.push(currentId); currentId = id; render(); scrollTop(); focusHeading(); }
 
     // The orientation frame belongs only to the very first step.
     function setOrient(){
@@ -268,6 +312,7 @@
             '</div>' +
             '<div class="ans__body">' +
               (covered ? '<div><p class="ans__label">Generally included</p><ul class="ans__covered">' + covered + '</ul></div>' : '') +
+              '<p class="ans__ack">This is a benefit you earned. Here is how to use it.</p>' +
               '<div><p class="ans__label">Your next step</p><div class="ans__next">' + esc(node.nextStep || '') + '</div></div>' +
               '<div class="ans__links">' +
                 (node.source ? '<a href="' + esc(node.source.url) + '" target="_blank" rel="noopener">Source: ' + esc(node.source.label) + ' &nearr;</a>' : '') +
@@ -286,10 +331,10 @@
           b.addEventListener('click', function(){ go(b.getAttribute('data-next')); });
         });
         var r = document.getElementById('restart');
-        if (r) r.addEventListener('click', function(){ trail = []; currentId = 'start'; render(); window.scrollTo({top:0,behavior:'smooth'}); });
+        if (r) r.addEventListener('click', function(){ trail = []; currentId = 'start'; render(); scrollTop(); focusHeading(); });
       }
       var back = document.getElementById('back');
-      if (back) back.addEventListener('click', function(){ currentId = trail.pop(); render(); window.scrollTo({top:0,behavior:'smooth'}); });
+      if (back) back.addEventListener('click', function(){ currentId = trail.pop(); render(); scrollTop(); focusHeading(); });
     }
 
     // deep link: ?node=by-program  or  ?node=ans-eeoicpa-hh
@@ -298,18 +343,26 @@
     var startNode = params.get('node');
     if (startNode && TREE[startNode]) { currentId = startNode; }
     render();
+  </script>
 
-    // Accessible mobile menu: flip aria-expanded + data-open. (~6 lines.)
-    (function(){
-      var t = document.getElementById('navToggle');
-      var m = document.getElementById('site-menu');
-      if (!t || !m) return;
-      t.addEventListener('click', function(){
-        var open = t.getAttribute('aria-expanded') === 'true';
-        t.setAttribute('aria-expanded', String(!open));
-        m.setAttribute('data-open', String(!open));
-      });
-    })();
+  <script>
+    var header = document.getElementById('siteHeader');
+    var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 24); };
+    onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+    var toggle = document.getElementById('navToggle'); var menu = document.getElementById('site-menu');
+    if (toggle && menu) { toggle.addEventListener('click', function () {
+      var open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!open));
+      toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+      menu.setAttribute('data-open', String(!open)); }); }
+    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!prefersReduced && 'IntersectionObserver' in window) {
+      document.documentElement.classList.add('js-reveal');
+      var io = new IntersectionObserver(function (entries) { entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+    } else { document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('is-in'); }); }
   </script>
 </body>
 </html>
