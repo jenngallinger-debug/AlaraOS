@@ -1,5 +1,11 @@
 # Experience architecture — the logic of the site
 
+> **SUPERSEDED (2026-06-30).** This early draft jumped from architecture to pixels
+> and skipped the experience layer. The canonical model is now
+> `docs/ARCHITECTURE-OF-EXPERIENCE.md` (Reality → Reality Operating Model →
+> Stakeholder Experience of Reality → Interactions). Kept for history only; do not
+> build from this file.
+
 Status: draft for owner review (2026-06-30). This is the map we build against.
 Nothing new ships until the journeys below are signed off.
 
