@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Alara Home Care &middot; Nurse-owned home health in Las Vegas</title>
-  <meta name="description" content="You are owed more care than anyone has told you. Alara is a nurse-owned home health team in Las Vegas for families on federal benefits. We bring the care home, find everything you have earned, and handle the forms and the calls. You just tell us what is happening." />
+  <title>Alara Home Care &middot; Specialized home health for federal-program patients in Las Vegas</title>
+  <meta name="description" content="Specialized skilled home health for complex patients on federal programs. AlaraOS knows every program and how they fit together, so you get everything you qualify for and never have to look anywhere else." />
   <meta property="og:title" content="Alara Home Care" />
-  <meta property="og:description" content="You are owed more care than anyone has told you. We find it, bring it home, and handle the rest." />
+  <meta property="og:description" content="Specialized skilled home health for complex patients on federal programs. The system that knows every program, and how to get you everything you qualify for." />
   <meta property="og:type" content="website" />
   <link rel="icon" href="logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -14,63 +14,65 @@
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="site.css" />
   <style>
-    /* ── THE REVELATION — the homepage as an experience ──────────────────
-       A calm, accumulating sequence of things families are owed but never
-       told. Each beat is one idea, generously spaced, revealed on scroll.
-       Five neutral swatches, hairlines, no new color. Education as feeling. */
-    .reveal-intro { padding-block: clamp(48px, 7vw, 96px) 0; }
-    .reveal-intro__eyebrow { display: block; margin-bottom: 20px; }
-    .reveal-intro h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 500; letter-spacing: -0.016em; max-width: 22ch; }
-    .reveal-intro p { margin-top: 18px; font-size: 1.1875rem; line-height: 1.6; color: var(--taupe-ink); max-width: 54ch; }
+    /* ── Homepage, curated. Generous air, one idea per screen, every block earns
+         its place. Five neutral swatches, hairlines, the arch. No new color. ── */
+    .sec { padding-block: var(--section-y); }
+    .sec--tint { background: var(--mist); }
+    .sec--dark { background: var(--espresso); color: var(--on-dark); }
+    .s-lede { max-width: 30ch; }
+    .s-lede__eyebrow { display: block; margin-bottom: 24px; }
+    .s-lede h2 { font-size: clamp(1.875rem, 3.6vw, 3rem); font-weight: 500; letter-spacing: -0.022em; line-height: 1.1; }
+    .sec--dark .s-lede h2 { color: var(--on-dark); }
+    .s-lede__sub { margin-top: 26px; font-size: 1.1875rem; line-height: 1.62; color: var(--taupe-ink); max-width: 52ch; }
+    .sec--dark .s-lede__sub { color: var(--on-dark-soft); }
 
-    .revelations { padding-block: clamp(24px, 4vw, 48px) 0; }
-    .revelation {
-      border-top: 1px solid var(--hairline);
-      padding-block: clamp(44px, 6.5vw, 96px);
-      display: grid; grid-template-columns: 84px 1fr; gap: clamp(8px, 2vw, 32px);
-      align-items: start;
-    }
-    .revelation__num { font-family: var(--display); font-weight: 300; font-size: 1.0625rem; color: var(--taupe); font-variant-numeric: tabular-nums; padding-top: 6px; }
-    .revelation__label { display: block; margin-bottom: 18px; }
-    .revelation__statement { font-size: clamp(1.625rem, 3.2vw, 2.625rem); font-weight: 500; line-height: 1.12; letter-spacing: -0.02em; max-width: 18ch; color: var(--espresso); }
-    .revelation__detail { margin-top: 22px; font-size: 1.1875rem; line-height: 1.62; color: var(--taupe-ink); max-width: 52ch; }
-    .revelation__proof { margin-top: 22px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; font-size: 0.875rem; color: var(--taupe); }
-    .revelation__tag { font-family: var(--display); letter-spacing: 0.14em; text-transform: uppercase; font-size: 0.6875rem; color: var(--taupe); }
-    .revelation__tag::after { content: ""; display: inline-block; width: 18px; height: 1px; background: var(--hairline); margin-left: 16px; vertical-align: middle; }
-    .revelation__link { color: var(--espresso); font-size: 0.9375rem; display: inline-flex; align-items: center; gap: 8px; }
-    .revelation__link .arrow { color: var(--taupe); transition: transform var(--dur) var(--ease); }
-    .revelation__link:hover .arrow { transform: translateX(3px); color: var(--espresso); }
+    /* The expert system — the breadth of programs Alara masters, as a quiet map. */
+    .breadth { margin-top: clamp(40px, 5vw, 72px); border-top: 1px solid var(--hairline); }
+    .breadth__row { display: grid; grid-template-columns: 16ch 1fr; gap: clamp(12px, 3vw, 48px); padding-block: clamp(22px, 2.8vw, 34px); border-bottom: 1px solid var(--hairline); align-items: baseline; }
+    .breadth__name { font-family: var(--display); font-size: 0.8125rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--espresso); }
+    .breadth__line { font-size: 1.0625rem; line-height: 1.55; color: var(--taupe-ink); max-width: 52ch; }
+    .breadth__cta { margin-top: clamp(36px, 4vw, 56px); }
 
-    /* The turn — relief + relationship, on greige. */
-    .turn { background: var(--greige); padding-block: var(--section-y); }
-    .turn__eyebrow { display: block; margin-bottom: 22px; }
-    .turn h2 { font-size: clamp(1.875rem, 3.6vw, 3rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.1; max-width: 16ch; }
-    .turn p { margin-top: 26px; font-size: 1.25rem; line-height: 1.55; color: var(--espresso); max-width: 46ch; }
-    .turn__actions { margin-top: 38px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-    .turn__call { color: var(--espresso); font-variant-numeric: tabular-nums; font-size: 1.0625rem; }
+    /* What AlaraOS answers — curated, scoped questions that show the depth. */
+    .asks { margin-top: clamp(40px, 5vw, 64px); display: grid; gap: 0; border-top: 1px solid var(--hairline); }
+    .ask { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-block: clamp(20px, 2.6vw, 30px); border-bottom: 1px solid var(--hairline); text-decoration: none; color: var(--espresso); transition: padding-left var(--dur) var(--ease); }
+    .ask:hover { padding-left: 10px; }
+    .ask__q { font-size: clamp(1.125rem, 1.9vw, 1.4375rem); font-weight: 500; letter-spacing: -0.01em; line-height: 1.25; max-width: 30ch; }
+    .ask__tag { font-family: var(--display); font-size: 0.625rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--taupe); white-space: nowrap; }
+    .ask__right { display: flex; align-items: center; gap: 18px; flex: none; }
+    .ask__right .arrow { color: var(--taupe); transition: transform var(--dur) var(--ease); }
+    .ask:hover .arrow { transform: translateX(4px); color: var(--espresso); }
+    .asks__note { margin-top: clamp(28px, 3vw, 40px); font-size: 0.9375rem; color: var(--taupe); max-width: 60ch; line-height: 1.6; }
+    .asks__note a { color: var(--espresso); }
 
-    /* Who runs this — compact substance, secondary to the revelation. */
-    .runs { padding-block: var(--section-y); }
-    .runs__eyebrow { display: block; margin-bottom: 20px; }
-    .runs h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 500; letter-spacing: -0.016em; max-width: 20ch; }
-    .runs p { margin-top: 20px; font-size: 1.1875rem; line-height: 1.62; color: var(--taupe-ink); max-width: 58ch; }
-    .runs__links { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 14px 32px; }
+    /* We connect it all — the closed loop, on espresso. */
+    .connect__grid { margin-top: clamp(44px, 5vw, 72px); display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: clamp(28px, 3vw, 48px); }
+    .connect__item h3 { font-size: 1.0625rem; font-weight: 500; color: var(--on-dark); letter-spacing: -0.01em; }
+    .connect__item p { margin-top: 10px; font-size: 0.9375rem; line-height: 1.6; color: var(--on-dark-soft); }
+    .connect__item { padding-top: 22px; border-top: 1px solid rgba(251,251,251,0.18); }
+
+    /* Convert — two patient paths, no urgency. */
+    .paths { margin-top: clamp(40px, 5vw, 64px); display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: clamp(20px, 2.4vw, 32px); }
+    .path { border: 1px solid var(--hairline); border-radius: 4px; padding: clamp(26px, 3vw, 36px); display: flex; flex-direction: column; }
+    .path__k { display: block; margin-bottom: 14px; }
+    .path h3 { font-size: 1.25rem; font-weight: 500; letter-spacing: -0.014em; }
+    .path p { margin-top: 12px; font-size: 1rem; line-height: 1.6; color: var(--taupe-ink); flex: 1; }
+    .path__action { margin-top: 24px; }
+
+    /* Quiet who-we-are. */
+    .runs__links { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 14px 32px; }
     .runs__links a { font-size: 0.9375rem; color: var(--espresso); display: inline-flex; align-items: center; gap: 8px; }
     .runs__links a .arrow { color: var(--taupe); transition: transform var(--dur) var(--ease); }
     .runs__links a:hover .arrow { transform: translateX(3px); color: var(--espresso); }
-    .runs__marks { margin-top: 40px; padding-top: 26px; border-top: 1px solid var(--hairline); display: flex; flex-wrap: wrap; gap: 10px 22px; font-family: var(--display); font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--taupe); }
-    .runs__marks span + span::before { content: "\00b7"; margin-right: 22px; color: var(--hairline); }
 
-    @media (max-width: 600px) {
-      .revelation { grid-template-columns: 1fr; gap: 4px; }
-      .revelation__num { padding-top: 0; }
-      .runs__marks span + span::before { content: none; margin: 0; }
+    @media (max-width: 640px) {
+      .breadth__row { grid-template-columns: 1fr; gap: 6px; }
+      .ask { flex-wrap: wrap; gap: 8px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- HEADER — wordmark + quiet four-link nav + phone, with accessible mobile menu. -->
   <header class="site-header" id="siteHeader">
     <div class="container site-header__inner">
       <a class="brand" href="home.html" aria-label="Alara Home Care, home">
@@ -96,7 +98,7 @@
             <span class="header-call__num">(702) 814-9630</span>
           </a>
         </nav>
-        <a class="btn btn--sm" href="qualify.html">See if you qualify</a>
+        <a class="btn btn--sm" href="qualify.html">See what you qualify for</a>
         <button class="nav-toggle" type="button" id="navToggle" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu">
           <span class="nav-toggle__bar" aria-hidden="true"></span>
         </button>
@@ -108,7 +110,7 @@
         <a class="mobile-menu__link" href="programs.html">Benefits <span class="arrow" aria-hidden="true">&rarr;</span></a>
         <a class="mobile-menu__link" href="learn.html">Library <span class="arrow" aria-hidden="true">&rarr;</span></a>
         <a class="mobile-menu__link" href="about.html">About <span class="arrow" aria-hidden="true">&rarr;</span></a>
-        <a class="btn btn--block mobile-menu__cta" href="qualify.html">See if you qualify</a>
+        <a class="btn btn--block mobile-menu__cta" href="qualify.html">See what you qualify for</a>
         <p class="mobile-menu__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></p>
       </div>
     </nav>
@@ -116,7 +118,7 @@
 
   <main>
 
-    <!-- 1 · HERO — the thesis of the revelation. -->
+    <!-- 1 · HERO -->
     <section class="lede-hero" aria-label="Welcome">
       <div class="container">
         <div class="lede-hero__grid">
@@ -132,7 +134,7 @@
             <div class="lede-hero__actions">
               <a class="btn btn--lg" href="qualify.html">See what you qualify for <span class="arrow" aria-hidden="true">&rarr;</span></a>
             </div>
-            <span class="lede-hero__reassure">Or talk to a nurse: <a href="tel:+17028149630">(702) 814-9630</a>.</span>
+            <span class="lede-hero__reassure">A few questions, plain answers, every one backed by the federal source. Or speak with a nurse: <a href="tel:+17028149630">(702) 814-9630</a>.</span>
           </div>
           <div class="lede-hero__media">
             <img src="hero-arches.webp" alt="A wide stone staircase rising to a warm arched doorway." />
@@ -141,131 +143,146 @@
       </div>
     </section>
 
-    <!-- 2 · THE REVELATIONS — education as experience. Each beat is real, sourced,
-            and most families have never been told it. They accumulate as you scroll. -->
-    <section aria-label="What you may already be owed">
+    <!-- 2 · ALARAOS — THE expert system. Breadth of programs, as a map. -->
+    <section class="sec" aria-label="AlaraOS">
       <div class="container">
-        <div class="reveal-intro reveal">
-          <span class="eyebrow reveal-intro__eyebrow">What you may already be owed</span>
-          <h2>A few of the benefits families come to us never knowing.</h2>
-          <p>Each one is real, and each applies to specific situations. Most families are told a fraction of it. Identifying what applies to you and getting it authorized is the work we specialize in.</p>
+        <div class="s-lede reveal">
+          <span class="eyebrow s-lede__eyebrow">Meet AlaraOS</span>
+          <h2>Most agencies know one program. We built the system that knows all of them.</h2>
+          <p class="s-lede__sub">AlaraOS holds every federal benefit program, every covered service, and every authorization path in one place, and knows how they work together. The answer you get is the right one, with the federal source behind it.</p>
         </div>
 
-        <div class="revelations">
-          <article class="revelation reveal">
-            <span class="revelation__num" aria-hidden="true">01</span>
-            <div>
-              <span class="eyebrow revelation__label">Most families are never told</span>
-              <h3 class="revelation__statement">You can be paid to care for your own mother or father.</h3>
-              <p class="revelation__detail">Under the White Card&rsquo;s in-home care benefit, the family member who already provides the daily care can be hired and paid for it as an employee, with a registered nurse&rsquo;s supervision.</p>
-              <p class="revelation__proof">
-                <span class="revelation__tag">White Card &middot; EEOICPA</span>
-                <a class="revelation__link" href="qualify.html?node=ans-paid-caregiver">See how this works <span class="arrow" aria-hidden="true">&rarr;</span></a>
-              </p>
-            </div>
-          </article>
-
-          <article class="revelation reveal">
-            <span class="revelation__num" aria-hidden="true">02</span>
-            <div>
-              <span class="eyebrow revelation__label">Hardly anyone is told this</span>
-              <h3 class="revelation__statement">A new problem your illness caused can be covered too.</h3>
-              <p class="revelation__detail">When an accepted condition leads to something else, a wound that will not heal, an infection, a decline, that consequential condition can be covered once the Department of Labor accepts it. We handle the documentation that gets it approved.</p>
-              <p class="revelation__proof">
-                <span class="revelation__tag">White Card &middot; EEOICPA</span>
-                <a class="revelation__link" href="qualify.html?node=ans-consequential">See how this works <span class="arrow" aria-hidden="true">&rarr;</span></a>
-              </p>
-            </div>
-          </article>
-
-          <article class="revelation reveal">
-            <span class="revelation__num" aria-hidden="true">03</span>
-            <div>
-              <span class="eyebrow revelation__label">You do not have to choose</span>
-              <h3 class="revelation__statement">Your White Card and your Medicare work together.</h3>
-              <p class="revelation__detail">Having one does not cancel the other. For care tied to your accepted condition, the White Card generally pays, with nothing out of your pocket, and we coordinate the billing across both so you never have to.</p>
-              <p class="revelation__proof">
-                <span class="revelation__tag">White Card + Medicare</span>
-                <a class="revelation__link" href="qualify.html?node=ans-white-card-medicare">See how this works <span class="arrow" aria-hidden="true">&rarr;</span></a>
-              </p>
-            </div>
-          </article>
-
-          <article class="revelation reveal">
-            <span class="revelation__num" aria-hidden="true">04</span>
-            <div>
-              <span class="eyebrow revelation__label">For veterans</span>
-              <h3 class="revelation__statement">You can get skilled care at home without waiting on the VA.</h3>
-              <p class="revelation__detail">Through VA Community Care, an eligible veteran receives home health from an approved community provider, often sooner than waiting for a VA appointment. You do not need Medicare to use it.</p>
-              <p class="revelation__proof">
-                <span class="revelation__tag">VA Community Care</span>
-                <a class="revelation__link" href="qualify.html?node=ans-va-hh">See how this works <span class="arrow" aria-hidden="true">&rarr;</span></a>
-              </p>
-            </div>
-          </article>
-
-          <article class="revelation reveal">
-            <span class="revelation__num" aria-hidden="true">05</span>
-            <div>
-              <span class="eyebrow revelation__label">For federal and postal workers</span>
-              <h3 class="revelation__statement">An accepted on-the-job injury can cover care at home.</h3>
-              <p class="revelation__detail">If OWCP has accepted your injury and a physician orders home health, it can be authorized at no out-of-pocket cost. Postal workers are covered the same as other federal employees.</p>
-              <p class="revelation__proof">
-                <span class="revelation__tag">OWCP &middot; FECA</span>
-                <a class="revelation__link" href="qualify.html?node=ans-owcp-hh">See how this works <span class="arrow" aria-hidden="true">&rarr;</span></a>
-              </p>
-            </div>
-          </article>
+        <div class="breadth reveal">
+          <div class="breadth__row">
+            <span class="breadth__name">White Card &middot; EEOICPA</span>
+            <span class="breadth__line">Skilled care for accepted conditions, the consequential-condition pathway, and in-home benefits a family can be employed under.</span>
+          </div>
+          <div class="breadth__row">
+            <span class="breadth__name">OWCP &middot; FECA</span>
+            <span class="breadth__line">Home health for federal and postal workers with an accepted on-the-job injury, including the authorization path most agencies cannot navigate.</span>
+          </div>
+          <div class="breadth__row">
+            <span class="breadth__name">VA Community Care</span>
+            <span class="breadth__line">Skilled care for eligible veterans through TriWest, Region 4, without waiting on a VA appointment.</span>
+          </div>
+          <div class="breadth__row">
+            <span class="breadth__name">Black Lung &middot; DCMWC</span>
+            <span class="breadth__line">Covered medical care at home for coal miners with pneumoconiosis, and for their eligible survivors.</span>
+          </div>
+          <div class="breadth__row">
+            <span class="breadth__name">Medicare</span>
+            <span class="breadth__line">Skilled home health for homebound patients, coordinated alongside whatever federal benefit a patient also holds.</span>
+          </div>
+          <div class="breadth__row">
+            <span class="breadth__name">Across all of them</span>
+            <span class="breadth__line">Eligibility, what is covered, consequential conditions, and billing across every payer, so nothing a patient is entitled to is left on the table.</span>
+          </div>
+        </div>
+        <div class="breadth__cta reveal">
+          <a class="btn btn--lg" href="qualify.html">See what you qualify for <span class="arrow" aria-hidden="true">&rarr;</span></a>
         </div>
       </div>
     </section>
 
-    <!-- 3 · THE TURN — relief and relationship. The revelations resolve into Alara. -->
-    <section class="turn" aria-label="What this means">
+    <!-- 3 · WHAT ALARAOS ANSWERS — scoped questions that show the depth. -->
+    <section class="sec sec--tint" aria-label="What AlaraOS answers">
       <div class="container">
-        <div class="reveal">
-          <span class="eyebrow turn__eyebrow">Where the expertise comes in</span>
-          <h2>Knowing which of these apply, and getting them authorized, is the work we do.</h2>
-          <p>It is the part we specialize in. Tell us the situation, and we map what applies, what is covered, and the next step, then we handle the authorizations.</p>
-          <div class="turn__actions">
-            <a class="btn btn--lg" href="begin.html">Talk to a nurse <span class="arrow" aria-hidden="true">&rarr;</span></a>
-            <a class="turn__call" href="tel:+17028149630">or call (702) 814-9630</a>
+        <div class="s-lede reveal">
+          <span class="eyebrow s-lede__eyebrow">A few of the answers waiting for you</span>
+          <h2>Ask the questions other agencies cannot answer.</h2>
+        </div>
+        <div class="asks reveal">
+          <a class="ask" href="qualify.html?node=ans-paid-caregiver">
+            <span class="ask__q">Can a family member be employed to provide the daily care?</span>
+            <span class="ask__right"><span class="ask__tag">White Card</span><span class="arrow" aria-hidden="true">&rarr;</span></span>
+          </a>
+          <a class="ask" href="qualify.html?node=ans-consequential">
+            <span class="ask__q">A new condition was caused by the accepted one. Is it covered?</span>
+            <span class="ask__right"><span class="ask__tag">White Card</span><span class="arrow" aria-hidden="true">&rarr;</span></span>
+          </a>
+          <a class="ask" href="qualify.html?node=ans-white-card-medicare">
+            <span class="ask__q">Can the White Card and Medicare be held together?</span>
+            <span class="ask__right"><span class="ask__tag">White Card + Medicare</span><span class="arrow" aria-hidden="true">&rarr;</span></span>
+          </a>
+          <a class="ask" href="qualify.html?node=ans-owcp-hh">
+            <span class="ask__q">Does an accepted OWCP injury cover skilled care at home?</span>
+            <span class="ask__right"><span class="ask__tag">OWCP / FECA</span><span class="arrow" aria-hidden="true">&rarr;</span></span>
+          </a>
+          <a class="ask" href="qualify.html?node=ans-va-hh">
+            <span class="ask__q">Can a veteran receive home health without the VA wait?</span>
+            <span class="ask__right"><span class="ask__tag">VA Community Care</span><span class="arrow" aria-hidden="true">&rarr;</span></span>
+          </a>
+        </div>
+        <p class="asks__note reveal">Each answer is in plain language, scoped to the program it belongs to, and linked to the federal source. <a href="qualify.html">See what applies to your situation</a>, or read the full <a href="learn.html">Library</a>.</p>
+      </div>
+    </section>
+
+    <!-- 4 · WE CONNECT IT ALL — the closed loop, on espresso. -->
+    <section class="sec sec--dark" aria-label="We connect it all">
+      <div class="container">
+        <div class="s-lede reveal">
+          <span class="eyebrow s-lede__eyebrow">One place for all of it</span>
+          <h2>The physician, the Resource Center, the VA, the billing. We hold the connections.</h2>
+          <p class="s-lede__sub">A patient on a federal program is usually managing four institutions that do not talk to each other. Alara sits at the center and runs the lines between them, so the work that used to fall on the family does not.</p>
+        </div>
+        <div class="connect__grid reveal">
+          <div class="connect__item">
+            <h3>Your physician</h3>
+            <p>We translate the plan of care into the orders and documentation each program requires.</p>
+          </div>
+          <div class="connect__item">
+            <h3>The DOL Resource Center</h3>
+            <p>We work alongside the Las Vegas Resource Center on White Card claims and authorizations.</p>
+          </div>
+          <div class="connect__item">
+            <h3>The VA and TriWest</h3>
+            <p>We coordinate community-care referrals and authorizations so eligible veterans start sooner.</p>
+          </div>
+          <div class="connect__item">
+            <h3>Every payer</h3>
+            <p>We manage billing across each program a patient holds, so coverage never lapses between them.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 4 · WHO RUNS THIS — compact substance, secondary to the experience. -->
-    <section class="runs" aria-label="Who we are">
+    <!-- 5 · CONVERT — two patient paths, learning first, no urgency. -->
+    <section class="sec" aria-label="When you are ready">
       <div class="container">
-        <div class="reveal measure">
-          <span class="eyebrow runs__eyebrow">Who runs this</span>
+        <div class="s-lede reveal">
+          <span class="eyebrow s-lede__eyebrow">When you are ready</span>
+          <h2>Start with the answers. Become a patient when it is right.</h2>
+        </div>
+        <div class="paths reveal">
+          <div class="path">
+            <span class="eyebrow path__k">Patients and families</span>
+            <h3>Schedule a consult</h3>
+            <p>When you want to go further than the answers, a nurse reviews your situation and maps the start of care, on your timeline.</p>
+            <div class="path__action"><a class="btn" href="begin.html">Schedule a consult <span class="arrow" aria-hidden="true">&rarr;</span></a></div>
+          </div>
+          <div class="path">
+            <span class="eyebrow path__k">Physicians and providers</span>
+            <h3>Send a referral</h3>
+            <p>Send the patient and the program lane. We complete the in-home assessment and the authorization, and respond within one hour.</p>
+            <div class="path__action"><a class="btn btn--ghost" href="begin.html?who=referrer">Refer a patient <span class="arrow" aria-hidden="true">&rarr;</span></a></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 · WHO RUNS THIS — quiet, member-relevant. -->
+    <section class="sec sec--tint" aria-label="Who we are">
+      <div class="container">
+        <div class="s-lede reveal measure">
+          <span class="eyebrow s-lede__eyebrow">Who runs this</span>
           <h2>Built for the programs most agencies will not touch.</h2>
-          <p>Alara is a nurse-owned home health agency in Las Vegas, founded by a healthcare executive and clinician who spent two decades building care systems before bringing it home. A Director of Nursing reviews every start of care. We bring the skilled nursing and therapy, and we hold the programs, the authorizations, and the paperwork so your family never has to.</p>
+          <p class="s-lede__sub">Alara is a nurse-owned home health agency in Las Vegas, founded by a healthcare executive and clinician who spent two decades building care systems at scale. We specialize in complex patients on federal benefit programs, and we built AlaraOS so that the expertise is never the part you have to supply.</p>
           <div class="runs__links">
             <a href="services.html">What we do <span class="arrow" aria-hidden="true">&rarr;</span></a>
             <a href="programs.html">Benefits we accept <span class="arrow" aria-hidden="true">&rarr;</span></a>
             <a href="about.html">About Alara <span class="arrow" aria-hidden="true">&rarr;</span></a>
           </div>
-          <div class="runs__marks" aria-label="Credentials">
-            <span>Nurse-owned</span>
-            <span>DON reviews every case</span>            <span>White Card &middot; OWCP &middot; VA</span>
-            <span>Clark County, Nevada</span>
-          </div>
         </div>
-      </div>
-    </section>
-
-    <!-- 5 · THE INVITATION — you do nothing. -->
-    <section class="invite" aria-label="Begin">
-      <div class="container invite__inner reveal">
-        <h2>Tell us the situation.</h2>
-        <p>No forms to decode, and no program you need to name. A nurse reviews it, tells you what applies, and starts the authorizations.</p>
-        <div class="invite__actions">
-          <a class="btn btn--on-dark btn--lg" href="begin.html">Talk to a nurse <span class="arrow" aria-hidden="true">&rarr;</span></a>
-          <a class="invite__call" href="tel:+17028149630">or call (702) 814-9630</a>
-        </div>
-        <p class="invite__reassure">A nurse answers, usually within the hour during business hours.</p>
       </div>
     </section>
 
