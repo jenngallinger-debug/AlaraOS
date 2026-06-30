@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inside AlaraOS &middot; The operating system behind your care</title>
+  <meta name="description" content="AlaraOS is the operating system behind Alara Home Care. It holds your care, your benefits, and your providers in one place, decides what needs to happen, and follows through, so you experience one organization that already understands you." />
+  <meta property="og:title" content="Inside AlaraOS" />
+  <meta property="og:description" content="An EMR remembers. An operating system runs things. AlaraOS holds the full picture of your care and acts on it, so the work of your care never becomes yours to manage." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="site.css" />
+  <style>
+    /* Page-scoped helpers — reuse the system; add only the cycle and scenarios. */
+    .home-section { padding-block: var(--section-y); }
+    .home-section--tint { background: var(--mist); }
+
+    /* The cycle, on espresso — the quiet machine, shown as outcomes not internals. */
+    .io-cycle { background: var(--espresso); color: var(--on-dark); }
+    .io-cycle .s-head__title, .io-cycle .eyebrow { color: var(--on-dark); }
+    .io-cycle .eyebrow { color: var(--on-dark-soft); }
+    .io-steps { margin-top: clamp(36px, 4.5vw, 60px); border-top: 1px solid rgba(251,251,251,0.2); }
+    .io-step { display: grid; grid-template-columns: 3rem 13ch 1fr; gap: clamp(14px, 2.4vw, 36px); padding-block: clamp(18px, 2.2vw, 26px); border-bottom: 1px solid rgba(251,251,251,0.14); align-items: baseline; }
+    .io-step__k { font-family: var(--display); font-size: 0.875rem; color: var(--on-dark-soft); font-variant-numeric: tabular-nums; }
+    .io-step__t { font-size: 1.125rem; font-weight: 500; color: var(--on-dark); letter-spacing: -0.01em; }
+    .io-step__d { font-size: 1rem; line-height: 1.55; color: var(--on-dark-soft); max-width: 56ch; }
+    @media (max-width: 720px) {
+      .io-step { grid-template-columns: 2.4rem 1fr; }
+      .io-step__d { grid-column: 1 / -1; }
+    }
+
+    /* Scenarios — the wow, concrete. Hairline cards, no shadow, no new color. */
+    .io-scenarios { margin-top: clamp(36px, 4.5vw, 56px); display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: clamp(16px, 2vw, 24px); }
+    .io-scenario { border: 1px solid var(--hairline); border-radius: 6px; padding: clamp(24px, 3vw, 34px); background: var(--paper); }
+    .io-scenario__q { font-size: 1.1875rem; line-height: 1.4; letter-spacing: -0.01em; color: var(--espresso); }
+    .io-scenario__tag { display: block; margin-top: 16px; font-family: var(--display); font-size: 0.625rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--taupe); }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header" id="siteHeader">
+    <div class="container site-header__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care, home">
+        <svg class="brand__mark" viewBox="0 0 100 92" role="img" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd"
+            d="M22,88 V34 L50,8 L78,34 V88 Z
+               M37,88 V66 A13,13 0 0 1 63,66 V88 Z
+               M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word">
+          <span class="brand__name">ALARA</span>
+          <span class="brand__sub">Home Care</span>
+        </span>
+      </a>
+      <div class="site-header__actions">
+        <nav class="site-nav site-nav--primary" aria-label="Primary">
+          <a class="site-nav__link" href="services.html">Services</a>
+          <a class="site-nav__link" href="programs.html">Benefits</a>
+          <a class="site-nav__link" href="learn.html">Library</a>
+          <a class="site-nav__link" href="about.html">About</a>
+          <a class="header-call" href="tel:+17028149630">
+            <span class="header-call__label">Call us</span>
+            <span class="header-call__num">(702) 814-9630</span>
+          </a>
+        </nav>
+        <a class="btn btn--sm" href="qualify.html">See what you qualify for</a>
+        <button class="nav-toggle" type="button" id="navToggle" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu">
+          <span class="nav-toggle__bar" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+    <nav class="mobile-menu" id="site-menu" data-open="false" aria-label="Primary (mobile)">
+      <div class="container mobile-menu__inner">
+        <a class="mobile-menu__link" href="services.html">Services <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="programs.html">Benefits <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="learn.html">Library <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="about.html">About <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="btn btn--block mobile-menu__cta" href="qualify.html">See what you qualify for</a>
+        <p class="mobile-menu__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></p>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- HERO — what AlaraOS is, benefit-first. -->
+    <section class="page-hero" aria-label="Inside AlaraOS">
+      <div class="container">
+        <span class="eyebrow">Inside AlaraOS</span>
+        <h1>The operating system behind your care.</h1>
+        <p class="page-hero__lead">
+          Every Alara nurse arrives backed by AlaraOS, the intelligence that runs the work around your
+          care. It holds your benefits, your providers, and your treatment in one place, works out what
+          needs to happen, and follows through, so you reach one organization that already understands you.
+        </p>
+      </div>
+    </section>
+
+    <!-- SOFTWARE vs OPERATING SYSTEM — the category distinction, positive. -->
+    <section class="home-section" aria-label="What makes it an operating system">
+      <div class="container">
+        <div class="s-head reveal">
+          <span class="eyebrow">Software, and something more</span>
+          <h2 class="s-head__title">An EMR remembers. An operating system runs things.</h2>
+        </div>
+        <div class="stack reveal measure">
+          <p class="lede">
+            Most of healthcare runs on software that records what happened: your visits, your notes, your
+            bills. It is useful, and it only ever looks backward.
+          </p>
+          <p class="lede">
+            AlaraOS is different in kind. It holds the full picture of your care at once, and then it acts
+            on it, working out every benefit you qualify for, lining up the people involved, and making
+            sure the care actually reaches you. A record looks back at what was done. AlaraOS moves your
+            care forward.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- THE CYCLE — the engine, shown as human outcomes, on espresso. -->
+    <section class="home-section io-cycle" aria-label="How AlaraOS works">
+      <div class="container">
+        <div class="s-head reveal">
+          <span class="eyebrow">How it works</span>
+          <h2 class="s-head__title">One continuous loop, running quietly behind every visit.</h2>
+        </div>
+        <div class="io-steps reveal">
+          <div class="io-step"><span class="io-step__k">01</span><span class="io-step__t">It notices</span><span class="io-step__d">It sees what is changing in your care before anyone has to report it.</span></div>
+          <div class="io-step"><span class="io-step__k">02</span><span class="io-step__t">It understands</span><span class="io-step__d">It connects the pieces into one clear picture of what is going on.</span></div>
+          <div class="io-step"><span class="io-step__k">03</span><span class="io-step__t">It decides</span><span class="io-step__d">It works out what should happen next, with a clinician accountable for every call.</span></div>
+          <div class="io-step"><span class="io-step__k">04</span><span class="io-step__t">It coordinates</span><span class="io-step__d">It lines up your doctors, your benefits, and your providers around that plan.</span></div>
+          <div class="io-step"><span class="io-step__k">05</span><span class="io-step__t">It acts</span><span class="io-step__d">It gets the visits, the orders, and the authorizations done.</span></div>
+          <div class="io-step"><span class="io-step__k">06</span><span class="io-step__t">It tells you</span><span class="io-step__d">It keeps you informed about what is happening, before you have to ask.</span></div>
+          <div class="io-step"><span class="io-step__k">07</span><span class="io-step__t">It checks</span><span class="io-step__d">It confirms that what was promised actually happened.</span></div>
+          <div class="io-step"><span class="io-step__k">08</span><span class="io-step__t">It learns</span><span class="io-step__d">Every patient makes the care of the next one sharper.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENARIOS — the wow, concrete and specific. -->
+    <section class="home-section home-section--tint" aria-label="What that looks like for you">
+      <div class="container">
+        <div class="s-head reveal">
+          <span class="eyebrow">In your life</span>
+          <h2 class="s-head__title">What that looks like for you.</h2>
+        </div>
+        <div class="io-scenarios reveal">
+          <div class="io-scenario">
+            <p class="io-scenario__q">&ldquo;It noticed your father getting weaker this month, and brought in therapy before it became a fall.&rdquo;</p>
+            <span class="io-scenario__tag">It notices, and acts</span>
+          </div>
+          <div class="io-scenario">
+            <p class="io-scenario__q">&ldquo;It saw treatment you were paying Medicare for that your White Card should cover, and moved it onto the card.&rdquo;</p>
+            <span class="io-scenario__tag">It finds what you are owed</span>
+          </div>
+          <div class="io-scenario">
+            <p class="io-scenario__q">&ldquo;It caught an authorization about to expire, and renewed it before a single visit was missed.&rdquo;</p>
+            <span class="io-scenario__tag">It stays ahead</span>
+          </div>
+          <div class="io-scenario">
+            <p class="io-scenario__q">&ldquo;It found a benefit you qualified for and were never told about, and started it for you.&rdquo;</p>
+            <span class="io-scenario__tag">It delivers the full benefit</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- THE PRINCIPLE — human sovereignty + consent. -->
+    <section class="home-section" aria-label="The line we hold">
+      <div class="container">
+        <div class="s-head reveal">
+          <span class="eyebrow">The line we hold</span>
+          <h2 class="s-head__title">It works for you. Not the other way around.</h2>
+        </div>
+        <div class="stack reveal measure">
+          <p class="lede">
+            AlaraOS never acts without your consent, and every decision that matters is made by a person,
+            not a machine. People do not experience software. They experience an organization.
+          </p>
+          <p class="lede">
+            That is the whole point of it. The organization you reach already understands you, and the
+            work of your care never becomes yours to manage.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-band cta-band--arched" aria-label="Begin">
+      <div class="container cta-band__inner reveal">
+        <h2 class="cta-band__title">See what your benefits cover.</h2>
+        <p class="cta-band__sub">
+          Answer a few questions and see what your benefits generally cover, with the one next step to
+          take. No form, no account. Or call a nurse and let us take it from there.
+        </p>
+        <div class="cta-band__actions">
+          <a class="btn btn--on-dark btn--lg" href="qualify.html">See what you qualify for <span class="arrow" aria-hidden="true">&rarr;</span></a>
+          <a class="cta-band__call" href="tel:+17028149630">Or call (702) 814-9630</a>
+        </div>
+        <p class="cta-band__reassure">A nurse answers, usually within the hour during business hours.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care">
+        <svg class="brand__mark" viewBox="0 0 100 92" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd"
+            d="M22,88 V34 L50,8 L78,34 V88 Z
+               M37,88 V66 A13,13 0 0 1 63,66 V88 Z
+               M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word">
+          <span class="brand__name">ALARA</span>
+          <span class="brand__sub">Home Care</span>
+        </span>
+      </a>
+      <div class="site-footer__meta">
+        Serving all of Clark County, Nevada<br />
+        <a href="tel:+17028149630">(702) 814-9630</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    var header = document.getElementById('siteHeader');
+    var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 24); };
+    onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+    var toggle = document.getElementById('navToggle'); var menu = document.getElementById('site-menu');
+    if (toggle && menu) { toggle.addEventListener('click', function () {
+      var open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!open));
+      toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+      menu.setAttribute('data-open', String(!open)); }); }
+    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!prefersReduced && 'IntersectionObserver' in window) {
+      document.documentElement.classList.add('js-reveal');
+      var io = new IntersectionObserver(function (entries) { entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+    } else { document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('is-in'); }); }
+  </script>
+  <script src="site-nav.js" defer></script>
+</body>
+</html>
