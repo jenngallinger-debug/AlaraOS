@@ -54,9 +54,12 @@ Resource Center, Acentra). Sibling canonical files already exist:
 A drift-check (`scripts/check-content.mjs`) fails the build if a retired
 phrasing or a stale phone number reappears anywhere.
 
-## Decision 2 — One canonical implementation  ⚠️ needs owner sign-off
+## Decision 2 — One canonical implementation  ✅ RESOLVED: static build is canonical
 
-We currently maintain **two** websites:
+Owner direction: "do what's easiest, cleanest, and best long term." That is the
+static build. **Resolved 2026-06-30.**
+
+We had **two** websites:
 
 - **`public/*.html`** — the static build. All recent design and brand work
   lives here. Self-contained, hostable anywhere, no build step.
@@ -65,17 +68,16 @@ We currently maintain **two** websites:
   `noindex` guard, JSON-LD structured data, the `/glossary` + `/navigator` +
   `/programs/*` routes, and `robots`/`sitemap`.
 
-**Recommendation:** make the **static build canonical**. Shrink the server to
-three jobs it still does well — (a) serve the static files, (b) enforce the
-staging `noindex`/`robots` guard by hostname, (c) host the `/api/*` endpoints.
-Retire its hand-written HTML views. The static pages already read structured
-data client-side (`learn.html`, `qualify.html`); point them and the prose pages
-at `data/programs.json` so nothing is hand-copied. Add JSON-LD back into the
-static `<head>`s.
+**Done:** `server.js` (the file `render.yaml` runs) is now a thin static file
+server rooted at `public/` — pretty/extensionless URLs, the staging
+`noindex` + `robots: Disallow` guard keyed off `SITE_MODE`, and the
+`/api/event` analytics endpoint. It generates no HTML. `preview_server.py` and
+the old `server.js` view functions are deprecated. The next deploy from `main`
+therefore serves the real static site, including `white-card.html`.
 
-This is the one decision worth your veto, because it determines what
-alarahc.com serves. Until it's made, the static build stays a prototype and the
-server stays the source of the live site (with stale copy).
+Still open (follow-on, not blocking): point `learn.html`/`qualify.html` and the
+prose pages at `data/programs.json` so nothing is hand-copied, and add JSON-LD
+back into the static `<head>`s.
 
 ## Decision 3 — Information architecture
 

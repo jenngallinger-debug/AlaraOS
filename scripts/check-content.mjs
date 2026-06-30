@@ -22,12 +22,12 @@ const SURFACES = [
   'preview_server.py',
 ];
 
-// Retired cost phrasings. The canonical one (data.constants.costPhrase) is the
-// only approved way to say it. These read cheap and were explicitly killed.
+// Retired cost phrasings. The canonical phrasing (data.constants.costPhrase,
+// "no cost to you") is the truthful approved way to say it. These read cheap
+// and were explicitly killed.
 const BANNED_COST = [
   'pay nothing',
   'most patients pay nothing',
-  'at no cost to you',
   '$0 out-of-pocket',
 ];
 

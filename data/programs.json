@@ -4,9 +4,9 @@
   "_lastReconciled": "2026-06-30",
 
   "constants": {
-    "costPhrase": "no out-of-pocket cost",
+    "costPhrase": "no cost to you",
     "costPhraseLong": "no premiums, copays, or deductibles for covered care tied to the accepted condition",
-    "_costNote": "CANONICAL. Do not use 'pay nothing', 'most patients pay nothing', 'at no cost to you', '$0 out-of-pocket', or 'no cost'. Those read cheap and were explicitly retired. This is the only approved phrasing."
+    "_costNote": "CANONICAL. 'no cost to you' is the truthful, approved phrasing (the federal program pays in full, not just out-of-pocket). Do NOT use 'pay nothing', 'most patients pay nothing', or '$0 out-of-pocket' — those read cheap and were retired."
   },
 
   "contacts": {
@@ -39,7 +39,7 @@
       "chips": ["Energy workers", "DOE contractors", "Survivors"],
       "shortDefinition": "A federal program that provides cash compensation and lifetime medical benefits — including skilled home health — to Department of Energy and Nevada Test Site workers who became ill from their work. An accepted condition issues a White Card.",
       "cost": {
-        "summary": "Generally no out-of-pocket cost for covered care tied to the accepted condition.",
+        "summary": "Generally no cost to you for covered care tied to the accepted condition.",
         "detail": "No premiums, copays, or deductibles for those covered services. The Department of Labor pays the provider directly."
       },
       "coveredServices": [
@@ -121,7 +121,7 @@
       "chips": ["Federal employees", "Postal workers", "On-the-job injury"],
       "shortDefinition": "Federal workers' compensation that may cover physician-prescribed home health services when an injury or illness is accepted and care is authorized.",
       "cost": {
-        "summary": "Generally no out-of-pocket cost for authorized care tied to the accepted injury or illness.",
+        "summary": "Generally no cost to you for authorized care tied to the accepted injury or illness.",
         "detail": "No premiums, copays, or deductibles for those authorized services."
       },
       "coveredServices": [
@@ -152,7 +152,7 @@
       "chips": ["Veterans", "TriWest Region 4"],
       "shortDefinition": "A VA program that authorizes eligible veterans to receive skilled home health from approved community providers when VA facilities cannot readily provide the care.",
       "cost": {
-        "summary": "Generally no out-of-pocket cost for authorized community care.",
+        "summary": "Generally no cost to you for authorized community care.",
         "detail": "Covered through the VA Community Care Network on authorization."
       },
       "coveredServices": [

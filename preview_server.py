@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """AlaraOS web server.
 
-Runs the Alara Home Care / AlaraOS site. Used both as the local dev-preview AND as the
-Render STAGING server (alarahc.com). Renders pages from the data files in data/ and the
-shared knowledge graph. Node server.js is kept in parity as the longer-term canonical.
+DEPRECATED (2026-06-30, see docs/SYSTEM-ARCHITECTURE.md Decision 2). The canonical
+website is now the static build in public/, served by the thin Node server.js, which
+is what render.yaml deploys. This Python server generates its own HTML and is no longer
+the source of the live site. Kept for reference only; do not add features here.
+
+Renders pages from the data files in data/ and the shared knowledge graph.
 
 Staging safety (see SITE_MODE below): unless SITE_MODE=production AND the request host is the
 real production domain, every page is noindex,nofollow, robots.txt disallows all, and the
@@ -132,7 +135,7 @@ def page(title, desc, body, active, jsonld=None, crumbs=None, site=None, path="/
 
 # ---- homepage ----------------------------------------------------------------
 AUDIENCE_DOORS = [
-    ("White Card / EEOICPA", "Former Nevada Test Site &amp; DOE workers. Covered skilled care at home, at no cost to you.", "/programs/eeoicpa", "$0 out-of-pocket", False),
+    ("White Card / EEOICPA", "Former Nevada Test Site &amp; DOE workers. Covered skilled care at home, at no cost to you.", "/programs/eeoicpa", "No cost to you", False),
     ("Federal Workers Compensation", "Federal and postal employees with an OWCP/FECA-accepted work injury or illness.", "/programs/owcp", "", False),
     ("Veterans / VA Community Care", "Eligible veterans through TriWest, Region 4. You do not need Medicare.", "/programs/veterans", "", False),
     ("Physicians &amp; Referral Partners", "Refer a patient. In-home assessment within 48 hours. One-hour response.", "#physicians", "Referral partners", True),
@@ -209,7 +212,7 @@ def view_home(site):
             '<a class="btn btn--ink" href="/navigator">See if we can help</a>'
             '<a class="btn btn--line" href="tel:+17028149630">Talk to a nurse</a>'
           '</div>'
-          '<p class="hero__note">Most patients pay nothing out of pocket.</p>'
+          '<p class="hero__note">Covered care comes at no cost to you.</p>'
         '</div>'
         '<div class="hero__media"><img class="hero__img" src="/public/hero-arches.webp" alt="A travertine archway framing a brass door at the top of a wide staircase" loading="eager"></div>'
       '</section>'
