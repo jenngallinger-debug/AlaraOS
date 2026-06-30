@@ -4,12 +4,28 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Begin — Alara Home Care</title>
-  <meta name="description" content="Tell us what's going on, in your own words, and a nurse takes it from there. One phone number to start. A nurse answers, usually within the hour." />
+  <meta name="description" content="Tell us what's going on, in your own words, and a nurse takes it from there. Leave your name and a number. A nurse calls you, usually within the hour during business hours." />
   <link rel="icon" href="logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="site.css" />
+  <style>
+    /* Page-scoped only: the confirmation steps as a quiet numbered sequence.
+       Uses the canonical palette and hairlines; no shadows, no new color. */
+    .confirm__steps { margin-top: 32px; text-align: left; border-top: 1px solid var(--hairline); }
+    .confirm__step {
+      display: grid; grid-template-columns: 2rem 1fr; gap: 16px;
+      padding-block: clamp(18px, 2.4vw, 26px); border-bottom: 1px solid var(--hairline);
+      align-items: baseline;
+    }
+    .confirm__num { font-family: var(--display); font-size: 0.875rem; letter-spacing: 0.1em; color: var(--taupe); font-variant-numeric: tabular-nums; }
+    .confirm__step h3 { font-size: 1.0625rem; font-weight: 500; letter-spacing: -0.01em; color: var(--espresso); }
+    .confirm__step p { margin-top: 8px; font-size: 1rem; line-height: 1.6; color: var(--taupe-ink); }
+    @media (max-width: 520px) {
+      .confirm__step { grid-template-columns: 1fr; gap: 6px; }
+    }
+  </style>
 </head>
 <body>
 
@@ -33,17 +49,17 @@
     <section class="page-hero">
       <div class="container">
         <span class="eyebrow" id="kicker">Begin</span>
-        <h1 id="headline">Tell us what's going on. We take it from there.</h1>
-        <p class="page-hero__lead" id="lead">No forms to figure out and no program you need to name. Leave your name and a number, and a nurse calls you back, usually within the hour.</p>
+        <h1 id="headline">Tell us what's going on. A nurse takes it from there.</h1>
+        <p class="page-hero__lead" id="lead">No forms to figure out and no program you need to name. Leave your name and a best number, and a nurse calls you, usually within the hour during business hours.</p>
       </div>
     </section>
 
     <div class="container">
-      <!-- INTAKE FORM -->
+      <!-- INTAKE FORM (phone-first, minimal: name + phone, optional story + who) -->
       <form class="intake" id="intakeForm" novalidate>
         <div class="intake__field">
-          <label for="story">In your own words, what's happening? <span class="hint">(optional)</span></label>
-          <textarea id="story" name="story" placeholder="A few words is plenty — for example, 'my dad worked at the Test Site and his wound isn't healing.'"></textarea>
+          <label for="story">In your own words, what's going on? <span class="hint">(optional)</span></label>
+          <textarea id="story" name="story" placeholder="A few words is plenty. For example, 'my dad worked at the Test Site and his wound isn't healing.'"></textarea>
         </div>
         <div class="intake__field">
           <label for="who">I am a&hellip;</label>
@@ -57,38 +73,58 @@
         </div>
         <div class="intake__field">
           <label for="name">Your name</label>
-          <input id="name" name="name" type="text" autocomplete="name" placeholder="First and last" />
+          <input id="name" name="name" type="text" autocomplete="name" placeholder="First and last" required />
         </div>
         <div class="intake__field">
           <label for="phone">Best phone number</label>
-          <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="(702) 000-0000" />
+          <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="(702) 814-9630" required />
         </div>
         <div class="intake__actions">
           <button class="btn" type="submit">Have a nurse call me <span class="arrow" aria-hidden="true">&rarr;</span></button>
           <span class="intake__or">or call <a href="tel:+17028149630">(702) 814-9630</a></span>
         </div>
-        <p class="intake__reassure">We ask for only your name and number — nothing more to start. A nurse answers, usually within the hour. After hours, first thing the next morning.</p>
+        <p class="intake__reassure">We ask for only your name and number to start. A nurse calls you, usually within the hour during business hours. After 6 PM, first thing the next business day.</p>
       </form>
 
       <!-- CONFIRMATION (shown after submit) -->
-      <div class="confirm" id="confirm" hidden>
+      <div class="confirm" id="confirm" hidden tabindex="-1">
         <svg class="confirm__mark" viewBox="0 0 100 92" aria-hidden="true">
           <path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
         </svg>
-        <h2 id="confirmTitle">We have it. Someone is already on it.</h2>
-        <p id="confirmBody">You don't need to do anything else. A nurse from our clinical team will call you back. If you reached us after hours, expect a call first thing the next business day.</p>
-        <dl class="confirm__card">
-          <div class="confirm__row"><dt>Who has it</dt><dd id="ownerVal">Your Alara care guide</dd></div>
-          <div class="confirm__row"><dt>When we'll call</dt><dd id="windowVal">Within the hour</dd></div>
-          <div class="confirm__row"><dt>Your reference</dt><dd id="refVal">—</dd></div>
-        </dl>
-        <p class="intake__reassure">Keep your reference number. If you'd rather not wait, call <a href="tel:+17028149630">(702) 814-9630</a> and give it to us — we'll already know who you are.</p>
+        <h2 id="confirmTitle">Thank you. We have your number and your request is logged.</h2>
+        <p id="confirmBody">Here is what happens next. There is nothing you need to prepare and no program you need to name.</p>
+
+        <div class="confirm__steps">
+          <div class="confirm__step">
+            <span class="confirm__num" aria-hidden="true">01</span>
+            <div>
+              <h3>A nurse will call you.</h3>
+              <p id="stepWindow">A member of our clinical team calls you, usually within the hour during business hours. If you reach us after 6 PM, we call first thing the next business day.</p>
+            </div>
+          </div>
+          <div class="confirm__step">
+            <span class="confirm__num" aria-hidden="true">02</span>
+            <div>
+              <h3>The nurse asks a few questions.</h3>
+              <p id="stepAsk">When we call, a nurse asks what is going on and walks you through whether the care you need is covered and how to start.</p>
+            </div>
+          </div>
+          <div class="confirm__step">
+            <span class="confirm__num" aria-hidden="true">03</span>
+            <div>
+              <h3>If it is urgent, reach us now.</h3>
+              <p>If you would rather not wait, call us directly at <a href="tel:+17028149630">(702) 814-9630</a>.</p>
+            </div>
+          </div>
+        </div>
+
+        <p class="intake__reassure">We will confirm your reference number when a nurse calls, so you never have to track one yourself.</p>
       </div>
     </div>
 
     <section class="disclaimer">
       <div class="container disclaimer__inner">
-        Alara complements — it does not replace — your Resource Center, physician, attorney, or the VA. We help you understand and reach the care and benefits you may already be entitled to.
+        Alara complements your Resource Center, physician, attorney, and the VA. It does not replace them. We help you understand and reach the care and benefits you may already be entitled to.
       </div>
     </section>
   </main>
@@ -106,29 +142,46 @@
   </footer>
 
   <script>
-    // Referrer variant copy
+    // Referrer variant copy (?who=referrer)
     var params = new URLSearchParams(location.search);
-    if (params.get('who') === 'referrer') {
+    var isReferrer = params.get('who') === 'referrer';
+    if (isReferrer) {
       document.getElementById('kicker').textContent = 'For physicians & providers';
       document.getElementById('headline').textContent = 'Your patients. Our paperwork.';
-      document.getElementById('lead').textContent = 'Send us the patient and the program lane. We complete the in-home assessment and handle the authorization, and we respond to every referral within one hour.';
+      document.getElementById('lead').textContent = 'Send us the patient and the program lane. We complete the in-home assessment and handle the authorization, and we respond to every referral within one hour during business hours.';
       document.getElementById('who').value = 'referrer';
     }
 
-    // In production this POSTs to /commands/referrals and the confirmation values
-    // (owner, honest window, reference id) come back from the live Journey Engine.
+    // In production this POSTs to /commands/referrals and the confirmation copy
+    // (the honest window, and a real reference number) comes back from the live
+    // Journey Engine after orchestrator.handleReferralReceived() runs. Here we
+    // simulate that client-side. We claim only what is true at submit time:
+    // the request was received, a nurse will call within a real window, and the
+    // reference number is confirmed later when a human is actually on it. No
+    // present-tense "someone is already on it", no browser-clock reference toy.
     var form = document.getElementById('intakeForm');
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var ref = 'AL-' + (Math.floor(Date.now() / 1000) % 1000000).toString().padStart(6, '0');
-      var who = document.getElementById('who').value;
-      document.getElementById('ownerVal').textContent = (who === 'referrer') ? 'Our referral nurse' : 'Your Alara care guide';
-      document.getElementById('windowVal').textContent = (who === 'referrer') ? 'Within one hour' : 'Within the hour';
-      document.getElementById('refVal').textContent = ref;
+
+      var name = document.getElementById('name').value.trim();
+      var phone = document.getElementById('phone').value.trim();
+      if (!name || !phone) {
+        (name ? document.getElementById('phone') : document.getElementById('name')).focus();
+        return;
+      }
+
+      if (isReferrer) {
+        document.getElementById('confirmTitle').textContent = 'Thank you. Your referral is logged.';
+        document.getElementById('confirmBody').textContent = 'Here is what happens next.';
+        document.getElementById('stepWindow').textContent = 'A nurse from our clinical team calls you back, within one hour during business hours, or first thing the next business day if it is after 6 PM.';
+        document.getElementById('stepAsk').textContent = 'We complete the in-home assessment, handle the authorization, and coordinate the care, and we keep you updated on your patient.';
+      }
+
       form.setAttribute('hidden', '');
       var c = document.getElementById('confirm');
       c.removeAttribute('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      c.focus();
     });
   </script>
 </body>

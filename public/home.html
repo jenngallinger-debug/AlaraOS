@@ -3,19 +3,43 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Alara Home Care</title>
-  <meta name="description" content="We make sure you get every benefit you've earned. Specialized skilled home health for complex patients on White Card, VA, and Medicare. Nurse-led and locally owned in Las Vegas." />
+  <title>Alara Home Care &middot; Nurse-led home health in Las Vegas</title>
+  <meta name="description" content="Nurse-owned home health in Las Vegas, built for the benefits you have earned. Skilled nursing and therapy at home for White Card, federal worker, veteran, and Medicare patients. We handle the authorizations, claims, and paperwork. Most patients pay nothing." />
   <meta property="og:title" content="Alara Home Care" />
-  <meta property="og:description" content="We make sure you get every benefit you've earned. Specialized skilled home health for complex patients on White Card, VA, and Medicare." />
+  <meta property="og:description" content="Skilled home health in Las Vegas, built for the benefits you have earned. We bring nursing and therapy into the home and handle the authorizations, claims, and paperwork." />
+  <meta property="og:type" content="website" />
   <link rel="icon" href="logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="site.css" />
+  <style>
+    /* Page-scoped helpers — calm spacing only; no new colors, no shadows. */
+    .home-section { padding-block: var(--section-y); }
+    .home-section--tint { background: var(--mist); }
+    .section-foot { margin-top: clamp(28px, 3.4vw, 44px); }
+    .disclaimer-line { margin-top: clamp(22px, 2.6vw, 32px); font-size: 0.8125rem; line-height: 1.55; color: var(--taupe-ink); max-width: 72ch; }
+    /* Navigator teaser entry points — recognition-first, the visitor's own words. */
+    .entry-points { margin-top: clamp(28px, 3.4vw, 44px); display: grid; gap: 12px; max-width: 720px; }
+    .entry-point {
+      display: flex; align-items: center; justify-content: space-between; gap: 18px;
+      text-decoration: none; background: var(--paper); border: 1px solid var(--hairline);
+      border-radius: 4px; padding: 18px 22px; min-height: 56px;
+      color: var(--espresso); font-size: 1.0625rem; line-height: 1.4;
+      transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+    }
+    .entry-point:hover, .entry-point:focus-visible { border-color: var(--espresso); background: #fff; }
+    .entry-point .arrow { flex: none; color: var(--taupe); transition: transform var(--dur) var(--ease); }
+    .entry-point:hover .arrow, .entry-point:focus-visible .arrow { transform: translateX(3px); color: var(--espresso); }
+    /* The earned payoff: reuse the home moments treatment, placed late. */
+    @media (max-width: 600px) {
+      .entry-point { flex-wrap: wrap; }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- HEADER — wordmark + a small, quiet nav into the journey. -->
+  <!-- HEADER — wordmark + quiet four-link nav + phone, with accessible mobile menu. -->
   <header class="site-header" id="siteHeader">
     <div class="container site-header__inner">
       <a class="brand" href="home.html" aria-label="Alara Home Care, home">
@@ -30,67 +54,220 @@
           <span class="brand__sub">Home Care</span>
         </span>
       </a>
-      <nav class="site-nav" aria-label="Primary">
-        <a class="site-nav__link" href="qualify.html">See what you qualify for</a>
-        <a class="site-nav__link" href="learn.html">Learn</a>
-        <a class="header-call" href="tel:+17028149630">
-          <span class="header-call__label">Call us</span>
-          <span class="header-call__num">(702) 814-9630</span>
-        </a>
-      </nav>
+
+      <div class="site-header__actions">
+        <nav class="site-nav site-nav--primary" aria-label="Primary">
+          <a class="site-nav__link" href="services.html">Services</a>
+          <a class="site-nav__link" href="programs.html">Benefits</a>
+          <a class="site-nav__link" href="learn.html">Library</a>
+          <a class="site-nav__link" href="about.html">About</a>
+          <a class="header-call" href="tel:+17028149630">
+            <span class="header-call__label">Call us</span>
+            <span class="header-call__num">(702) 814-9630</span>
+          </a>
+        </nav>
+        <a class="btn btn--sm" href="qualify.html">See if you qualify</a>
+        <button class="nav-toggle" type="button" id="navToggle" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu">
+          <span class="nav-toggle__bar" aria-hidden="true"></span>
+        </button>
+      </div>
     </div>
+
+    <!-- Slide-down mobile panel, controlled by #navToggle. -->
+    <nav class="mobile-menu" id="site-menu" data-open="false" aria-label="Primary (mobile)">
+      <div class="container mobile-menu__inner">
+        <a class="mobile-menu__link" href="services.html">Services <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="programs.html">Benefits <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="learn.html">Library <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="about.html">About <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="btn btn--block mobile-menu__cta" href="qualify.html">See if you qualify</a>
+        <p class="mobile-menu__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></p>
+      </div>
+    </nav>
   </header>
 
   <main>
 
-    <!-- 1 · THE THRESHOLD — recognition, relief, permission. Nothing else. -->
-    <section class="hero" aria-label="Welcome">
-      <div class="hero__grid">
-        <div class="hero__text">
-          <p class="eyebrow hero__eyebrow">Nurse-led &middot; Locally owned &middot; Las Vegas, Nevada</p>
-          <h1 class="hero__headline">
-            We make sure you get every benefit you&rsquo;ve earned.
-          </h1>
-          <p class="hero__sub">
-            Specialized skilled home health for complex patients on White Card, VA, and
-            Medicare. The coordination, advocacy, and expertise a standard visit can&rsquo;t give you.
-          </p>
-          <div class="hero__actions">
-            <a class="btn" href="qualify.html">Find out if you qualify <span class="arrow" aria-hidden="true">&rarr;</span></a>
-            <a class="btn btn--ghost" href="begin.html?who=referrer">Refer a patient <span class="arrow" aria-hidden="true">&rarr;</span></a>
+    <!-- ============================================================= -->
+    <!-- 1 · HERO — THE THRESHOLD. What Alara is and does, on sight.   -->
+    <!-- ============================================================= -->
+    <section class="lede-hero" aria-label="Welcome">
+      <div class="container">
+        <div class="lede-hero__grid">
+          <div class="lede-hero__text">
+            <p class="eyebrow lede-hero__eyebrow">Nurse-owned home health &middot; Serving all of Clark County, Nevada</p>
+            <h1 class="lede-hero__headline">
+              Skilled home health in Las Vegas, <span class="soft">built for the benefits you have earned.</span>
+            </h1>
+            <p class="lede-hero__sub">
+              We bring nursing and therapy into the home for White Card, federal worker, veteran,
+              and Medicare patients, and we handle the authorizations, claims, and paperwork so
+              your family does not have to. Most patients pay nothing.
+            </p>
+            <div class="lede-hero__actions">
+              <a class="btn btn--primary btn--lg" href="qualify.html">See if you qualify <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              <a class="btn btn--ghost" href="tel:+17028149630">Call us (702) 814-9630</a>
+            </div>
+            <span class="lede-hero__reassure">A nurse answers, usually within the hour during business hours.</span>
           </div>
-          <span class="hero__reassure">Or call <a href="tel:+17028149630">(702) 814-9630</a>. A nurse answers, usually within the hour.</span>
-        </div>
-        <div class="hero__image">
-          <img src="hero-arches.webp" alt="A wide stone staircase rising to a warm brass arched door." />
+          <div class="lede-hero__media">
+            <img src="hero-arches.webp" alt="A wide stone staircase rising to a warm arched doorway." />
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- 2 · THE TANGLE — relief deepens. Derived from the Constitution's Preamble. -->
-    <section class="tangle">
+    <!-- ============================================================= -->
+    <!-- 2 · WHAT WE DO — services strip. Answers "what do you offer". -->
+    <!-- ============================================================= -->
+    <section class="home-section" aria-label="What we do">
+      <div class="container">
+        <div class="s-head reveal">
+          <span class="eyebrow">What we do</span>
+          <h2 class="s-head__title">Skilled care at home, and the coordination that makes it work.</h2>
+          <p class="s-head__lead">A registered nurse holds the clinical care and the paperwork together, so nothing falls between them.</p>
+        </div>
+
+        <div class="editorial-rows reveal">
+          <div class="editorial-row">
+            <div class="editorial-row__index">01</div>
+            <h3 class="editorial-row__title">Skilled nursing</h3>
+            <div class="editorial-row__body">
+              Registered and licensed nurses care for medically complex patients at home: assessment,
+              wound care, medication management, IV and infusion therapy, and disease management for
+              conditions like COPD, CHF, diabetes, cancer, and stroke. The kind of close watching that
+              catches a problem before it becomes a hospital stay.
+            </div>
+          </div>
+          <div class="editorial-row">
+            <div class="editorial-row__index">02</div>
+            <h3 class="editorial-row__title">Wound care</h3>
+            <div class="editorial-row__body">
+              A nurse treats chronic and non-healing wounds at home, including staging, sterile dressing
+              changes, infection monitoring, and advanced or negative-pressure therapy when a physician
+              orders it.
+            </div>
+          </div>
+          <div class="editorial-row">
+            <div class="editorial-row__index">03</div>
+            <h3 class="editorial-row__title">Physical and occupational therapy</h3>
+            <div class="editorial-row__body">
+              Therapists rebuild strength, balance, and daily independence in the home where function has
+              to happen: gait training, fall prevention, ADL retraining, adaptive equipment, and caregiver
+              training, built around the goal the patient names.
+            </div>
+          </div>
+          <div class="editorial-row">
+            <div class="editorial-row__index">04</div>
+            <h3 class="editorial-row__title">Coordination and case management</h3>
+            <div class="editorial-row__body">
+              We identify uncovered consequential conditions, track authorizations and renewals in advance,
+              and coordinate billing across payers, so care is never interrupted by a paperwork gap.
+            </div>
+          </div>
+        </div>
+
+        <p class="section-foot reveal">
+          <a class="link-arrow" href="services.html">See everything we do <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        </p>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- 3 · PROGRAMS WE ACCEPT — benefits strip. Answers "what do you take". -->
+    <!-- ============================================================= -->
+    <section class="home-section home-section--tint" aria-label="Programs we accept">
+      <div class="container">
+        <div class="s-head reveal">
+          <span class="eyebrow">Programs we accept</span>
+          <h2 class="s-head__title">The benefit programs we specialize in, and most patients pay nothing.</h2>
+          <p class="s-head__lead">When a physician orders care for a covered condition, these programs generally pay for it in full. We confirm what applies to you and handle the authorizations.</p>
+        </div>
+
+        <div class="trust-strip reveal">
+          <div class="trust-strip__inner">
+            <span class="trust-strip__label">We work with</span>
+            <div class="trust-strip__items">
+              <span class="trust-strip__item">White Card (EEOICPA)</span>
+              <span class="trust-strip__item">OWCP / FECA</span>
+              <span class="trust-strip__item">VA Community Care</span>
+              <span class="trust-strip__item">Medicare</span>
+              <span class="trust-strip__item">Black Lung (DCMWC)</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="disclaimer-line reveal">
+          This is general information, not a coverage determination. Your DOL Resource Center, the VA,
+          and your physician confirm what applies to your claim.
+        </p>
+
+        <p class="section-foot reveal">
+          <a class="link-arrow" href="programs.html">See programs and what they cover <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        </p>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- 4 · THE EDGE — the Tangle + what Alara holds. The differentiator. -->
+    <!-- ============================================================= -->
+    <section class="tangle" aria-label="What makes Alara different">
       <div class="container tangle__inner reveal">
         <p>
-          <span class="lede-rest">A family shouldn't have to coordinate nurses, track down
+          <span class="lede-rest">A family should not have to coordinate nurses, track down
           authorizations, and decode benefits on top of caring for someone.</span>
           <span class="hold"> Alara runs all of it, the clinical care and the paperwork, so none of it lands on you.</span>
         </p>
       </div>
     </section>
 
-    <!-- 3 · WHAT THEY REMEMBER — the experience moments. The emotional apex. -->
+    <!-- ============================================================= -->
+    <!-- 5 · SEE WHAT YOU QUALIFY FOR — the navigator teaser. The proof. -->
+    <!-- ============================================================= -->
+    <section class="home-section" aria-label="See what you qualify for">
+      <div class="container">
+        <div class="s-head reveal">
+          <span class="eyebrow">See what you qualify for</span>
+          <h2 class="s-head__title">Tell us where you are, and we will show what your benefits cover.</h2>
+          <p class="s-head__lead">No form and no program you need to name. Start anywhere, and the answer comes back in plain language, with the source it is based on.</p>
+        </div>
+
+        <div class="entry-points reveal">
+          <a class="entry-point" href="qualify.html?node=by-program">
+            <span>My dad worked at the Test Site</span>
+            <span class="arrow" aria-hidden="true">&rarr;</span>
+          </a>
+          <a class="entry-point" href="qualify.html?node=by-need">
+            <span>A wound that will not heal</span>
+            <span class="arrow" aria-hidden="true">&rarr;</span>
+          </a>
+          <a class="entry-point" href="qualify.html?node=by-question">
+            <span>I am a veteran and need care at home</span>
+            <span class="arrow" aria-hidden="true">&rarr;</span>
+          </a>
+        </div>
+
+        <p class="section-foot reveal">
+          <a class="link-arrow" href="qualify.html">Start the benefit navigator <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        </p>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- 6 · WHAT FAMILIES REMEMBER — the earned emotional payoff.      -->
+    <!-- ============================================================= -->
     <section class="moments" aria-label="What families remember">
       <div class="container">
         <div class="moments__head reveal">
           <span class="eyebrow">What families tell us, afterward</span>
-          <h2>Ask our families what they remember. It's never the paperwork.</h2>
+          <h2>Ask our families what they remember. It is never the paperwork.</h2>
         </div>
         <div class="moments__list">
           <p class="moment reveal">Every form, every call, every appointment, accounted for.</p>
           <p class="moment reveal">We never had to chase anyone. Someone was always already on it.</p>
-          <p class="moment reveal">They tracked the details we forgot, and the ones we didn't know to ask about.</p>
+          <p class="moment reveal">They tracked the details we forgot, and the ones we did not know to ask about.</p>
           <p class="moment reveal">When something was wrong, they told us straight, and they told us early.</p>
-          <p class="moment reveal">The paperwork we'd dreaded for months was just handled.</p>
+          <p class="moment reveal">The paperwork we had dreaded for months was just handled.</p>
           <p class="moment reveal">Everything they said they would do, they did.</p>
           <p class="moment reveal">They were always a step ahead of what we needed next.</p>
         </div>
@@ -101,8 +278,10 @@
       </div>
     </section>
 
-    <!-- 4 · THE FOUNDER'S EXPERIENCE — anonymous by design. About the experience, never the person. -->
-    <section class="founder" aria-label="Our founder">
+    <!-- ============================================================= -->
+    <!-- 7 · WHO WE ARE — credibility. The feeling confirmed with fact. -->
+    <!-- ============================================================= -->
+    <section class="founder" aria-label="Who we are">
       <div class="container founder__grid reveal">
         <div class="founder__frame" role="img" aria-label="Alara">
           <svg viewBox="0 0 100 92" aria-hidden="true">
@@ -113,53 +292,41 @@
           </svg>
         </div>
         <div>
-          <p class="eyebrow founder__eyebrow">Our founder</p>
+          <p class="eyebrow founder__eyebrow">Who we are</p>
           <p class="founder__quote">
-            Alara was founded by a healthcare executive, clinician, and entrepreneur who has
-            spent more than two decades building and scaling healthcare systems across the country.
+            Nurse-owned, DON-led, and Medicare-certified home health, serving all of Clark County, Nevada.
           </p>
           <p class="founder__body">
-            She has worked alongside providers, health plans, regulators, and policymakers;
-            helped shape programs serving vulnerable populations; built healthcare networks at
-            scale; and led operations that have reached more than one million patients. After
-            two decades improving healthcare at scale, she saw the center of care moving from
-            institutions to the home, and founded Alara to build for that future.
+            A Director of Nursing reviews every start of care before it is submitted. Alara was founded by
+            a healthcare executive, clinician, and entrepreneur who has spent more than two decades building
+            and scaling healthcare systems across the country. After two decades improving healthcare at
+            scale, she saw the center of care moving from institutions into the home, and founded Alara to
+            build for that future. We work with White Card (EEOICPA), federal-worker (OWCP), veteran (VA
+            Community Care), Black Lung (DCMWC), and Medicare benefits, and most families pay nothing out
+            of pocket.
+          </p>
+          <p class="section-foot">
+            <a class="link-arrow" href="about.html">More about Alara <span class="arrow" aria-hidden="true">&rarr;</span></a>
           </p>
         </div>
       </div>
     </section>
 
-    <!-- 5 · AND IT'S REAL — legitimacy as reward. The only place programs are named. -->
-    <section class="real" aria-label="What makes Alara legitimate">
-      <div class="container real__inner reveal">
-        <span class="eyebrow">Who we are</span>
-        <p>
-          <strong>Nurse-owned, DON-led, and Medicare-certified.</strong> We deliver skilled
-          home health across Southern Nevada and specialize in the benefits other agencies
-          won't touch: White Card (EEOICPA), federal-worker (OWCP), and veteran (VA Community
-          Care). A Director of Nursing reviews every case, and <strong>most families pay nothing out of pocket.</strong>
-        </p>
-        <div class="real__marks" aria-label="Credentials">
-          <span>Nurse-owned</span>
-          <span>DON reviews every case</span>
-          <span>Medicare-certified</span>
-          <span>EEOICPA</span>
-          <span>OWCP</span>
-          <span>VA Community Care</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- 6 · THE INVITATION — conversation earned. Invited, never pressured. -->
+    <!-- ============================================================= -->
+    <!-- 8 · THE INVITATION — one honest, low-cost way to begin.        -->
+    <!-- ============================================================= -->
     <section class="invite" id="invite" aria-label="Begin">
       <div class="container invite__inner reveal">
-        <h2>One call, and we get to work.</h2>
-        <p>No forms to figure out and no program you need to name. Tell us what's going on, and a nurse takes it from there, including the benefits paperwork.</p>
+        <h2>Tell us what is going on. A nurse takes it from there.</h2>
+        <p>No forms to figure out and no program you need to name. Leave your number, and a nurse calls you about what is happening and what is covered, including the benefits paperwork.</p>
         <div class="invite__actions">
-          <a class="btn btn--on-dark" href="begin.html">Find out if you qualify <span class="arrow" aria-hidden="true">&rarr;</span></a>
-          <a class="invite__call" href="tel:+17028149630">or call (702) 814-9630</a>
+          <a class="btn btn--on-dark" href="qualify.html">Find out if you qualify <span class="arrow" aria-hidden="true">&rarr;</span></a>
+          <a class="btn btn--on-dark" href="begin.html?who=referrer">Refer a patient <span class="arrow" aria-hidden="true">&rarr;</span></a>
         </div>
-        <p class="invite__reassure">A nurse answers, usually within the hour.</p>
+        <p class="invite__reassure">
+          Or call <a class="invite__call" href="tel:+17028149630">(702) 814-9630</a>.
+          A nurse answers, usually within the hour during business hours.
+        </p>
       </div>
     </section>
 
@@ -187,11 +354,25 @@
   </footer>
 
   <script>
+    // Sticky-header hairline on scroll.
     var header = document.getElementById('siteHeader');
     var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 24); };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
 
+    // Accessible mobile menu: flip aria-expanded + data-open.
+    var toggle = document.getElementById('navToggle');
+    var menu = document.getElementById('site-menu');
+    if (toggle && menu) {
+      toggle.addEventListener('click', function () {
+        var open = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!open));
+        toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+        menu.setAttribute('data-open', String(!open));
+      });
+    }
+
+    // Quiet reveal: one slow fade, reduced-motion safe.
     var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!prefersReduced && 'IntersectionObserver' in window) {
       document.documentElement.classList.add('js-reveal');

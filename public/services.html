@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Services · Alara Home Care</title>
+  <meta name="description" content="Skilled care at home, and the coordination that makes it work. Skilled nursing, wound care, infusion, therapy, home health aide, medical social work, and case management. Physician-ordered and DON-supervised. Serving all of Clark County, Nevada." />
+  <meta property="og:title" content="Services · Alara Home Care" />
+  <meta property="og:description" content="Skilled care at home, and the coordination that makes it work. Physician-ordered, DON-supervised home health for White Card, federal worker, veteran, and Medicare patients." />
+  <link rel="icon" href="logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="site.css" />
+  <style>
+    /* Page-scoped only: a calm "physician-ordered, DON-supervised" note band
+       and a small order-note for the editorial intro. Five swatches, hairlines. */
+    .order-note {
+      display: block; margin-top: 22px;
+      font-size: 0.9375rem; line-height: 1.6; color: var(--taupe);
+      max-width: 56ch;
+    }
+    .order-note strong { color: var(--espresso); font-weight: 500; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER — identical chrome across the site: wordmark + quiet nav + mobile menu. -->
+  <header class="site-header" id="siteHeader">
+    <div class="container site-header__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care, home">
+        <svg class="brand__mark" viewBox="0 0 100 92" role="img" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd"
+            d="M22,88 V34 L50,8 L78,34 V88 Z
+               M37,88 V66 A13,13 0 0 1 63,66 V88 Z
+               M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word">
+          <span class="brand__name">ALARA</span>
+          <span class="brand__sub">Home Care</span>
+        </span>
+      </a>
+
+      <div class="site-header__actions">
+        <nav class="site-nav site-nav--primary" aria-label="Primary">
+          <a class="site-nav__link" href="services.html" aria-current="page">Services</a>
+          <a class="site-nav__link" href="programs.html">Benefits</a>
+          <a class="site-nav__link" href="learn.html">Library</a>
+          <a class="site-nav__link" href="about.html">About</a>
+          <a class="header-call" href="tel:+17028149630">
+            <span class="header-call__label">Call us</span>
+            <span class="header-call__num">(702) 814-9630</span>
+          </a>
+        </nav>
+        <a class="btn btn--sm" href="qualify.html">See if you qualify</a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu">
+          <span class="nav-toggle__bar" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile slide-down panel -->
+    <div class="mobile-menu" id="site-menu" data-open="false">
+      <div class="container mobile-menu__inner">
+        <a class="mobile-menu__link" href="services.html" aria-current="page">Services <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="programs.html">Benefits <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="learn.html">Library <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="about.html">About <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="btn btn--block mobile-menu__cta" href="qualify.html">See if you qualify</a>
+        <p class="mobile-menu__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- HERO — what we do, in one plain line, with the edge named in the subhead. -->
+    <section class="lede-hero" aria-label="Services">
+      <div class="container lede-hero__grid">
+        <div class="lede-hero__text">
+          <p class="eyebrow lede-hero__eyebrow">What we do &middot; Serving all of Clark County, Nevada</p>
+          <h1 class="lede-hero__headline">
+            Skilled care at home, <span class="soft">and the coordination that makes it work.</span>
+          </h1>
+          <p class="lede-hero__sub">
+            A physician orders the care. A registered nurse delivers it, and a Director
+            of Nursing reviews it. We hold the clinical work and the benefits paperwork
+            together, so nothing falls between them.
+          </p>
+          <div class="lede-hero__actions">
+            <a class="btn btn--primary btn--lg" href="qualify.html">See if you qualify <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <a class="btn btn--ghost" href="tel:+17028149630">Call us (702) 814-9630</a>
+          </div>
+          <span class="lede-hero__reassure">A nurse answers, usually within the hour during business hours.</span>
+        </div>
+        <div class="lede-hero__media">
+          <img src="hero-arches.webp" alt="A wide stone staircase rising to a warm arched doorway." />
+        </div>
+      </div>
+    </section>
+
+    <!-- ORDERED & SUPERVISED — stated once, plainly, up front. -->
+    <section class="section section--mist" aria-label="How care is ordered and supervised">
+      <div class="container">
+        <div class="s-head" style="margin-bottom: clamp(28px, 4vw, 44px);">
+          <span class="eyebrow">Physician-ordered, DON-supervised</span>
+          <h2 class="s-head__title">Every service starts with a physician order and is supervised by a nurse.</h2>
+        </div>
+        <p class="lede">
+          Skilled home health is medical care. Nothing on this page begins without a
+          physician's order, and every start of care is reviewed by our Director of
+          Nursing before it is submitted. Nurses, therapists, and aides all work under
+          that clinical supervision, on a plan of care your physician signs.
+        </p>
+        <p class="order-note">
+          <strong>What this means for you.</strong> You do not order or arrange any of
+          this yourself. Your physician orders the care, we build and run the plan, and
+          the most clinically accountable person in the agency has looked at it.
+        </p>
+      </div>
+    </section>
+
+    <!-- THE CLINICAL SERVICES — editorial hairline rows, not a grid. -->
+    <section class="section" aria-label="Clinical services">
+      <div class="container">
+        <div class="s-head">
+          <span class="eyebrow">Clinical care at home</span>
+          <h2 class="s-head__title">The care a nurse, therapist, or aide brings into the home.</h2>
+          <p class="s-head__lead">
+            Each of these is provided when a physician orders it, for patients across
+            Clark County. The list is plain on purpose.
+          </p>
+        </div>
+
+        <div class="editorial-rows">
+
+          <div class="editorial-row">
+            <span class="editorial-row__index">01</span>
+            <h3 class="editorial-row__title">Skilled nursing</h3>
+            <div class="editorial-row__body">
+              <p>
+                Registered nurses and licensed practical nurses provide skilled care in
+                the home for medically complex patients: clinical assessment, wound care,
+                medication management, IV and infusion therapy, post-surgical monitoring,
+                and disease management for conditions like COPD, CHF, diabetes, cancer,
+                CKD, and stroke.
+              </p>
+              <p>
+                It is the kind of close watching that catches a problem before it becomes
+                a hospital stay.
+              </p>
+            </div>
+          </div>
+
+          <div class="editorial-row">
+            <span class="editorial-row__index">02</span>
+            <h3 class="editorial-row__title">Wound care</h3>
+            <div class="editorial-row__body">
+              <p>
+                A nurse treats chronic and non-healing wounds in your home, including
+                assessment and staging, sterile dressing changes, infection monitoring,
+                and advanced or negative-pressure therapy when a physician orders it.
+              </p>
+              <p class="editorial-row__more">
+                <a class="link-arrow" href="learn.html#wound-care">What wound care covers <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              </p>
+            </div>
+          </div>
+
+          <div class="editorial-row">
+            <span class="editorial-row__index">03</span>
+            <h3 class="editorial-row__title">Infusion and IV therapy</h3>
+            <div class="editorial-row__body">
+              <p>
+                When a physician orders it, a nurse manages IV and infusion treatment at
+                home, including IV antibiotics, hydration and nutrition support, and PICC
+                or central-line care, so you can receive it without traveling to a facility.
+              </p>
+            </div>
+          </div>
+
+          <div class="editorial-row">
+            <span class="editorial-row__index">04</span>
+            <h3 class="editorial-row__title">Physical therapy</h3>
+            <div class="editorial-row__body">
+              <p>
+                Physical therapists work with patients in the actual home where function
+                has to happen, rebuilding strength, balance, and mobility after surgery,
+                stroke, injury, or illness. Care includes gait training, fall prevention,
+                assistive-device fitting, therapeutic exercise, home safety assessment,
+                and caregiver training, built around the goal the patient names.
+              </p>
+            </div>
+          </div>
+
+          <div class="editorial-row">
+            <span class="editorial-row__index">05</span>
+            <h3 class="editorial-row__title">Occupational therapy</h3>
+            <div class="editorial-row__body">
+              <p>
+                Occupational therapy is about getting daily life back: showering without
+                exhaustion, dressing independently, preparing a meal. Therapists assess
+                what is getting in the way of independence and address it through ADL
+                retraining, adaptive equipment, energy conservation, cognitive support,
+                home safety evaluation, and caregiver instruction.
+              </p>
+            </div>
+          </div>
+
+          <div class="editorial-row">
+            <span class="editorial-row__index">06</span>
+            <h3 class="editorial-row__title">Home health aide</h3>
+            <div class="editorial-row__body">
+              <p>
+                Home health aides provide personal care such as bathing, grooming,
+                dressing, and help with mobility, under the supervision of a registered
+                nurse. At Alara, aides are trained to observe and report, so they know
+                the warning signs for each patient's diagnoses and know when to call the
+                nurse.
+              </p>
+            </div>
+          </div>
+
+          <div class="editorial-row">
+            <span class="editorial-row__index">07</span>
+            <h3 class="editorial-row__title">Medical social work</h3>
+            <div class="editorial-row__body">
+              <p>
+                A social worker sees why a problem persists: the patient who cannot afford
+                adequate nutrition, the caregiver one hard week from walking out, the
+                veteran not yet connected to earned VA benefits, the White Card patient
+                who qualifies for more than the card currently covers.
+              </p>
+              <p>
+                Our medical social workers run social-determinants screening at every
+                admission, connect families to community resources, provide counseling and
+                advance-care-planning support, and help navigate benefits. We offer medical
+                social work as a standard service, which many agencies treat as optional.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- THE EDGE — the coordination competitors lack. This is "we handle the rest." -->
+    <section class="section section--greige" aria-label="Coordination and advocacy">
+      <div class="container">
+        <div class="s-head">
+          <span class="eyebrow">The part most agencies leave to your family</span>
+          <h2 class="s-head__title">The coordination that makes the care actually work.</h2>
+          <p class="s-head__lead">
+            Skilled care is only half of it. The other half is the authorizations, the
+            claims, and the benefits no one told you about. This is what we mean when we
+            say we handle the rest.
+          </p>
+        </div>
+
+        <div class="editorial-rows editorial-rows--simple">
+
+          <div class="editorial-row">
+            <h3 class="editorial-row__title">Benefits navigation</h3>
+            <div class="editorial-row__body">
+              <p>
+                We know the programs that pay for home care: White Card (EEOICPA),
+                federal-worker (OWCP), veteran (VA Community Care), Black Lung (DCMWC),
+                and Medicare. We confirm what applies to you and what it covers, so you
+                are never guessing about coverage.
+              </p>
+            </div>
+          </div>
+
+          <div class="editorial-row">
+            <h3 class="editorial-row__title">Authorization tracking</h3>
+            <div class="editorial-row__body">
+              <p>
+                Our scheduling blocks visits without a valid authorization number, and
+                renewals are tracked in advance. You do not receive care you are not
+                covered for, and coverage does not lapse in the middle of an episode.
+              </p>
+            </div>
+          </div>
+
+          <div class="editorial-row">
+            <h3 class="editorial-row__title">Claims coordination across programs</h3>
+            <div class="editorial-row__body">
+              <p>
+                Many patients carry more than one form of coverage. Our team manages
+                billing across multiple payers and handles the claims directly, so
+                patients and families never have to.
+              </p>
+            </div>
+          </div>
+
+          <div class="editorial-row">
+            <h3 class="editorial-row__title">Consequential conditions and missed benefits</h3>
+            <div class="editorial-row__body">
+              <p>
+                We screen for consequential conditions that may qualify for expanded
+                coverage at no additional cost, and for benefits families are often never
+                told about, such as a family member being paid to provide care, or holding
+                the White Card and Medicare together.
+              </p>
+              <p class="editorial-row__more">
+                <a class="link-arrow" href="qualify.html">See what you may be missing <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              </p>
+            </div>
+          </div>
+
+          <div class="editorial-row">
+            <h3 class="editorial-row__title">Caregiver training</h3>
+            <div class="editorial-row__body">
+              <p>
+                We teach the people already in the home what to watch for and what to do,
+                so the family is steadier between visits and the patient is safer.
+              </p>
+            </div>
+          </div>
+
+          <div class="editorial-row">
+            <h3 class="editorial-row__title">The DON case review</h3>
+            <div class="editorial-row__body">
+              <p>
+                Our Director of Nursing reviews every start-of-care assessment before it
+                is submitted. Not a coordinator, not a supervisor. The most clinically
+                accountable person in the agency looks at every admission. This is not
+                standard practice in home health. It is ours.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- WHAT HOME HEALTH IS (AND ISN'T) — the plain distinction. -->
+    <section class="section" aria-label="What home health is and isn't">
+      <div class="container">
+        <div class="s-head">
+          <span class="eyebrow">A plain distinction</span>
+          <h2 class="s-head__title">What home health is, and what it isn't.</h2>
+        </div>
+        <div class="proof proof--two">
+          <div class="proof-point">
+            <h3 class="proof-point__title">Skilled home health</h3>
+            <p class="proof-point__body">
+              Medical care delivered at home by licensed clinicians: nurses, physical and
+              occupational therapists, medical social workers, and supervised aides. It is
+              ordered by a physician, supervised by a nurse, and generally paid by a
+              benefit program. This is what Alara provides.
+            </p>
+          </div>
+          <div class="proof-point">
+            <h3 class="proof-point__title">Non-medical home care</h3>
+            <p class="proof-point__body">
+              Help with daily tasks like housekeeping, errands, and companionship, provided
+              by caregivers who are not licensed clinicians and do not work under a
+              physician's plan of care. It is useful, but it is a different service and is
+              usually paid out of pocket.
+            </p>
+          </div>
+        </div>
+        <p class="order-note">
+          <a class="link-arrow" href="learn.html#home-health">More on what skilled home health means <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        </p>
+      </div>
+    </section>
+
+    <!-- PROGRAMS — quiet typographic row, with the honest disclaimer. -->
+    <section class="section section--mist" aria-label="Programs we accept">
+      <div class="container">
+        <div class="s-head" style="margin-bottom: clamp(24px, 3vw, 36px);">
+          <span class="eyebrow">Who pays for this</span>
+          <h2 class="s-head__title">The benefit programs we specialize in, and most patients pay nothing.</h2>
+          <p class="s-head__lead">
+            When a physician orders care for a covered condition, these programs generally
+            pay for it in full. We confirm what applies to you and handle the authorizations.
+          </p>
+        </div>
+      </div>
+      <div class="container">
+        <div class="trust-strip" style="border-block: 1px solid var(--hairline); background: transparent;">
+          <div class="trust-strip__inner">
+            <span class="trust-strip__label">We work with</span>
+            <div class="trust-strip__items">
+              <span class="trust-strip__item">White Card (EEOICPA)</span>
+              <span class="trust-strip__item">OWCP / FECA</span>
+              <span class="trust-strip__item">VA Community Care</span>
+              <span class="trust-strip__item">Medicare</span>
+              <span class="trust-strip__item">Black Lung (DCMWC)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <p class="muted" style="margin-top: 24px; font-size: 0.8125rem; line-height: 1.55; max-width: 72ch;">
+          This is general information, not a coverage determination. Your DOL Resource
+          Center, the VA, and your physician confirm what applies to your claim.
+        </p>
+        <p style="margin-top: 18px;">
+          <a class="link-arrow" href="programs.html">See programs and what they cover <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        </p>
+      </div>
+    </section>
+
+    <!-- CLOSE — one calm primary action. -->
+    <section class="cta-band cta-band--arched" aria-label="Begin">
+      <div class="container cta-band__inner">
+        <h2 class="cta-band__title">See what you qualify for.</h2>
+        <p class="cta-band__sub">
+          Tell us where you are, and we will show what your benefits generally cover.
+          There is nothing to prepare and no program you need to name.
+        </p>
+        <div class="cta-band__actions">
+          <a class="btn btn--on-dark btn--lg" href="qualify.html">See if you qualify <span class="arrow" aria-hidden="true">&rarr;</span></a>
+          <a class="cta-band__call" href="tel:+17028149630">or call (702) 814-9630</a>
+        </div>
+        <p class="cta-band__reassure">A nurse answers, usually within the hour during business hours.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care">
+        <svg class="brand__mark" viewBox="0 0 100 92" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd"
+            d="M22,88 V34 L50,8 L78,34 V88 Z
+               M37,88 V66 A13,13 0 0 1 63,66 V88 Z
+               M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word">
+          <span class="brand__name">ALARA</span>
+          <span class="brand__sub">Home Care</span>
+        </span>
+      </a>
+      <div class="site-footer__meta">
+        Serving all of Clark County, Nevada &middot; Medicare-certified<br />
+        <a href="tel:+17028149630">(702) 814-9630</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Sticky header hairline on scroll.
+    var header = document.getElementById('siteHeader');
+    var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 24); };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    // Accessible mobile menu: flip aria-expanded + data-open.
+    var toggle = document.querySelector('.nav-toggle');
+    var menu = document.getElementById('site-menu');
+    if (toggle && menu) {
+      toggle.addEventListener('click', function () {
+        var open = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!open));
+        toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+        menu.setAttribute('data-open', String(!open));
+      });
+    }
+  </script>
+</body>
+</html>
