@@ -12,31 +12,37 @@
 - **The visitor already knows roughly what they need.** Nobody random finds us; they are
   searching for an agency like us. So the site does not need to educate from zero — it needs to
   **hook, prove, and route fast.**
-- **Four jobs, in order:**
-  1. **Hook** in the hero with the differentiator — and say who we are, what we do, and *why* and
-     *how* we're better.
-  2. **Give value immediately** — a clear education path for those still deciding, and a fast lane
-     for those who've already decided to start.
-  3. **Let them choose their path** — there are only a few user types; each self-identifies.
-  4. **Convert** — Begin (patients) or Refer (professionals), at their pace, never pushed.
+- **Five beats, in order:**
+  1. **Hook** — the hero, and only the hero: who Alara is, what we do, why we're better, in a
+     one-liner about the moat that makes them think *"this system is insane — I want these people."*
+     **No decisions are asked here.** The hero does not route.
+  2. **Lock it in** — transition straight into **AlaraOS, revealed like Apple reveals its chip:** a
+     little pre-education on why Alara is unlike anyone else. This is what closes them emotionally
+     ("ok, we've got them"). Light, not White-Card-deep.
+  3. **Route to their lane** — *now* let them find their lane. Push them down **one** lane; don't
+     make them weigh a pile of decisions.
+  4. **In the lane: educate or convert** — if they need education, give the full thing but **dumbed
+     down** (all the tea leaves and breadcrumbs), so they feel *"there's a lot here, and I need
+     someone to do it all for me"* — then the **best clinical care** and the **founder's
+     experience** to solidify. If they already know what they want, straight to convert.
+  5. **Convert** — per stakeholder: qualify / have your physician refer / etc., never forgetting
+     the family. At their pace, never pushed.
 - **The differentiator is the moat:** Alara is always *a step ahead* — it knows before, keeps
   everyone in concert, and makes sure each person already has what they need. That is the hook and
   the "why better."
 - **Two audiences, two front doors:** people who need care (for themselves/family), and
   professionals sending us a patient. Both are hooked in seconds, each in their own language.
 
-## 2. The hero (the shared hook)
+## 2. The hero (the hook — no path decision)
 
-One hero, doing four things fast:
-- **Hook with the difference:** Alara stays ahead of your care — the agency that catches what
-  others miss and runs the whole system around you.
-- **Who/what:** specialized home health for White Card, federal-worker, and veteran patients in
-  Las Vegas.
-- **Why/how better:** because Alara runs on AlaraOS — it finds the benefits you're owed, handles
-  the paperwork, and keeps everyone in concert. (One line; expanded just below.)
-- **Route immediately:** the path chooser (the user types), plus a clear professionals door.
+The hero's only job is to make them want us. It carries:
+- **Who we are + what we do:** specialized home health for White Card, federal-worker, and veteran
+  patients in Las Vegas.
+- **Why we're better, in one line:** Alara runs on AlaraOS and stays a step ahead of your care —
+  the line that lands as *"this system is insane, I want these people."*
 
-Right under the hero, before anything else: **"Which of these is you?"** — the path chooser.
+That's it. **No path chooser in the hero**, no "which of these is you" yet. We hook first; routing
+comes after the AlaraOS reveal.
 
 ## 3. Patient paths (they need care for themselves or family)
 
@@ -132,20 +138,22 @@ them**, and **exactly how to refer and how it will feel.**
   claim-boundary awareness · how to refer) → **Refer**.
 - **How it feels:** "I don't have to think about it — I send them to Alara and it's handled."
 
-## 5. How the homepage presents this
+## 5. How the homepage presents this (the order matters)
 
-1. **Hero** — the hook + who/what + why/how better, in seconds.
-2. **"Which of these is you?"** — the patient path chooser (A–D) + a distinct **"Refer a patient"**
-   door for professionals (E–H). This is the router.
-3. **Why we're better** — the AlaraOS difference (knows before · in concert · each person informed)
-   + the proof (DON review, only MSW agency, nurse-led, local). This is who we are / what we do /
-   why & how better, expanded.
-4. **Immediate value** — benefits you may be missing (instant education payoff) and a preview of how
-   care feels (the Moments, as the promise).
-5. **The doors** — Begin (patients) and Refer (professionals).
+1. **Hero — the hook.** Who we are, what we do, why we're better, in one line. No decisions. (§2)
+2. **The AlaraOS reveal — lock them in.** Reveal AlaraOS like Apple reveals its chip: the moat
+   (knows before · everyone in concert · each person already informed), as light pre-education on
+   why we're unlike anyone else. This is the "fuck yeah" beat that closes them. → links deeper to
+   *The AlaraOS difference*.
+3. **Now find your lane.** Only here does the **path chooser** appear: the patient paths (A–D) and a
+   distinct **"Refer a patient"** door (E–H). Push them into one lane; minimal decisions.
+4. **In the lane** (on the pillar / path page, or a homepage preview): full-but-simplified education
+   (the tea leaves and breadcrumbs) → the best clinical care → the founder's experience to solidify.
+5. **Convert** — per stakeholder: Begin / qualify (patients), Refer (professionals), and the family
+   never forgotten. Those unsure of their lane go through the **Navigator**.
 
-The path chooser sends each user into their journey (§3, §4); those who aren't sure go through the
-**Navigator**.
+So the spine is: **hook → reveal AlaraOS → choose lane → educate (or go straight to convert) →
+convert.** The hero hooks; AlaraOS locks; the lane carries them home.
 
 ## 6. Page inventory, mapped to the paths
 
@@ -167,9 +175,8 @@ The path chooser sends each user into their journey (§3, §4); those who aren't
 
 ## 7. What I recommend we lock
 
-1. The four-jobs hero (hook · who/what/why-how-better · value · route).
-2. The patient paths A–D and the professional paths E–H as the site's organizing journeys.
-3. The homepage flow in §5 (hero → path chooser → why better → value → doors).
-4. The conversion split: Begin (patients) vs Refer (professionals), Navigator as the bridge.
+1. The homepage spine: **hook (hero) → reveal AlaraOS → choose lane → educate → convert** (§5).
+2. The patient paths A–D and the professional paths E–H as the site's organizing journeys (§3, §4).
+3. The conversion split: Begin (patients) vs Refer (professionals), Navigator as the bridge.
 
 Once locked, every page and line is written to move one known user along their path.
