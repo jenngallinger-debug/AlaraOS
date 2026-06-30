@@ -1,0 +1,629 @@
+/* ============================================================================
+   ALARA — site.css  (canonical brand design system, shared by all pages)
+   Source of truth: design-system/BRAND.md + THE-FACE-OF-ALARA.md.
+   Five neutral swatches only. No gold in UI. No blue. No serif.
+   Warmth comes only from the arch photography. Recognition first; calm always.
+   ========================================================================= */
+:root {
+  --espresso: #342E2E;   /* primary text, dark sections */
+  --taupe:    #817A7A;   /* secondary text, hairlines, dividers */
+  --taupe-ink:#645E5C;   /* darkened taupe for AA body on paper */
+  --greige:   #D9D8D3;   /* surfaces, arch fills */
+  --mist:     #E8E8E8;   /* alternate section tint */
+  --paper:    #FBFBFB;   /* page background — never pure white */
+  --hairline: #E2E0DC;   /* soft warm hairline */
+  --on-dark:  #FBFBFB;
+  --on-dark-soft: #C9C4C1;
+
+  --display: "Jost", "Century Gothic", system-ui, sans-serif;
+  --text:    "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --section-y: clamp(80px, 10vw, 156px);
+  --gutter:    clamp(24px, 6vw, 80px);
+  --maxw:      1180px;
+  --measure:   58ch;
+
+  --ls-eyebrow: 0.26em;
+  --ls-wordmark: 0.34em;
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur:  220ms;
+
+  /* Arch motif radii — one intentional curve, reusable. */
+  --arch-lg:   clamp(80px, 14vw, 220px);  /* large arched bands / CTA closes */
+  --arch-card: clamp(120px, 22vw, 220px); /* arched-top cards & media frames */
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--paper);
+  color: var(--espresso);
+  font-family: var(--text);
+  font-size: 17px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a { color: var(--espresso); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--espresso); outline-offset: 3px; }
+img, svg { display: block; }
+
+.container { max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gutter); }
+.measure { max-width: var(--measure); }
+
+.eyebrow {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: 0.6875rem;
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--taupe);
+}
+
+/* Headings: Inter, restrained weight. Authority from space, not from a serif. */
+h1, h2, h3 { font-family: var(--text); font-weight: 500; line-height: 1.18; letter-spacing: -0.01em; color: var(--espresso); }
+
+/* ---- Header + quiet nav -------------------------------------------------- */
+.site-header {
+  position: sticky; top: 0; z-index: 50;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: saturate(120%) blur(8px);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--dur) var(--ease);
+}
+.site-header.is-scrolled { border-bottom-color: var(--hairline); }
+.site-header__inner { display: flex; align-items: center; justify-content: space-between; height: 76px; gap: 24px; }
+.brand { display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--espresso); }
+.brand__mark { width: 30px; height: auto; color: var(--espresso); }
+.brand__word { display: flex; flex-direction: column; line-height: 1.1; }
+.brand__name { font-family: var(--display); font-weight: 400; font-size: 1.0625rem; letter-spacing: var(--ls-wordmark); }
+.brand__sub  { font-family: var(--display); font-weight: 300; font-size: 0.625rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--taupe); }
+
+.site-nav { display: flex; align-items: center; gap: clamp(18px, 2.4vw, 36px); }
+.site-nav__link { text-decoration: none; color: var(--taupe-ink); font-size: 0.9375rem; white-space: nowrap; transition: color var(--dur) var(--ease); }
+.site-nav__link:hover, .site-nav__link[aria-current="page"] { color: var(--espresso); }
+
+.header-call { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding-block: 11px; text-decoration: none; color: var(--espresso); font-size: 0.9375rem; }
+.header-call__label { font-family: var(--display); letter-spacing: 0.14em; text-transform: uppercase; font-size: 0.6875rem; color: var(--taupe); }
+.header-call__num { font-variant-numeric: tabular-nums; }
+.header-call:hover .header-call__num { text-decoration: underline; }
+
+/* ---- Buttons: the single, calm action ----------------------------------- */
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--text); font-size: 0.9375rem; font-weight: 500;
+  padding: 15px 26px; border-radius: 2px;
+  border: 1px solid var(--espresso); background: var(--espresso); color: var(--on-dark);
+  text-decoration: none; cursor: pointer;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.btn:hover { background: #443D3C; border-color: #443D3C; }
+.btn .arrow { transition: transform var(--dur) var(--ease); }
+.btn:hover .arrow { transform: translateX(3px); }
+.btn--on-dark { background: var(--paper); color: var(--espresso); border-color: var(--paper); }
+.btn--on-dark:hover { background: var(--mist); border-color: var(--mist); }
+.btn--ghost { background: transparent; color: var(--espresso); border-color: var(--taupe); }
+.btn--ghost:hover { background: transparent; border-color: var(--espresso); }
+
+/* ---- Homepage hero (the threshold) -------------------------------------- */
+.hero { border-bottom: 1px solid var(--hairline); }
+.hero__grid { display: grid; grid-template-columns: 1fr 1fr; min-height: min(88vh, 860px); }
+.hero__text {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(48px, 8vw, 120px) clamp(32px, 5vw, 88px) clamp(48px, 8vw, 120px) max(var(--gutter), calc((100vw - var(--maxw)) / 2 + var(--gutter)));
+}
+.hero__eyebrow { margin-bottom: 28px; }
+.hero__headline { font-size: clamp(2.25rem, 4.4vw, 3.5rem); font-weight: 500; line-height: 1.08; letter-spacing: -0.02em; max-width: 15ch; }
+.hero__headline .soft { color: var(--taupe-ink); font-weight: 400; }
+.hero__sub { margin-top: 28px; font-size: 1.1875rem; line-height: 1.6; color: var(--espresso); max-width: 40ch; }
+.hero__actions { margin-top: 40px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.hero__reassure { display: block; margin-top: 24px; font-size: 0.9375rem; color: var(--taupe); max-width: 46ch; line-height: 1.5; }
+.hero__image { position: relative; background: var(--greige); overflow: hidden; }
+.hero__image img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center bottom; }
+
+/* ---- Interior page header ------------------------------------------------ */
+.page-hero { padding-block: clamp(56px, 8vw, 104px) clamp(40px, 5vw, 64px); border-bottom: 1px solid var(--hairline); }
+.page-hero .eyebrow { display: block; margin-bottom: 20px; }
+.page-hero h1 { font-size: clamp(2rem, 3.6vw, 2.875rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.1; max-width: 18ch; }
+.page-hero__lead { margin-top: 24px; font-size: 1.1875rem; line-height: 1.6; color: var(--taupe-ink); max-width: 56ch; }
+
+/* ---- The Tangle (home) -------------------------------------------------- */
+.tangle { background: var(--greige); padding-block: var(--section-y); }
+.tangle p { font-size: clamp(1.5rem, 2.6vw, 2.125rem); font-weight: 400; line-height: 1.42; letter-spacing: -0.012em; max-width: 22ch; color: var(--espresso); }
+.tangle .hold { color: var(--espresso); }
+.tangle .lede-rest { color: var(--taupe-ink); }
+
+/* ---- The Moments (home) ------------------------------------------------- */
+.moments { padding-block: var(--section-y); }
+.moments__head { margin-bottom: clamp(40px, 5vw, 72px); }
+.moments__head .eyebrow { display: block; margin-bottom: 18px; }
+.moments__head h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 500; max-width: 20ch; }
+.moments__list { border-top: 1px solid var(--hairline); max-width: 880px; }
+.moment { border-bottom: 1px solid var(--hairline); padding-block: clamp(22px, 2.6vw, 34px); font-size: clamp(1.25rem, 2.1vw, 1.625rem); font-weight: 400; line-height: 1.45; color: var(--espresso); letter-spacing: -0.01em; }
+.moment .q { color: var(--taupe); }
+.moments__seal { margin-top: clamp(48px, 6vw, 88px); text-align: center; }
+.moments__seal .eyebrow { display: block; margin-bottom: 20px; }
+.moments__seal blockquote { font-family: var(--display); font-weight: 300; font-size: clamp(2.5rem, 7vw, 5rem); letter-spacing: -0.01em; line-height: 1.05; color: var(--espresso); }
+
+/* ---- Founder (home) ----------------------------------------------------- */
+.founder { background: var(--mist); padding-block: var(--section-y); }
+.founder__grid { display: grid; grid-template-columns: 300px 1fr; gap: clamp(40px, 6vw, 88px); align-items: center; }
+.founder__frame { width: 100%; max-width: 300px; aspect-ratio: 3 / 4; background: var(--greige); border: 1px solid var(--hairline); border-radius: 150px 150px 4px 4px; display: flex; align-items: center; justify-content: center; }
+.founder__frame svg { width: 88px; height: auto; color: var(--taupe); opacity: 0.55; }
+.founder__eyebrow { margin-bottom: 18px; }
+.founder__quote { font-size: clamp(1.25rem, 2.1vw, 1.625rem); font-weight: 400; line-height: 1.42; letter-spacing: -0.01em; max-width: 32ch; color: var(--espresso); }
+.founder__body { margin-top: 22px; font-size: 1.0625rem; line-height: 1.65; color: var(--taupe-ink); max-width: 52ch; }
+
+/* ---- And it's real (home) ----------------------------------------------- */
+.real { padding-block: var(--section-y); }
+.real__inner { max-width: 760px; }
+.real .eyebrow { display: block; margin-bottom: 20px; }
+.real p { font-size: 1.1875rem; line-height: 1.65; color: var(--taupe-ink); max-width: 56ch; }
+.real p strong { color: var(--espresso); font-weight: 500; }
+.real__marks { margin-top: 40px; padding-top: 26px; border-top: 1px solid var(--hairline); display: flex; flex-wrap: wrap; gap: 10px 22px; font-family: var(--display); font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--taupe); }
+.real__marks span { white-space: nowrap; }
+.real__marks span + span::before { content: "·"; margin-right: 22px; color: var(--hairline); }
+
+/* ---- The invitation (home) ---------------------------------------------- */
+.invite { background: var(--espresso); color: var(--on-dark); border-radius: clamp(80px, 14vw, 220px) clamp(80px, 14vw, 220px) 0 0; margin-top: clamp(24px, 4vw, 56px); }
+.invite__inner { padding-block: clamp(80px, 11vw, 168px); text-align: center; }
+.invite h2 { color: var(--on-dark); font-size: clamp(1.875rem, 4vw, 3rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.12; max-width: 18ch; margin-inline: auto; }
+.invite p { margin-top: 26px; color: var(--on-dark-soft); font-size: 1.1875rem; line-height: 1.6; max-width: 44ch; margin-inline: auto; }
+.invite__actions { margin-top: 44px; display: flex; align-items: center; justify-content: center; gap: 24px; flex-wrap: wrap; }
+.invite__call { color: var(--on-dark); text-decoration: none; font-size: 1.0625rem; font-variant-numeric: tabular-nums; }
+.invite__call:hover { text-decoration: underline; }
+.invite__reassure { margin-top: 26px; color: var(--on-dark-soft); font-size: 0.9375rem; }
+
+/* ========================================================================
+   BENEFIT NAVIGATOR  (/qualify) — start-anywhere wizard → cited answer
+   ===================================================================== */
+.wiz { max-width: 720px; margin-inline: auto; padding-block: clamp(40px, 6vw, 72px); }
+.wiz__crumbs { display: flex; align-items: center; gap: 12px; min-height: 24px; margin-bottom: 28px; }
+.wiz__back { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; background: none; border: none; cursor: pointer; font-family: var(--text); font-size: 0.9375rem; color: var(--taupe-ink); padding: 11px 8px; margin-left: -8px; }
+.wiz__back:hover { color: var(--espresso); text-decoration: underline; }
+.wiz__step { font-family: var(--display); font-size: 0.6875rem; letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--taupe); margin-left: auto; }
+.wiz__question { font-size: clamp(1.5rem, 2.8vw, 2rem); font-weight: 500; letter-spacing: -0.015em; line-height: 1.18; margin-bottom: 28px; max-width: 20ch; }
+.wiz__options { display: flex; flex-direction: column; gap: 12px; }
+.wiz__option {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  width: 100%; text-align: left; cursor: pointer;
+  background: var(--paper); border: 1px solid var(--hairline); border-radius: 4px;
+  padding: 20px 22px; font-family: var(--text); font-size: 1.0625rem; color: var(--espresso);
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.wiz__option:hover { border-color: var(--espresso); background: #fff; }
+.wiz__option .arrow { color: var(--taupe); transition: transform var(--dur) var(--ease); }
+.wiz__option:hover .arrow { transform: translateX(3px); color: var(--espresso); }
+.wiz__help { margin-top: 28px; font-size: 0.875rem; line-height: 1.6; color: var(--taupe); max-width: 60ch; }
+
+/* Answer card */
+.ans { border: 1px solid var(--hairline); border-radius: 6px; background: var(--paper); overflow: hidden; }
+.ans__head { padding: clamp(24px, 3vw, 36px); border-bottom: 1px solid var(--hairline); }
+.ans__kicker { display: block; margin-bottom: 14px; }
+.ans__title { font-size: clamp(1.375rem, 2.4vw, 1.875rem); font-weight: 500; letter-spacing: -0.015em; line-height: 1.2; }
+.ans__answer { margin-top: 18px; font-size: 1.0625rem; line-height: 1.65; color: var(--taupe-ink); }
+.ans__body { padding: clamp(24px, 3vw, 36px); display: grid; gap: 28px; }
+.ans__label { font-family: var(--display); font-size: 0.6875rem; letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--taupe); margin-bottom: 12px; }
+.ans__covered { list-style: none; display: grid; gap: 10px; }
+.ans__covered li { display: flex; align-items: flex-start; gap: 12px; font-size: 1rem; color: var(--espresso); }
+.ans__covered li::before { content: ""; flex: none; width: 16px; height: 16px; margin-top: 4px; border-radius: 50%; border: 1px solid var(--taupe); background:
+  radial-gradient(circle at center, var(--espresso) 0 3px, transparent 3px); }
+.ans__next { background: var(--greige); border-radius: 4px; padding: 20px 22px; font-size: 1.0625rem; line-height: 1.6; color: var(--espresso); }
+.ans__links { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; }
+.ans__links a { font-size: 0.9375rem; color: var(--espresso); }
+.ans__trust { font-size: 0.8125rem; line-height: 1.55; color: var(--taupe); border-top: 1px solid var(--hairline); padding-top: 20px; }
+.ans__cta { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.ans__cta .restart { display: inline-flex; align-items: center; min-height: 44px; padding-block: 11px; background: none; border: none; cursor: pointer; font-family: var(--text); font-size: 0.9375rem; color: var(--taupe-ink); text-decoration: underline; text-underline-offset: 3px; }
+.ans__cta .restart:hover { color: var(--espresso); }
+
+/* ========================================================================
+   FEDERAL BENEFITS LIBRARY  (/learn) — definition-first, cited, calm
+   ===================================================================== */
+.lib { padding-block: clamp(48px, 6vw, 88px); }
+.lib__intro { max-width: 60ch; margin-bottom: clamp(32px, 4vw, 56px); font-size: 1.1875rem; line-height: 1.6; color: var(--taupe-ink); }
+.lib__list { border-top: 1px solid var(--hairline); }
+.term { border-bottom: 1px solid var(--hairline); padding-block: clamp(28px, 3.5vw, 44px); display: grid; grid-template-columns: minmax(0,1fr); gap: 14px; }
+.term__name { font-family: var(--display); font-size: 0.75rem; letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--taupe); }
+.term__def { font-size: clamp(1.1875rem, 1.9vw, 1.4375rem); font-weight: 400; line-height: 1.4; letter-spacing: -0.01em; color: var(--espresso); max-width: 46ch; }
+.term__plain { font-size: 1.0625rem; line-height: 1.65; color: var(--taupe-ink); max-width: 60ch; }
+.term__who { display: flex; flex-wrap: wrap; gap: 8px; }
+.term__chip { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--taupe-ink); border: 1px solid var(--hairline); border-radius: 999px; padding: 5px 12px; }
+.term__meta { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.8125rem; color: var(--taupe); }
+.term__meta a { color: var(--taupe-ink); }
+.term__meta .pending { color: var(--taupe); font-style: italic; }
+
+/* ========================================================================
+   BEGIN  (/begin) — phone-first intake, calm, one ask
+   ===================================================================== */
+.intake { max-width: 600px; margin-inline: auto; padding-block: clamp(40px, 6vw, 72px); }
+.intake__field { margin-bottom: 22px; }
+.intake__field label { display: block; font-size: 0.9375rem; color: var(--espresso); margin-bottom: 8px; }
+.intake__field .hint { color: var(--taupe); }
+.intake input, .intake textarea, .intake select {
+  width: 100%; font-family: var(--text); font-size: 1.0625rem; color: var(--espresso);
+  background: var(--paper); border: 1px solid var(--hairline); border-radius: 4px; padding: 14px 16px;
+  transition: border-color var(--dur) var(--ease);
+}
+.intake input:focus, .intake textarea:focus, .intake select:focus { border-color: var(--espresso); }
+.intake textarea { min-height: 96px; resize: vertical; line-height: 1.6; }
+.intake__actions { margin-top: 28px; display: flex; flex-wrap: wrap; align-items: center; gap: 18px; }
+.intake__or { color: var(--taupe); font-size: 0.9375rem; }
+.intake__or a { color: var(--espresso); font-variant-numeric: tabular-nums; }
+.intake__reassure { margin-top: 22px; font-size: 0.9375rem; color: var(--taupe); line-height: 1.55; }
+/* confirmation */
+.confirm { max-width: 600px; margin-inline: auto; padding-block: clamp(48px, 7vw, 96px); text-align: center; }
+.confirm__mark { width: 56px; height: 56px; margin: 0 auto 28px; color: var(--espresso); }
+.confirm h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 500; letter-spacing: -0.015em; }
+.confirm p { margin-top: 18px; font-size: 1.0625rem; line-height: 1.65; color: var(--taupe-ink); }
+.confirm__card { margin-top: 32px; text-align: left; border: 1px solid var(--hairline); border-radius: 6px; padding: 24px 26px; display: grid; gap: 14px; }
+.confirm__row { display: flex; justify-content: space-between; gap: 16px; font-size: 0.9375rem; }
+.confirm__row dt { color: var(--taupe); }
+.confirm__row dd { color: var(--espresso); text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ---- Sitewide quiet disclaimer (YMYL honesty) --------------------------- */
+.disclaimer { background: var(--mist); }
+.disclaimer__inner { padding-block: 18px; font-size: 0.8125rem; line-height: 1.55; color: var(--taupe-ink); max-width: 72ch; }
+
+/* ---- Section helpers ---------------------------------------------------- */
+.section { padding-block: var(--section-y); }
+.section--mist { background: var(--mist); }
+
+/* ---- Footer ------------------------------------------------------------- */
+.site-footer { background: var(--espresso); color: var(--on-dark-soft); padding-block: clamp(36px, 5vw, 56px); }
+.site-footer__inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.site-footer .brand__name { color: var(--on-dark); }
+.site-footer .brand__sub { color: var(--on-dark-soft); }
+.site-footer .brand__mark { color: var(--on-dark); }
+.site-footer__meta { font-size: 0.875rem; color: var(--on-dark-soft); text-align: right; line-height: 1.7; }
+.site-footer__meta a { display: inline-flex; align-items: center; min-height: 44px; padding-block: 11px; color: var(--on-dark); text-decoration: none; }
+.site-footer__meta a:hover { text-decoration: underline; }
+
+/* ---- Quiet reveal: one slow fade, reduced-motion safe ------------------- */
+html.js-reveal .reveal { opacity: 0; transform: translateY(14px); transition: opacity 600ms var(--ease), transform 600ms var(--ease); }
+html.js-reveal .reveal.is-in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  html.js-reveal .reveal { opacity: 1; transform: none; transition: none; }
+  * { animation: none !important; transition: none !important; }
+}
+
+/* ---- Responsive --------------------------------------------------------- */
+@media (max-width: 860px) {
+  .hero__grid { grid-template-columns: 1fr; min-height: 0; }
+  .hero__image { order: -1; aspect-ratio: 4 / 3; }
+  .hero__image img { position: static; height: 100%; }
+  .hero__text { padding: clamp(40px, 9vw, 64px) var(--gutter) clamp(48px, 10vw, 72px); }
+  .founder__grid { grid-template-columns: 1fr; gap: 36px; }
+  .founder__frame { max-width: 240px; margin-inline: auto; }
+}
+@media (max-width: 760px) {
+  .site-nav__link { display: none; }
+}
+@media (max-width: 520px) {
+  .header-call__label { display: none; }
+  .real__marks span + span::before { content: none; margin: 0; }
+  .real__marks { gap: 8px 16px; }
+}
+@media (max-width: 375px) {
+  /* Collapse the doubled gap where the navigator orientation block stacks
+     its bottom margin onto the wizard's top padding-block on small screens. */
+  .nav-orient + .wiz { padding-top: 0; }
+}
+
+/* ============================================================================
+   ════════════════════════════════════════════════════════════════════════
+   SITE COMPONENT SYSTEM  (multi-page) — extension of the canonical brand.
+   Everything above is unchanged and still in force. Everything below ADDS
+   editorial components for the new pages. Same five swatches, hairlines not
+   shadows, Jost + Inter, arch motif, AA contrast, 375px-safe, motion-safe.
+   ════════════════════════════════════════════════════════════════════════
+   ========================================================================= */
+
+/* ---- Shared rhythm helpers (opt-in, never override existing layout) ------ */
+.lede        { font-size: 1.1875rem; line-height: 1.6; color: var(--taupe-ink); max-width: var(--measure); }
+.lede--tight { max-width: 48ch; }
+.muted       { color: var(--taupe); }
+.center      { text-align: center; }
+.stack > * + * { margin-top: 1.1em; }
+.section--paper  { background: var(--paper); }
+.section--greige { background: var(--greige); }
+.section--espresso { background: var(--espresso); color: var(--on-dark); }
+.section--espresso h1, .section--espresso h2, .section--espresso h3 { color: var(--on-dark); }
+.divider-top    { border-top: 1px solid var(--hairline); }
+.divider-bottom { border-bottom: 1px solid var(--hairline); }
+
+/* A calm, repeatable section head: eyebrow + title + optional lead. */
+.s-head { max-width: 64ch; margin-bottom: clamp(36px, 5vw, 64px); }
+.s-head--center { margin-inline: auto; text-align: center; }
+.s-head--tight { margin-bottom: clamp(24px, 3vw, 36px); }
+.s-head .eyebrow { display: block; margin-bottom: 18px; }
+.s-head__title { font-size: clamp(1.625rem, 3vw, 2.375rem); font-weight: 500; letter-spacing: -0.018em; line-height: 1.14; max-width: 20ch; }
+.s-head--center .s-head__title { margin-inline: auto; }
+.s-head__lead { margin-top: 22px; font-size: 1.1875rem; line-height: 1.6; color: var(--taupe-ink); max-width: 58ch; }
+.s-head--center .s-head__lead { margin-inline: auto; }
+
+/* ---- Buttons: small additions on the existing .btn vocabulary ----------- */
+.btn--lg    { padding: 18px 32px; font-size: 1rem; }
+.btn--sm    { padding: 11px 18px; font-size: 0.875rem; }
+.btn--block { display: flex; width: 100%; justify-content: center; }
+/* A quiet text link with the arrow affordance, for "Learn more" rows. */
+.link-arrow { display: inline-flex; align-items: baseline; gap: 8px; text-decoration: none; color: var(--espresso); font-size: 0.9375rem; font-weight: 500; }
+.link-arrow .arrow { transition: transform var(--dur) var(--ease); color: var(--taupe); }
+.link-arrow:hover { text-decoration: underline; text-underline-offset: 3px; }
+.link-arrow:hover .arrow { transform: translateX(3px); color: var(--espresso); }
+
+/* ============================================================================
+   REFINED STICKY HEADER  +  ACCESSIBLE MOBILE MENU  (no framework)
+   Use `.site-header` (already defined) as the shell. The pieces below add a
+   primary nav, a real toggle button, and a slide-down panel. The toggle is a
+   <button aria-expanded> targeting #site-menu; CSS reacts to aria-expanded so
+   it works with a ~6-line vanilla JS handler, and degrades to a link list.
+   ========================================================================= */
+.site-nav--primary { display: flex; align-items: center; gap: clamp(20px, 2.6vw, 40px); }
+.site-nav--primary .site-nav__link { font-size: 0.9375rem; padding-block: 6px; }
+
+/* The header right cluster: nav + a single CTA, kept calm. */
+.site-header__actions { display: flex; align-items: center; gap: clamp(16px, 2.4vw, 32px); }
+.site-header__actions .btn { padding: 11px 20px; font-size: 0.875rem; }
+
+/* Hamburger toggle — 48px tap target, three hairlines, becomes an X. */
+.nav-toggle {
+  display: none; /* shown only at the mobile breakpoint */
+  position: relative; width: 48px; height: 48px; flex: none;
+  background: none; border: none; cursor: pointer; color: var(--espresso);
+}
+.nav-toggle__bar, .nav-toggle__bar::before, .nav-toggle__bar::after {
+  content: ""; position: absolute; left: 12px; width: 24px; height: 1.5px;
+  background: currentColor; transition: transform var(--dur) var(--ease), opacity var(--dur) var(--ease);
+}
+.nav-toggle__bar { top: 50%; transform: translateY(-50%); }
+.nav-toggle__bar::before { top: -7px; }
+.nav-toggle__bar::after  { top: 7px; }
+.nav-toggle[aria-expanded="true"] .nav-toggle__bar { background: transparent; }
+.nav-toggle[aria-expanded="true"] .nav-toggle__bar::before { top: 0; transform: rotate(45deg); }
+.nav-toggle[aria-expanded="true"] .nav-toggle__bar::after  { top: 0; transform: rotate(-45deg); }
+
+/* Slide-down mobile panel. Hidden by default; revealed by the toggle. */
+.mobile-menu {
+  display: none;
+  border-top: 1px solid var(--hairline);
+  background: var(--paper);
+}
+.mobile-menu[data-open="true"] { display: block; }
+.mobile-menu__inner { padding-block: 12px 24px; display: flex; flex-direction: column; }
+.mobile-menu__link {
+  display: flex; align-items: center; justify-content: space-between;
+  min-height: 56px; text-decoration: none; color: var(--espresso);
+  font-size: 1.0625rem; border-bottom: 1px solid var(--hairline);
+}
+.mobile-menu__link[aria-current="page"] { color: var(--espresso); font-weight: 500; }
+.mobile-menu__link:not([aria-current="page"]) { color: var(--taupe-ink); }
+.mobile-menu__link .arrow { color: var(--taupe); }
+.mobile-menu__cta { margin-top: 22px; }
+.mobile-menu__call { margin-top: 16px; font-size: 0.9375rem; color: var(--taupe); }
+.mobile-menu__call a { color: var(--espresso); font-variant-numeric: tabular-nums; }
+
+/* ============================================================================
+   HERO SYSTEM  (value-prop pages)  — calm but confident.
+   `.hero` (existing) is the home split. `.lede-hero` below is a flexible hero
+   for interior/value-prop pages: headline + subhead + dual CTA + arch image,
+   reflows cleanly to one column at 375px.
+   ========================================================================= */
+.lede-hero { border-bottom: 1px solid var(--hairline); overflow: hidden; }
+.lede-hero__grid {
+  display: grid; grid-template-columns: 1.05fr 0.95fr;
+  gap: clamp(40px, 6vw, 88px); align-items: center;
+  padding-block: clamp(56px, 8vw, 120px);
+}
+.lede-hero--centered .lede-hero__grid { grid-template-columns: 1fr; max-width: 40ch; margin-inline: auto; text-align: center; }
+.lede-hero__eyebrow { display: block; margin-bottom: 24px; }
+.lede-hero__headline {
+  font-size: clamp(2.125rem, 4.4vw, 3.375rem); font-weight: 500;
+  line-height: 1.08; letter-spacing: -0.02em; max-width: 16ch;
+}
+.lede-hero--centered .lede-hero__headline { margin-inline: auto; }
+.lede-hero__headline .soft { color: var(--taupe-ink); font-weight: 400; }
+.lede-hero__sub { margin-top: 26px; font-size: 1.1875rem; line-height: 1.6; color: var(--taupe-ink); max-width: 44ch; }
+.lede-hero--centered .lede-hero__sub { margin-inline: auto; }
+.lede-hero__actions { margin-top: 40px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.lede-hero--centered .lede-hero__actions { justify-content: center; }
+.lede-hero__reassure { display: block; margin-top: 22px; font-size: 0.9375rem; color: var(--taupe); max-width: 46ch; line-height: 1.5; }
+.lede-hero--centered .lede-hero__reassure { margin-inline: auto; }
+
+/* The arch-topped image frame — the signature motif, used with restraint. */
+.lede-hero__media {
+  position: relative; background: var(--greige);
+  aspect-ratio: 4 / 5; border-radius: 4px;
+  overflow: hidden; border: 1px solid var(--hairline);
+}
+.lede-hero__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center bottom; }
+/* A standalone arch frame any block can use for photography. */
+.arch-frame { position: relative; background: var(--greige); border: 1px solid var(--hairline); border-radius: clamp(120px, 22vw, 220px) clamp(120px, 22vw, 220px) 6px 6px; overflow: hidden; }
+.arch-frame > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.arch-frame--placeholder { display: flex; align-items: center; justify-content: center; }
+.arch-frame--placeholder svg { width: 30%; max-width: 96px; height: auto; color: var(--taupe); opacity: 0.5; }
+
+/* ============================================================================
+   TRUST STRIP — "programs we accept" — a quiet typographic row, not a logo wall.
+   ========================================================================= */
+.trust-strip { border-block: 1px solid var(--hairline); background: var(--paper); }
+.trust-strip__inner {
+  display: flex; align-items: center; flex-wrap: wrap;
+  gap: 14px clamp(24px, 4vw, 52px); padding-block: clamp(22px, 3vw, 32px);
+}
+.trust-strip__label { font-family: var(--display); font-size: 0.6875rem; letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--taupe); margin-right: 8px; }
+.trust-strip__items { display: flex; flex-wrap: wrap; align-items: center; gap: 12px clamp(20px, 3vw, 40px); }
+.trust-strip__item { font-family: var(--display); font-weight: 400; font-size: 0.9375rem; letter-spacing: 0.04em; color: var(--espresso); white-space: nowrap; }
+.trust-strip--center .trust-strip__inner { justify-content: center; text-align: center; }
+
+/* ============================================================================
+   WHO WE SERVE / WHAT WE DO — EDITORIAL, not a SaaS feature grid.
+   Two patterns, both restrained:
+   (a) `.editorial-rows` — full-width hairline rows, index + heading + prose.
+   (b) `.serve-cards`   — at most three arched-top cards, used sparingly.
+   ========================================================================= */
+
+/* (a) Hairline editorial rows — the default, most-restrained presentation. */
+.editorial-rows { border-top: 1px solid var(--hairline); }
+.editorial-row {
+  display: grid; grid-template-columns: 4rem minmax(0, 22ch) 1fr;
+  gap: clamp(16px, 3vw, 48px); align-items: baseline;
+  padding-block: clamp(28px, 3.6vw, 48px);
+  border-bottom: 1px solid var(--hairline);
+}
+.editorial-row__index { font-family: var(--display); font-size: 0.875rem; letter-spacing: 0.1em; color: var(--taupe); font-variant-numeric: tabular-nums; padding-top: 0.35em; }
+.editorial-row__title { font-size: clamp(1.25rem, 2vw, 1.5rem); font-weight: 500; letter-spacing: -0.012em; line-height: 1.25; color: var(--espresso); }
+.editorial-row__body { font-size: 1.0625rem; line-height: 1.65; color: var(--taupe-ink); max-width: 56ch; }
+.editorial-row__body > * + * { margin-top: 0.8em; }
+.editorial-row__more { margin-top: 16px; }
+/* Optional 2-column variant when there is no index column. */
+.editorial-rows--simple .editorial-row { grid-template-columns: minmax(0, 24ch) 1fr; }
+
+/* (b) Arched-top cards — for "who we serve": at most three, generous, hairline. */
+.serve-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(20px, 2.6vw, 32px); }
+.serve-card {
+  background: var(--paper); border: 1px solid var(--hairline);
+  border-radius: 120px 120px 6px 6px;
+  padding: clamp(32px, 4vw, 48px) clamp(26px, 3vw, 36px) clamp(28px, 3.4vw, 40px);
+  display: flex; flex-direction: column;
+  transition: border-color var(--dur) var(--ease);
+}
+.serve-card:hover { border-color: var(--taupe); }
+.serve-card__cap { font-family: var(--display); font-size: 0.6875rem; letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--taupe); margin-bottom: 16px; }
+.serve-card__title { font-size: 1.3125rem; font-weight: 500; letter-spacing: -0.012em; line-height: 1.22; color: var(--espresso); }
+.serve-card__body { margin-top: 14px; font-size: 1rem; line-height: 1.62; color: var(--taupe-ink); }
+.serve-card__foot { margin-top: auto; padding-top: 22px; }
+
+/* ============================================================================
+   SERVICES LIST — a clean two-column hairline list of clinical services.
+   ========================================================================= */
+.services { border-top: 1px solid var(--hairline); display: grid; grid-template-columns: 1fr 1fr; column-gap: clamp(32px, 5vw, 72px); }
+.service {
+  border-bottom: 1px solid var(--hairline);
+  padding-block: clamp(20px, 2.4vw, 30px);
+  display: grid; gap: 8px;
+}
+.service__name { font-size: 1.125rem; font-weight: 500; letter-spacing: -0.01em; color: var(--espresso); }
+.service__note { font-size: 0.9375rem; line-height: 1.6; color: var(--taupe-ink); max-width: 44ch; }
+
+/* ============================================================================
+   PROGRAMS / BENEFIT ROWS — a definition-led row pattern (program → who → link).
+   Pairs with data/glossary.json + navigator answer cards.
+   ========================================================================= */
+.programs { border-top: 1px solid var(--hairline); }
+.program-row {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px clamp(24px, 4vw, 56px); align-items: start;
+  padding-block: clamp(26px, 3.4vw, 44px);
+  border-bottom: 1px solid var(--hairline);
+}
+.program-row__main { max-width: 62ch; }
+.program-row__name { font-family: var(--display); font-size: 0.75rem; letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--taupe); margin-bottom: 10px; }
+.program-row__def { font-size: clamp(1.1875rem, 1.9vw, 1.375rem); font-weight: 400; line-height: 1.4; letter-spacing: -0.01em; color: var(--espresso); max-width: 46ch; }
+.program-row__plain { margin-top: 12px; font-size: 1.0625rem; line-height: 1.62; color: var(--taupe-ink); }
+.program-row__who { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; }
+/* reuse .term__chip from the library for the audience chips */
+.program-row__aside { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding-top: 2px; }
+
+/* ============================================================================
+   WHY ALARA — proof pattern. Numbered claims, each backed by a plain reason.
+   Calm, no icons, hairline-separated.
+   ========================================================================= */
+.proof { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(28px, 3.4vw, 48px); }
+.proof--two { grid-template-columns: repeat(2, 1fr); }
+.proof-point { padding-top: 24px; border-top: 1px solid var(--hairline); }
+.proof-point__title { font-size: 1.1875rem; font-weight: 500; letter-spacing: -0.012em; line-height: 1.28; color: var(--espresso); }
+.proof-point__body { margin-top: 12px; font-size: 1rem; line-height: 1.62; color: var(--taupe-ink); max-width: 42ch; }
+
+/* A quiet stat band — large figure + caption, hairline-separated. */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(24px, 3vw, 48px); }
+.stats--two { grid-template-columns: repeat(2, 1fr); }
+.stat { padding-top: 24px; border-top: 1px solid var(--hairline); }
+.stat__figure { font-family: var(--display); font-weight: 300; font-size: clamp(2.25rem, 5vw, 3.25rem); letter-spacing: -0.01em; line-height: 1; color: var(--espresso); }
+.stat__caption { margin-top: 14px; font-size: 0.9375rem; line-height: 1.55; color: var(--taupe-ink); max-width: 28ch; }
+
+/* ============================================================================
+   FOUNDER / ABOUT BLOCK — anonymous by brand rule (experience, never a face).
+   `.founder` (existing, home) stays. `.about` below is a reusable variant
+   for interior pages, with the arch frame holding the mark, never a portrait.
+   ========================================================================= */
+.about { background: var(--mist); }
+.about__grid { display: grid; grid-template-columns: 320px 1fr; gap: clamp(40px, 6vw, 96px); align-items: center; }
+.about__frame { width: 100%; max-width: 320px; aspect-ratio: 3 / 4; }
+.about__eyebrow { display: block; margin-bottom: 18px; }
+.about__quote { font-size: clamp(1.25rem, 2.2vw, 1.75rem); font-weight: 400; line-height: 1.4; letter-spacing: -0.012em; color: var(--espresso); max-width: 30ch; }
+.about__body { margin-top: 24px; font-size: 1.0625rem; line-height: 1.68; color: var(--taupe-ink); max-width: 54ch; }
+.about__body > * + * { margin-top: 1em; }
+.about__sig { margin-top: 26px; font-family: var(--display); font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--taupe); }
+
+/* ============================================================================
+   CREDENTIAL / PROOF BAND — legitimacy as a quiet typographic rule, not badges.
+   ========================================================================= */
+.creds { border-top: 1px solid var(--hairline); padding-top: clamp(26px, 3vw, 36px); }
+.creds__lead { font-size: 1.0625rem; line-height: 1.65; color: var(--taupe-ink); max-width: 60ch; }
+.creds__lead strong { color: var(--espresso); font-weight: 500; }
+.creds__marks {
+  margin-top: 28px; display: flex; flex-wrap: wrap; gap: 10px 22px;
+  font-family: var(--display); font-size: 0.75rem; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--taupe);
+}
+.creds__marks span { white-space: nowrap; }
+.creds__marks span + span::before { content: "·"; margin-right: 22px; color: var(--hairline); }
+
+/* ============================================================================
+   CTA BANDS — calm closes. `.invite` (existing) is the home arched espresso
+   band. The two below are reusable: a plain centered band and an arched-top
+   espresso band, each with one primary action.
+   ========================================================================= */
+.cta-band { background: var(--greige); }
+.cta-band__inner { padding-block: clamp(64px, 9vw, 120px); text-align: center; }
+.cta-band__title { font-size: clamp(1.75rem, 3.6vw, 2.75rem); font-weight: 500; letter-spacing: -0.018em; line-height: 1.14; max-width: 18ch; margin-inline: auto; }
+.cta-band__sub { margin-top: 22px; font-size: 1.1875rem; line-height: 1.6; color: var(--taupe-ink); max-width: 44ch; margin-inline: auto; }
+.cta-band__actions { margin-top: 38px; display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; }
+.cta-band__reassure { margin-top: 22px; font-size: 0.9375rem; color: var(--taupe); }
+.cta-band__call { text-decoration: none; color: var(--espresso); font-variant-numeric: tabular-nums; font-size: 1.0625rem; }
+.cta-band__call:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Arched espresso variant — the signature close (mirrors `.invite`). */
+.cta-band--arched { background: var(--espresso); color: var(--on-dark); border-radius: clamp(80px, 14vw, 220px) clamp(80px, 14vw, 220px) 0 0; }
+.cta-band--arched .cta-band__title { color: var(--on-dark); }
+.cta-band--arched .cta-band__sub { color: var(--on-dark-soft); }
+.cta-band--arched .cta-band__reassure { color: var(--on-dark-soft); }
+.cta-band--arched .cta-band__call { color: var(--on-dark); }
+
+/* ============================================================================
+   COMPONENT-SYSTEM RESPONSIVE  (additions only; existing rules untouched)
+   ========================================================================= */
+@media (max-width: 980px) {
+  .serve-cards { grid-template-columns: 1fr; max-width: 520px; }
+  .proof, .proof--two { grid-template-columns: 1fr 1fr; }
+  .stats, .stats--two { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 860px) {
+  .lede-hero__grid { grid-template-columns: 1fr; }
+  .lede-hero__media { order: -1; aspect-ratio: 4 / 3; max-width: 460px; }
+  .about__grid { grid-template-columns: 1fr; gap: 36px; }
+  .about__frame { max-width: 240px; margin-inline: auto; }
+  .services { grid-template-columns: 1fr; }
+  .editorial-row { grid-template-columns: 3rem 1fr; }
+  .editorial-row__body { grid-column: 1 / -1; }
+  .editorial-rows--simple .editorial-row { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  /* Mobile header: reveal toggle, hide the primary inline nav + its CTA. */
+  .nav-toggle { display: inline-flex; align-items: center; justify-content: center; }
+  .site-nav--primary { display: none; }
+  .site-header__actions .btn { display: none; }
+}
+@media (max-width: 600px) {
+  .program-row { grid-template-columns: 1fr; }
+  .program-row__aside { flex-direction: row; flex-wrap: wrap; align-items: center; }
+  .proof, .proof--two, .stats, .stats--two { grid-template-columns: 1fr; }
+  .editorial-row { grid-template-columns: 1fr; gap: 8px; }
+  .editorial-row__index { padding-top: 0; }
+  .creds__marks span + span::before { content: none; margin: 0; }
+  .creds__marks { gap: 8px 16px; }
+}

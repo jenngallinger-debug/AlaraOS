@@ -28,8 +28,8 @@
   /* --- Accent: warm GOLD, used sparingly (Aman / RH brass-accent restraint) — small
          marks, arrows, the wordmark tagline, hairline accents. Ties to the brass door in
          the arch photography. Not for body text; espresso still carries links/headings. --- */
-  --c-gold: #A8852C;         /* gold — refined metallic accent, used sparingly */
-  --c-brass: #A8852C;        /* gold — keylines, hover */
+  --c-gold: #342E2E;        /* gold removed: owner palette is the five neutrals only */
+  --c-brass: #E2E0DC;       /* was gold; neutral hairline now */
   --c-deep-brass: #342E2E;   /* espresso — links + eyebrow text (links underlined) */
   --c-focus: #342E2E;        /* focus ring */
 

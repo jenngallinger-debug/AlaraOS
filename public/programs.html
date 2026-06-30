@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Benefits we accept &middot; Alara Home Care</title>
+  <meta name="description" content="The federal benefit programs Alara accepts for home health in Las Vegas: White Card (EEOICPA), OWCP/FECA, VA Community Care. Who each is for, what it covers at home, and the cost, which is generally no cost to you for covered care." />
+  <meta property="og:title" content="Benefits we accept · Alara Home Care" />
+  <meta property="og:description" content="The benefit programs we specialize in, with no cost to you for covered care. White Card, OWCP, VA Community Care, with the federal source for each." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="site.css" />
+  <style>
+    /* Page-scoped helpers only. No new colors, no shadows, hairlines only. */
+    .prog-section { padding-block: var(--section-y); }
+    .prog-section--tint { background: var(--mist); }
+    .section-foot { margin-top: clamp(28px, 3.4vw, 44px); }
+
+    /* One benefit program, presented as a calm reference card. */
+    .benefit { border-top: 1px solid var(--hairline); padding-block: clamp(36px, 4.6vw, 64px); }
+    .benefit:first-child { border-top: none; padding-top: 0; }
+    .benefit__name { font-family: var(--display); font-size: 0.75rem; letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--taupe); margin-bottom: 14px; }
+    .benefit__title { font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 500; letter-spacing: -0.015em; line-height: 1.18; max-width: 22ch; }
+    .benefit__who { margin-top: 18px; font-size: 1.0625rem; line-height: 1.62; color: var(--taupe-ink); max-width: 60ch; }
+    .benefit__chips { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .benefit__detail { margin-top: clamp(26px, 3vw, 38px); display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 3vw, 44px); }
+    .benefit__col-label { font-family: var(--display); font-size: 0.6875rem; letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--taupe); margin-bottom: 14px; }
+    .benefit__covered { list-style: none; display: grid; gap: 10px; }
+    .benefit__covered li { display: flex; align-items: flex-start; gap: 12px; font-size: 1rem; line-height: 1.5; color: var(--espresso); }
+    .benefit__covered li::before { content: ""; flex: none; width: 16px; height: 16px; margin-top: 3px; border-radius: 50%; border: 1px solid var(--taupe); background: radial-gradient(circle at center, var(--espresso) 0 3px, transparent 3px); }
+
+    .benefit__cost { font-size: 1.0625rem; line-height: 1.62; color: var(--espresso); }
+    .benefit__cost strong { font-weight: 500; }
+    .benefit__cost .benefit__cost-note { display: block; margin-top: 10px; font-size: 0.9375rem; color: var(--taupe-ink); }
+
+    .benefit__missed { margin-top: clamp(24px, 3vw, 36px); background: var(--greige); border-radius: 4px; padding: clamp(20px, 2.6vw, 28px); }
+    .benefit__missed-label { font-family: var(--display); font-size: 0.6875rem; letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--taupe); margin-bottom: 12px; }
+    .benefit__missed p { font-size: 1rem; line-height: 1.6; color: var(--espresso); max-width: 60ch; }
+
+    .benefit__foot { margin-top: clamp(24px, 3vw, 34px); display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: center; }
+    .benefit__foot a { font-size: 0.9375rem; }
+    .benefit__source { font-size: 0.875rem; color: var(--taupe); width: 100%; }
+    .benefit__source a { color: var(--taupe-ink); }
+
+    .verify-note { margin-top: 16px; font-size: 0.8125rem; line-height: 1.55; color: var(--taupe); max-width: 64ch; font-style: italic; }
+
+    .disclaimer-line { font-size: 0.875rem; line-height: 1.6; color: var(--taupe-ink); max-width: 72ch; }
+
+    @media (max-width: 640px) {
+      .benefit__detail { grid-template-columns: 1fr; gap: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER — identical chrome across the site. -->
+  <header class="site-header" id="siteHeader">
+    <div class="container site-header__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care, home">
+        <svg class="brand__mark" viewBox="0 0 100 92" role="img" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd"
+            d="M22,88 V34 L50,8 L78,34 V88 Z
+               M37,88 V66 A13,13 0 0 1 63,66 V88 Z
+               M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word">
+          <span class="brand__name">ALARA</span>
+          <span class="brand__sub">Home Care</span>
+        </span>
+      </a>
+
+      <div class="site-header__actions">
+        <nav class="site-nav site-nav--primary" aria-label="Primary">
+          <a class="site-nav__link" href="services.html">Services</a>
+          <a class="site-nav__link" href="programs.html" aria-current="page">Benefits</a>
+          <a class="site-nav__link" href="learn.html">Library</a>
+          <a class="site-nav__link" href="about.html">About</a>
+          <a class="header-call" href="tel:+17028149630">
+            <span class="header-call__label">Call us</span>
+            <span class="header-call__num">(702) 814-9630</span>
+          </a>
+        </nav>
+        <a class="btn btn--sm" href="qualify.html">See if you qualify</a>
+        <button class="nav-toggle" type="button" id="navToggle" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu">
+          <span class="nav-toggle__bar" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+
+    <nav class="mobile-menu" id="site-menu" data-open="false" aria-label="Primary (mobile)">
+      <div class="container mobile-menu__inner">
+        <a class="mobile-menu__link" href="services.html">Services <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="programs.html" aria-current="page">Benefits <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="learn.html">Library <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="about.html">About <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="btn btn--block mobile-menu__cta" href="qualify.html">See if you qualify</a>
+        <p class="mobile-menu__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></p>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- ============================================================= -->
+    <!-- PAGE HERO — the answer to "what benefits do you take".         -->
+    <!-- ============================================================= -->
+    <section class="page-hero" aria-label="Benefits we accept">
+      <div class="container">
+        <span class="eyebrow">Programs and benefits we accept</span>
+        <h1>The benefit programs we specialize in, with no cost to you for covered care.</h1>
+        <p class="page-hero__lead">
+          When a physician orders care for a covered condition, these federal programs generally pay
+          for it in full. Below is who each program is for, what it covers at home, and the cost. We
+          confirm what applies to you and handle the authorizations.
+        </p>
+      </div>
+    </section>
+
+    <!-- Quiet typographic strip: the programs at a glance. -->
+    <div class="trust-strip trust-strip--center">
+      <div class="container">
+        <div class="trust-strip__inner">
+          <span class="trust-strip__label">We work with</span>
+          <div class="trust-strip__items">
+            <span class="trust-strip__item">White Card (EEOICPA)</span>
+            <span class="trust-strip__item">OWCP / FECA</span>
+            <span class="trust-strip__item">VA Community Care</span>
+            <span class="trust-strip__item">TRICARE West, ask us</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================= -->
+    <!-- THE PROGRAMS — one reference block each.                        -->
+    <!-- ============================================================= -->
+    <section class="prog-section" aria-label="Programs in detail">
+      <div class="container">
+
+        <!-- EEOICPA / WHITE CARD -->
+        <article class="benefit reveal" id="white-card">
+          <p class="benefit__name">EEOICPA / White Card</p>
+          <h2 class="benefit__title">For Nevada Test Site, DOE, and atomic weapons workers.</h2>
+          <p class="benefit__who">
+            For former Nevada Test Site and Nevada National Security Site workers, Department of Energy
+            and Atomic Weapons Employer workers, and eligible survivors with an accepted EEOICPA condition.
+          </p>
+          <div class="benefit__chips">
+            <span class="term__chip">Energy workers</span>
+            <span class="term__chip">DOE contractors</span>
+            <span class="term__chip">Survivors</span>
+          </div>
+
+          <div class="benefit__detail">
+            <div>
+              <p class="benefit__col-label">What it covers at home</p>
+              <ul class="benefit__covered">
+                <li>Skilled nursing</li>
+                <li>Wound care</li>
+                <li>Physical and occupational therapy</li>
+                <li>Home health aide services</li>
+                <li>Caregiver training</li>
+              </ul>
+            </div>
+            <div>
+              <p class="benefit__col-label">Cost</p>
+              <p class="benefit__cost">
+                <strong>Generally no out-of-pocket cost</strong> for covered care tied to the accepted
+                condition.
+                <span class="benefit__cost-note">No premiums, copays, or deductibles for those covered services.</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="benefit__missed">
+            <p class="benefit__missed-label">Worth naming, and often missed</p>
+            <p>
+              Consequential conditions can be added to the card. A family member already providing
+              daily care may be paid as a home health aide with registered-nurse supervision. The
+              White Card and Medicare can be held together.
+            </p>
+          </div>
+
+          <div class="benefit__foot">
+            <a class="link-arrow" href="white-card.html">The complete White Card guide <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <a class="link-arrow" href="qualify.html?node=ans-eeoicpa-hh">See what applies to you <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <p class="benefit__source">
+              Source: U.S. Department of Labor, EEOICP &middot;
+              <a href="https://www.dol.gov/agencies/owcp/energy" target="_blank" rel="noopener">dol.gov/agencies/owcp/energy</a>
+            </p>
+          </div>
+        </article>
+
+        <!-- OWCP / FECA -->
+        <article class="benefit reveal" id="owcp">
+          <p class="benefit__name">OWCP / FECA</p>
+          <h2 class="benefit__title">For federal and postal workers with an accepted injury or illness.</h2>
+          <p class="benefit__who">
+            For federal and postal (USPS) workers with an OWCP-accepted work-related injury or illness.
+          </p>
+          <div class="benefit__chips">
+            <span class="term__chip">Federal workers</span>
+            <span class="term__chip">Postal workers</span>
+          </div>
+
+          <div class="benefit__detail">
+            <div>
+              <p class="benefit__col-label">What it covers at home</p>
+              <ul class="benefit__covered">
+                <li>Skilled nursing</li>
+                <li>Wound care</li>
+                <li>Physical and occupational therapy</li>
+                <li>Home health aide services</li>
+              </ul>
+            </div>
+            <div>
+              <p class="benefit__col-label">Cost</p>
+              <p class="benefit__cost">
+                <strong>Generally no out-of-pocket cost</strong> when the claim is accepted and care
+                is authorized.
+                <span class="benefit__cost-note">Coverage requires a physician order and OWCP authorization.</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="benefit__foot">
+            <a class="link-arrow" href="owcp.html">The complete OWCP / FECA guide <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <a class="link-arrow" href="qualify.html?node=ans-owcp-hh">See what applies to you <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <p class="benefit__source">
+              Source: U.S. Department of Labor, OWCP/FECA &middot;
+              <a href="https://www.dol.gov/agencies/owcp/FECA" target="_blank" rel="noopener">dol.gov/agencies/owcp/FECA</a>
+            </p>
+          </div>
+        </article>
+
+        <!-- VA COMMUNITY CARE -->
+        <article class="benefit reveal" id="community-care">
+          <p class="benefit__name">VA Community Care / TriWest</p>
+          <h2 class="benefit__title">For veterans authorized for care in the community.</h2>
+          <p class="benefit__who">
+            For enrolled veterans authorized for community care when the VA cannot readily provide it
+            directly. In Region 4, which includes Nevada, the network is administered by TriWest.
+          </p>
+          <div class="benefit__chips">
+            <span class="term__chip">Veterans</span>
+            <span class="term__chip">Community care</span>
+          </div>
+
+          <div class="benefit__detail">
+            <div>
+              <p class="benefit__col-label">What it covers at home</p>
+              <ul class="benefit__covered">
+                <li>Skilled nursing</li>
+                <li>Wound care</li>
+                <li>Physical and occupational therapy</li>
+                <li>Home health aide services</li>
+              </ul>
+            </div>
+            <div>
+              <p class="benefit__col-label">Cost</p>
+              <p class="benefit__cost">
+                <strong>No cost</strong> to veterans authorized for community care.
+                <span class="benefit__cost-note">The VA authorizes and pays directly. A VA referral, authorization, and provider order are required.</span>
+              </p>
+            </div>
+          </div>
+
+          <p class="verify-note">
+            Network participation and any PACT Act details can change. Ask us and we will confirm what
+            applies to your situation before you rely on it.
+          </p>
+
+          <div class="benefit__foot">
+            <a class="link-arrow" href="learn.html#community-care">Community Care in the Library <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <a class="link-arrow" href="qualify.html?node=ans-va-hh">See what applies to you <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <p class="benefit__source">
+              Source: U.S. Department of Veterans Affairs, Community Care &middot;
+              <a href="https://www.va.gov/communitycare/" target="_blank" rel="noopener">va.gov/communitycare</a>
+            </p>
+          </div>
+        </article>
+
+        <!-- TRICARE WEST -->
+        <article class="benefit reveal" id="tricare">
+          <p class="benefit__name">TRICARE West</p>
+          <h2 class="benefit__title">For eligible military families and retirees.</h2>
+          <p class="benefit__who">
+            For eligible active-duty family members, retirees, and dependents in Southern Nevada.
+            TriWest administers TRICARE West in Nevada.
+          </p>
+          <div class="benefit__chips">
+            <span class="term__chip">Military families</span>
+            <span class="term__chip">Retirees</span>
+          </div>
+
+          <div class="benefit__detail">
+            <div>
+              <p class="benefit__col-label">What it covers at home</p>
+              <ul class="benefit__covered">
+                <li>Skilled home health services for eligible plans</li>
+              </ul>
+            </div>
+            <div>
+              <p class="benefit__col-label">Cost</p>
+              <p class="benefit__cost">
+                Coverage depends on the specific TRICARE plan.
+                <span class="benefit__cost-note">Patients should confirm their plan coverage and eligibility.</span>
+              </p>
+            </div>
+          </div>
+
+          <p class="verify-note">
+            TRICARE West participation and the services that qualify vary by plan. Ask us and we will
+            confirm what applies before you rely on it.
+          </p>
+
+          <div class="benefit__foot">
+            <a class="link-arrow" href="qualify.html?node=by-who">Ask us what applies to you <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <p class="benefit__source">
+              Source: U.S. Department of Defense, TRICARE &middot;
+              <a href="https://www.tricare.mil/" target="_blank" rel="noopener">tricare.mil</a>
+            </p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- COMMONLY MISSED — route into the navigator.                    -->
+    <!-- ============================================================= -->
+    <section class="prog-section prog-section--tint" aria-label="Commonly missed benefits">
+      <div class="container">
+        <div class="s-head reveal">
+          <span class="eyebrow">Commonly missed</span>
+          <h2 class="s-head__title">Benefits families are often never told about.</h2>
+          <p class="s-head__lead">Some of the most valuable coverage is the kind no one mentions. If any of these sound like your situation, the navigator can show what may apply.</p>
+        </div>
+
+        <div class="editorial-rows editorial-rows--simple reveal">
+          <div class="editorial-row">
+            <h3 class="editorial-row__title">A paid family caregiver</h3>
+            <div class="editorial-row__body">
+              A family member already providing daily care may be paid as a home health aide, with
+              registered-nurse supervision, under the White Card.
+              <p class="editorial-row__more">
+                <a class="link-arrow" href="qualify.html?node=ans-paid-caregiver">See if this applies <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              </p>
+            </div>
+          </div>
+          <div class="editorial-row">
+            <h3 class="editorial-row__title">Consequential conditions</h3>
+            <div class="editorial-row__body">
+              A condition that developed because of an accepted condition can often be added to the
+              card, opening coverage other agencies never pursue.
+              <p class="editorial-row__more">
+                <a class="link-arrow" href="qualify.html?node=ans-consequential">See if this applies <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              </p>
+            </div>
+          </div>
+          <div class="editorial-row">
+            <h3 class="editorial-row__title">The White Card and Medicare together</h3>
+            <div class="editorial-row__body">
+              You do not have to choose. The White Card and Medicare can be held together, and we
+              coordinate billing across both.
+              <p class="editorial-row__more">
+                <a class="link-arrow" href="qualify.html?node=ans-white-card-medicare">See if this applies <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <p class="disclaimer-line reveal" style="margin-top: clamp(28px, 3.4vw, 44px);">
+          This is general information, not a coverage determination. Your DOL Resource Center, the VA,
+          and your physician confirm what applies to your claim. Alara informs and coordinates. It does
+          not file claims or determine eligibility.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <!-- CLOSE — one honest, low-cost way to begin.                     -->
+    <!-- ============================================================= -->
+    <section class="cta-band cta-band--arched" aria-label="Begin">
+      <div class="container">
+        <div class="cta-band__inner reveal">
+          <h2 class="cta-band__title">We will help you find the program that is yours.</h2>
+          <p class="cta-band__sub">Tell us where you are, and a nurse walks you through what is covered and how to start. No form to figure out and no program you need to name.</p>
+          <div class="cta-band__actions">
+            <a class="btn btn--on-dark" href="qualify.html">See if you qualify <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <a class="btn btn--on-dark" href="begin.html?who=referrer">Refer a patient <span class="arrow" aria-hidden="true">&rarr;</span></a>
+          </div>
+          <p class="cta-band__reassure">
+            Or call <a class="cta-band__call" href="tel:+17028149630">(702) 814-9630</a>.
+            A nurse answers, usually within the hour during business hours.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care">
+        <svg class="brand__mark" viewBox="0 0 100 92" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd"
+            d="M22,88 V34 L50,8 L78,34 V88 Z
+               M37,88 V66 A13,13 0 0 1 63,66 V88 Z
+               M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word">
+          <span class="brand__name">ALARA</span>
+          <span class="brand__sub">Home Care</span>
+        </span>
+      </a>
+      <div class="site-footer__meta">
+        Serving all of Clark County, Nevada<br />
+        <a href="tel:+17028149630">(702) 814-9630</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Sticky-header hairline on scroll.
+    var header = document.getElementById('siteHeader');
+    var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 24); };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    // Accessible mobile menu: flip aria-expanded + data-open.
+    var toggle = document.getElementById('navToggle');
+    var menu = document.getElementById('site-menu');
+    if (toggle && menu) {
+      toggle.addEventListener('click', function () {
+        var open = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', String(!open));
+        toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+        menu.setAttribute('data-open', String(!open));
+      });
+    }
+
+    // Quiet reveal: one slow fade, reduced-motion safe.
+    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!prefersReduced && 'IntersectionObserver' in window) {
+      document.documentElement.classList.add('js-reveal');
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+    } else {
+      document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('is-in'); });
+    }
+  </script>
+</body>
+</html>
