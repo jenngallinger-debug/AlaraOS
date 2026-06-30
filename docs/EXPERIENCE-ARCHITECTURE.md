@@ -65,6 +65,24 @@ The White Card page maps to this: hook (Revelation first, deliberately) → cove
 
 ---
 
+## 2a. The split that comes before everything: card or no card
+
+Owner direction (2026-06-30): the two EEOICPA audiences are **not** the same
+journey and must not be blended.
+
+- **Has a card → bread and butter.** They can start care right away. They need
+  education about *what they already have access to*. This is the priority
+  audience and what the White Card pillar primarily serves.
+- **No card → a different, longer, education-heavy path.** Getting a card is a
+  separate process (filing EE-1 / EE-2, the Resource Center, possibly appealing
+  a denial). It must not sit inside the cardholder pillar as an equal section,
+  because it implies a quick start that isn't real for them.
+
+**Therefore the EEOICPA entry forks on one question first — "Do you have a White
+Card?"** Yes → the pillar (start now). No → the filing path (its own page, to
+build). The pillar now states this fork in its hero and reframes its filing
+section as a clearly-separate, longer path rather than a peer.
+
 ## 3. The audiences and their entry states
 
 | Audience | Where they enter | Feeling | Top thing they want |
@@ -96,6 +114,34 @@ The same table will exist for OWCP, VA, the no-card filer, and the physician —
 each is a one-page map before its pillar gets built.
 
 ---
+
+## 4a. The OWCP / FECA journey (second pillar to build)
+
+Federal and postal worker with an accepted on-the-job injury. Same five-moment
+arc; different anxieties (paperwork, "will comp actually cover home care").
+
+| Point | They feel | They want to know | The exact question we answer | Where next |
+|---|---|---|---|---|
+| Entry | Frustrated by the system | "Does workers' comp even cover home care?" | "Yes — when OWCP accepts the injury and a physician orders it, FECA can authorize skilled home health." | Into the pillar |
+| Hook | Skeptical | "What's the catch / what gets denied?" | The authorization path most agencies get wrong, and how we get it right. | Coverage |
+| Coverage | Steadier | "What's covered at home?" | Nursing, wound care, therapy, aide — at no cost to you. | Their question |
+| Action | Capable | "How does it get authorized?" | The exact authorization steps; what their physician submits. | Navigator / Begin |
+| Decision | Trust | "Who handles the paperwork?" | "Alara handles the authorization so you don't have to." | Begin |
+
+## 4b. The physician / referral-partner journey (build in parallel — owner: now)
+
+A different lane. Not benefits education — **competence and speed**. Time-poor,
+protective of patients, deciding in seconds whether to trust the agency.
+
+| Point | They feel | They want to know | The exact question we answer | Where next |
+|---|---|---|---|---|
+| Entry | Guarded, busy | "Are these people clinically serious?" | DON-led, RN-supervised, complex-patient specialists — stated fast, with proof. | Scan capabilities |
+| Proof | Evaluating | "Can they handle my complex patient?" | The clinical services + the benefit-authorization depth competitors lack. | How to refer |
+| Action | Ready | "How do I refer, and how fast do you move?" | One-step referral; in-home assessment within 48 hours; one-hour response. | Refer |
+| Decision | Confidence | "Will this reflect well on me?" | "We close the loop with you and keep you informed." | Send referral |
+
+This journey gets its own entry (a physicians page / referral path), linked from
+the home page and footer, not buried in the patient lanes.
 
 ## 5. What each page is for (and the nav logic)
 
@@ -158,10 +204,23 @@ the service lane is there when they're ready — never pushed mid-lesson.
 
 ---
 
-## 8. Decisions to confirm
+## 8. Decisions — RESOLVED (owner, 2026-06-30)
 
-1. **White Card page identity** — confirm it is the *EEOICPA education pillar
-   authored by Alara*, not an Alara service page. (This drives every other pillar.)
-2. **Whose journey is second** after the star — OWCP, VA, or the no-card filer?
-3. **The no-card filer** — its own entry page, or keep as a section in the pillar?
-4. **Physicians** — in scope now, or later? It's a separate lane and a separate build.
+1. **White Card page identity** → ✅ the *EEOICPA education pillar authored by
+   Alara*. Drives every pillar's template.
+2. **Build order after the star** → ✅ **OWCP / FECA, then physicians**
+   (VA after). Cardholder pillar refinements first.
+3. **No-card filer** → ✅ a **separate, longer path**, not a peer section. The
+   pillar serves cardholders (bread and butter, start now); the EEOICPA entry
+   forks on "do you have a card?" first. Dedicated filer page to build.
+4. **Physicians** → ✅ **in scope now** — build the referral journey in parallel
+   (its own lane and entry).
+
+## 9. Build queue (in order)
+
+1. ~~White Card pillar~~ + cardholder/no-card fork — **done.**
+2. **OWCP / FECA pillar** — same template + arc (Section 4a).
+3. **Physicians / referral path** — separate lane (Section 4b).
+4. **No-card EEOICPA filing page** — the longer path, lifted out of the pillar.
+5. VA Community Care pillar.
+6. Re-walk Home + Navigator end-to-end against the arc.
