@@ -142,6 +142,7 @@
         eyebrow: 'For energy and nuclear-weapons workers',
         title: 'EEOICPA and the White Card',
         lead: 'The federal program for Department of Energy and Nevada Test Site workers, the card it issues, and the conditions it can grow to cover.',
+        guide: { href: 'white-card.html', label: 'Read the complete White Card guide' },
         slugs: ['white-card','eeoicpa','eeoicpa-part-b','eeoicpa-part-e','consequential-condition','impairment-evaluation']
       },
       {
@@ -194,6 +195,7 @@
           '<span class="eyebrow">' + esc(g.eyebrow) + '</span>' +
           '<h2 class="lib-group__title" id="grouptitle-' + esc(g.id) + '">' + esc(g.title) + '</h2>' +
           '<p class="lib-group__lead">' + esc(g.lead) + '</p>' +
+          (g.guide ? '<a class="link-arrow" href="' + esc(g.guide.href) + '">' + esc(g.guide.label) + ' <span class="arrow" aria-hidden="true">&rarr;</span></a>' : '') +
         '</div>' +
         '<div class="lib-group__list">' + terms + '</div>' +
       '</section>';

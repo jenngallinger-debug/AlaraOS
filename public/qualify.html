@@ -240,6 +240,10 @@
 
     function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 
+    // Answers whose term belongs to the EEOICPA family route to the deep guide
+    // (white-card.html) instead of the shorter Library entry.
+    var WHITE_CARD_TERMS = { 'white-card': 1, 'eeoicpa': 1, 'consequential-condition': 1, 'impairment-evaluation': 1 };
+
     function scrollTop(){ window.scrollTo({ top: 0, behavior: prefersReduced ? 'auto' : 'smooth' }); }
 
     // Move focus to the new question/answer heading and announce it via the
@@ -316,7 +320,7 @@
               '<div><p class="ans__label">Your next step</p><div class="ans__next">' + esc(node.nextStep || '') + '</div></div>' +
               '<div class="ans__links">' +
                 (node.source ? '<a href="' + esc(node.source.url) + '" target="_blank" rel="noopener">Source: ' + esc(node.source.label) + ' &nearr;</a>' : '') +
-                (node.term ? '<a href="learn.html#' + esc(node.term) + '">Learn more in the Library &rarr;</a>' : '') +
+                (WHITE_CARD_TERMS[node.term] ? '<a href="white-card.html">Read the complete White Card guide &rarr;</a>' : (node.term ? '<a href="learn.html#' + esc(node.term) + '">Learn more in the Library &rarr;</a>' : '')) +
               '</div>' +
               discoverHtml +
               '<div class="ans__cta">' +

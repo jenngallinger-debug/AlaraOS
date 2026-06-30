@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The White Card (EEOICPA), explained &middot; Alara Home Care</title>
+  <meta name="description" content="A complete, plain-language guide to the EEOICPA White Card for former Nevada Test Site and DOE workers: every benefit, the ones most people are never told about, consequential conditions, how to claim travel reimbursement, and how to file if you do not have a card yet." />
+  <link rel="icon" href="logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="site.css" />
+  <style>
+    /* Long-form education layout: sticky table of contents + a reading column.
+       Five neutral swatches, hairlines, generous measure. No new color. */
+    .guide { padding-block: clamp(40px, 5vw, 72px) var(--section-y); }
+    .guide__grid { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: clamp(32px, 5vw, 72px); align-items: start; }
+    .toc { position: sticky; top: 100px; }
+    .toc__label { display: block; margin-bottom: 16px; }
+    .toc ol { list-style: none; counter-reset: t; display: grid; gap: 2px; }
+    .toc a { display: block; padding: 7px 0; font-size: 0.9375rem; color: var(--taupe-ink); text-decoration: none; border-left: 2px solid var(--hairline); padding-left: 16px; transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease); }
+    .toc a:hover, .toc a.is-active { color: var(--espresso); border-left-color: var(--espresso); }
+
+    .prose { max-width: 720px; }
+    .prose section { padding-top: clamp(36px, 4vw, 56px); }
+    .prose section:first-child { padding-top: 0; }
+    .prose h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 500; letter-spacing: -0.018em; line-height: 1.16; max-width: 24ch; }
+    .prose h3 { margin-top: 28px; font-size: 1.1875rem; font-weight: 500; letter-spacing: -0.01em; }
+    .prose p { margin-top: 16px; font-size: 1.0625rem; line-height: 1.7; color: var(--taupe-ink); }
+    .prose p strong, .prose li strong { color: var(--espresso); font-weight: 500; }
+    .prose .lede { font-size: 1.25rem; line-height: 1.55; color: var(--espresso); max-width: 30ch; margin-top: 0; }
+    .prose ul { margin-top: 16px; padding-left: 0; list-style: none; display: grid; gap: 10px; }
+    .prose ul li { position: relative; padding-left: 26px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); }
+    .prose ul li::before { content: ""; position: absolute; left: 4px; top: 11px; width: 7px; height: 7px; border: 1px solid var(--taupe); border-radius: 50%; }
+
+    /* Numbered process steps */
+    .steps { margin-top: 24px; list-style: none; padding: 0; counter-reset: s; border-top: 1px solid var(--hairline); }
+    .steps li { counter-increment: s; border-bottom: 1px solid var(--hairline); padding: 18px 0 18px 56px; position: relative; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); }
+    .steps li::before { content: counter(s, decimal-leading-zero); position: absolute; left: 0; top: 18px; font-family: var(--display); font-size: 0.875rem; color: var(--taupe); letter-spacing: 0.08em; }
+    .steps li strong { color: var(--espresso); font-weight: 500; }
+
+    /* The action line that closes each benefit */
+    .do { margin-top: 14px; padding: 14px 18px; background: var(--mist); border-radius: 4px; font-size: 1rem; line-height: 1.55; color: var(--espresso); }
+    .do b { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--taupe); display: block; margin-bottom: 6px; }
+
+    /* Missed-benefit blocks */
+    .missed { margin-top: 8px; border-top: 1px solid var(--hairline); }
+    .missed__item { border-bottom: 1px solid var(--hairline); padding-block: clamp(22px, 2.6vw, 30px); }
+    .missed__item h3 { margin-top: 0; }
+    .missed__tag { font-family: var(--display); font-size: 0.625rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--taupe); }
+
+    /* Callout box (Resource Center, Acentra) */
+    .callout { margin-top: 24px; border: 1px solid var(--hairline); border-left: 2px solid var(--espresso); border-radius: 0 4px 4px 0; padding: 22px 24px; }
+    .callout h3 { margin-top: 0; }
+    .callout p { margin-top: 8px; font-size: 1rem; }
+    .callout .num { font-variant-numeric: tabular-nums; color: var(--espresso); font-weight: 500; }
+
+    /* What we do / do not do */
+    .boundary { margin-top: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--hairline); border-radius: 4px; overflow: hidden; }
+    .boundary > div { padding: 22px 24px; }
+    .boundary > div + div { border-left: 1px solid var(--hairline); }
+    .boundary h3 { margin-top: 0; font-size: 1rem; }
+    .boundary ul { margin-top: 12px; }
+    .boundary ul li { font-size: 0.9375rem; padding-left: 22px; }
+    .boundary ul li::before { top: 9px; }
+
+    /* Consequential conditions: primary -> what can follow */
+    .cc { margin-top: 20px; border-top: 1px solid var(--hairline); }
+    .cc__row { display: grid; grid-template-columns: 14ch 1fr; gap: 18px; padding-block: 16px; border-bottom: 1px solid var(--hairline); align-items: baseline; }
+    .cc__primary { font-weight: 500; color: var(--espresso); font-size: 1rem; }
+    .cc__follow { font-size: 0.9375rem; color: var(--taupe-ink); line-height: 1.5; }
+
+    /* FAQ */
+    .faq { margin-top: 8px; border-top: 1px solid var(--hairline); }
+    .faq details { border-bottom: 1px solid var(--hairline); }
+    .faq summary { cursor: pointer; list-style: none; padding: 20px 0; font-size: 1.125rem; font-weight: 500; color: var(--espresso); display: flex; justify-content: space-between; gap: 16px; }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::after { content: "+"; color: var(--taupe); font-weight: 400; }
+    .faq details[open] summary::after { content: "\2212"; }
+    .faq details p { margin-top: 0; padding-bottom: 20px; max-width: 64ch; }
+
+    .review { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--hairline); font-size: 0.8125rem; line-height: 1.6; color: var(--taupe); }
+
+    @media (max-width: 860px) {
+      .guide__grid { grid-template-columns: 1fr; }
+      .toc { display: none; }
+      .boundary { grid-template-columns: 1fr; }
+      .boundary > div + div { border-left: none; border-top: 1px solid var(--hairline); }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header" id="siteHeader">
+    <div class="container site-header__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care, home">
+        <svg class="brand__mark" viewBox="0 0 100 92" role="img" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
+      </a>
+      <div class="site-header__actions">
+        <nav class="site-nav site-nav--primary" aria-label="Primary">
+          <a class="site-nav__link" href="services.html">Services</a>
+          <a class="site-nav__link" href="programs.html" aria-current="page">Benefits</a>
+          <a class="site-nav__link" href="learn.html">Library</a>
+          <a class="site-nav__link" href="about.html">About</a>
+          <a class="header-call" href="tel:+17028149630"><span class="header-call__label">Call us</span><span class="header-call__num">(702) 814-9630</span></a>
+        </nav>
+        <a class="btn btn--sm" href="qualify.html">See if you qualify</a>
+        <button class="nav-toggle" type="button" id="navToggle" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu"><span class="nav-toggle__bar" aria-hidden="true"></span></button>
+      </div>
+    </div>
+    <nav class="mobile-menu" id="site-menu" data-open="false" aria-label="Primary (mobile)">
+      <div class="container mobile-menu__inner">
+        <a class="mobile-menu__link" href="services.html">Services <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="programs.html">Benefits <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="learn.html">Library <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="about.html">About <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="btn btn--block mobile-menu__cta" href="qualify.html">See if you qualify</a>
+        <p class="mobile-menu__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></p>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <span class="eyebrow">White Card &middot; EEOICPA</span>
+        <h1>The White Card covers more than you have been told.</h1>
+        <p class="page-hero__lead">If you or a family member worked at the Nevada Test Site or another Department of Energy facility and has an EEOICPA White Card, you are entitled to skilled home health for your accepted conditions at no out-of-pocket cost. This is the complete guide: every benefit, the ones most people are never told about, and exactly how to claim them, on your own.</p>
+      </div>
+    </section>
+
+    <div class="container guide">
+      <div class="guide__grid">
+
+        <nav class="toc" aria-label="On this page">
+          <span class="eyebrow toc__label">On this page</span>
+          <ol id="tocList">
+            <li><a href="#picture">What EEOICPA is</a></li>
+            <li><a href="#covers">What it covers at home</a></li>
+            <li><a href="#missed">Benefits most people miss</a></li>
+            <li><a href="#consequential">Consequential conditions</a></li>
+            <li><a href="#file">If you do not have a card yet</a></li>
+            <li><a href="#medicare">The White Card and Medicare</a></li>
+            <li><a href="#scope">What we do, and do not do</a></li>
+            <li><a href="#faq">Common questions</a></li>
+          </ol>
+        </nav>
+
+        <div class="prose">
+
+          <section id="picture">
+            <h2>What EEOICPA is, in one minute.</h2>
+            <p class="lede">A former Test Site worker gets sick from the work. The federal government says: we caused this, and we owe you.</p>
+            <p>So Congress created EEOICPA, the Energy Employees Occupational Illness Compensation Program Act. It pays these workers, and their families, in two forms: <strong>cash compensation</strong>, a lump-sum payment for the illness, and <strong>medical benefits</strong>, all care related to the illness, paid for life at no cost to the patient.</p>
+            <p>The <strong>White Card</strong> is the card that proves a patient has been approved for those medical benefits. It works like an insurance card, except there are no copays, no deductibles, and no limits on covered care. The Department of Labor pays the provider directly. You never receive a bill.</p>
+            <p>Alara is enrolled with the Department of Labor&rsquo;s WCMBP billing system and accepts the White Card directly. We provide the home health care your card covers, handle the authorization, and do the billing. And we do the one thing most agencies do not: we make sure you are receiving every benefit you are entitled to, including the ones below that most patients have never been told about.</p>
+          </section>
+
+          <section id="covers">
+            <h2>What the White Card covers at home.</h2>
+            <p>For the conditions accepted under your claim, the White Card covers skilled care in your own home, at no out-of-pocket cost:</p>
+            <ul>
+              <li><strong>Skilled nursing</strong> &mdash; assessment, wound care, medication management, disease management, and more.</li>
+              <li><strong>Physical therapy</strong> &mdash; strength, mobility, and balance, toward your own goals.</li>
+              <li><strong>Occupational therapy</strong> &mdash; returning to daily activities safely and independently.</li>
+              <li><strong>Medical social work</strong> &mdash; connecting you to resources and identifying the benefits you have not been told about.</li>
+              <li><strong>Home health aide services</strong> &mdash; personal care under nursing supervision.</li>
+              <li><strong>Caregiver training</strong> &mdash; if a family member helps care for you, formal training is covered as part of the plan of care.</li>
+            </ul>
+            <p>Beyond home health, your benefits can also include prescription medications, durable medical equipment (hospital beds, wheelchairs, walkers, oxygen), medically necessary home safety modifications such as grab bars and ramps, travel reimbursement, and diagnostic and specialist visits, all tied to your accepted conditions.</p>
+            <p><strong>One correction worth thousands of dollars:</strong> home health is not only for after a hospital stay. If a physician orders it and it relates to an accepted condition, it is covered any time, ongoing, for as long as it is medically necessary.</p>
+          </section>
+
+          <section id="missed">
+            <h2>The benefits most people are never told about.</h2>
+            <p>These are real, they are yours if they apply, and almost no one claims all of them. Each one below ends with the exact step to take.</p>
+
+            <div class="missed">
+              <div class="missed__item">
+                <span class="missed__tag">Almost always missed</span>
+                <h3>Travel reimbursement (form OWCP-957)</h3>
+                <p>Every trip to a doctor, specialist, hospital, lab, or pharmacy for an accepted condition is reimbursable at the federal mileage rate. A patient going to oncology twice a week and the pharmacy weekly can leave hundreds of dollars a month unclaimed.</p>
+                <div class="do"><b>Do this yourself</b>Download form <strong>OWCP-957</strong> from dol.gov, log your mileage or attach receipts, and submit it to DEEOIC. They mail you a check. You do not need us to do this, and you can claim past trips.</div>
+              </div>
+
+              <div class="missed__item">
+                <span class="missed__tag">Very often missed</span>
+                <h3>A family member can be paid to provide your care</h3>
+                <p>If a spouse, son, or daughter already helps you bathe, dress, cook, or get to appointments, they may be employed and paid for that care through your White Card. They become a trained, nurse-supervised home health aide, and the program covers their wages.</p>
+                <div class="do"><b>How to start</b>This one runs through an agency. Ask Alara about enrolling your family member when you set up care. One rule: that family member cannot also serve as your Authorized Representative with the DOL.</div>
+              </div>
+
+              <div class="missed__item">
+                <span class="missed__tag">Very often missed</span>
+                <h3>You may be paying Medicare copays the White Card should cover</h3>
+                <p>Many patients run their cancer treatment, medications, or equipment through Medicare and pay copays, when the White Card should cover those, related to an accepted condition, at no cost. A chemotherapy support drug at $200 a month, or a hospital bed at $150 a month, may already be covered.</p>
+                <div class="do"><b>Check this</b>Ask whether your treatment, medications, and equipment for your accepted condition are billed through your White Card. If you are paying out of pocket for anything related to it, that is usually fixable.</div>
+              </div>
+
+              <div class="missed__item">
+                <span class="missed__tag">Sometimes missed</span>
+                <h3>An updated impairment rating</h3>
+                <p>The DOL pays additional lump-sum compensation based on a physician&rsquo;s impairment rating. If your condition has worsened since your original claim, a re-evaluation may entitle you to more.</p>
+                <div class="do"><b>Who handles it</b>Your Authorized Representative files impairment requests. Ask them whether a re-evaluation is worth doing. (Alara does not file these.)</div>
+              </div>
+
+              <div class="missed__item">
+                <span class="missed__tag">Often missed by survivors</span>
+                <h3>Survivor benefits</h3>
+                <p>When a covered worker dies from an accepted condition, the surviving spouse and eligible children may be entitled to compensation. Many widows of Test Site workers never learn this.</p>
+                <div class="do"><b>Who handles it</b>An Authorized Representative can determine eligibility and file. If you are not sure whether you have one, the Resource Center below can point you.</div>
+              </div>
+            </div>
+          </section>
+
+          <section id="consequential">
+            <h2>Consequential conditions: the single biggest missed benefit.</h2>
+            <p>A consequential condition is a new problem that develops because of your accepted illness or its treatment. Once the DOL accepts it, it is added to your White Card and all care for it is covered at no cost. Most patients, and most physicians, have never heard of this.</p>
+            <p>Common examples we identify and pursue:</p>
+            <div class="cc">
+              <div class="cc__row"><span class="cc__primary">Lung cancer</span><span class="cc__follow">Depression, anxiety, malnutrition, chemotherapy neuropathy, steroid-induced diabetes</span></div>
+              <div class="cc__row"><span class="cc__primary">COPD</span><span class="cc__follow">Depression, anxiety, cardiac complications, sleep disturbance</span></div>
+              <div class="cc__row"><span class="cc__primary">Radiation-related cancer</span><span class="cc__follow">Peripheral neuropathy, cognitive changes, chronic pain, functional decline</span></div>
+              <div class="cc__row"><span class="cc__primary">Beryllium disease</span><span class="cc__follow">Depression, anxiety, cardiac complications</span></div>
+            </div>
+            <h3>How it gets added, step by step</h3>
+            <ol class="steps">
+              <li>A nurse identifies and documents a finding, for example new numbness since chemotherapy, or a positive depression screen.</li>
+              <li>Your <strong>physician documents the causal link</strong> between your accepted condition or its treatment and the new condition.</li>
+              <li>The agency submits an <strong>EN-28</strong> (Request to Add a Consequential Condition) to Acentra, with the physician&rsquo;s documentation and the clinical screening.</li>
+              <li>DEEOIC reviews. If accepted, the condition is <strong>added to your White Card</strong>.</li>
+              <li>The authorization and plan of care are updated, and care for the new condition is now covered.</li>
+            </ol>
+            <div class="do"><b>What this means for you</b>Every condition added opens a new authorization. A patient with lung cancer, depression, and neuropathy has three covered conditions instead of one. If you have developed anything new since your diagnosis, raise it. Alara screens for this on day one of care, using validated tools, and works with your physician to pursue it.</div>
+          </section>
+
+          <section id="file">
+            <h2>If you do not have a White Card yet.</h2>
+            <p>If you worked at the Nevada Test Site or another covered DOE or Atomic Weapons Employer facility and believe you may qualify, you may be able to get a White Card, <strong>even if you were denied before</strong>. The program has expanded over the years, adding covered conditions and exposure categories. A past denial is not permanent.</p>
+            <p>You file with the Department of Labor: <strong>Form EE-1</strong> as the worker, or <strong>Form EE-2</strong> as a survivor. When a condition is accepted, you receive the White Card for covered medical care.</p>
+            <p>You do not have to do this alone or pay anyone a percentage. Two no-cost resources exist specifically to help:</p>
+            <div class="callout">
+              <h3>DOL Las Vegas Resource Center</h3>
+              <p><span class="num">(702) 697-0841</span></p>
+              <p>The primary, no-cost navigation resource for Test Site workers in Southern Nevada. They help with filing, benefit questions, and provider connections at no charge. If you think you may qualify, start here.</p>
+            </div>
+            <p>An Authorized Representative who specializes in EEOICPA can also file and manage the claim for you. <strong>Alara does not file initial claims</strong>, that is the role of Authorized Representatives and the Resource Center, but we will tell you honestly what your situation looks like and point you to the right people.</p>
+          </section>
+
+          <section id="medicare">
+            <h2>The White Card and Medicare. You can have both.</h2>
+            <p>The White Card is not Medicare and does not affect it. The White Card covers your accepted EEOICPA conditions; Medicare covers everything else. Many patients use both, White Card home health for the occupational illness and Medicare for other conditions, so every part of their health is covered. Having one does not cancel the other.</p>
+          </section>
+
+          <section id="scope">
+            <h2>What we do, and what we do not.</h2>
+            <p>Being clear about the line is part of being the expert. Everything short of the financial claim is exactly what the best White Card agencies do.</p>
+            <div class="boundary">
+              <div>
+                <h3>Alara does</h3>
+                <ul>
+                  <li>Provide the home health care your card covers</li>
+                  <li>Handle the authorization and the billing</li>
+                  <li>Screen for and pursue consequential conditions</li>
+                  <li>Identify benefits you are missing, and educate you on them</li>
+                  <li>Connect you to your Resource Center and Authorized Representative</li>
+                </ul>
+              </div>
+              <div>
+                <h3>Alara does not</h3>
+                <ul>
+                  <li>File your initial EE-1 or EE-2 claim</li>
+                  <li>Act as your Authorized Representative with the DOL</li>
+                  <li>File impairment-rating requests</li>
+                  <li>Take any percentage of your compensation</li>
+                </ul>
+              </div>
+            </div>
+            <div class="callout">
+              <h3>Have a benefit question we have not answered?</h3>
+              <p>The DOL&rsquo;s billing administrator, Acentra, answers benefit and coverage questions directly at <span class="num">(800) 736-6001</span>. For anything about your home health care, reach Alara at <span class="num">(702) 814-9630</span>.</p>
+            </div>
+          </section>
+
+          <section id="faq">
+            <h2>Common questions.</h2>
+            <div class="faq">
+              <details><summary>Does the White Card cover home health care?</summary><p>Yes. Benefits include skilled nursing, physical therapy, occupational therapy, medical social work, and home health aide services for accepted conditions, at no out-of-pocket cost.</p></details>
+              <details><summary>Do I pay anything for White Card home health?</summary><p>No. There are no copays, deductibles, or out-of-pocket costs for covered services. The Department of Labor pays your provider directly.</p></details>
+              <details><summary>What is a consequential condition?</summary><p>A new condition that is a consequence of your accepted EEOICPA condition or its treatment. Once the DOL accepts it, it is added to your White Card and covered. Examples include depression secondary to cancer, or diabetes caused by steroid treatment for beryllium disease.</p></details>
+              <details><summary>Can I use the White Card and Medicare at the same time?</summary><p>Yes. The White Card covers your accepted EEOICPA conditions; Medicare covers other conditions. They work alongside each other and do not cancel each other out.</p></details>
+              <details><summary>What if I was denied EEOICPA benefits before?</summary><p>A previous denial is not permanent. The program has expanded its covered conditions and exposure categories over the years. Contact the DOL Las Vegas Resource Center at (702) 697-0841 about reapplying.</p></details>
+              <details><summary>Can I get reimbursed for travel to appointments?</summary><p>Yes. Travel to appointments related to your accepted conditions is reimbursable at the federal mileage rate. File form OWCP-957 with DEEOIC; you can claim past trips.</p></details>
+            </div>
+          </section>
+
+          <p class="review">Reviewed by Alara&rsquo;s Director of Nursing, RN. Sources: U.S. Department of Labor, Division of Energy Employees Occupational Illness Compensation (DEEOIC), dol.gov/agencies/owcp/energy. General information, not a determination of your eligibility or coverage. Your accepted conditions, your physician, and the Department of Labor determine what applies to your claim.</p>
+
+        </div>
+      </div>
+    </div>
+
+    <section class="cta-band cta-band--arched">
+      <div class="container">
+        <div class="cta-band__inner reveal">
+          <h2 class="cta-band__title">When you want skilled care, we move fast.</h2>
+          <p class="cta-band__sub">We review your card and accepted conditions, handle the authorization, start care within 48 hours, and screen for consequential conditions on day one.</p>
+          <div class="cta-band__actions">
+            <a class="btn btn--on-dark btn--lg" href="qualify.html">See what you qualify for <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <a class="btn btn--on-dark" href="begin.html">Talk to a nurse</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care">
+        <svg class="brand__mark" viewBox="0 0 100 92" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
+      </a>
+      <div class="site-footer__meta">Serving all of Clark County, Nevada<br /><a href="tel:+17028149630">(702) 814-9630</a></div>
+    </div>
+  </footer>
+
+  <script>
+    var header = document.getElementById('siteHeader');
+    var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 24); };
+    onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+    var toggle = document.getElementById('navToggle'); var menu = document.getElementById('site-menu');
+    if (toggle && menu) { toggle.addEventListener('click', function () {
+      var open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!open));
+      toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+      menu.setAttribute('data-open', String(!open)); }); }
+    // TOC active-section highlight
+    var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if ('IntersectionObserver' in window && links.length) {
+      var map = {};
+      links.forEach(function (a) { var id = a.getAttribute('href').slice(1); var s = document.getElementById(id); if (s) map[id] = a; });
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { links.forEach(function (l) { l.classList.remove('is-active'); }); if (map[e.target.id]) map[e.target.id].classList.add('is-active'); }
+        });
+      }, { rootMargin: '-20% 0px -70% 0px' });
+      Object.keys(map).forEach(function (id) { io.observe(document.getElementById(id)); });
+    }
+  </script>
+</body>
+</html>
