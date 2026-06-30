@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Inside AlaraOS &middot; The operating system behind your care</title>
-  <meta name="description" content="AlaraOS is the operating system behind Alara Home Care. It holds your care, your benefits, and your providers as one, and moves all of it forward, so you reach one organization that already understands you." />
+  <meta name="description" content="AlaraOS is the operating system behind Alara Home Care. It gives everyone who looks after you, your nurse, your doctor, your family, and the people behind your benefits, one complete picture of you, so the whole organization moves as one." />
   <meta property="og:title" content="Inside AlaraOS" />
-  <meta property="og:description" content="An EMR remembers. AlaraOS runs things. The intelligence behind every Alara visit, holding your whole care and moving it forward." />
+  <meta property="og:description" content="An EMR remembers. AlaraOS runs things. One complete picture of you, in every hand that touches your care." />
   <meta property="og:type" content="website" />
   <link rel="icon" href="logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -15,75 +15,75 @@
   <link rel="stylesheet" href="site.css" />
   <style>
     /* ─────────────────────────────────────────────────────────────
-       Inside AlaraOS — the reveal, built for impact. Dramatic scale,
-       dark cinematic rhythm, a signature loop, motion. No new palette,
-       no photography: drama comes from type, contrast, and movement.
+       Inside AlaraOS — the reveal. Built for impact and to FILL the
+       canvas: centered marquee moments, two-column filled sections,
+       no left-hugging columns with an empty right. No new palette.
        ───────────────────────────────────────────────────────────── */
     .io { --io-pad: clamp(64px, 8vw, 124px); }
 
-    /* HERO — dark, full, an ambient field drifting behind huge type. */
-    .io-hero { position: relative; overflow: hidden; background: var(--espresso); color: var(--on-dark); padding-block: clamp(96px, 12vw, 176px); }
+    /* HERO — dark, centered, an ambient field drifting behind huge type. */
+    .io-hero { position: relative; overflow: hidden; background: var(--espresso); color: var(--on-dark); padding-block: clamp(104px, 13vw, 188px); text-align: center; }
     .io-hero > .container { position: relative; z-index: 2; }
     .io-amb { position: absolute; inset: -20%; z-index: 0; pointer-events: none; contain: paint; }
-    .io-amb i { position: absolute; display: block; width: 52vw; height: 52vw; border-radius: 50%; filter: blur(64px); }
-    .io-amb i:nth-child(1) { background: radial-gradient(circle, rgba(193,166,134,0.34), transparent 70%); top: -16%; left: 40%; animation: ioDrift1 26s ease-in-out infinite; }
-    .io-amb i:nth-child(2) { background: radial-gradient(circle, rgba(151,124,98,0.30), transparent 70%); top: 18%; left: -6%; animation: ioDrift2 30s ease-in-out infinite; }
-    .io-amb i:nth-child(3) { background: radial-gradient(circle, rgba(214,196,176,0.18), transparent 72%); top: 36%; left: 56%; animation: ioDrift3 34s ease-in-out infinite; }
+    .io-amb i { position: absolute; display: block; width: 54vw; height: 54vw; border-radius: 50%; filter: blur(66px); }
+    .io-amb i:nth-child(1) { background: radial-gradient(circle, rgba(193,166,134,0.34), transparent 70%); top: -18%; left: 30%; animation: ioDrift1 26s ease-in-out infinite; }
+    .io-amb i:nth-child(2) { background: radial-gradient(circle, rgba(151,124,98,0.28), transparent 70%); top: 6%; left: -8%; animation: ioDrift2 30s ease-in-out infinite; }
+    .io-amb i:nth-child(3) { background: radial-gradient(circle, rgba(214,196,176,0.18), transparent 72%); top: 24%; left: 62%; animation: ioDrift3 34s ease-in-out infinite; }
     @keyframes ioDrift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-5%,6%)} }
     @keyframes ioDrift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(7%,-4%)} }
     @keyframes ioDrift3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-6%,-5%)} }
-    .io-hero__eyebrow { font-family: var(--display); font-size: 0.8125rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--on-dark-soft); }
-    .io-hero h1 { margin-top: clamp(22px, 3vw, 38px); font-size: clamp(2.75rem, 6.6vw, 5.5rem); font-weight: 500; line-height: 0.98; letter-spacing: -0.035em; max-width: 18ch; color: var(--on-dark); }
-    .io-hero h1 .soft { color: var(--on-dark-soft); }
-    .io-hero__sub { margin-top: clamp(26px, 3vw, 40px); font-size: clamp(1.0625rem, 1.6vw, 1.375rem); line-height: 1.55; color: var(--on-dark-soft); max-width: 46ch; }
+    .io-hero__eyebrow { font-family: var(--display); font-size: 0.8125rem; letter-spacing: 0.34em; text-transform: uppercase; color: var(--on-dark-soft); }
+    .io-hero h1 { margin: clamp(22px, 3vw, 36px) auto 0; font-size: clamp(2.625rem, 6vw, 5rem); font-weight: 500; line-height: 1.0; letter-spacing: -0.035em; max-width: 16ch; color: var(--on-dark); }
+    .io-hero__sub { margin: clamp(26px, 3vw, 38px) auto 0; font-size: clamp(1.0625rem, 1.55vw, 1.375rem); line-height: 1.55; color: var(--on-dark-soft); max-width: 60ch; }
 
-    /* THE DISTINCTION — one giant typographic statement, light. */
+    /* TWO-COLUMN FILLED — heading left, substance right; fills both halves. */
+    .io-two { display: grid; grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr); gap: clamp(36px, 5.5vw, 96px); align-items: start; }
+    .io-two__head h2 { font-size: clamp(2rem, 4.2vw, 3.5rem); font-weight: 500; line-height: 1.02; letter-spacing: -0.03em; }
+    .io-two__head h2 .accent { color: var(--taupe-ink); }
+    .io-two__eyebrow { font-family: var(--display); font-size: 0.8125rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--taupe); margin-bottom: 18px; display: block; }
+    .io-two__body p { font-size: clamp(1.0625rem, 1.5vw, 1.3125rem); line-height: 1.58; color: var(--taupe-ink); }
+    .io-two__body p + p { margin-top: 18px; }
+    @media (max-width: 860px) { .io-two { grid-template-columns: 1fr; gap: 24px; } }
+
     .io-claim { padding-block: var(--io-pad); }
-    .io-claim h2 { font-size: clamp(2.25rem, 5.6vw, 4.5rem); font-weight: 500; line-height: 1.0; letter-spacing: -0.03em; max-width: 16ch; }
-    .io-claim h2 .accent { color: var(--taupe-ink); }
-    .io-claim p { margin-top: clamp(28px, 3vw, 44px); font-size: clamp(1.125rem, 1.7vw, 1.4375rem); line-height: 1.5; color: var(--taupe-ink); max-width: 40ch; }
+    .io-claim .io-two__head h2 { font-size: clamp(2.25rem, 5vw, 4rem); line-height: 1.0; }
 
-    /* THE LOOP — the centerpiece. Big ghost numbers on a spine, dark. */
-    .io-loop { position: relative; background: var(--espresso); color: var(--on-dark); padding-block: var(--io-pad); overflow: hidden; }
-    .io-loop__head { max-width: 30ch; }
-    .io-loop__eyebrow { font-family: var(--display); font-size: 0.8125rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--on-dark-soft); }
-    .io-loop__head h2 { margin-top: 18px; font-size: clamp(1.875rem, 3.4vw, 2.75rem); font-weight: 500; line-height: 1.04; letter-spacing: -0.025em; color: var(--on-dark); }
-    /* Two columns (01-04 | 05-08) to fill the width and halve the height. */
-    .io-loop__list { margin-top: clamp(28px, 3.6vw, 52px); display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(4, auto); grid-auto-flow: column; column-gap: clamp(40px, 6vw, 96px); }
-    .io-move { display: grid; grid-template-columns: clamp(3rem, 4vw, 4.5rem) 1fr; gap: clamp(16px, 2vw, 30px); align-items: center; padding-block: clamp(18px, 2.2vw, 28px); border-top: 1px solid rgba(251,251,251,0.14); }
-    @media (max-width: 820px) {
-      .io-loop__list { grid-template-columns: 1fr; grid-template-rows: none; grid-auto-flow: row; }
-    }
-    .io-move__n { font-family: var(--display); font-weight: 300; font-size: clamp(2rem, 3vw, 3.125rem); line-height: 1; color: rgba(251,251,251,0.28); font-variant-numeric: tabular-nums; transition: color .6s var(--ease); }
-    .io-move.is-in .io-move__n { color: rgba(251,251,251,0.5); }
-    .io-move__t { font-size: clamp(1.5rem, 2.8vw, 2.375rem); font-weight: 500; letter-spacing: -0.02em; color: var(--on-dark); line-height: 1.05; }
-    .io-move__d { margin-top: 10px; font-size: clamp(1rem, 1.4vw, 1.1875rem); line-height: 1.5; color: var(--on-dark-soft); max-width: 52ch; }
-    .io-loop__return { margin-top: clamp(28px, 3vw, 40px); font-family: var(--display); font-size: 0.8125rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--on-dark-soft); display: flex; align-items: center; gap: 12px; }
-    .io-loop__return svg { width: 28px; height: 28px; flex: none; }
+    /* THE WORK — dark; intro two-column, then the eight movements in 2 cols. */
+    .io-work { background: var(--espresso); color: var(--on-dark); padding-block: var(--io-pad); }
+    .io-work .io-two__head h2, .io-work .io-two__body p { color: var(--on-dark); }
+    .io-work .io-two__body p { color: var(--on-dark-soft); }
+    .io-work .io-two__eyebrow { color: var(--on-dark-soft); }
+    .io-grid { margin-top: clamp(40px, 5vw, 72px); display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(4, auto); grid-auto-flow: column; column-gap: clamp(40px, 6vw, 96px); }
+    .io-move { display: grid; grid-template-columns: clamp(2.8rem, 3.6vw, 4rem) 1fr; gap: clamp(14px, 1.8vw, 26px); align-items: baseline; padding-block: clamp(18px, 2.2vw, 28px); border-top: 1px solid rgba(251,251,251,0.14); }
+    .io-move__n { font-family: var(--display); font-weight: 300; font-size: clamp(1.75rem, 2.6vw, 2.75rem); line-height: 1; color: rgba(251,251,251,0.3); font-variant-numeric: tabular-nums; }
+    .io-move__t { font-size: clamp(1.375rem, 2.4vw, 2rem); font-weight: 500; letter-spacing: -0.02em; color: var(--on-dark); line-height: 1.06; }
+    .io-move__d { margin-top: 8px; font-size: clamp(0.9375rem, 1.3vw, 1.0625rem); line-height: 1.5; color: var(--on-dark-soft); }
+    .io-work__foot { margin-top: clamp(28px, 3vw, 40px); font-family: var(--display); font-size: 0.8125rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--on-dark-soft); display: flex; align-items: center; gap: 12px; }
+    .io-work__foot svg { width: 26px; height: 26px; flex: none; }
+    @media (max-width: 860px) { .io-grid { grid-template-columns: 1fr; grid-template-rows: none; grid-auto-flow: row; } }
 
-    /* STATEMENT — a cinematic full-width line. */
-    .io-statement { padding-block: var(--io-pad); background: var(--mist); }
-    .io-statement__line { font-size: clamp(2rem, 5vw, 4rem); font-weight: 500; line-height: 1.04; letter-spacing: -0.03em; max-width: 20ch; }
-    .io-statement__line .soft { color: var(--taupe-ink); }
-    .io-statement__sub { margin-top: clamp(26px, 3vw, 40px); font-size: clamp(1.0625rem, 1.6vw, 1.375rem); line-height: 1.5; color: var(--taupe-ink); max-width: 46ch; }
+    /* THESIS — centered, full-width, cinematic. */
+    .io-thesis { padding-block: var(--io-pad); background: var(--mist); text-align: center; }
+    .io-thesis__line { margin: 0 auto; font-size: clamp(2.125rem, 5vw, 4rem); font-weight: 500; line-height: 1.04; letter-spacing: -0.03em; max-width: 24ch; }
+    .io-thesis__line .soft { color: var(--taupe-ink); }
+    .io-thesis__sub { margin: clamp(26px, 3vw, 40px) auto 0; font-size: clamp(1.0625rem, 1.6vw, 1.375rem); line-height: 1.55; color: var(--taupe-ink); max-width: 56ch; }
 
-    /* SCENARIOS — showcase, larger, with presence. */
+    /* SCENARIOS — showcase grid; every stakeholder, around one reality. */
     .io-cases { padding-block: var(--io-pad); }
-    .io-cases__head h2 { font-size: clamp(1.875rem, 4vw, 3rem); font-weight: 500; letter-spacing: -0.025em; line-height: 1.04; max-width: 18ch; }
-    .io-cases__grid { margin-top: clamp(40px, 5vw, 68px); display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: clamp(18px, 2vw, 28px); }
-    .io-case { border: 1px solid var(--hairline); border-radius: 10px; padding: clamp(28px, 3.2vw, 44px); background: var(--paper); transition: border-color .4s var(--ease), transform .4s var(--ease); }
+    .io-cases__head h2 { font-size: clamp(1.875rem, 4vw, 3rem); font-weight: 500; letter-spacing: -0.025em; line-height: 1.04; max-width: 20ch; }
+    .io-cases__head p { margin-top: 16px; font-size: clamp(1.0625rem, 1.4vw, 1.25rem); color: var(--taupe-ink); line-height: 1.5; max-width: 52ch; }
+    .io-cases__grid { margin-top: clamp(40px, 5vw, 68px); display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: clamp(18px, 2vw, 26px); }
+    .io-case { border: 1px solid var(--hairline); border-radius: 10px; padding: clamp(26px, 3vw, 40px); background: var(--paper); transition: border-color .4s var(--ease), transform .4s var(--ease); }
     .io-case:hover { border-color: var(--taupe); transform: translateY(-3px); }
-    .io-case__q { font-size: clamp(1.1875rem, 1.7vw, 1.4375rem); line-height: 1.34; letter-spacing: -0.012em; color: var(--espresso); }
+    .io-case__q { font-size: clamp(1.125rem, 1.55vw, 1.375rem); line-height: 1.36; letter-spacing: -0.012em; color: var(--espresso); }
     .io-case__tag { display: block; margin-top: clamp(18px, 2vw, 26px); font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--taupe); }
 
-    /* PRINCIPLE — dark close before the CTA. */
+    /* PRINCIPLE — dark, two-column filled close. */
     .io-principle { background: var(--espresso); color: var(--on-dark); padding-block: var(--io-pad); }
-    .io-principle h2 { font-size: clamp(2rem, 4.6vw, 3.5rem); font-weight: 500; line-height: 1.02; letter-spacing: -0.03em; color: var(--on-dark); max-width: 16ch; }
-    .io-principle p { margin-top: clamp(24px, 3vw, 40px); font-size: clamp(1.0625rem, 1.5vw, 1.3125rem); line-height: 1.55; color: var(--on-dark-soft); max-width: 50ch; }
-    .io-principle p + p { margin-top: 18px; }
+    .io-principle .io-two__head h2 { color: var(--on-dark); }
+    .io-principle .io-two__body p { color: var(--on-dark-soft); font-size: clamp(1.0625rem, 1.5vw, 1.3125rem); line-height: 1.6; }
 
     /* MOTION — cinematic reveals + hero entrance; reduced-motion safe. */
-    .io-rise { opacity: 0; transform: translateY(22px); }
     .js-reveal .io-reveal { opacity: 0; transform: translateY(28px); transition: opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); }
     .js-reveal .io-reveal.is-in { opacity: 1; transform: none; }
     .io-hero__eyebrow, .io-hero h1, .io-hero__sub { animation: ioUp 1s cubic-bezier(.2,.7,.2,1) both; }
@@ -145,96 +145,112 @@
 
   <main>
 
-    <!-- HERO — dark, dramatic, ambient. -->
+    <!-- HERO — centered, dark, ambient. The whole organization, not one nurse. -->
     <section class="io-hero" aria-label="Inside AlaraOS">
       <div class="io-amb" aria-hidden="true"><i></i><i></i><i></i></div>
       <div class="container">
         <p class="io-hero__eyebrow">AlaraOS</p>
-        <h1>The intelligence behind <span class="soft">every visit.</span></h1>
+        <h1>The intelligence behind your entire care.</h1>
         <p class="io-hero__sub">
-          AlaraOS is the intelligence that runs Alara. It gives the nurse at your door the full picture of
-          your care and your benefits, so they arrive already knowing you, and already a step ahead.
+          AlaraOS is the operating system that runs Alara. It gives everyone who looks after you, your
+          nurse, your doctor, your family, and the people behind your benefits, one complete picture of you,
+          so the whole organization moves as one.
         </p>
       </div>
     </section>
 
-    <!-- THE DISTINCTION — one giant statement. -->
+    <!-- THE DISTINCTION — two-column filled. -->
     <section class="io-claim" aria-label="What makes it an operating system">
       <div class="container">
-        <h2 class="io-reveal">An EMR remembers.<br /><span class="accent">AlaraOS runs things.</span></h2>
-        <p class="io-reveal">
-          A medical record stores what already happened. AlaraOS holds your whole picture at once and acts
-          on it, finding the benefits you qualify for, lining up the people involved, and carrying your
-          care forward.
-        </p>
+        <div class="io-two">
+          <div class="io-two__head io-reveal">
+            <h2>An EMR remembers.<br /><span class="accent">AlaraOS runs things.</span></h2>
+          </div>
+          <div class="io-two__body io-reveal">
+            <p>A medical record stores what already happened. AlaraOS holds the whole truth of your care and acts on it, finding the benefits you qualify for, lining up everyone involved, and carrying your care forward.</p>
+            <p>A record looks back at what was done. AlaraOS moves you forward.</p>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- THE LOOP — the centerpiece, dark, big numbers on a spine. -->
-    <section class="io-loop" aria-label="How AlaraOS works">
+    <!-- THE WORK — dark; intro two-column, then the eight movements. -->
+    <section class="io-work" aria-label="What AlaraOS runs">
       <div class="container">
-        <div class="io-loop__head io-reveal">
-          <p class="io-loop__eyebrow">Behind every nurse</p>
-          <h2>What AlaraOS handles, so your nurse can focus on you.</h2>
+        <div class="io-two">
+          <div class="io-two__head io-reveal">
+            <span class="io-two__eyebrow">Around one reality</span>
+            <h2>Everything AlaraOS runs, around one picture of you.</h2>
+          </div>
+          <div class="io-two__body io-reveal">
+            <p>Around every patient sits a whole organization: nurses, doctors, family, the people coordinating benefits. AlaraOS gives them the same complete picture, and runs the work between them, so everyone is working from the same truth and the whole organization moves as one.</p>
+          </div>
         </div>
-        <div class="io-loop__list">
+        <div class="io-grid">
           <div class="io-move io-reveal"><span class="io-move__n">01</span><div><div class="io-move__t">Notices</div><div class="io-move__d">Sees what is changing in your care before anyone has to report it.</div></div></div>
           <div class="io-move io-reveal"><span class="io-move__n">02</span><div><div class="io-move__t">Understands</div><div class="io-move__d">Connects every piece into one clear picture of what is going on.</div></div></div>
           <div class="io-move io-reveal"><span class="io-move__n">03</span><div><div class="io-move__t">Decides</div><div class="io-move__d">Works out what should happen next, with a clinician accountable for every call.</div></div></div>
           <div class="io-move io-reveal"><span class="io-move__n">04</span><div><div class="io-move__t">Coordinates</div><div class="io-move__d">Lines up your doctors, your benefits, and your providers around the plan.</div></div></div>
           <div class="io-move io-reveal"><span class="io-move__n">05</span><div><div class="io-move__t">Acts</div><div class="io-move__d">Gets the visits, the orders, and the authorizations done.</div></div></div>
-          <div class="io-move io-reveal"><span class="io-move__n">06</span><div><div class="io-move__t">Tells you</div><div class="io-move__d">Keeps you informed about what is happening, before you have to ask.</div></div></div>
+          <div class="io-move io-reveal"><span class="io-move__n">06</span><div><div class="io-move__t">Tells everyone</div><div class="io-move__d">Keeps you and your providers informed, before anyone has to ask.</div></div></div>
           <div class="io-move io-reveal"><span class="io-move__n">07</span><div><div class="io-move__t">Verifies</div><div class="io-move__d">Confirms that what was promised actually happened.</div></div></div>
           <div class="io-move io-reveal"><span class="io-move__n">08</span><div><div class="io-move__t">Learns</div><div class="io-move__d">Every patient sharpens the care of the next.</div></div></div>
         </div>
-        <p class="io-loop__return io-reveal">
+        <p class="io-work__foot io-reveal">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12a8 8 0 1 1 2.3 5.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M3 18v-4h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Every day, for every patient
         </p>
       </div>
     </section>
 
-    <!-- STATEMENT — the thesis: the software makes the nurse extraordinary. -->
-    <section class="io-statement" aria-label="What this means">
+    <!-- THESIS — centered, the message: AlaraOS makes the whole organization act as one. -->
+    <section class="io-thesis" aria-label="What this means">
       <div class="container">
-        <p class="io-statement__line io-reveal">AlaraOS never delivers your care. <span class="soft">It makes the nurse who does extraordinary.</span></p>
-        <p class="io-statement__sub io-reveal">The best nurse you have ever had, arriving already knowing your full picture, already a step ahead, because the system did everything around the care so the nurse could give you all of it.</p>
+        <p class="io-thesis__line io-reveal">AlaraOS never delivers your care. <span class="soft">It makes everyone who does move as one.</span></p>
+        <p class="io-thesis__sub io-reveal">Your nurse, your doctor, your family, the people behind your benefits, all working from the same complete picture of you, so the whole organization acts with a single mind around your care.</p>
       </div>
     </section>
 
-    <!-- SCENARIOS — showcase. -->
-    <section class="io-cases" aria-label="What that looks like for you">
+    <!-- SCENARIOS — every stakeholder, around one reality. -->
+    <section class="io-cases" aria-label="What that looks like">
       <div class="container">
         <div class="io-cases__head io-reveal">
-          <h2>What that looks like in your life.</h2>
+          <h2>One picture of you, working for everyone around your care.</h2>
+          <p>The same intelligence shows up differently for each person it serves.</p>
         </div>
         <div class="io-cases__grid">
           <div class="io-case io-reveal">
             <p class="io-case__q">&ldquo;Your father was getting weaker this month, so therapy started before it became a fall.&rdquo;</p>
-            <span class="io-case__tag">Notices, and acts</span>
+            <span class="io-case__tag">For you</span>
           </div>
           <div class="io-case io-reveal">
             <p class="io-case__q">&ldquo;Treatment you were paying Medicare for moved onto the White Card that should cover it.&rdquo;</p>
-            <span class="io-case__tag">Finds what you are owed</span>
+            <span class="io-case__tag">For your benefits</span>
           </div>
           <div class="io-case io-reveal">
-            <p class="io-case__q">&ldquo;An authorization about to expire was renewed before a single visit was missed.&rdquo;</p>
-            <span class="io-case__tag">Stays ahead</span>
+            <p class="io-case__q">&ldquo;Your doctor&rsquo;s office knew the visit was done before they finished their next call.&rdquo;</p>
+            <span class="io-case__tag">For your physician</span>
           </div>
           <div class="io-case io-reveal">
-            <p class="io-case__q">&ldquo;A benefit you qualified for and were never told about was found, and started for you.&rdquo;</p>
-            <span class="io-case__tag">Delivers the full benefit</span>
+            <p class="io-case__q">&ldquo;Your daughter could see what changed and who handled it, without making a single call.&rdquo;</p>
+            <span class="io-case__tag">For your family</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- PRINCIPLE — dark close. -->
+    <!-- PRINCIPLE — dark, two-column filled close. -->
     <section class="io-principle" aria-label="The line we hold">
       <div class="container">
-        <h2 class="io-reveal">Built to serve you, never the reverse.</h2>
-        <p class="io-reveal">AlaraOS never acts without your consent, and every decision that matters is made by a person, not a machine.</p>
-        <p class="io-reveal">The organization you reach already understands you, and the work of your care never becomes yours to manage.</p>
+        <div class="io-two">
+          <div class="io-two__head io-reveal">
+            <h2>Built to serve you, never the reverse.</h2>
+          </div>
+          <div class="io-two__body io-reveal">
+            <p>AlaraOS never acts without your consent, and every decision that matters is made by a person, not a machine.</p>
+            <p>People do not experience software. They experience an organization. AlaraOS exists so the one you reach already understands you, and the work of your care never becomes yours to manage.</p>
+          </div>
+        </div>
       </div>
     </section>
 
