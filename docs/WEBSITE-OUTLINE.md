@@ -1,171 +1,147 @@
-# The Alara Website — Full Outline (derived from locked canon)
+# The Alara Website — Full Outline, organized by the Experience Journey
 
-> Status: DRAFT for owner sign-off, 2026-06-30. This is the **skeleton**: every page,
-> its one job, the realities it serves, its sections, and where it hands off. It is
-> derived from `docs/VISION.md`, `docs/ARCHITECTURE-OF-EXPERIENCE.md`, and
-> `docs/REALITY-ENTRY-ARCHITECTURE.md`. Headlines here describe *intent*, not final copy.
-> We agree the structure here, then write the words.
+> Status: DRAFT for owner sign-off, 2026-06-30. Reworked to the **experience/journey**
+> spine. Derived from the frozen **Eight Experience Moments** and the canonical arc
+> ("Experience & Website Blueprint — Session Synthesis"), `docs/VISION.md`,
+> `docs/ARCHITECTURE-OF-EXPERIENCE.md`, and `docs/REALITY-ENTRY-ARCHITECTURE.md`.
+> Pages are **vehicles for the journey**, not the organizing unit. Words here describe
+> intent; we agree the journey, then write copy into it.
 
-## 1. The logic the whole site runs on
+## 1. The spine (what the site actually is)
 
-- **The site is one Interaction surface of AlaraOS.** Inbound, it *perceives* (captures the
-  visitor's reality); outbound, it delivers that visitor's *participant obligation* (what they
-  may know and should receive). It is never built straight from architecture to pixels.
-- **Reality organizes it, not personas.** Each page exists to meet a reality a visitor brings
-  (from the Reality Entry Catalog). The visitor's identity only bounds what they're shown.
-- **Two lanes + one bridge + one reveal.**
-  - *Education lane* (build trust, get found): Benefits hub, the pillars, Library.
-  - *Service lane* (convert): Services, About, Begin.
-  - *The bridge*: the Navigator ("See what you qualify for") — always one click away.
-  - *The reveal*: The AlaraOS difference — why Alara is not like other agencies.
-- **Engagement progression:** Learn → Engage → Organizational Response. Never rush a visitor
-  from Learn to a phone call.
-- **Hard rules (Public Experience Layer):** never make someone more anxious; no manipulation;
-  no dead ends; show outcomes, never machinery; never bypass the consent gate.
-- **Rendering rule:** concrete numeric promises (one-hour discharge response, physician SLAs)
-  appear only on *referrer* surfaces; patient surfaces get outcome language.
+- **The website is the public stretch of one continuous Human Experience** — "the first
+  member of the care team… the only full-arc surface," not the marketing department.
+- **It moves a person along the canonical arc:**
+  `Realization → Recognition → Orientation → Trust → Decision → Handoff → (years of care → after)`
+- **Four journeys run in parallel** through every phase, and conversion is a byproduct, never the target:
+  - *Emotional:* overwhelmed → seen → calmer → confident → safe
+  - *Learning:* don't-know-what-I-don't-know → know what to do
+  - *Trust:* skeptical → committed
+  - *Conversion:* stranger → known → helped → patient
+- **One room, many windows.** The site is regioned by Authority & Consent into the public
+  region (this site) and the care region (after handoff). Becoming a patient is a
+  consent event, not an experience break.
+- **The binding rule: trust precedes disclosure.** "They understand my world" (Moment 1)
+  must land before the conversation (Moment 2). The environment earns the conversation. The
+  site never decides or pushes; every consequential choice stays with the person.
+- **The interface cannot lie.** A surface may promise only what care can actually deliver.
 
-## 2. Navigation & site map
+## 2. The Eight Experience Moments (the felt beats — frozen canon)
 
-```
-TOP NAV:  Services   Benefits   Library   About        [Call]  [See what you qualify for]
+The smallest sequence that produces the reputation **"They had us."** The site delivers the
+early moments and *promises* the later ones (which happen in care).
 
-HOME ─ the threshold: recognize your reality, see what Alara does + why it's different, route.
-│
-├─ BENEFITS (hub) ─ index of programs; routes to each pillar, teaches nothing deeply.
-│   ├─ White Card (EEOICPA) pillar        [built]
-│   ├─ OWCP / FECA pillar                 [built]
-│   └─ VA Community Care pillar           [to build]
-│
-├─ LIBRARY ─ plain-language definitions that support the pillars; cites them.
-│
-├─ THE ALARAOS DIFFERENCE ─ the reveal: anticipation, orchestration, appropriate awareness.
-│
-├─ SERVICES ─ what Alara clinically does (service lane).
-├─ ABOUT ─ who Alara is, why to trust them (service lane).
-│
-├─ NAVIGATOR ("See what you qualify for") ─ the bridge: personalize → cited answer + next step.
-├─ BEGIN ─ start care / be contacted (conversion).
-│
-├─ PHYSICIANS / REFERRAL ─ separate lane: competence + speed, concrete SLAs.   [to build]
-└─ EEOICPA FILING (no card yet) ─ the longer path, lifted out of the pillar.    [to build]
-```
+| # | Moment | They feel | Where the site carries it |
+|---|---|---|---|
+| 1 | **The Answer** | "Someone finally made this make sense." | Home (hero + recognition), the pillars, Library |
+| 2 | **Being Understood** | "They understood me — how did they know?" | Home recognition, the Navigator, Begin |
+| 3 | **The First Kept Promise** | "I never had to start over. Someone real has us." | Begin (the handoff promise) |
+| 4 | **The Truth, and the Choice** | "They told me the truth — and the choice stayed ours." | Pillars' boundary, proof, the doors |
+| 5 | **The Weight Lifted** | "They carried it. I didn't have to become an expert." | "What happens when you reach out" (preview) |
+| 6 | **The Catch** | "They caught it before I did. Always one step ahead." | The AlaraOS difference (the moat) |
+| 7 | **There at the Worst** | "They were there when it was worst." | Promise-of-care (preview), About |
+| 8 | **Even at the End** | "Even at the end, they had us." | Promise-of-care (preview), story |
 
-**Open nav decision:** whether "The AlaraOS difference" earns a top-nav slot, or stays
-surfaced from Home + About. (Recommendation: surface from Home prominently; add to nav only if
-it tests as a primary destination.)
+Moments 5–8 are the **promise of what care is**, previewed to build desire and trust — never
+claimed as something the website itself does.
 
-## 3. Page-by-page outline
+## 3. The journey, phase by phase (this is the structure)
 
-Each page: **Job** (the one thing) · **Realities it serves** (from the Catalog) · **Sections**
-(in order, by their job) · **Hands off to**.
+Each phase: the person's **state** · the **Moment** it serves · what the **site does** · the
+**felt outcome** · the **surfaces** that carry it.
 
-### HOME — the threshold
-- **Job:** let the right person recognize their situation and draw them in, show what Alara does
-  and why it's different, and route them to their reality.
-- **Realities:** all patient/family entries (Catalog rows 1–10) + a door for referrers.
-- **Sections:**
-  1. *Hero* — what Alara is, in one clear line (positioning), with the AlaraOS difference implied.
-  2. *Reality recognition* — the entry realities in the visitor's own words; each routes to its place. (This is how the organization perceives them.)
-  3. *What happens when you reach out* — the first commitment, outcome-rendered (a named owner; we do the work).
-  4. *The AlaraOS difference* — the moat (knows before, everyone in concert, each person informed), → the reveal page.
-  5. *Benefits you may be missing* — the revelation, backed by `data/programs.json`.
-  6. *The standard is ours* — proof (DON reviews every start of care; only MSW agency; nurse-led, local).
-  7. *Doors* — patients → Navigator; professionals → referral (with the one-hour SLA).
-- **Hands off to:** the matching reality (pillar / navigator), or Begin.
+### Phase 0 — Realization (off-site → arrival)
+Something changes: a diagnosis, a White Card, a decline, a discharge, a "could I be owed
+this?" They arrive via search, an AI answer, or a referral. *(This is the reality they bring,
+from the Reality Entry Catalog.)*
 
-### BENEFITS — the hub
-- **Job:** route, don't teach. One card per program → its pillar.
-- **Realities:** "I have a White Card," "I was hurt at work (OWCP)," "I'm a veteran," "I need home care (unsure which)."
-- **Sections:** short intro; a card per program (what it is in one line, who it's for, → pillar); a line to the Navigator for the unsure.
-- **Hands off to:** the pillars; the Navigator.
+### Phase 1 — Recognition  ·  Moments 1–2
+- **State:** overwhelmed, skeptical, doesn't know what they don't know.
+- **Site does:** be the clearest, most honest explanation anywhere; let them see their exact
+  situation in their own words and feel understood before anything is asked.
+- **Felt:** "Someone finally made this make sense — and they understand my world."
+- **Surfaces:** Home (hero = the answer; recognition = their reality), the pillars, Library.
+- *(Homepage job #1: **Recognition**.)*
 
-### WHITE CARD (EEOICPA) PILLAR — education [built]
-- **Job:** the clearest explanation of the White Card anywhere, authored by Alara as the expert; convert trust at the end.
-- **Realities:** "I have a White Card and need care" (primary); "I think I might qualify" (forks to the filing path).
-- **Sections (the pillar arc):** recognition hook → benefits most miss → what it covers → what the card is → the cardholder/no-card fork → your specific question (consequential / Medicare / file) → what Alara does / does not do → FAQ → where to go next (Navigator + Begin + print).
-- **Hands off to:** Navigator, Begin, the filing path (no-card).
+### Phase 2 — Orientation  ·  Moment 1 deepens
+- **State:** curious, steadier, learning.
+- **Site does:** show the whole picture plainly — what they're entitled to, what's covered,
+  what they're missing — without overwhelm, and show that the work won't fall to them.
+- **Felt:** "Now I see the whole picture, and I won't have to carry it alone."
+- **Surfaces:** the pillars (coverage, benefits-most-miss), Library, the AlaraOS difference.
+- *(Homepage job #2: **Relief**.)*
 
-### OWCP / FECA PILLAR — education [built]
-- **Job:** same template; answer "does workers' comp cover home care, and how is it authorized?"
-- **Realities:** "I have an accepted OWCP claim," "I was just injured at work."
-- **Sections:** recognition → does comp cover home care (yes, when…) → what's covered → the authorization path others get wrong → what Alara handles → FAQ → next step.
-- **Hands off to:** Navigator, Begin.
+### Phase 3 — Trust  ·  Moment 4
+- **State:** weighing; skeptical moving to committed.
+- **Site does:** tell the truth, including what Alara does **not** do; show proof (DON review,
+  the only MSW agency, the AlaraOS difference = the catch); leave the choice entirely to them.
+- **Felt:** "They told me the truth when everyone looked away, and the choice stayed mine."
+- **Surfaces:** the pillars' do/don't boundary, About + Services proof, the AlaraOS difference.
+- *(Homepage job #3: **Permission** — it's okay to take the next step, on your terms.)*
 
-### VA COMMUNITY CARE PILLAR — education [to build]
-- **Job:** answer "can I get home care without the VA wait, and without Medicare?"
-- **Realities:** "I'm a veteran and need home health," "I'm a veteran, not sure what I need."
-- **Sections:** same arc; goals-first, no-pressure tone (per the veteran journeys).
+### Phase 4 — Decision  ·  Moment 4 → 3
+- **State:** capable, ready — or ready to personalize first.
+- **Site does:** offer the next step at their pace: personalize (Navigator) or begin (Begin).
+  No dead ends; nothing pushed.
+- **Felt:** "I'm choosing this."
+- **Surfaces:** the Navigator (the bridge), Begin.
 
-### LIBRARY — supporting definitions
-- **Job:** define the terms the pillars use; never re-teach the pillar; cite it.
-- **Sections:** searchable/scannable definitions (White Card, EEOICPA Part B/E, consequential condition, OWCP, FECA, VA Community Care, authorization, Authorized Representative…), each linking to its pillar.
+### Phase 5 — Handoff  ·  Moment 3 (The First Kept Promise)
+- **State:** committed; crossing into care.
+- **Site does:** capture only the first-contact fields (per the Catalog) and set the promise:
+  a real, named person reaches you exactly when promised, already knowing everything. This is
+  the consent/authority event into the care region.
+- **Felt:** "I never had to start over. Someone real has us."
+- **Surfaces:** Begin → the organization (a Care Guide).
 
-### THE ALARAOS DIFFERENCE — the reveal
-- **Job:** make the visitor *feel* and believe why Alara is different, without explaining machinery.
-- **Realities:** anyone who's intrigued ("why is this different / why should I spend time here").
-- **Sections:**
-  1. *Hero* — the distinctive promise (care that's ahead, in concert).
-  2. *What sets it apart* — the three pillars: knows before (anticipation) · everyone in concert (orchestration) · each person already knows their part (appropriate awareness).
-  3. *Reason-why* — one living picture of you, read continuously; people make every decision; nothing without consent.
-  4. *CTA* — Navigator.
-- **Hands off to:** Navigator, Begin.
+### Phase 6 — The promise of care ahead  ·  Moments 5–8 (previewed)
+- The site previews what being a patient feels like — the weight lifted, the catch, there at
+  the worst, even at the end — as desire and proof, so the reputation **"They had us"** is felt
+  before they commit. Never claimed as the website's own doing.
+- **Surfaces:** the AlaraOS difference (Moment 6), About (the standard), story/testimonial.
 
-### SERVICES — what Alara clinically does (service lane)
-- **Job:** show clinical competence and the whole-person standard.
-- **Sections:** the clinical services (skilled nursing, wound care, therapy, aide, MSW, caregiver training); the whole-person screen; the operating commitments (DON review, one-hour response, zero authorization gaps).
-- **Hands off to:** Begin; back to education for the not-ready.
+## 4. The pages, as vehicles for the journey
 
-### ABOUT — who Alara is (service lane)
-- **Job:** earn trust; why these people.
-- **Sections:** why Alara exists (care moved home, help didn't); the founder (experience, anonymous by brand rule); the operating commitments; credentials + service area.
-- **Hands off to:** Begin; Navigator.
+Same pages exist; their job is defined by the phase/moment they serve. Nav stays four
+(Services · Benefits · Library · About) + the bridge ("See what you qualify for"); **the AlaraOS
+difference is surfaced prominently from Home, not in the nav** (owner decision).
 
-### NAVIGATOR ("See what you qualify for") — the bridge
-- **Job:** personalize education into a plain, cited answer + the one next step. The bridge every pillar hands to.
-- **Realities:** all of them — it triages "I need home care (unsure which)" into the right program.
-- **Sections:** a few plain questions → a plain answer with its source → the one next step (Begin, or a pillar, or print). No account, no long form.
-- **Hands off to:** Begin; the matching pillar.
+| Surface | Journey role | Moments | Status |
+|---|---|---|---|
+| **Home** | the only full-arc surface; does Recognition / Relief / Permission in miniature | 1,2,4 (+ previews 3,5,6) | live |
+| **The pillars** (White Card, OWCP, VA) | the Answer + Orientation + the Truth/boundary for one reality | 1,4 | 2 built, VA to build |
+| **Benefits hub** | routes a reality to its pillar; teaches nothing deeply | — | built |
+| **Library** | the Answer at the term level; supports the pillars | 1 | built |
+| **The AlaraOS difference** | the Catch — why Alara is always a step ahead | 6 | built |
+| **Services / About** | proof that seals Trust | 4,7 | built |
+| **Navigator** | the bridge at Decision: personalize → cited answer + next step | 2,4 | needs upgrade |
+| **Begin** | the Handoff and the First Kept Promise | 3,5 | built |
+| **Physicians / referral** | the same arc through the Accountability lens; concrete SLAs | 3,6 | to build |
+| **EEOICPA filing (no card)** | the Answer for the longer path, honestly separate | 1,4 | to build |
 
-### BEGIN — start care / be contacted (conversion)
-- **Job:** the lowest-friction way to hand the work to Alara; honor the first commitment.
-- **Realities:** anyone ready; also referrers.
-- **Sections:** minimal capture (only the Catalog's first-contact fields); what happens next (named owner, fast human follow-up); reassurance.
-- **Hands off to:** the organization (a Care Guide).
+## 5. Home, mapped to its three jobs and the moments
 
-### PHYSICIANS / REFERRAL — separate lane [to build]
-- **Job:** competence + speed, not benefits education; make referring effortless.
-- **Realities:** "my patient needs home health," "my patient is being discharged."
-- **Sections:** what Alara handles for them; how to refer (their workflow); the closed loop and **concrete SLAs** (one-hour discharge response, SOC ack, etc.).
-- **Hands off to:** referral submission.
+The homepage is the only full-arc surface, so it walks the whole journey in miniature:
 
-### EEOICPA FILING (no card yet) — the longer path [to build]
-- **Job:** serve "I think I might qualify" honestly as a separate, longer path (filing EE-1/EE-2, the Resource Center, appeals) — not implying a quick start.
-- **Sections:** what the path is, what's required, where Alara fits (and does not), the Resource Center.
+1. **Recognition** — *Hero* (the Answer: what Alara is, plainly) → *Reality recognition* (they
+   see their situation; Moments 1–2).
+2. **Relief** — *What happens when you reach out* (the Weight Lifted, previewed; Moment 5) →
+   *The AlaraOS difference* (the Catch; Moment 6) → *Benefits you may be missing* (Orientation).
+3. **Permission** — *The standard is ours* (proof → Trust; Moment 4) → *The doors* (Decision at
+   their pace; → Navigator / Begin) → the First Kept Promise previewed at Begin.
 
-## 4. Build status
+## 6. What changed from the prior draft
 
-| Page | Status |
-|---|---|
-| Home | built (live), copy being refined |
-| Benefits hub | built |
-| White Card pillar | built |
-| OWCP / FECA pillar | built |
-| Library | built |
-| The AlaraOS difference | built (PR #12), copy being refined |
-| Services | built |
-| About | built |
-| Navigator | built — flagged for an expert-grade upgrade |
-| Begin | built |
-| VA Community Care pillar | to build |
-| Physicians / referral | to build |
-| EEOICPA filing (no card) | to build |
+- Organized by the **experience arc and the Eight Moments**, not by marketing page categories.
+- Conversion is now explicitly a **byproduct** of the emotional/learning/trust journeys.
+- Every page's job is defined by the **Moment and phase** it serves.
+- Trust-precedes-disclosure is the ordering law (the environment earns the conversation).
 
-## 5. What I recommend we lock before writing more words
+## 7. What to lock before writing copy
 
-1. This page set and the nav (incl. the AlaraOS-difference nav decision).
-2. Home's seven-section order (above).
-3. The pillar arc (used by White Card, OWCP, VA).
-4. That the Navigator is the single patient CTA, and Begin is the conversion endpoint.
+1. This journey spine (the arc + the Eight Moments as the beats).
+2. The phase-by-phase structure (§3) and the homepage's Recognition/Relief/Permission order (§5).
+3. The page-to-journey mapping (§4), incl. nav at four + AlaraOS surfaced from Home.
+4. The pillar arc as the per-reality template.
 
-Once these are signed off, copy is filling a known frame, not searching for one.
+Once locked, copy fills a known frame built on frozen canon.
