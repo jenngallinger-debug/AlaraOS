@@ -86,12 +86,6 @@
     .boundary ul li { font-size: 0.9375rem; padding-left: 22px; }
     .boundary ul li::before { top: 9px; }
 
-    /* Consequential conditions: primary -> what can follow */
-    .cc { margin-top: 20px; border-top: 1px solid var(--hairline); }
-    .cc__row { display: grid; grid-template-columns: 14ch 1fr; gap: 18px; padding-block: 16px; border-bottom: 1px solid var(--hairline); align-items: baseline; }
-    .cc__primary { font-weight: 500; color: var(--espresso); font-size: 1rem; }
-    .cc__follow { font-size: 0.9375rem; color: var(--taupe-ink); line-height: 1.5; }
-
     /* FAQ */
     .faq { margin-top: 8px; border-top: 1px solid var(--hairline); }
     .faq details { border-bottom: 1px solid var(--hairline); }
@@ -124,7 +118,7 @@
       .boundary > div + div { border-left: none; border-top: 1px solid var(--hairline); }
       .wc-next__item:nth-child(odd) { border-right: none; padding-right: 0; }
       .wc-next__item:nth-child(even) { padding-left: 0; }
-      .defs__row, .cc__row { grid-template-columns: 1fr; gap: 6px; }
+      .defs__row { grid-template-columns: 1fr; gap: 6px; }
     }
 
     /* Print / save-as-PDF: drop the chrome, keep the reference. */
@@ -180,9 +174,9 @@
         <nav class="crumbs" aria-label="Breadcrumb">
           <a href="programs.html">Benefits</a><span aria-hidden="true">/</span>White Card
         </nav>
-        <span class="eyebrow">White Card &middot; EEOICPA</span>
-        <h1>The White Card covers more than you have been told.</h1>
-        <p class="page-hero__lead">If you or a family member worked at the Nevada Test Site or another Department of Energy facility and has an EEOICPA White Card, skilled home health for the accepted conditions comes at no cost to you. The benefits most families miss are below, each with the exact step to claim it.</p>
+        <span class="eyebrow">A complete guide &middot; White Card (EEOICPA)</span>
+        <h1>The White Card is a hard benefit to understand. Here is all of it, in plain language.</h1>
+        <p class="page-hero__lead">If you or a family member worked at the Nevada Test Site or another Department of Energy facility and has an EEOICPA White Card, skilled home health for the accepted conditions comes at no cost to you. The program is genuinely complex, and that is the only reason families miss what they are entitled to. Below is the whole picture, with the exact step to claim each part.</p>
         <div class="page-hero__actions">
           <a class="btn btn--primary btn--lg" href="#missed">See the benefits most people miss <span class="arrow" aria-hidden="true">&darr;</span></a>
           <button class="btn btn--ghost" type="button" id="printGuide">Print or save this guide</button>
@@ -282,13 +276,7 @@
           <section id="consequential">
             <h2>Consequential conditions: the single biggest missed benefit.</h2>
             <p class="section-intro">A consequential condition is a new problem that develops because of your accepted illness or its treatment. Once the DOL accepts it, it is added to your White Card and all care for it is covered at no cost to you. Most patients, and most physicians, have never heard of this.</p>
-            <p>Common examples we identify and pursue:</p>
-            <div class="cc">
-              <div class="cc__row"><span class="cc__primary">Lung cancer</span><span class="cc__follow">Depression, anxiety, malnutrition, chemotherapy neuropathy, steroid-induced diabetes</span></div>
-              <div class="cc__row"><span class="cc__primary">COPD</span><span class="cc__follow">Depression, anxiety, cardiac complications, sleep disturbance</span></div>
-              <div class="cc__row"><span class="cc__primary">Radiation-related cancer</span><span class="cc__follow">Peripheral neuropathy, cognitive changes, chronic pain, functional decline</span></div>
-              <div class="cc__row"><span class="cc__primary">Beryllium disease</span><span class="cc__follow">Depression, anxiety, cardiac complications</span></div>
-            </div>
+            <p>The new problem can be physical or mental, and which ones apply is specific to you and your diagnosis &mdash; which is exactly why it gets overlooked. What matters is the pattern: if something new has appeared since your accepted illness or its treatment, it may be addable. The way to find out is to raise it.</p>
             <h3>How it gets added, step by step</h3>
             <ol class="steps">
               <li>A nurse identifies and documents a finding, for example new numbness since chemotherapy, or a positive depression screen.</li>
@@ -297,7 +285,7 @@
               <li>DEEOIC reviews. If accepted, the condition is <strong>added to your White Card</strong>.</li>
               <li>The authorization and plan of care are updated, and care for the new condition is now covered.</li>
             </ol>
-            <div class="do"><b>What this means for you</b>Every condition added opens a new authorization. A patient with lung cancer, depression, and neuropathy has three covered conditions instead of one. If you have developed anything new since your diagnosis, raise it. Alara screens for this on day one of care, using validated tools, and works with your physician to pursue it.</div>
+            <div class="do"><b>What this means for you</b>Every condition added opens a new authorization, so three accepted conditions means three covered authorizations instead of one. If anything new has developed since your diagnosis, raise it. Alara screens for this on day one of care, using validated tools, and works with your physician to pursue it.</div>
           </section>
 
           <section id="file">
