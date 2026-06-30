@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Federal Benefits Library — Alara Home Care</title>
+  <meta name="description" content="Plain-language, clinician-reviewed explanations of the federal benefits that pay for home health — White Card (EEOICPA), OWCP/FECA, VA Community Care, Medicare — with sources." />
+  <link rel="icon" href="logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="site.css" />
+</head>
+<body>
+
+  <header class="site-header is-scrolled" id="siteHeader">
+    <div class="container site-header__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care, home">
+        <svg class="brand__mark" viewBox="0 0 100 92" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
+      </a>
+      <nav class="site-nav" aria-label="Primary">
+        <a class="site-nav__link" href="qualify.html">See what you qualify for</a>
+        <a class="site-nav__link" href="learn.html" aria-current="page">Learn</a>
+        <a class="header-call" href="tel:+17028149630"><span class="header-call__label">Call us</span><span class="header-call__num">(702) 814-9630</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <span class="eyebrow">Federal Benefits Library</span>
+        <h1>The benefits no one explains, in plain language.</h1>
+        <p class="page-hero__lead">Most families are never told the full scope of what they've earned. These are the terms that matter for home health — defined plainly, reviewed by a nurse, and linked to the federal source. Education is the first care we give.</p>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="lib">
+        <p class="lib__intro">Start with the term you came for, or read straight through. When you're ready to see what applies to your situation, the <a href="qualify.html">Benefit Navigator</a> walks you there in about a minute.</p>
+        <div class="lib__list" id="lib"><!-- rendered from glossary data --></div>
+      </div>
+    </div>
+
+    <section class="invite" style="border-radius:0;margin-top:0">
+      <div class="container invite__inner reveal">
+        <h2>Not sure which one applies to you?</h2>
+        <p>You don't have to figure that out alone. See what your benefits generally cover, or let a nurse walk you through it.</p>
+        <div class="invite__actions">
+          <a class="btn btn--on-dark" href="qualify.html">See what you qualify for <span class="arrow" aria-hidden="true">&rarr;</span></a>
+          <a class="invite__call" href="begin.html">or have a nurse call you</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care">
+        <svg class="brand__mark" viewBox="0 0 100 92" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
+      </a>
+      <div class="site-footer__meta">Serving all of Clark County, Nevada &middot; Medicare-certified<br /><a href="tel:+17028149630">(702) 814-9630</a></div>
+    </div>
+  </footer>
+
+  <!-- Federal Benefits Library. In production this renders from data/glossary.json
+       server-side (one page per term for SEO); inlined here for the prototype. -->
+  <script id="lib-data" type="application/json">
+  [
+    {"slug":"white-card","term":"White Card","shortDefinition":"A White Card is the medical benefits identification card issued under EEOICPA that lets approved Department of Energy and Nevada Test Site workers receive covered medical care — including home health — at no out-of-pocket cost.","plain":"If your EEOICPA claim is accepted, you receive a White Card. You show it like an insurance card to get covered care for your accepted condition. There are generally no premiums, copays, or deductibles for covered services tied to that condition.","whoItAffects":["DOE workers","Nevada Test Site workers","Atomic Weapons Employer workers","survivors"],"sources":[{"label":"U.S. Department of Labor — EEOICP","url":"https://www.dol.gov/agencies/owcp/energy"}],"lastReviewed":"2026-06-22"},
+    {"slug":"eeoicpa","term":"EEOICPA","shortDefinition":"EEOICPA (the Energy Employees Occupational Illness Compensation Program Act) is a federal program that provides compensation and lifetime medical benefits to workers who became ill from exposure at Department of Energy and related nuclear-weapons facilities.","plain":"EEOICPA has two parts. Part B pays a lump sum and covers medical care for certain radiation, beryllium, and silica illnesses. Part E covers illnesses caused by toxic exposure at DOE facilities, including wage loss and impairment. It is administered by the Department of Labor's DEEOIC.","whoItAffects":["DOE workers","Nevada Test Site workers","Atomic Weapons Employer workers","survivors"],"sources":[{"label":"U.S. Department of Labor — EEOICP","url":"https://www.dol.gov/agencies/owcp/energy"}],"lastReviewed":"2026-06-22"},
+    {"slug":"eeoicpa-part-b","term":"EEOICPA Part B","shortDefinition":"Part B of EEOICPA provides a lump-sum payment of $150,000 plus lifetime medical benefits to workers with covered conditions such as radiation-induced cancers, chronic beryllium disease, and silicosis.","plain":"Part B is the radiation/beryllium/silica side of the program. Eligible workers (or survivors) receive $150,000 and medical coverage for the accepted condition.","whoItAffects":["DOE workers","Atomic Weapons Employer workers","survivors"],"sources":[{"label":"U.S. Department of Labor — EEOICP","url":"https://www.dol.gov/agencies/owcp/energy"}],"lastReviewed":"2026-06-22"},
+    {"slug":"eeoicpa-part-e","term":"EEOICPA Part E","shortDefinition":"Part E of EEOICPA compensates Department of Energy contractor and subcontractor employees for illnesses caused by toxic exposure, including wage loss and impairment, up to $250,000.","plain":"Part E covers a broader range of toxic-exposure illnesses than Part B and can pay for wage loss and permanent impairment in addition to medical benefits.","whoItAffects":["DOE contractor workers","survivors"],"sources":[{"label":"U.S. Department of Labor — EEOICP","url":"https://www.dol.gov/agencies/owcp/energy"}],"lastReviewed":"2026-06-22"},
+    {"slug":"consequential-condition","term":"Consequential Condition","shortDefinition":"A consequential condition is a new illness or injury that results from an already-accepted EEOICPA condition or its treatment, and which may also become covered after Department of Labor approval.","plain":"If your accepted condition (or its treatment) causes another problem — for example, a wound or infection that follows from it — that secondary problem may also be covered once the Department of Labor accepts it as consequential.","whoItAffects":["EEOICPA claimants","White Card holders"],"sources":[{"label":"U.S. Department of Labor — EEOICP","url":"https://www.dol.gov/agencies/owcp/energy"}],"lastReviewed":"2026-06-22"},
+    {"slug":"impairment-evaluation","term":"Impairment Evaluation","shortDefinition":"An impairment evaluation is a medical assessment of permanent whole-body impairment from an accepted EEOICPA Part E condition, used to determine additional compensation, and which can generally be repeated as impairment increases.","plain":"Under Part E, a physician rates how much permanent impairment your accepted condition has caused. That rating converts to compensation. If your condition worsens over time, you may request a new evaluation.","whoItAffects":["EEOICPA Part E claimants"],"sources":[{"label":"U.S. Department of Labor — EEOICP","url":"https://www.dol.gov/agencies/owcp/energy"}],"lastReviewed":"2026-06-22"},
+    {"slug":"owcp","term":"OWCP","shortDefinition":"OWCP (the Office of Workers' Compensation Programs) is the Department of Labor office that administers federal workers' compensation, including FECA for injured federal and postal workers, which can cover physician-ordered home health.","plain":"If you are a federal or postal worker hurt or made ill on the job, OWCP is the office that handles your claim. When a claim is accepted and a doctor orders it, OWCP can authorize home health care at no out-of-pocket cost.","whoItAffects":["Federal workers","Postal workers"],"sources":[{"label":"U.S. Department of Labor — OWCP/FECA","url":"https://www.dol.gov/agencies/owcp/FECA"}],"lastReviewed":"2026-06-22"},
+    {"slug":"feca","term":"FECA","shortDefinition":"FECA (the Federal Employees' Compensation Act) is the law providing workers' compensation — including medical care and home health when authorized — to federal and postal employees with work-related injuries or illnesses.","plain":"FECA is the federal version of workers' compensation. It's administered by OWCP's DFEC division and can pay for covered medical care, including in-home care, for an accepted work injury.","whoItAffects":["Federal workers","Postal workers"],"sources":[{"label":"U.S. Department of Labor — OWCP/FECA","url":"https://www.dol.gov/agencies/owcp/FECA"}],"lastReviewed":"2026-06-22"},
+    {"slug":"community-care","term":"VA Community Care","shortDefinition":"VA Community Care lets eligible veterans receive care — including home health — from approved community providers through the VA Community Care Network (CCN) when the VA cannot readily provide it directly.","plain":"If you're enrolled with the VA and need home health the VA can't deliver itself, the VA can authorize a community provider in its network. In Region 4 (which includes Nevada), the network is administered by TriWest.","whoItAffects":["Veterans"],"sources":[{"label":"U.S. Department of Veterans Affairs — Community Care","url":"https://www.va.gov/communitycare/"}],"lastReviewed":"2026-06-22"},
+    {"slug":"triwest","term":"TriWest","shortDefinition":"TriWest Healthcare Alliance is the third-party administrator for the VA Community Care Network in Region 4, which includes Nevada, connecting eligible veterans with approved community home-health providers.","plain":"TriWest is the company the VA uses in the western U.S. to manage community-care referrals and authorizations. A provider working with TriWest can serve veterans referred through VA Community Care.","whoItAffects":["Veterans"],"sources":[{"label":"U.S. Department of Veterans Affairs — Community Care","url":"https://www.va.gov/communitycare/"}],"lastReviewed":"2026-06-22"},
+    {"slug":"home-health","term":"Home Health","shortDefinition":"Home health is skilled, physician-ordered medical care delivered in a patient's home — including nursing, wound care, infusion therapy, and rehabilitation — as an alternative to facility-based care.","plain":"Home health brings licensed clinicians to you. It is ordered by a physician and is distinct from non-medical 'home care.' Federal programs like EEOICPA, OWCP, and VA Community Care can cover it.","whoItAffects":["EEOICPA claimants","Federal workers","Veterans","Seniors"],"sources":[{"label":"Centers for Medicare & Medicaid Services","url":"https://www.cms.gov/"}],"lastReviewed":"2026-06-22"},
+    {"slug":"wound-care","term":"Wound Care","shortDefinition":"Home wound care is skilled nursing treatment of chronic or non-healing wounds in the home — including assessment, dressing changes, infection monitoring, and advanced therapies — and is generally covered by EEOICPA, OWCP, and VA programs when ordered.","plain":"A nurse comes to your home to treat wounds that are slow to heal. This often includes diabetic ulcers, surgical wounds, and pressure injuries. When a physician orders it and your program authorizes it, you generally pay nothing.","whoItAffects":["EEOICPA claimants","Federal workers","Veterans"],"sources":[{"label":"U.S. Department of Labor — EEOICP","url":"https://www.dol.gov/agencies/owcp/energy"}],"lastReviewed":"2026-06-22"},
+    {"slug":"dcmwc","term":"DCMWC (Black Lung)","shortDefinition":"The Division of Coal Mine Workers' Compensation administers the federal Black Lung Benefits Act, which provides monthly payments and covered medical care — including skilled care at home — to coal miners with pneumoconiosis and their survivors.","plain":"If you mined coal and developed black lung disease (pneumoconiosis), the federal Black Lung program can pay monthly benefits and cover your medical care, including home health. Survivors may also qualify. Alara knows the DCMWC process.","whoItAffects":["Coal miners","Survivors of coal miners"],"sources":[{"label":"U.S. Department of Labor — DCMWC","url":"https://www.dol.gov/agencies/owcp/dcmwc"}],"lastReviewed":"2026-06-22"},
+    {"slug":"medicare-home-health","term":"Medicare Home Health","shortDefinition":"Medicare Part A covers physician-ordered home health — skilled nursing, therapy, and home health aide services — for homebound beneficiaries who meet eligibility criteria, often alongside other federal benefits.","plain":"Medicare can pay for skilled care at home when a doctor orders it and you meet the homebound criteria. Many patients carry Medicare plus another benefit; Alara coordinates billing across all of them so families never have to.","whoItAffects":["Seniors","Medicare beneficiaries"],"sources":[{"label":"Centers for Medicare & Medicaid Services","url":"https://www.cms.gov/"}],"lastReviewed":"2026-06-22"}
+  ]
+  </script>
+
+  <script>
+    var TERMS = JSON.parse(document.getElementById('lib-data').textContent);
+    var lib = document.getElementById('lib');
+    function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+    function fmtDate(d){ try { return new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month:'long', year:'numeric' }); } catch(e){ return d; } }
+
+    lib.innerHTML = TERMS.map(function(t){
+      var who = (t.whoItAffects||[]).map(function(w){ return '<span class="term__chip">' + esc(w) + '</span>'; }).join('');
+      var src = (t.sources||[]).map(function(s){ return '<a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.label) + ' &nearr;</a>'; }).join(' ');
+      return '<section class="term" id="' + esc(t.slug) + '">' +
+        '<p class="term__name">' + esc(t.term) + '</p>' +
+        '<p class="term__def">' + esc(t.shortDefinition) + '</p>' +
+        '<p class="term__plain">' + esc(t.plain) + '</p>' +
+        (who ? '<div class="term__who">' + who + '</div>' : '') +
+        '<div class="term__meta">' +
+          '<span>Clinically reviewed by Alara’s Director of Nursing, RN</span>' +
+          '<span>Last reviewed ' + esc(fmtDate(t.lastReviewed)) + '</span>' +
+          '<span>Source: ' + src + '</span>' +
+        '</div>' +
+      '</section>';
+    }).join('');
+
+    // smooth-scroll to a term if linked from the Navigator (#slug)
+    if (location.hash) { var el = document.getElementById(location.hash.slice(1)); if (el) setTimeout(function(){ el.scrollIntoView({behavior:'smooth', block:'start'}); }, 60); }
+  </script>
+</body>
+</html>

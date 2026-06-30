@@ -11,269 +11,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
-  <style>
-    /* ========================================================================
-       THE FACE OF ALARA — homepage
-       Brand source of truth: design-system/BRAND.md.
-       Five neutral swatches only. No gold in UI. No blue. No serif.
-       The only warmth on the page is the brass door inside the photograph.
-       Every rule here serves: recognition first, conversation earned.
-       ===================================================================== */
-    :root {
-      --espresso: #342E2E;   /* primary text, dark sections */
-      --taupe:    #817A7A;   /* secondary text, hairlines, dividers */
-      --taupe-ink:#645E5C;   /* darkened taupe for AA body on paper */
-      --greige:   #D9D8D3;   /* surfaces, arch fills */
-      --mist:     #E8E8E8;   /* alternate section tint */
-      --paper:    #FBFBFB;   /* page background — never pure white */
-      --hairline: #E2E0DC;   /* soft warm hairline */
-      --on-dark:  #FBFBFB;
-      --on-dark-soft: #C9C4C1;
-
-      --display: "Jost", "Century Gothic", system-ui, sans-serif;
-      --text:    "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-
-      --section-y: clamp(80px, 10vw, 156px);
-      --gutter:    clamp(24px, 6vw, 80px);
-      --maxw:      1180px;
-      --measure:   58ch;
-
-      --ls-eyebrow: 0.26em;
-      --ls-wordmark: 0.34em;
-
-      --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
-      --dur:  220ms;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { scroll-behavior: smooth; }
-    body {
-      background: var(--paper);
-      color: var(--espresso);
-      font-family: var(--text);
-      font-size: 17px;
-      line-height: 1.7;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
-    }
-
-    a { color: var(--espresso); text-underline-offset: 3px; }
-    :focus-visible { outline: 2px solid var(--espresso); outline-offset: 3px; }
-    img, svg { display: block; }
-
-    .container { max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gutter); }
-
-    .eyebrow {
-      font-family: var(--display);
-      font-weight: 400;
-      font-size: 0.6875rem;
-      letter-spacing: var(--ls-eyebrow);
-      text-transform: uppercase;
-      color: var(--taupe);
-    }
-
-    /* Headings: Inter, restrained weight. Authority from space, not from a serif. */
-    h1, h2, h3 { font-family: var(--text); font-weight: 500; line-height: 1.18; letter-spacing: -0.01em; color: var(--espresso); }
-
-    /* ---- Header --------------------------------------------------------- */
-    .site-header {
-      position: sticky; top: 0; z-index: 50;
-      background: color-mix(in srgb, var(--paper) 88%, transparent);
-      backdrop-filter: saturate(120%) blur(8px);
-      border-bottom: 1px solid transparent;
-      transition: border-color var(--dur) var(--ease);
-    }
-    .site-header.is-scrolled { border-bottom-color: var(--hairline); }
-    .site-header__inner {
-      display: flex; align-items: center; justify-content: space-between;
-      height: 76px;
-    }
-    .brand { display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--espresso); }
-    .brand__mark { width: 30px; height: auto; color: var(--espresso); }
-    .brand__word { display: flex; flex-direction: column; line-height: 1.1; }
-    .brand__name { font-family: var(--display); font-weight: 400; font-size: 1.0625rem; letter-spacing: var(--ls-wordmark); }
-    .brand__sub  { font-family: var(--display); font-weight: 300; font-size: 0.625rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--taupe); }
-    .header-call { display: inline-flex; align-items: baseline; gap: 10px; text-decoration: none; color: var(--espresso); font-size: 0.9375rem; }
-    .header-call__label { font-family: var(--display); letter-spacing: 0.14em; text-transform: uppercase; font-size: 0.6875rem; color: var(--taupe); }
-    .header-call__num { font-variant-numeric: tabular-nums; }
-    .header-call:hover .header-call__num { text-decoration: underline; }
-
-    /* ---- 1 · The Threshold (hero) -------------------------------------- */
-    .hero { border-bottom: 1px solid var(--hairline); }
-    .hero__grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      min-height: min(88vh, 860px);
-    }
-    .hero__text {
-      display: flex; flex-direction: column; justify-content: center;
-      padding: clamp(48px, 8vw, 120px) clamp(32px, 5vw, 88px) clamp(48px, 8vw, 120px) max(var(--gutter), calc((100vw - var(--maxw)) / 2 + var(--gutter)));
-    }
-    .hero__eyebrow { margin-bottom: 28px; }
-    .hero__headline {
-      font-size: clamp(2.25rem, 4.4vw, 3.5rem);
-      font-weight: 500;
-      line-height: 1.08;
-      letter-spacing: -0.02em;
-      max-width: 15ch;
-    }
-    .hero__headline .soft { color: var(--taupe-ink); font-weight: 400; }
-    .hero__sub {
-      margin-top: 28px;
-      font-size: 1.1875rem;
-      line-height: 1.6;
-      color: var(--espresso);
-      max-width: 40ch;
-    }
-    .hero__actions { margin-top: 40px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-    .hero__reassure { display: block; margin-top: 24px; font-size: 0.9375rem; color: var(--taupe); max-width: 46ch; line-height: 1.5; }
-
-    .hero__image { position: relative; background: var(--greige); overflow: hidden; }
-    .hero__image img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center bottom; }
-
-    /* ---- Button: the single, calm action ------------------------------- */
-    .btn {
-      display: inline-flex; align-items: center; gap: 10px;
-      font-family: var(--text); font-size: 0.9375rem; font-weight: 500;
-      padding: 15px 26px; border-radius: 2px;
-      border: 1px solid var(--espresso); background: var(--espresso); color: var(--on-dark);
-      text-decoration: none; cursor: pointer;
-      transition: background var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease);
-    }
-    .btn:hover { background: #443D3C; border-color: #443D3C; }
-    .btn .arrow { transition: transform var(--dur) var(--ease); }
-    .btn:hover .arrow { transform: translateX(3px); }
-    .btn--on-dark { background: var(--paper); color: var(--espresso); border-color: var(--paper); }
-    .btn--on-dark:hover { background: var(--mist); border-color: var(--mist); }
-    .btn--ghost { background: transparent; color: var(--espresso); border-color: var(--taupe); }
-    .btn--ghost:hover { background: transparent; border-color: var(--espresso); }
-
-    /* ---- 2 · The Tangle ------------------------------------------------- */
-    .tangle { background: var(--greige); padding-block: var(--section-y); }
-    .tangle p {
-      font-size: clamp(1.5rem, 2.6vw, 2.125rem);
-      font-weight: 400;
-      line-height: 1.42;
-      letter-spacing: -0.012em;
-      max-width: 22ch;
-      color: var(--espresso);
-    }
-    .tangle .hold { color: var(--espresso); }
-    .tangle .lede-rest { color: var(--taupe-ink); }
-
-    /* ---- 3 · What they remember (the Eight Moments) -------------------- */
-    .moments { padding-block: var(--section-y); }
-    .moments__head { margin-bottom: clamp(40px, 5vw, 72px); }
-    .moments__head .eyebrow { display: block; margin-bottom: 18px; }
-    .moments__head h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 500; max-width: 20ch; }
-    .moments__list { border-top: 1px solid var(--hairline); max-width: 880px; }
-    .moment {
-      border-bottom: 1px solid var(--hairline);
-      padding-block: clamp(22px, 2.6vw, 34px);
-      font-size: clamp(1.25rem, 2.1vw, 1.625rem);
-      font-weight: 400;
-      line-height: 1.45;
-      color: var(--espresso);
-      letter-spacing: -0.01em;
-    }
-    .moment .q { color: var(--taupe); }
-    .moments__seal {
-      margin-top: clamp(48px, 6vw, 88px);
-      text-align: center;
-    }
-    .moments__seal .eyebrow { display: block; margin-bottom: 20px; }
-    .moments__seal blockquote {
-      font-family: var(--display);
-      font-weight: 300;
-      font-size: clamp(2.5rem, 7vw, 5rem);
-      letter-spacing: -0.01em;
-      line-height: 1.05;
-      color: var(--espresso);
-    }
-
-    /* ---- 4 · The person behind the door -------------------------------- */
-    .founder { background: var(--mist); padding-block: var(--section-y); }
-    .founder__grid { display: grid; grid-template-columns: 300px 1fr; gap: clamp(40px, 6vw, 88px); align-items: center; }
-    .founder__frame {
-      width: 100%; max-width: 300px; aspect-ratio: 3 / 4;
-      background: var(--greige);
-      border: 1px solid var(--hairline);
-      border-radius: 150px 150px 4px 4px;   /* the arch */
-      display: flex; align-items: center; justify-content: center;
-    }
-    .founder__frame svg { width: 88px; height: auto; color: var(--taupe); opacity: 0.55; }
-    .founder__eyebrow { margin-bottom: 18px; }
-    .founder__quote { font-size: clamp(1.25rem, 2.1vw, 1.625rem); font-weight: 400; line-height: 1.42; letter-spacing: -0.01em; max-width: 32ch; color: var(--espresso); }
-    .founder__body { margin-top: 22px; font-size: 1.0625rem; line-height: 1.65; color: var(--taupe-ink); max-width: 52ch; }
-
-    /* ---- 5 · And it's real (legitimacy as reward) --------------------- */
-    .real { padding-block: var(--section-y); }
-    .real__inner { max-width: 760px; }
-    .real .eyebrow { display: block; margin-bottom: 20px; }
-    .real p { font-size: 1.1875rem; line-height: 1.65; color: var(--taupe-ink); max-width: 56ch; }
-    .real p strong { color: var(--espresso); font-weight: 500; }
-    .real__marks {
-      margin-top: 40px; padding-top: 26px; border-top: 1px solid var(--hairline);
-      display: flex; flex-wrap: wrap; gap: 10px 22px;
-      font-family: var(--display); font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--taupe);
-    }
-    .real__marks span { white-space: nowrap; }
-    .real__marks span + span::before { content: "·"; margin-right: 22px; color: var(--hairline); }
-
-    /* ---- 6 · The invitation ------------------------------------------- */
-    .invite { background: var(--espresso); color: var(--on-dark); border-radius: clamp(80px, 14vw, 220px) clamp(80px, 14vw, 220px) 0 0; margin-top: clamp(24px, 4vw, 56px); }
-    .invite__inner { padding-block: clamp(80px, 11vw, 168px); text-align: center; }
-    .invite h2 { color: var(--on-dark); font-size: clamp(1.875rem, 4vw, 3rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.12; max-width: 18ch; margin-inline: auto; }
-    .invite p { margin-top: 26px; color: var(--on-dark-soft); font-size: 1.1875rem; line-height: 1.6; max-width: 44ch; margin-inline: auto; }
-    .invite__actions { margin-top: 44px; display: flex; align-items: center; justify-content: center; gap: 24px; flex-wrap: wrap; }
-    .invite__call { color: var(--on-dark); text-decoration: none; font-size: 1.0625rem; font-variant-numeric: tabular-nums; }
-    .invite__call:hover { text-decoration: underline; }
-    .invite__reassure { margin-top: 26px; color: var(--on-dark-soft); font-size: 0.9375rem; }
-
-    /* ---- Footer -------------------------------------------------------- */
-    .site-footer { background: var(--espresso); color: var(--on-dark-soft); padding-block: clamp(36px, 5vw, 56px); }
-    .site-footer__inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
-    .site-footer .brand__name { color: var(--on-dark); }
-    .site-footer .brand__sub { color: var(--on-dark-soft); }
-    .site-footer .brand__mark { color: var(--on-dark); }
-    .site-footer__meta { font-size: 0.875rem; color: var(--on-dark-soft); text-align: right; line-height: 1.7; }
-    .site-footer__meta a { color: var(--on-dark); text-decoration: none; }
-    .site-footer__meta a:hover { text-decoration: underline; }
-
-    /* ---- Quiet reveal: one slow fade, reduced-motion safe --------------
-       Content is visible by default. It only hides to animate once JS has
-       confirmed it is running (html.js-reveal). If JS fails, nothing is lost. */
-    html.js-reveal .reveal { opacity: 0; transform: translateY(14px); transition: opacity 600ms var(--ease), transform 600ms var(--ease); }
-    html.js-reveal .reveal.is-in { opacity: 1; transform: none; }
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      html.js-reveal .reveal { opacity: 1; transform: none; transition: none; }
-      * { animation: none !important; transition: none !important; }
-    }
-
-    /* ---- Responsive: image-first hero, single column ------------------ */
-    @media (max-width: 860px) {
-      .hero__grid { grid-template-columns: 1fr; min-height: 0; }
-      .hero__image { order: -1; aspect-ratio: 4 / 3; }
-      .hero__image img { position: static; height: 100%; }
-      .hero__text { padding: clamp(40px, 9vw, 64px) var(--gutter) clamp(48px, 10vw, 72px); }
-      .founder__grid { grid-template-columns: 1fr; gap: 36px; }
-      .founder__frame { max-width: 240px; margin-inline: auto; }
-    }
-    @media (max-width: 520px) {
-      .header-call__label { display: none; }
-      .real__marks span + span::before { content: none; margin: 0; }
-      .real__marks { gap: 8px 16px; }
-    }
-  </style>
+  <link rel="stylesheet" href="site.css" />
 </head>
 <body>
 
-  <!-- HEADER — wordmark + one phone affordance. No menu to scan. -->
+  <!-- HEADER — wordmark + a small, quiet nav into the journey. -->
   <header class="site-header" id="siteHeader">
     <div class="container site-header__inner">
-      <a class="brand" href="/" aria-label="Alara Home Care, home">
+      <a class="brand" href="home.html" aria-label="Alara Home Care, home">
         <svg class="brand__mark" viewBox="0 0 100 92" role="img" aria-hidden="true">
           <path fill="currentColor" fill-rule="evenodd"
             d="M22,88 V34 L50,8 L78,34 V88 Z
@@ -285,10 +30,14 @@
           <span class="brand__sub">Home Care</span>
         </span>
       </a>
-      <a class="header-call" href="tel:+17028149630">
-        <span class="header-call__label">Call us</span>
-        <span class="header-call__num">(702) 814-9630</span>
-      </a>
+      <nav class="site-nav" aria-label="Primary">
+        <a class="site-nav__link" href="qualify.html">See what you qualify for</a>
+        <a class="site-nav__link" href="learn.html">Learn</a>
+        <a class="header-call" href="tel:+17028149630">
+          <span class="header-call__label">Call us</span>
+          <span class="header-call__num">(702) 814-9630</span>
+        </a>
+      </nav>
     </div>
   </header>
 
@@ -307,8 +56,8 @@
             Medicare. The coordination, advocacy, and expertise a standard visit can&rsquo;t give you.
           </p>
           <div class="hero__actions">
-            <a class="btn" href="#invite">Find out if you qualify <span class="arrow" aria-hidden="true">&rarr;</span></a>
-            <a class="btn btn--ghost" href="#invite">Refer a patient <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <a class="btn" href="qualify.html">Find out if you qualify <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <a class="btn btn--ghost" href="begin.html?who=referrer">Refer a patient <span class="arrow" aria-hidden="true">&rarr;</span></a>
           </div>
           <span class="hero__reassure">Or call <a href="tel:+17028149630">(702) 814-9630</a>. A nurse answers, usually within the hour.</span>
         </div>
@@ -329,7 +78,7 @@
       </div>
     </section>
 
-    <!-- 3 · WHAT THEY REMEMBER — the Eight Moments. The emotional apex. -->
+    <!-- 3 · WHAT THEY REMEMBER — the experience moments. The emotional apex. -->
     <section class="moments" aria-label="What families remember">
       <div class="container">
         <div class="moments__head reveal">
@@ -407,7 +156,7 @@
         <h2>One call, and we get to work.</h2>
         <p>No forms to figure out and no program you need to name. Tell us what's going on, and a nurse takes it from there, including the benefits paperwork.</p>
         <div class="invite__actions">
-          <a class="btn btn--on-dark" href="tel:+17028149630">Find out if you qualify <span class="arrow" aria-hidden="true">&rarr;</span></a>
+          <a class="btn btn--on-dark" href="begin.html">Find out if you qualify <span class="arrow" aria-hidden="true">&rarr;</span></a>
           <a class="invite__call" href="tel:+17028149630">or call (702) 814-9630</a>
         </div>
         <p class="invite__reassure">A nurse answers, usually within the hour.</p>
@@ -418,7 +167,7 @@
 
   <footer class="site-footer">
     <div class="container site-footer__inner">
-      <a class="brand" href="/" aria-label="Alara Home Care">
+      <a class="brand" href="home.html" aria-label="Alara Home Care">
         <svg class="brand__mark" viewBox="0 0 100 92" aria-hidden="true">
           <path fill="currentColor" fill-rule="evenodd"
             d="M22,88 V34 L50,8 L78,34 V88 Z
@@ -438,14 +187,11 @@
   </footer>
 
   <script>
-    // Header hairline appears only once you've left the threshold.
     var header = document.getElementById('siteHeader');
     var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 24); };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
 
-    // One slow fade-up as each block enters. Only arm if we can observe; otherwise
-    // leave content fully visible (the js-reveal class is what hides it to animate).
     var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!prefersReduced && 'IntersectionObserver' in window) {
       document.documentElement.classList.add('js-reveal');
