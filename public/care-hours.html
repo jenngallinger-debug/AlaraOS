@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>EEOICPA survivor benefits, explained &middot; Alara Home Care</title>
-  <meta name="description" content="A guide to EEOICPA survivor benefits for the families of former Nevada Test Site and DOE workers: who qualifies, what Part B and Part E pay survivors, how to file even if the worker never did, and where to get free help. Reviewed by a nurse, cited to the Department of Labor." />
+  <title>How your home health hours are set &middot; Alara Home Care</title>
+  <meta name="description" content="Who decides how many hours of home health you get under the White Card and OWCP, how the six-month authorization cycle works, how hours can be increased when your needs change, and how Alara documents medical necessity with data from your care record." />
   <link rel="icon" href="logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -36,24 +36,30 @@
       color: var(--bronze); letter-spacing: 0.04em; line-height: 1.2;
     }
     .gprose > section > * { grid-column: 2; min-width: 0; }
-    .gprose h2 { font-size: clamp(1.625rem, 2.8vw, 2.125rem); font-weight: 500; letter-spacing: -0.018em; line-height: 1.14; color: var(--espresso); max-width: 24ch; }
+    .gprose h2 { font-size: clamp(1.625rem, 2.8vw, 2.125rem); font-weight: 500; letter-spacing: -0.018em; line-height: 1.14; color: var(--espresso); max-width: 26ch; }
     .gprose p { margin-top: 16px; font-size: 1.0625rem; line-height: 1.7; color: var(--taupe-ink); }
     .gprose p strong, .gprose li strong { color: var(--espresso); font-weight: 500; }
     .gprose .lede { margin-top: 20px; padding: 20px 24px; background: var(--mist); border-left: 3px solid var(--bronze); border-radius: 0 8px 8px 0; font-size: 1.1875rem; line-height: 1.5; color: var(--espresso); max-width: none; }
     .gprose ul { margin-top: 16px; padding-left: 0; list-style: none; display: grid; gap: 10px; }
     .gprose ul li { position: relative; padding-left: 26px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); }
     .gprose ul li::before { content: ""; position: absolute; left: 4px; top: 11px; width: 7px; height: 7px; border: 1.5px solid var(--bronze); border-radius: 50%; }
-    /* Money figures — warm greige cards with a bronze figure, not hairline boxes. */
-    .gfig { margin-top: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .gfig__card { background: var(--greige); border: none; border-top: 2px solid var(--bronze); border-radius: 4px 4px 6px 6px; padding: 24px 22px; }
-    .gfig__fig { font-family: var(--display); font-size: clamp(1.75rem, 2.8vw, 2.375rem); font-weight: 400; letter-spacing: -0.02em; line-height: 1; color: var(--espresso); }
-    .gfig__k { margin-top: 10px; font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--bronze); }
-    .gfig__p { margin-top: 8px; font-size: 0.9375rem; line-height: 1.5; color: var(--taupe-ink); }
-    @media (max-width: 560px) { .gfig { grid-template-columns: 1fr; } }
+    .steps { margin-top: 20px; list-style: none; padding: 0; counter-reset: s; border-top: 1px solid var(--hairline); }
+    .steps li { counter-increment: s; border-bottom: 1px solid var(--hairline); padding: 18px 0 18px 52px; position: relative; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); }
+    .steps li::before { content: counter(s, decimal-leading-zero); position: absolute; left: 0; top: 18px; font-family: var(--display); font-size: 0.875rem; color: var(--bronze); letter-spacing: 0.08em; }
+    .steps li strong { color: var(--espresso); font-weight: 500; }
     .callout { margin-top: 26px; background: var(--greige); border: none; border-left: 3px solid var(--bronze); border-radius: 0 8px 8px 0; padding: 24px 26px; }
-    .callout h3 { font-size: 1.0625rem; font-weight: 500; color: var(--espresso); }
+    .callout h3 { margin-top: 0; font-size: 1.0625rem; font-weight: 500; color: var(--espresso); }
     .callout p { margin-top: 8px; font-size: 1rem; }
-    .callout .num { color: var(--espresso); font-weight: 600; }
+    /* Dark highlight panel — the AlaraOS LMN & hours tool. */
+    .os-tool { margin-top: 26px; background: var(--espresso); border-radius: 12px; padding: clamp(24px, 3.2vw, 36px); color: var(--on-dark-soft); }
+    .os-tool .eyebrow { display: block; margin-bottom: 14px; color: var(--bronze-l); }
+    .os-tool .eyebrow::before { background: var(--bronze-l); }
+    .os-tool h3 { font-size: clamp(1.25rem, 2vw, 1.5rem); font-weight: 500; color: var(--on-dark); letter-spacing: -0.014em; line-height: 1.2; }
+    .os-tool p { margin-top: 12px; font-size: 1.0625rem; line-height: 1.65; color: var(--on-dark-soft); }
+    .os-tool p strong, .os-tool li strong { color: var(--on-dark); font-weight: 500; }
+    .os-tool ul { margin-top: 14px; padding: 0; list-style: none; display: grid; gap: 10px; }
+    .os-tool ul li { position: relative; padding-left: 26px; font-size: 1rem; line-height: 1.55; color: var(--on-dark-soft); }
+    .os-tool ul li::before { content: ""; position: absolute; left: 4px; top: 9px; width: 7px; height: 7px; border: 1.5px solid var(--bronze-l); border-radius: 50%; }
     .gsrc { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--hairline); font-size: 0.8125rem; line-height: 1.7; color: var(--taupe); }
     .gsrc a { color: var(--taupe-ink); }
     @media (max-width: 620px) {
@@ -86,7 +92,7 @@
               <a class="nav-dd__link" role="menuitem" href="owcp.html">Federal Workers (OWCP / FECA)</a>
               <a class="nav-dd__link" role="menuitem" href="veterans.html">Veterans</a>
               <span class="nav-dd__sep" aria-hidden="true"></span>
-              <a class="nav-dd__link nav-dd__link--cta" role="menuitem" href="begin.html">Not sure? Start here <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              <a class="nav-dd__link nav-dd__link--cta" role="menuitem" href="case-review.html">Start a White Card case review <span class="arrow" aria-hidden="true">&rarr;</span></a>
             </span>
           </span>
           <a class="site-nav__link" href="learn.html">Learning Hub</a>
@@ -110,7 +116,7 @@
         <a class="mobile-menu__link mobile-menu__link--sub" href="reca.html">RECA (Radiation Exposure)</a>
         <a class="mobile-menu__link mobile-menu__link--sub" href="owcp.html">Federal Workers (OWCP / FECA)</a>
         <a class="mobile-menu__link mobile-menu__link--sub" href="veterans.html">Veterans</a>
-        <a class="mobile-menu__link mobile-menu__link--sub" href="begin.html">Not sure? Start here</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="case-review.html">Start a White Card case review</a>
         <a class="mobile-menu__link" href="learn.html">Learning Hub <span class="arrow" aria-hidden="true">&rarr;</span></a>
         <a class="mobile-menu__link" href="about.html">Why Alara <span class="arrow" aria-hidden="true">&rarr;</span></a>
         <a class="mobile-menu__link" href="refer.html">Refer a Patient <span class="arrow" aria-hidden="true">&rarr;</span></a>
@@ -124,10 +130,10 @@
     <section class="page-hero page-hero--guide">
       <div class="container">
         <div class="guidewrap">
-          <nav class="crumbs" aria-label="Breadcrumb"><a href="learn.html">Learning Hub</a><span aria-hidden="true">/</span>Survivor benefits</nav>
-          <span class="eyebrow">Guide &middot; EEOICPA survivors</span>
-          <h1>Survivor benefits, and why so many families never claim them.</h1>
-          <p class="page-hero__lead">When a Nevada Test Site or DOE worker dies of a covered illness, the family may be owed compensation of their own, even if the worker never filed, was denied, or passed years ago. It is one of the most overlooked benefits in the program. Here is who qualifies, what it pays, and how to claim it.</p>
+          <nav class="crumbs" aria-label="Breadcrumb"><a href="learn.html">Learning Hub</a><span aria-hidden="true">/</span>How your care hours are set</nav>
+          <span class="eyebrow">Guide &middot; Care hours &amp; authorization</span>
+          <h1>How your home health hours are set, and how they can grow.</h1>
+          <p class="page-hero__lead">The most common question in this program is also the least answered: who decides how many hours of care I get, and how do I get more when I need more? Here is exactly how it works under the White Card and OWCP, and how we document it so your hours match your needs.</p>
         </div>
       </div>
     </section>
@@ -136,76 +142,78 @@
       <div class="guidewrap gprose">
 
         <section>
-          <h2>Who can file as a survivor.</h2>
-          <p class="lede">If the worker&rsquo;s illness was accepted, or would have been, the people closest to them may qualify.</p>
-          <p>EEOICPA survivor benefits are paid, in order of priority, to:</p>
-          <ul>
-            <li>The <strong>surviving spouse</strong>, first.</li>
-            <li><strong>Children</strong>, if there is no surviving spouse (and in some cases alongside a spouse under Part E).</li>
-            <li><strong>Parents, then grandchildren, then grandparents</strong>, under Part B, when there is no spouse or child.</li>
-          </ul>
-          <p><strong>The worker does not need to have filed.</strong> You can file as a survivor even if your family member never started a claim, was denied during their lifetime, or died long ago. What matters is the work and the illness, not whether a form was ever submitted.</p>
+          <h2>Who decides your hours.</h2>
+          <p class="lede">Your treating physician states what you need. The Department of Labor authorizes it. Your job is neither.</p>
+          <p>Hours of care are not picked by the agency and not negotiated on a phone call. They come from a <strong>Letter of Medical Necessity</strong>: your treating physician certifies the care you need &mdash; the type of caregiver, the <strong>hours per day</strong>, and the <strong>days per week</strong> &mdash; tied to your accepted conditions. The Department of Labor&rsquo;s claims staff reviews that documentation and authorizes the services.</p>
+          <p>For the first request under the White Card, this runs through <strong>Form EE-17A</strong> (you or your representative start the request) and <strong>Form EE-17B</strong> (the DOL sends it to your physician, who certifies the need after examining you within the past 60 days).</p>
         </section>
 
         <section>
-          <h2>What survivor benefits pay.</h2>
-          <p>Survivors can receive lump-sum compensation under one or both parts of the program. The Department of Labor sets the amounts; these are the figures, for context.</p>
-          <div class="gfig">
-            <div class="gfig__card">
-              <div class="gfig__fig">$150,000</div>
-              <div class="gfig__k">Part B survivors</div>
-              <p class="gfig__p">A one-time, tax-free lump sum when a worker died of a covered Part B illness, divided among eligible survivors.</p>
-            </div>
-            <div class="gfig__card">
-              <div class="gfig__fig">Up to $125,000</div>
-              <div class="gfig__k">Part E survivors</div>
-              <p class="gfig__p">For a death tied to toxic exposure. More may be payable based on the worker&rsquo;s years of wage loss before death.</p>
-            </div>
-          </div>
-          <p>A family may qualify under both parts. Amounts, eligibility, and any additions for wage loss are determined by the Department of Labor and depend on the worker&rsquo;s history.</p>
+          <h2>Authorizations run in periods, and they expire.</h2>
+          <p>An authorization is not permanent. It covers a defined period &mdash; commonly around <strong>six months</strong> &mdash; and must be <strong>renewed with updated medical documentation</strong> before it ends. This is where care breaks at other agencies: the renewal is late, the documentation is thin, and visits stop while everyone scrambles.</p>
+          <ul>
+            <li><strong>Before the period ends,</strong> updated documentation of your needs goes back to the DOL.</li>
+            <li><strong>If nothing is submitted,</strong> the authorization lapses and care stops &mdash; not because your needs changed, but because the paperwork did not keep up.</li>
+            <li><strong>Tracking the renewal is the agency&rsquo;s job.</strong> You should never learn about a lapse from a cancelled visit.</li>
+          </ul>
         </section>
 
         <section>
-          <h2>How to file, step by step.</h2>
-          <ul>
-            <li><strong>File Form EE-2</strong>, the claim for survivor benefits, with the Department of Labor&rsquo;s Division of Energy Employees Occupational Illness Compensation (DEEOIC).</li>
-            <li><strong>Document the employment</strong> with Form EE-3, showing where and when the worker was employed at a covered facility.</li>
-            <li><strong>Provide the medical and death records</strong> that connect the covered illness to the death.</li>
-            <li>The DOL reviews the claim and, if accepted, pays the eligible survivors.</li>
-          </ul>
-          <p>You never pay anyone a percentage of the award. Two no-cost resources exist specifically to help survivors file.</p>
+          <h2>When your needs change, your hours can too.</h2>
+          <p class="lede">Hours are set by medical evidence. New evidence can reset them.</p>
+          <p>If your condition has progressed &mdash; more help with bathing or mobility, a new wound, more frequent nursing needs &mdash; the authorized hours can be increased. The path is the same as the original request:</p>
+          <ol class="steps">
+            <li><strong>The change is documented.</strong> What is different, since when, and what care it requires &mdash; specific, dated, clinical.</li>
+            <li><strong>Your physician certifies it.</strong> An updated Letter of Medical Necessity states the new hours per day and days per week, tied to your accepted conditions.</li>
+            <li><strong>It goes to the DOL&rsquo;s claims staff,</strong> who review and adjust the authorization. Hours can go up when the evidence supports it &mdash; and can be reduced when documentation is weak.</li>
+          </ol>
           <div class="callout">
-            <h3>DOL Las Vegas Resource Center</h3>
-            <p><span class="num">(702) 697-0841</span></p>
-            <p>The primary, no-cost help for Nevada Test Site families. They assist with survivor filing, records, and benefit questions at no charge. If you think you may qualify, start here.</p>
+            <h3>The honest version</h3>
+            <p>Whether your hours match your needs comes down to <strong>the quality of the documentation</strong>. Vague notes get vague authorizations. Specific, dated, clinical evidence of need is what moves hours &mdash; in either direction.</p>
           </div>
-          <p>An Authorized Representative who specializes in EEOICPA can also file and manage a survivor claim for you. <strong>Alara does not file claims</strong>, that is the role of the Resource Center and Authorized Representatives, but we will tell you what your options look like and point you to the right people.</p>
         </section>
 
         <section>
-          <h2>Radiation deaths: there may be a second path.</h2>
-          <p>If the worker was a uranium worker or was exposed through atmospheric nuclear testing, the family may also have a claim under <a href="reca.html">RECA</a>, the Radiation Exposure Compensation Act, which reopened in 2025. RECA is filed with the Department of Justice, separately from EEOICPA, and has its own survivor provisions and a filing deadline of December 31, 2027.</p>
+          <h2>How Alara documents your need: with data, not memory.</h2>
+          <p>This is where we are built differently. Most agencies assemble an LMN from recollection &mdash; a nurse&rsquo;s memory of the month, written the week the renewal is due.</p>
+          <div class="os-tool">
+            <span class="eyebrow">Inside AlaraOS</span>
+            <h3>The LMN and hours are built from your care record.</h3>
+            <p>AlaraOS &mdash; our care system &mdash; records what your care actually requires, visit by visit: assessments, wound measurements, medication changes, mobility and daily-living needs. When the Letter of Medical Necessity is prepared, <strong>it is drafted from that recorded clinical data</strong>, not from memory.</p>
+            <ul>
+              <li><strong>Every renewal is prepared before the period ends</strong> &mdash; the deadline is tracked from day one, so authorizations do not lapse.</li>
+              <li><strong>A documented change triggers a documented request.</strong> When your recorded needs grow, the evidence for more hours is already assembled.</li>
+              <li><strong>Your physician signs a defensible document.</strong> Specific, dated, clinical &mdash; the kind of LMN that stands up to review.</li>
+            </ul>
+            <p style="margin-top:18px;"><a class="btn btn--on-dark" href="inside-alaraos.html">See how AlaraOS works <span class="arrow" aria-hidden="true">&rarr;</span></a></p>
+          </div>
         </section>
 
         <section>
-          <h2>Where Alara fits.</h2>
-          <p>We are a nurse-owned home health agency, not a claims filer. If a <strong>living</strong> family member has a White Card and needs skilled care at home, that is what we provide, at no cost to you for the accepted condition. And when you are trying to understand a survivor benefit, we will walk you through it and connect you to the Resource Center or an Authorized Representative who can file it. The claim and the care, handled by people who will not hand you off.</p>
+          <h2>What you should never have to do.</h2>
+          <ul>
+            <li>Track your own authorization end date.</li>
+            <li>Learn about a lapse from a cancelled visit.</li>
+            <li>Convince anyone your needs grew &mdash; without documentation behind you.</li>
+            <li>Accept &ldquo;that&rsquo;s all the hours you get&rdquo; as a final answer when your condition has changed.</li>
+          </ul>
+          <p>If any of that is happening now, it is fixable. Send us a <a href="refer.html">referral</a>, start a <a href="case-review.html">case review</a>, or ask your physician to send the order to Alara.</p>
         </section>
 
         <p class="gsrc">
-          Reviewed by Alara&rsquo;s Director of Nursing, RN. General information, not a determination of eligibility; the Department of Labor determines survivor eligibility and amounts. Sources:
-          <a href="https://www.dol.gov/agencies/owcp/energy" target="_blank" rel="noopener">U.S. Department of Labor, DEEOIC</a> &middot;
-          <a href="https://www.justice.gov/civil/reca" target="_blank" rel="noopener">U.S. Department of Justice, RECA</a>.
+          Reviewed by Alara&rsquo;s Director of Nursing, RN. General information, not a determination of coverage; the Department of Labor sets and adjusts authorizations. Sources:
+          <a href="https://owcpmed.dol.gov/portal/deeoic-initial-home-health-care-nursing-home-or-assisted-living-request-forms-ee-17a-and-ee-17b" target="_blank" rel="noopener">U.S. Department of Labor, Forms EE-17A / EE-17B</a> &middot;
+          <a href="https://www.dol.gov/agencies/owcp/energy/regs/compliance/PolicyandProcedures/proceduremanualhtml/unifiedpm/Unifiedpm_part3/Chapter3-1000HRHC" target="_blank" rel="noopener">DEEOIC Procedure Manual, Home &amp; Residential Health Care</a>.
         </p>
 
       </div>
     </div>
 
-    <section class="cta-band cta-band--arched" aria-label="Get help">
+    <section class="cta-band cta-band--arched" aria-label="Get your hours right">
       <div class="container">
         <div class="cta-band__inner reveal">
-          <h2 class="cta-band__title">Not sure if your family qualifies?</h2>
-          <p class="cta-band__sub">Start a case review and a nurse reads your family member&rsquo;s work and illness, tells you what may be owed, and points you to the free help to file.</p>
+          <h2 class="cta-band__title">Think your hours don&rsquo;t match your needs?</h2>
+          <p class="cta-band__sub">Start a case review. A nurse reads your care needs and your current authorization together and tells you what the documentation supports.</p>
           <div class="cta-band__actions">
             <a class="btn btn--on-dark btn--lg" href="case-review.html">Start a case review <span class="arrow" aria-hidden="true">&rarr;</span></a>
             <a class="cta-band__call" href="tel:+17028149630">Or call (702) 814-9630</a>
@@ -216,7 +224,7 @@
 
     <section class="disclaimer">
       <div class="container disclaimer__inner">
-        Alara helps you understand and reach benefits you may already be entitled to. It does not replace the Department of Labor, the Department of Justice, your Resource Center, an authorized representative, or any federal agency. It helps you work with them. Nothing here is a coverage or eligibility determination.
+        Alara helps you understand and reach benefits you may already be entitled to. It does not replace the Department of Labor, your Resource Center, your physician, or any federal agency. It helps you work with them. Nothing here is a coverage or eligibility determination.
       </div>
     </section>
   </main>

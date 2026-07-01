@@ -55,6 +55,15 @@
     .callout h3 { margin-top: 0; font-size: 1.0625rem; font-weight: 500; color: var(--espresso); }
     .callout p { margin-top: 8px; font-size: 1rem; }
     .callout .num { color: var(--espresso); font-weight: 600; }
+    /* Denial-route table: which action fits which decision. */
+    .route-scroll { margin-top: 24px; overflow-x: auto; border: 1px solid var(--rule); border-radius: 10px; }
+    .route { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 0.9375rem; }
+    .route th, .route td { text-align: left; vertical-align: top; padding: 13px 16px; border-bottom: 1px solid var(--hairline); line-height: 1.5; }
+    .route thead th { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--taupe-ink); background: var(--mist); border-bottom: 2px solid var(--rule); }
+    .route tbody th[scope="row"] { font-weight: 500; color: var(--espresso); }
+    .route tbody td { color: var(--taupe-ink); }
+    .route tbody tr:last-child th, .route tbody tr:last-child td { border-bottom: none; }
+    .route .route-win { white-space: nowrap; color: var(--espresso); font-weight: 500; }
     .gsrc { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--hairline); font-size: 0.8125rem; line-height: 1.7; color: var(--taupe); }
     .gsrc a { color: var(--taupe-ink); }
     @media (max-width: 620px) {
@@ -92,7 +101,7 @@
           </span>
           <a class="site-nav__link" href="learn.html">Learning Hub</a>
           <a class="site-nav__link" href="about.html">Why Alara</a>
-          <a class="site-nav__link" href="begin.html?who=referrer">Refer a Patient</a>
+          <a class="site-nav__link" href="refer.html">Refer a Patient</a>
           <a class="header-call" href="tel:+17028149630">
             <span class="header-call__label">Call us</span>
             <span class="header-call__num">(702) 814-9630</span>
@@ -114,7 +123,7 @@
         <a class="mobile-menu__link mobile-menu__link--sub" href="begin.html">Not sure? Start here</a>
         <a class="mobile-menu__link" href="learn.html">Learning Hub <span class="arrow" aria-hidden="true">&rarr;</span></a>
         <a class="mobile-menu__link" href="about.html">Why Alara <span class="arrow" aria-hidden="true">&rarr;</span></a>
-        <a class="mobile-menu__link" href="begin.html?who=referrer">Refer a Patient <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="refer.html">Refer a Patient <span class="arrow" aria-hidden="true">&rarr;</span></a>
         <a class="btn btn--block mobile-menu__cta" href="qualify.html">See if you qualify</a>
         <p class="mobile-menu__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></p>
       </div>
@@ -165,6 +174,21 @@
             <li><strong>Check for a new Special Exposure Cohort.</strong> If a class that now covers your worksite and years has been added since your denial, that can be grounds to reopen.</li>
             <li><strong>Consider the other part, or a consequential condition.</strong> A denial under one part does not rule out the other, and a new condition caused by an accepted one can be added later.</li>
           </ol>
+          <div class="route-scroll">
+            <table class="route">
+              <thead>
+                <tr><th scope="col">Where your claim is</th><th scope="col">The right move</th><th scope="col">The window</th></tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row">Recommended denial (not final yet)</th><td>File objections and request a hearing, or a review of the written record, with the Final Adjudication Branch</td><td class="route-win">Generally 60 days</td></tr>
+                <tr><th scope="row">Final decision issued</th><td>Ask the Final Adjudication Branch to reconsider</td><td class="route-win">A short window &mdash; confirm yours with the Resource Center</td></tr>
+                <tr><th scope="row">New medical or employment evidence</th><td>Request that the claim be reopened</td><td class="route-win">Anytime</td></tr>
+                <tr><th scope="row">A new Special Exposure Cohort covers your worksite and years</th><td>Reopen on that basis</td><td class="route-win">Anytime</td></tr>
+                <tr><th scope="row">Denied under Part B or Part E only</th><td>File under the other part; raise consequential conditions later</td><td class="route-win">Anytime</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin-top:14px; font-size:0.875rem; color:var(--taupe);">Deadlines are set by the Department of Labor and depend on your decision date. Confirm your exact windows with the Resource Center at (702) 697-0841 before acting.</p>
         </section>
 
         <section>
