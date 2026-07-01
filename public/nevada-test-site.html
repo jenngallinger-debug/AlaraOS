@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nevada Test Site workers &middot; White Card (EEOICPA) home health &middot; Alara Home Care</title>
+  <meta name="description" content="Worked at the Nevada Test Site or Nevada National Security Site? A plain-language guide to the White Card (EEOICPA): who is covered, the two Special Exposure Cohort periods, the 22 specified cancers, what your White Card covers at home, and what the benefit is worth. General information, cited to the Department of Labor and NIOSH." />
+  <link rel="icon" href="logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="site.css" />
+  <style>
+    /* Nevada Test Site facility guide — page-scoped structure only, shared palette. */
+    .nts { max-width: 820px; margin-inline: auto; }
+    .nts__sec { margin-top: clamp(44px, 6vw, 72px); }
+    .nts__head { display:flex; align-items:center; gap:16px; margin-bottom: clamp(18px, 2.4vw, 26px); }
+    .nts__num { flex:none; width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center;
+      font-family: var(--display); font-size:0.8125rem; font-weight:500; color:var(--taupe); border:1px solid var(--hairline); border-radius:100px; }
+    .nts__title { font-family: var(--display); font-size: clamp(1.4rem, 2.8vw, 2rem); font-weight:500; letter-spacing:-0.018em; line-height:1.14; color:var(--espresso); }
+    .nts__rule { flex:1; height:1px; background:var(--hairline); }
+    .nts__lead { font-size: 1.125rem; line-height:1.62; color: var(--taupe-ink); max-width: 68ch; }
+    .nts__lead strong { color: var(--espresso); font-weight:500; }
+    .nts p { font-size: 1.0625rem; line-height:1.65; color: var(--taupe-ink); max-width: 68ch; }
+    .nts p strong { color: var(--espresso); font-weight:500; }
+
+    /* The two SEC period cards. */
+    .sec-cards { margin-top: 24px; display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .sec-card { border:1px solid var(--hairline); border-radius:10px; overflow:hidden; background:var(--paper); }
+    .sec-card__bar { background: var(--espresso); color: var(--on-dark); padding: 16px clamp(18px,2.4vw,22px); }
+    .sec-card__kicker { font-family: var(--display); font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; color: var(--on-dark-soft); }
+    .sec-card__range { font-family: var(--display); font-size: 1.1875rem; font-weight:500; margin-top:4px; }
+    .sec-card__body { padding: clamp(18px,2.4vw,22px); font-size:0.9875rem; line-height:1.6; color: var(--taupe-ink); }
+
+    /* The 22 specified cancers, split by latency. */
+    .cancers { margin-top: 24px; display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px 32px; }
+    .cancers__group { background: var(--mist); border-radius:10px; padding: clamp(20px,2.6vw,28px); }
+    .cancers__label { font-family: var(--display); font-size:0.6875rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--taupe); margin-bottom:14px; }
+    .cancers__list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; }
+    .cancers__list li { font-size: 1rem; line-height:1.5; color:var(--espresso); padding: 9px 0; border-top:1px solid var(--hairline); }
+    .cancers__list li:first-child { border-top:none; }
+
+    /* What the White Card covers (home health). */
+    .covers { margin-top: 22px; display:flex; flex-wrap:wrap; gap:10px; }
+    .covers span { font-size:0.9375rem; color:var(--espresso); background:var(--paper); border:1px solid var(--hairline); border-radius:5px; padding:9px 14px; }
+
+    /* Worth / compensation band. */
+    .worth { margin-top: 24px; border:1px solid var(--hairline); border-radius:12px; overflow:hidden; }
+    .worth__row { padding: clamp(20px,2.6vw,26px) clamp(20px,2.8vw,30px); border-top:1px solid var(--hairline); }
+    .worth__row:first-child { border-top:none; }
+    .worth__part { font-family: var(--display); font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--taupe); }
+    .worth__fig { font-family: var(--display); font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight:500; letter-spacing:-0.02em; color: var(--espresso); margin-top:6px; }
+    .worth__desc { margin-top: 8px; font-size:1rem; line-height:1.55; color: var(--taupe-ink); max-width: 62ch; }
+    .worth__note { margin-top: 18px; font-size:0.9375rem; line-height:1.6; color: var(--taupe); }
+
+    /* Closing CTA. */
+    .nts-cta { margin-top: clamp(44px, 6vw, 72px); background: var(--espresso); color: var(--on-dark); border-radius:14px; padding: clamp(30px, 4vw, 48px); }
+    .nts-cta h2 { font-family: var(--display); font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight:500; letter-spacing:-0.02em; color: var(--on-dark); }
+    .nts-cta p { color: var(--on-dark-soft); font-size:1.0625rem; line-height:1.6; margin-top:14px; max-width: 60ch; }
+    .nts-cta__actions { margin-top: 24px; display:flex; flex-wrap:wrap; gap: 12px 22px; align-items:center; }
+    .nts-cta__call { color: var(--on-dark); font-size:0.9375rem; }
+
+    /* Sources. */
+    .nts-src { margin-top: clamp(36px,4.5vw,52px); border-top:1px solid var(--hairline); padding-top: 24px; }
+    .nts-src__label { font-family: var(--display); font-size:0.6875rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--taupe); margin-bottom:12px; }
+    .nts-src ul { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
+    .nts-src a { font-size:0.9375rem; color:var(--taupe-ink); }
+    .nts-src a:hover { color:var(--espresso); }
+  </style>
+</head>
+<body>
+
+  <header class="site-header" id="siteHeader">
+    <div class="container site-header__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care, home">
+        <svg class="brand__mark" viewBox="0 0 100 92" role="img" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd"
+            d="M22,88 V34 L50,8 L78,34 V88 Z
+               M37,88 V66 A13,13 0 0 1 63,66 V88 Z
+               M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word">
+          <span class="brand__name">ALARA</span>
+          <span class="brand__sub">Home Care</span>
+        </span>
+      </a>
+      <div class="site-header__actions">
+        <nav class="site-nav site-nav--primary" aria-label="Primary">
+          <a class="site-nav__link" href="services.html">Services</a>
+          <a class="site-nav__link" href="programs.html">Benefits</a>
+          <a class="site-nav__link" href="learn.html">Library</a>
+          <a class="site-nav__link" href="about.html">About</a>
+          <a class="header-call" href="tel:+17028149630">
+            <span class="header-call__label">Call us</span>
+            <span class="header-call__num">(702) 814-9630</span>
+          </a>
+        </nav>
+        <a class="btn btn--sm" href="qualify.html">See if you qualify</a>
+        <button class="nav-toggle" type="button" id="navToggle" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu">
+          <span class="nav-toggle__bar" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+    <nav class="mobile-menu" id="site-menu" data-open="false" aria-label="Primary (mobile)">
+      <div class="container mobile-menu__inner">
+        <a class="mobile-menu__link" href="services.html">Services <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="programs.html">Benefits <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="learn.html">Library <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="about.html">About <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="btn btn--block mobile-menu__cta" href="qualify.html">See if you qualify</a>
+        <p class="mobile-menu__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></p>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href="programs.html">Benefits</a><span aria-hidden="true">/</span>Nevada Test Site
+        </nav>
+        <span class="eyebrow">Nevada Test Site &amp; NNSS &middot; White Card (EEOICPA)</span>
+        <h1>Worked at the Nevada Test Site? Your White Card can cover care at home.</h1>
+        <p class="page-hero__lead">The federal government recognizes that work at the Nevada Test Site could make people sick. When an illness is accepted, it comes with a White Card: lifetime medical benefits at no cost to you, including skilled home health. Here is who is covered, which illnesses qualify, and what the benefit is worth, in plain language and drawn from the Department of Labor and NIOSH.</p>
+        <div class="page-hero__actions">
+          <a class="btn btn--primary btn--lg" href="qualify.html">See what applies to you <span class="arrow" aria-hidden="true">&rarr;</span></a>
+          <a class="btn btn--ghost" href="begin.html">Talk to a nurse</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="nts">
+
+        <section class="nts__sec">
+          <div class="nts__head"><span class="nts__num">01</span><span class="nts__title">Is the Nevada Test Site covered?</span><span class="nts__rule"></span></div>
+          <p class="nts__lead"><strong>Yes.</strong> The Nevada Test Site, now the Nevada National Security Site, is a covered Department of Energy facility under EEOICPA for work from 1951 on. Department of Energy employees and contractor and subcontractor employees who worked there may qualify when a covered illness is linked to that work. The Tonopah Test Range is a covered facility as well.</p>
+        </section>
+
+        <section class="nts__sec">
+          <div class="nts__head"><span class="nts__num">02</span><span class="nts__title">Two Special Exposure Cohort periods</span><span class="nts__rule"></span></div>
+          <p>For certain periods, the government grants a <strong>Special Exposure Cohort</strong>. If you worked at the Test Site during one of these windows and later developed one of the 22 specified cancers below, your claim is presumed to be work-related. You do not have to reconstruct your radiation dose.</p>
+          <div class="sec-cards">
+            <div class="sec-card">
+              <div class="sec-card__bar"><span class="sec-card__kicker">Cohort period one</span><div class="sec-card__range">Jan 27, 1951 to Dec 31, 1962</div></div>
+              <div class="sec-card__body">At least 250 work days at the Test Site, alone or combined with other covered sites, and monitored or that should have been monitored for radiation.</div>
+            </div>
+            <div class="sec-card">
+              <div class="sec-card__bar"><span class="sec-card__kicker">Cohort period two</span><div class="sec-card__range">Jan 1, 1963 to Dec 31, 1992</div></div>
+              <div class="sec-card__body">At least 250 work days at the Test Site, alone or combined with other covered sites, for Department of Energy, its predecessor agencies, and contractor and subcontractor employees.</div>
+            </div>
+          </div>
+          <p style="margin-top:22px;">Outside these windows, a claim can still be covered. NIOSH reconstructs your radiation dose, and the claim is compensable when the probability that the work caused the cancer is at least 50 percent.</p>
+        </section>
+
+        <section class="nts__sec">
+          <div class="nts__head"><span class="nts__num">03</span><span class="nts__title">The 22 specified cancers</span><span class="nts__rule"></span></div>
+          <p>For a Special Exposure Cohort member, these cancers are presumed work-related. Onset must be at least two or five years after first exposure, depending on the cancer. This is the federal list, not medical advice; your physician and the Department of Labor determine what applies.</p>
+          <div class="cancers">
+            <div class="cancers__group">
+              <p class="cancers__label">Onset at least 2 years after exposure</p>
+              <ul class="cancers__list">
+                <li>Leukemia (other than chronic lymphocytic leukemia)</li>
+                <li>Lung cancer (other than in-situ found at autopsy)</li>
+                <li>Bone cancer (primary or secondary)</li>
+                <li>Renal (kidney) cancer</li>
+              </ul>
+            </div>
+            <div class="cancers__group">
+              <p class="cancers__label">Onset at least 5 years after exposure</p>
+              <ul class="cancers__list">
+                <li>Multiple myeloma</li>
+                <li>Lymphomas (other than Hodgkin&rsquo;s disease)</li>
+                <li>Thyroid</li>
+                <li>Male breast &middot; Female breast</li>
+                <li>Esophagus</li>
+                <li>Stomach</li>
+                <li>Pharynx</li>
+                <li>Small intestine</li>
+                <li>Pancreas</li>
+                <li>Bile ducts &middot; Gall bladder</li>
+                <li>Salivary gland</li>
+                <li>Urinary bladder</li>
+                <li>Brain (malignant only)</li>
+                <li>Colon</li>
+                <li>Ovary</li>
+                <li>Liver (except if cirrhosis or hepatitis B is indicated)</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="nts__sec">
+          <div class="nts__head"><span class="nts__num">04</span><span class="nts__title">What the White Card covers at home</span><span class="nts__rule"></span></div>
+          <p>An accepted claim issues a <strong>White Card</strong>, the medical-benefits card the Department of Labor honors for care tied to your accepted condition, at no cost to you. The Department of Labor pays the provider directly, and you never receive a bill. Alara provides the home-health side:</p>
+          <div class="covers">
+            <span>Skilled nursing</span>
+            <span>Wound care</span>
+            <span>Physical &amp; occupational therapy</span>
+            <span>Home health aide</span>
+            <span>Caregiver training</span>
+          </div>
+          <p style="margin-top:22px;"><a href="white-card.html">Read the complete White Card guide <span class="arrow" aria-hidden="true">&rarr;</span></a></p>
+        </section>
+
+        <section class="nts__sec">
+          <div class="nts__head"><span class="nts__num">05</span><span class="nts__title">What the benefit is worth</span><span class="nts__rule"></span></div>
+          <p>Beyond medical care, EEOICPA can pay compensation. This is general education, not a determination, and Alara does not file or decide claims. The Department of Labor decides every claim.</p>
+          <div class="worth">
+            <div class="worth__row">
+              <span class="worth__part">Part B</span>
+              <div class="worth__fig">$150,000 + lifetime medical</div>
+              <p class="worth__desc">A one-time payment plus lifetime medical benefits for a covered cancer or illness tied to the work. Special Exposure Cohort members with a specified cancer qualify without dose reconstruction.</p>
+            </div>
+            <div class="worth__row">
+              <span class="worth__part">Part E &middot; for Department of Energy contractor &amp; subcontractor employees</span>
+              <div class="worth__fig">$2,500 for each 1% of impairment</div>
+              <p class="worth__desc">Compensation for whole-body impairment and for wage loss caused by the covered illness, up to a combined maximum of $250,000. Federal Department of Energy employees are not covered under Part E.</p>
+            </div>
+          </div>
+          <p class="worth__note">A White Card can also grow. A new problem caused by an accepted condition, called a consequential condition, can be added, which can open more care and, under Part E, more impairment compensation.</p>
+        </section>
+
+        <div class="nts-cta">
+          <h2>Not sure if you qualify?</h2>
+          <p>You do not have to work this out alone, and you do not pay anyone a percentage to help. The Benefit Navigator walks you through what generally applies in about a minute. A nurse can explain the home-health side. And the Department of Labor&rsquo;s Las Vegas Resource Center can help you file, at no cost.</p>
+          <div class="nts-cta__actions">
+            <a class="btn btn--on" href="qualify.html">Open the Benefit Navigator <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <a class="nts-cta__call" href="tel:+17028149630">Talk to a nurse: (702) 814-9630</a>
+            <a class="nts-cta__call" href="tel:+17026970841">DOL Resource Center: (702) 697-0841</a>
+          </div>
+        </div>
+
+        <div class="nts-src">
+          <p class="nts-src__label">Federal sources</p>
+          <ul>
+            <li><a href="https://www.cdc.gov/niosh/ocas/nts.html" target="_blank" rel="noopener">NIOSH, Nevada Test Site Special Exposure Cohort classes &nearr;</a></li>
+            <li><a href="https://www.dol.gov/agencies/owcp/energy/regs/compliance/progbenefits" target="_blank" rel="noopener">U.S. Department of Labor, EEOICPA program benefits (Part B and Part E) &nearr;</a></li>
+            <li><a href="https://www.dol.gov/agencies/owcp/energy" target="_blank" rel="noopener">U.S. Department of Labor, Division of Energy Employees Occupational Illness Compensation &nearr;</a></li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <section class="disclaimer">
+      <div class="container disclaimer__inner">
+        Alara helps you understand and reach benefits you may already be entitled to. It does not replace your Resource Center, physician, attorney, authorized representative, or any federal agency. It helps you work with them. Nothing here is a coverage determination.
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care">
+        <svg class="brand__mark" viewBox="0 0 100 92" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
+      </a>
+      <div class="site-footer__meta">Serving all of Clark County and Southern Nevada<br /><a href="tel:+17028149630">(702) 814-9630</a></div>
+    </div>
+  </footer>
+
+  <script>
+    var header = document.getElementById('siteHeader');
+    var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 24); };
+    onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+    var toggle = document.getElementById('navToggle'); var menu = document.getElementById('site-menu');
+    if (toggle && menu) { toggle.addEventListener('click', function () {
+      var open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!open));
+      toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+      menu.setAttribute('data-open', String(!open)); }); }
+  </script>
+  <script src="site-nav.js" defer></script>
+</body>
+</html>
