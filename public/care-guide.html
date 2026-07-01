@@ -11,87 +11,66 @@
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="site.css" />
   <style>
-    /* ─────────────────────────────────────────────────────────────────────
-       Your Care Guide — same warm, hook-forward direction as the RECA page.
-       Hearth palette (cream + honey-bronze + espresso), big surfaced hooks,
-       little text. Page-scoped so the system can be judged before rollout.
-       ───────────────────────────────────────────────────────────────────── */
-    :root {
-      --cream:   #F5EFE6;
-      --ivory:   #FCFAF5;
-      --bronze:  #8C5E2A;   /* deep bronze (browner, not yellow) */
-      --bronze-d:#6E4A1E;
-      --bronze-l:#CBA875;   /* muted antique bronze — used sparingly on espresso */
-      --warm-hair:#E4DBCB;
-      --warm-shadow: 0 2px 10px rgba(70,52,28,.05), 0 18px 46px rgba(70,52,28,.09);
-    }
-    body { background: var(--cream); }
-    .site-header { background: color-mix(in srgb, var(--cream) 88%, transparent); }
+    /* Your Care Guide — canonical neutral system. Warmth from the photo, not
+       from color. Page-scoped rules are layout only, on shared tokens. */
+
+    /* Full-bleed photographic hero. */
+    .phero { position: relative; min-height: clamp(420px, 62vh, 620px); display: flex; align-items: flex-end; }
+    .phero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .phero__scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(24,21,21,.36) 0%, rgba(24,21,21,.5) 55%, rgba(24,21,21,.76) 100%); }
+    .phero__inner { position: relative; width: 100%; padding-block: clamp(38px, 5vw, 68px); }
     .cg-wrap { max-width: 960px; margin-inline: auto; }
-    .crumbs a { color: var(--taupe-ink); }
-    .crumbs a:hover { color: var(--bronze-d); }
+    .phero .crumbs, .phero .crumbs a { color: var(--on-dark-soft); }
+    .phero .crumbs a:hover { color: var(--on-dark); }
+    .phero .eyebrow { color: var(--on-dark-soft); display: block; margin-bottom: 16px; }
+    .phero h1 { font-family: var(--display); font-size: clamp(2.2rem, 5.2vw, 3.75rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.04; color: var(--on-dark); max-width: 18ch; }
+    .phero__lead { margin-top: 20px; font-size: 1.1875rem; line-height: 1.5; color: var(--on-dark); opacity: .92; max-width: 50ch; }
 
-    /* HERO */
-    .chero { padding-block: clamp(40px, 6vw, 84px) clamp(24px, 3vw, 36px); }
-    .chero .eyebrow { color: var(--bronze); display:block; margin-bottom: 18px; }
-    .chero h1 { font-family: var(--display); font-size: clamp(2.3rem, 5.6vw, 4rem); font-weight: 500; letter-spacing: -0.03em; line-height: 1.02; color: var(--espresso); max-width: 17ch; }
-    .chero__lead { margin-top: 24px; font-size: 1.25rem; line-height: 1.5; color: var(--taupe-ink); max-width: 50ch; }
-    .chero__lead strong { color: var(--espresso); font-weight: 500; }
+    /* First hook, on paper. */
+    .cline { padding-block: clamp(44px, 6vw, 80px) 0; }
+    .cline__big { font-family: var(--display); font-size: clamp(1.75rem, 4vw, 2.875rem); font-weight: 500; letter-spacing: -0.024em; line-height: 1.1; color: var(--espresso); max-width: 22ch; }
 
-    /* THE FIRST HOOK — big line, blown up on cream. */
-    .cline { margin-top: clamp(36px, 4.4vw, 56px); }
-    .cline__big { font-family: var(--display); font-size: clamp(1.9rem, 4.6vw, 3.25rem); font-weight: 500; letter-spacing: -0.028em; line-height: 1.06; color: var(--espresso); max-width: 20ch; }
-    .cline__big .bronze { color: var(--bronze); }
-
-    /* THEM vs US — warm ivory card beside espresso. */
-    .wedge { margin-top: clamp(30px, 4vw, 44px); display:grid; grid-template-columns: 1fr 1fr; border-radius: 18px; overflow:hidden; box-shadow: var(--warm-shadow); }
-    .wedge__col { padding: clamp(26px, 3vw, 38px); }
-    .wedge__col--them { background: var(--ivory); border:1px solid var(--warm-hair); }
+    /* Them vs us. */
+    .wedge { margin-top: clamp(28px, 3.4vw, 40px); display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--hairline); border-radius: 4px; overflow: hidden; }
+    .wedge__col { padding: clamp(24px, 3vw, 36px); }
+    .wedge__col--them { background: var(--paper); }
     .wedge__col--us { background: var(--espresso); color: var(--on-dark); }
-    .wedge__k { font-family: var(--display); font-size:0.6875rem; letter-spacing:0.14em; text-transform:uppercase; color: var(--taupe); margin-bottom: 18px; }
+    .wedge__k { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--taupe); margin-bottom: 18px; }
     .wedge__col--us .wedge__k { color: var(--on-dark-soft); }
-    .wedge__list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap: 15px; }
-    .wedge__list li { font-size: 1.0625rem; line-height:1.45; color:var(--taupe-ink); padding-left: 24px; position:relative; }
+    .wedge__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 15px; }
+    .wedge__list li { font-size: 1.0625rem; line-height: 1.45; color: var(--taupe-ink); padding-left: 24px; position: relative; }
     .wedge__col--us .wedge__list li { color: var(--on-dark); }
-    .wedge__list li::before { content:""; position:absolute; left:0; top:0.55em; width:7px; height:7px; border-radius:50%; background: var(--taupe); }
+    .wedge__list li::before { content: ""; position: absolute; left: 0; top: 0.55em; width: 7px; height: 7px; border-radius: 50%; background: var(--taupe); }
     .wedge__col--us .wedge__list li::before { background: var(--on-dark-soft); }
     @media (max-width: 640px) { .wedge { grid-template-columns: 1fr; } }
 
-    /* SECTION heading */
-    .csec { margin-top: clamp(52px, 7vw, 92px); }
-    .csec__h { font-family: var(--display); font-size: clamp(1.75rem, 3.6vw, 2.6rem); font-weight: 500; letter-spacing: -0.024em; line-height: 1.06; color: var(--espresso); max-width: 22ch; }
-    .csec__h::after { content:""; display:block; width: 56px; height: 3px; background: var(--bronze); border-radius: 2px; margin-top: 20px; }
-    .csec__intro { margin-top: 22px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); max-width: 58ch; }
+    .csec { padding-block: clamp(52px, 7vw, 92px) 0; }
+    .csec__h { font-family: var(--display); font-size: clamp(1.75rem, 3.4vw, 2.5rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.08; color: var(--espresso); max-width: 22ch; }
+    .csec__intro { margin-top: 18px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); max-width: 58ch; }
 
-    /* THREE warm feature cards. */
-    .cfeat { margin-top: clamp(28px, 3.4vw, 40px); display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; }
-    .cfeat__card { background: var(--ivory); border:1px solid var(--warm-hair); border-radius:16px; padding: clamp(24px, 2.8vw, 32px); box-shadow: var(--warm-shadow); display:flex; flex-direction:column; }
-    .cfeat__i { width:40px; height:40px; border-radius:12px; background: var(--cream); border:1px solid var(--warm-hair); display:flex; align-items:center; justify-content:center; color:var(--bronze); font-family:var(--display); font-weight:500; font-size:1.125rem; }
-    .cfeat__n { margin-top:16px; font-family:var(--display); font-size:1.25rem; font-weight:500; line-height:1.2; color:var(--espresso); }
-    .cfeat__p { margin-top:10px; font-size:0.9875rem; line-height:1.55; color:var(--taupe-ink); }
-    .cfeat__p strong { color:var(--espresso); font-weight:500; }
-    .cfeat__link { margin-top:16px; display:inline-flex; align-items:center; gap:8px; font-size:0.9375rem; color:var(--bronze-d); }
+    .cfeat { margin-top: clamp(26px, 3vw, 40px); display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; }
+    .cfeat__card { background: var(--paper); border: 1px solid var(--hairline); border-radius: 4px; padding: clamp(24px, 2.8vw, 32px); display: flex; flex-direction: column; }
+    .cfeat__k { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--taupe); }
+    .cfeat__n { margin-top: 12px; font-family: var(--display); font-size: 1.25rem; font-weight: 500; line-height: 1.2; color: var(--espresso); }
+    .cfeat__p { margin-top: 10px; font-size: 0.9875rem; line-height: 1.55; color: var(--taupe-ink); }
+    .cfeat__p strong { color: var(--espresso); font-weight: 500; }
+    .cfeat__link { margin-top: 16px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9375rem; color: var(--espresso); }
 
-    /* THE BIG HOOK — espresso panel, journey inside. */
-    .chook { margin-top: clamp(56px, 7vw, 96px); background: var(--espresso); color: var(--on-dark); border-radius:22px; padding: clamp(32px, 4.6vw, 60px); box-shadow: var(--warm-shadow); }
-    .chook__k { font-family:var(--display); font-size:0.75rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--on-dark-soft); }
-    .chook__big { margin-top:16px; font-family:var(--display); font-size:clamp(1.9rem, 4.6vw, 3.1rem); font-weight:500; letter-spacing:-0.026em; line-height:1.06; color:var(--on-dark); max-width:22ch; }
-    .chook__big .gold { color: var(--bronze-l); }
-    .journey { margin-top: clamp(28px, 3.4vw, 40px); display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-    .journey__step { background: color-mix(in srgb, var(--on-dark) 6%, transparent); border:1px solid color-mix(in srgb, var(--bronze-l) 22%, transparent); border-radius:14px; padding: clamp(20px,2.4vw,26px); }
-    .journey__n { font-family:var(--display); font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--on-dark-soft); }
-    .journey__h { margin-top:8px; font-family:var(--display); font-size:1.25rem; font-weight:500; color:var(--on-dark); }
-    .journey__p { margin-top:10px; font-size:0.9375rem; line-height:1.55; color:var(--on-dark-soft); }
+    .chook { margin-top: clamp(52px, 7vw, 92px); background: var(--espresso); color: var(--on-dark); border-radius: 4px; padding: clamp(32px, 4.6vw, 60px); }
+    .chook__k { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--on-dark-soft); }
+    .chook__big { margin-top: 14px; font-family: var(--display); font-size: clamp(1.75rem, 4vw, 2.75rem); font-weight: 500; letter-spacing: -0.022em; line-height: 1.08; color: var(--on-dark); max-width: 24ch; }
+    .journey { margin-top: clamp(26px, 3.2vw, 38px); display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .journey__step { border: 1px solid rgba(201,196,193,.25); border-radius: 4px; padding: clamp(18px, 2.2vw, 24px); }
+    .journey__n { font-family: var(--display); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--on-dark-soft); }
+    .journey__h { margin-top: 8px; font-family: var(--display); font-size: 1.25rem; font-weight: 500; color: var(--on-dark); }
+    .journey__p { margin-top: 10px; font-size: 0.9375rem; line-height: 1.55; color: var(--on-dark-soft); }
     @media (max-width: 640px) { .journey { grid-template-columns: 1fr; } }
 
-    /* CTA */
-    .cg-cta { margin-top: clamp(52px, 7vw, 92px); text-align:center; }
-    .cg-cta h2 { font-family:var(--display); font-size:clamp(1.75rem, 4vw, 2.75rem); font-weight:500; letter-spacing:-0.024em; color:var(--espresso); max-width:20ch; margin-inline:auto; }
-    .cg-cta p { margin-top:18px; font-size:1.0625rem; line-height:1.6; color:var(--taupe-ink); max-width:56ch; margin-inline:auto; }
-    .cg-cta__actions { margin-top:30px; display:flex; flex-wrap:wrap; gap:14px 22px; align-items:center; justify-content:center; }
-    .btn--gold { background: var(--bronze-d); border-color: var(--bronze-d); color: var(--on-dark); box-shadow: var(--warm-shadow); }
-    .btn--gold:hover { background:#6F4D1D; border-color:#6F4D1D; }
-    .cg-cta__call { color: var(--espresso); font-size:0.9375rem; }
+    .cg-cta { padding-block: clamp(52px, 7vw, 92px); text-align: center; }
+    .cg-cta h2 { font-family: var(--display); font-size: clamp(1.75rem, 4vw, 2.75rem); font-weight: 500; letter-spacing: -0.022em; color: var(--espresso); max-width: 20ch; margin-inline: auto; }
+    .cg-cta p { margin-top: 18px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); max-width: 56ch; margin-inline: auto; }
+    .cg-cta__actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; justify-content: center; }
+    .cg-cta__call { color: var(--espresso); font-size: 0.9375rem; }
     .cg-cta__call a { color: var(--espresso); }
   </style>
 </head>
@@ -161,60 +140,68 @@
   </header>
 
   <main>
+
+    <section class="phero" aria-label="Your Care Guide">
+      <img class="phero__img" src="care-hands.webp" alt="The clasped hands of an older person resting quietly" onerror="this.onerror=null;this.src='hero-arches.webp';" />
+      <div class="phero__scrim" aria-hidden="true"></div>
+      <div class="phero__inner">
+        <div class="container">
+          <div class="cg-wrap">
+            <nav class="crumbs" aria-label="Breadcrumb" style="font-size:0.8125rem; margin-bottom:16px;">
+              <a href="about.html">Why Alara</a><span aria-hidden="true" style="margin:0 8px;">/</span><span style="color:var(--on-dark-soft);">Your Care Guide</span>
+            </nav>
+            <span class="eyebrow">Your Care Guide</span>
+            <h1>Not a call center. A named person who owns your case.</h1>
+            <p class="phero__lead">Most agencies hand you a helpful voice that checks in now and then. Alara gives you one named Care Guide who owns your whole journey, from RECA to the White Card to home health. At no cost to you.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <div class="container">
       <div class="cg-wrap">
 
-        <section class="chero">
-          <nav class="crumbs" aria-label="Breadcrumb" style="font-size:0.8125rem; color:var(--taupe); margin-bottom:18px;">
-            <a href="about.html">Why Alara</a><span aria-hidden="true" style="margin:0 8px;">/</span>Your Care Guide
-          </nav>
-          <span class="eyebrow">Your Care Guide</span>
-          <h1>Not a call center. A named person who owns your case.</h1>
-          <p class="chero__lead">The benefits maze is built to wear you down. Most agencies hand you a helpful voice that checks in now and then. Alara gives you <strong>one named Care Guide</strong> who owns your whole journey, an intelligence that stays ahead of it, and a way to see what applies to you yourself. At no cost to you.</p>
-
-          <div class="cline">
-            <p class="cline__big">With Alara, <span class="bronze">you never explain yourself twice.</span></p>
+        <section class="cline">
+          <p class="cline__big">With Alara, you never explain yourself twice.</p>
+          <div class="wedge">
+            <div class="wedge__col wedge__col--them">
+              <p class="wedge__k">What most agencies give you</p>
+              <ul class="wedge__list">
+                <li>A helpful voice that checks in</li>
+                <li>A team, not a name you can call</li>
+                <li>You wait to be told what is next</li>
+                <li>Help that starts at the White Card</li>
+              </ul>
+            </div>
+            <div class="wedge__col wedge__col--us">
+              <p class="wedge__k">What Alara gives you</p>
+              <ul class="wedge__list">
+                <li>A named Care Guide who owns it</li>
+                <li>AlaraOS that stays ahead of it</li>
+                <li>A Navigator to see it yourself</li>
+                <li>The whole journey, RECA to home health</li>
+              </ul>
+            </div>
           </div>
         </section>
-
-        <div class="wedge">
-          <div class="wedge__col wedge__col--them">
-            <p class="wedge__k">What most agencies give you</p>
-            <ul class="wedge__list">
-              <li>A helpful voice that checks in</li>
-              <li>A team, not a name you can call</li>
-              <li>You wait to be told what is next</li>
-              <li>Help that starts at the White Card</li>
-            </ul>
-          </div>
-          <div class="wedge__col wedge__col--us">
-            <p class="wedge__k">What Alara gives you</p>
-            <ul class="wedge__list">
-              <li>A named Care Guide who owns it</li>
-              <li>AlaraOS that stays ahead of it</li>
-              <li>A Navigator to see it yourself</li>
-              <li>The whole journey, RECA to home health</li>
-            </ul>
-          </div>
-        </div>
 
         <section class="csec">
           <h2 class="csec__h">One person, three ways they stay ahead of it.</h2>
           <p class="csec__intro">Your Care Guide is a name, not a phone tree. Behind them is the system and the tools that keep your case from ever going quiet.</p>
           <div class="cfeat">
             <div class="cfeat__card">
-              <div class="cfeat__i">01</div>
+              <div class="cfeat__k">01</div>
               <div class="cfeat__n">One name, not a phone tree.</div>
               <p class="cfeat__p">One person, by name, coordinates your doctors, your authorizations, and the benefits you qualify for. <strong>You never explain yourself twice.</strong> Not a rotating team. Your person, who knows your case.</p>
             </div>
             <div class="cfeat__card">
-              <div class="cfeat__i">02</div>
+              <div class="cfeat__k">02</div>
               <div class="cfeat__n">Backed by AlaraOS, so nothing waits on memory.</div>
               <p class="cfeat__p">AlaraOS tracks every authorization, renewal, and change, and flags what is due before it lapses. <strong>We reach out when something needs doing</strong>, so you never wait a month to find out.</p>
               <a class="cfeat__link" href="inside-alaraos.html">See how AlaraOS works <span class="arrow" aria-hidden="true">&rarr;</span></a>
             </div>
             <div class="cfeat__card">
-              <div class="cfeat__i">03</div>
+              <div class="cfeat__k">03</div>
               <div class="cfeat__n">See what applies to you yourself, anytime.</div>
               <p class="cfeat__p">The <strong>Benefit Navigator</strong> walks you through what generally applies in about a minute, with no forms and nothing saved. Use it whenever you want. This is general education, not a determination.</p>
               <a class="cfeat__link" href="qualify.html">Open the Benefit Navigator <span class="arrow" aria-hidden="true">&rarr;</span></a>
@@ -224,7 +211,7 @@
 
         <section class="chook">
           <div class="chook__k">The whole journey, one owner</div>
-          <p class="chook__big">Most help starts at the White Card. <span class="gold">Alara starts earlier and stays later.</span></p>
+          <p class="chook__big">Most help starts at the White Card. Alara starts earlier and stays later.</p>
           <div class="journey">
             <div class="journey__step">
               <span class="journey__n">Upstream</span>
@@ -248,7 +235,7 @@
           <h2>Meet your Care Guide.</h2>
           <p>One call, and a named person takes it from there, at no cost to you. Covered care tied to your accepted condition is paid by the federal program. You never receive a bill.</p>
           <div class="cg-cta__actions">
-            <a class="btn btn--gold" href="begin.html">Have a nurse call you <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <a class="btn" href="begin.html">Have a nurse call you <span class="arrow" aria-hidden="true">&rarr;</span></a>
             <span class="cg-cta__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></span>
           </div>
         </section>
