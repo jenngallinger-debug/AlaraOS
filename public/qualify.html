@@ -347,10 +347,19 @@
   function nextStep(results, sig) {
     var strong = results.filter(function(r){ return r.tier === 'strong'; });
     var top = strong[0];
-    if (top && top.id === 'eeoicpa') return 'Bring your accepted condition and your physician’s order. A nurse can verify what your White Card covers and start care, at ' + COST + '.';
+    if (top && top.id === 'eeoicpa') return 'Start a case review. A nurse reads where you worked, the work you did, and your illness together, and tells you plainly whether the White Card can be opened, at ' + COST + '.';
     if (top && top.id === 'owcp') return 'Confirm your accepted injury and get your physician’s order. A nurse can track the OWCP authorization and start care, at ' + COST + '.';
     if (top && top.id === 'va') return 'Ask your VA care team for a community-care referral. A nurse can begin once it is authorized, at ' + COST + '.';
-    return 'A short call with a nurse, or your DOL Resource Center, will tell you which path fits. No cost, and no commitment.';
+    return 'Tell us what is going on and a nurse will point you to the right path, or your DOL Resource Center can confirm which program fits. No cost, and no commitment.';
+  }
+
+  // Program-aware primary action — routes to the aligned self-serve close.
+  function nextAction(results) {
+    var strong = results.filter(function(r){ return r.tier === 'strong'; });
+    var top = strong[0];
+    if (top && top.id === 'eeoicpa') return { href: 'case-review.html', label: 'Start a case review' };
+    if (top && (top.id === 'owcp' || top.id === 'va')) return { href: 'begin.html', label: 'Start your care' };
+    return { href: 'begin.html', label: 'Tell us what’s going on' };
   }
 
   // "Easy to miss" is educational and program-aware. Neutral framing only.
@@ -564,12 +573,13 @@
               '</div>' +
             '</div>';
 
-    // One next step
+    // One next step — program-aware primary action, phone as a quiet fallback.
+    var act = nextAction(results);
     html += '<div class="step">' +
               '<p class="step__label">Your one next step</p>' +
               '<p class="step__body">' + esc(nextStep(results, sig)) + '</p>' +
               '<div class="step__actions">' +
-                '<a class="btn btn--on" href="begin.html">Have a nurse call you <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
+                '<a class="btn btn--on" href="' + act.href + '">' + esc(act.label) + ' <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
                 '<a class="step__call" href="tel:+17028149630">Or call (702) 814-9630</a>' +
               '</div>' +
             '</div>';
