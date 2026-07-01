@@ -1,5 +1,29 @@
 # The source of every line — AlaraOS value truths
 
+## The copy engine: feature → truth
+
+Every stakeholder's value is written the same way: **not the feature everyone else sells — the
+life they actually get.** Never sell the feature. Name the change, in the reader's words.
+
+> **They don't get [feature]. They get [life change].**
+
+| Stakeholder | Not this (the feature) | This (the truth) |
+|---|---|---|
+| **Patient** | home health | **more life between crises** |
+| **Family** | care coordination | **their relationship back** |
+| **Physician** | updates | **confidence their patients are cared for the way they intended** |
+| **Nurse** | ambient documentation | **their attention back** |
+
+**The hook (families / the site's front door):** *More time being family. Less time managing care.*
+
+The functional truths below (fall caught, benefit used, nurse looks at you) are never the point —
+they are the **proof** that the life change is real. Feature is the mechanism; truth is the payoff;
+the concrete truths are the receipts.
+
+---
+
+
+
 > The model, stated plainly: **a capability makes something objectively true, and a specific
 > person feels it.** Copy is written from the *what-becomes-true* column and the *who*, never from
 > the capability name, and never from abstraction ("the work becomes ours," "backed by AlaraOS,"
