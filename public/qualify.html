@@ -411,7 +411,7 @@
       id: 'program',
       // Only needed when we can't infer the program from the situation.
       when: function(){ return sig.situation === 'unsure' || sig.situation === 'caregiver'; },
-      title: function(){ return sig.situation === 'caregiver' ? 'Which program is the person you care for under?' : 'Do you already hold any of these?'; },
+      title: function(){ return sig.situation === 'caregiver' ? 'Which program is the person you care for under?' : 'Do you already have any of these?'; },
       options: [
         { label: 'White Card (EEOICPA)', set:{ program:'whitecard' } },
         { label: 'OWCP / FECA', set:{ program:'owcp' } },
@@ -533,7 +533,7 @@
   }
 
   function situationChip(s){ return { energy:'Energy / Test Site worker', fedpostal:'Federal or postal worker', veteran:'Veteran', caregiver:'Family caregiver', unsure:'Still sorting it out' }[s]; }
-  function programChip(p){ return { whitecard:'Holds a White Card', owcp:'Under OWCP', va:'With the VA' }[p]; }
+  function programChip(p){ return { whitecard:'Has a White Card', owcp:'Under OWCP', va:'With the VA' }[p]; }
   function careChip(c){ return { nursing:'Skilled nursing', wound:'Wound care', therapy:'Therapy', aide:'Help at home' }[c]; }
 
   function renderPicture(){
