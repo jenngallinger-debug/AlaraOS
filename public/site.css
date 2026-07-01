@@ -362,7 +362,9 @@ html.js-reveal .reveal.is-in { opacity: 1; transform: none; }
    <button aria-expanded> targeting #site-menu; CSS reacts to aria-expanded so
    it works with a ~6-line vanilla JS handler, and degrades to a link list.
    ========================================================================= */
-.site-nav--primary { display: flex; align-items: center; gap: clamp(20px, 2.6vw, 40px); }
+.site-nav--primary { display: flex; align-items: center; gap: clamp(16px, 1.9vw, 30px); }
+.header-call__num { white-space: nowrap; }
+.site-header__actions .btn--sm { white-space: nowrap; }
 .site-nav--primary .site-nav__link { font-size: 0.9375rem; padding-block: 6px; }
 
 /* The header right cluster: nav + a single CTA, kept calm. */
@@ -615,8 +617,9 @@ a.trust-strip__item:hover, a.trust-strip__item:focus-visible { border-bottom-col
   .editorial-row__body { grid-column: 1 / -1; }
   .editorial-rows--simple .editorial-row { grid-template-columns: 1fr; }
 }
-@media (max-width: 760px) {
-  /* Mobile header: reveal toggle, hide the primary inline nav + its CTA. */
+@media (max-width: 1080px) {
+  /* The fuller program-first nav needs more room; hand off to the mobile menu
+     earlier so the inline nav never crowds or wraps. */
   .nav-toggle { display: inline-flex; align-items: center; justify-content: center; }
   .site-nav--primary { display: none; }
   .site-header__actions .btn { display: none; }
@@ -630,3 +633,40 @@ a.trust-strip__item:hover, a.trust-strip__item:focus-visible { border-bottom-col
   .creds__marks span + span::before { content: none; margin: 0; }
   .creds__marks { gap: 8px 16px; }
 }
+
+/* ============================================================================
+   PRIMARY-NAV DROPDOWN  (Programs menu). CSS-only: opens on hover and on
+   keyboard focus (focus-within). A transparent bridge covers the gap so the
+   pointer can travel from the link to the panel. The whole inline nav is
+   hidden below 760px, where the expanded mobile menu takes over.
+   ========================================================================= */
+.site-nav__item { position: relative; display: inline-flex; align-items: center; }
+.site-nav__link--dd { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+.nav-caret { font-size: 0.7em; color: var(--taupe); transition: transform var(--dur) var(--ease); }
+.nav-dd {
+  position: absolute; top: 100%; left: 50%;
+  min-width: 250px; margin-top: 10px; padding: 8px;
+  background: var(--paper); border: 1px solid var(--hairline); border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(52, 46, 46, 0.12);
+  display: flex; flex-direction: column;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transform: translateX(-50%) translateY(6px);
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+  z-index: 70;
+}
+.nav-dd::before { content: ""; position: absolute; top: -12px; left: 0; right: 0; height: 12px; }
+.site-nav__item:hover .nav-dd,
+.site-nav__item:focus-within .nav-dd {
+  opacity: 1; visibility: visible; pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+.site-nav__item:hover .nav-caret,
+.site-nav__item:focus-within .nav-caret { transform: rotate(180deg); }
+.nav-dd__link { display: block; padding: 10px 12px; border-radius: 7px; font-size: 0.9375rem; color: var(--espresso); text-decoration: none; white-space: nowrap; transition: background var(--dur) var(--ease); }
+.nav-dd__link:hover { background: var(--mist); }
+.nav-dd__link--sub { padding-left: 28px; font-size: 0.875rem; color: var(--taupe-ink); position: relative; }
+.nav-dd__link--sub::before { content: "\21B3"; position: absolute; left: 13px; top: 9px; color: var(--taupe); font-size: 0.8rem; }
+.nav-dd__sep { height: 1px; background: var(--hairline); margin: 7px 6px; }
+.nav-dd__link--cta { color: var(--espresso); font-weight: 500; }
+.nav-dd__link--cta .arrow { color: var(--taupe); }
+.mobile-menu__link--sub { padding-left: 28px; font-size: 0.9375rem; color: var(--taupe-ink); }
