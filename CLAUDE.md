@@ -24,8 +24,10 @@ and untouched by this repo.
 - No vague reassurance: no "you don't have to do this alone" / "work this out alone".
 - The website should **replace the first phone call**, not push one. Primary CTAs are
   self-serve: **Start a case review** (`case-review.html`), **See what you qualify for**
-  (`qualify.html` Navigator), **Refer a patient** (`begin.html?who=referrer`). Phone is a
-  quiet fallback only.
+  (`qualify.html` Navigator), **Refer a patient** (`refer.html`). Phone is a quiet
+  fallback — but **never disparage calling** (no "no phone call required", no digs at
+  callbacks or town halls). This older population prefers the phone and its community
+  events; self-serve is the addition, the phone stays honored.
 
 ## Before you ship
 
