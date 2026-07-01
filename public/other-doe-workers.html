@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Other Nevada DOE worksites &middot; White Card (EEOICPA) &middot; Alara Home Care</title>
+  <meta name="description" content="The White Card covers workers from every Department of Energy site in Nevada, not just the Nevada Test Site: Tonopah Test Range, the North Las Vegas Site Office, Project Shoal, the Central Nevada Test Area, and Yucca Mountain. Find your site. Same program, your place in it. Cited to the Department of Labor and NIOSH." />
+  <link rel="icon" href="logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="site.css" />
+  <style>
+    /* Nevada DOE worksites gallery — page-scoped, shared palette. The plates are
+       designed placeholders ready to receive real site photography later. */
+    .sites-intro { max-width: 720px; }
+    .sites { margin-top: clamp(36px, 5vw, 60px); display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: clamp(20px, 2.6vw, 30px); }
+    .site-card { border: 1px solid var(--hairline); border-radius: 12px; overflow: hidden; background: var(--paper); display: flex; flex-direction: column; text-decoration: none; transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease); }
+    .site-card:hover { border-color: var(--espresso); transform: translateY(-2px); }
+    /* The plate — a tonal placeholder for site photography. */
+    .site-card__plate { position: relative; aspect-ratio: 16 / 9; background: var(--espresso); overflow: hidden; display: flex; align-items: flex-end; padding: 16px 18px; }
+    .site-card__plate::before { content: ""; position: absolute; inset: 0; background:
+      radial-gradient(120% 90% at 80% 10%, rgba(193,166,134,0.34), transparent 60%),
+      radial-gradient(90% 80% at 10% 100%, rgba(151,124,98,0.30), transparent 60%); }
+    .site-card__era { position: relative; font-family: var(--display); font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--on-dark-soft); }
+    .site-card__body { padding: clamp(18px, 2.2vw, 24px); display: flex; flex-direction: column; flex: 1; }
+    .site-card__name { font-family: var(--display); font-size: 1.25rem; font-weight: 500; letter-spacing: -0.01em; color: var(--espresso); line-height: 1.15; }
+    .site-card__loc { margin-top: 6px; font-size: 0.875rem; color: var(--taupe); }
+    .site-card__tag { margin-top: 14px; align-self: flex-start; font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--taupe-ink); border: 1px solid var(--hairline); border-radius: 100px; padding: 5px 11px; }
+    .site-card__tag--sec { color: var(--espresso); border-color: var(--espresso); }
+    .site-card__desc { margin-top: 14px; font-size: 0.9375rem; line-height: 1.55; color: var(--taupe-ink); flex: 1; }
+    .site-card__go { margin-top: 16px; font-size: 0.9375rem; color: var(--espresso); display: inline-flex; align-items: center; gap: 7px; }
+    .site-card__go .arrow { color: var(--taupe); transition: transform var(--dur) var(--ease); }
+    .site-card:hover .site-card__go .arrow { transform: translateX(3px); color: var(--espresso); }
+
+    .sites-note { margin-top: clamp(34px, 4vw, 48px); font-size: 0.9375rem; line-height: 1.6; color: var(--taupe); max-width: 70ch; }
+    .sites-note strong { color: var(--espresso); font-weight: 500; }
+
+    /* Contractors — the persona who often does not realize they are covered. */
+    .contractors { margin-top: clamp(40px, 5vw, 64px); background: var(--mist); border-radius: 14px; padding: clamp(28px, 3.6vw, 44px); }
+    .contractors h2 { font-family: var(--display); font-size: clamp(1.4rem, 2.6vw, 1.9rem); font-weight: 500; letter-spacing: -0.018em; color: var(--espresso); max-width: 24ch; }
+    .contractors p { margin-top: 14px; font-size: 1.0625rem; line-height: 1.62; color: var(--taupe-ink); max-width: 66ch; }
+    .contractors p strong { color: var(--espresso); font-weight: 500; }
+    .contractors__list { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 10px; }
+    .contractors__list span { font-size: 0.9375rem; color: var(--espresso); background: var(--paper); border: 1px solid var(--hairline); border-radius: 6px; padding: 9px 14px; }
+    .contractors__note { margin-top: 20px; font-size: 0.9375rem; line-height: 1.6; color: var(--taupe); max-width: 64ch; }
+
+    .doe-cta { margin-top: clamp(40px, 5vw, 64px); background: var(--espresso); color: var(--on-dark); border-radius: 14px; padding: clamp(30px, 4vw, 48px); }
+    .doe-cta h2 { font-family: var(--display); font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 500; letter-spacing: -0.02em; color: var(--on-dark); max-width: 20ch; }
+    .doe-cta p { color: var(--on-dark-soft); font-size: 1.0625rem; line-height: 1.6; margin-top: 14px; max-width: 58ch; }
+    .doe-cta__actions { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 12px 22px; align-items: center; }
+    .doe-cta__call { color: var(--on-dark); font-size: 0.9375rem; }
+
+    .doe-src { margin-top: clamp(34px, 4vw, 48px); border-top: 1px solid var(--hairline); padding-top: 22px; }
+    .doe-src__label { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--taupe); margin-bottom: 12px; }
+    .doe-src ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+    .doe-src a { font-size: 0.9375rem; color: var(--taupe-ink); }
+    .doe-src a:hover { color: var(--espresso); }
+  </style>
+</head>
+<body>
+
+  <header class="site-header" id="siteHeader">
+    <div class="container site-header__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care, home">
+        <svg class="brand__mark" viewBox="0 0 100 92" role="img" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd"
+            d="M22,88 V34 L50,8 L78,34 V88 Z
+               M37,88 V66 A13,13 0 0 1 63,66 V88 Z
+               M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word">
+          <span class="brand__name">ALARA</span>
+          <span class="brand__sub">Home Care</span>
+        </span>
+      </a>
+      <div class="site-header__actions">
+        <nav class="site-nav site-nav--primary" aria-label="Primary">
+          <a class="site-nav__link" href="services.html">Get Care</a>
+          <span class="site-nav__item">
+            <a class="site-nav__link site-nav__link--dd" href="programs.html" aria-haspopup="true">Benefits <span class="nav-caret" aria-hidden="true">&#9662;</span></a>
+            <span class="nav-dd" role="menu">
+              <span class="nav-dd__head">Do I qualify?</span>
+              <a class="nav-dd__link" role="menuitem" href="white-card.html">White Card (EEOICPA)</a>
+              <a class="nav-dd__link" role="menuitem" href="owcp.html">Federal Workers (OWCP / FECA)</a>
+              <a class="nav-dd__link" role="menuitem" href="programs.html#community-care">Veterans</a>
+              <span class="nav-dd__sep" aria-hidden="true"></span>
+              <a class="nav-dd__link nav-dd__link--cta" role="menuitem" href="qualify.html">Not sure? Start here <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            </span>
+          </span>
+          <a class="site-nav__link" href="learn.html">Learn</a>
+          <a class="site-nav__link" href="about.html">Why Alara</a>
+          <a class="site-nav__link" href="begin.html?who=referrer">Refer a Patient</a>
+          <a class="header-call" href="tel:+17028149630">
+            <span class="header-call__label">Call us</span>
+            <span class="header-call__num">(702) 814-9630</span>
+          </a>
+        </nav>
+        <a class="btn btn--sm" href="qualify.html">See if you qualify</a>
+        <button class="nav-toggle" type="button" id="navToggle" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu">
+          <span class="nav-toggle__bar" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+    <nav class="mobile-menu" id="site-menu" data-open="false" aria-label="Primary (mobile)">
+      <div class="container mobile-menu__inner">
+        <a class="mobile-menu__link" href="services.html">Get Care <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="programs.html">Benefits <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="white-card.html">White Card (EEOICPA)</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="owcp.html">Federal Workers (OWCP / FECA)</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="programs.html#community-care">Veterans</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="qualify.html">Not sure? Start here</a>
+        <a class="mobile-menu__link" href="learn.html">Learn <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="about.html">Why Alara <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="begin.html?who=referrer">Refer a Patient <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="btn btn--block mobile-menu__cta" href="qualify.html">See if you qualify</a>
+        <p class="mobile-menu__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></p>
+      </div>
+    </nav>
+  </header>
+
+  <nav class="section-nav" aria-label="White Card section">
+    <div class="container section-nav__inner">
+      <a class="section-nav__title" href="white-card.html">White Card (EEOICPA)</a>
+      <div class="section-nav__links">
+        <a href="qualify.html">Do I Qualify?</a>
+        <a href="nevada-test-site.html">Nevada Test Site Workers</a>
+        <a class="is-active" href="other-doe-workers.html">Other DOE Workers</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href="programs.html">Benefits</a><span aria-hidden="true">/</span><a href="white-card.html">White Card</a><span aria-hidden="true">/</span>Other DOE Workers
+        </nav>
+        <span class="eyebrow">White Card (EEOICPA) &middot; Nevada worksites</span>
+        <h1>The Test Site is not the only Nevada site the White Card covers.</h1>
+        <p class="page-hero__lead">The Department of Energy ran more than one site in Nevada, and workers from all of them can carry the same White Card. If you were at Tonopah, the North Las Vegas office, Shoal, the Central Nevada Test Area, or Yucca Mountain, this is your place in the program too. Find your site below.</p>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="sites-intro">
+        <p style="font-size:1.0625rem; line-height:1.65; color:var(--taupe-ink);">It is one program with one card. What differs by site is how a claim is proven: the Nevada Test Site carries a <strong style="color:var(--espresso); font-weight:500;">Special Exposure Cohort</strong>, where certain cancers are presumed work-related. At the other sites, a claim is built through NIOSH dose reconstruction. Either way, an accepted illness brings the same lifetime medical benefits, at no cost to you.</p>
+      </div>
+
+      <div class="sites">
+
+        <a class="site-card" href="nevada-test-site.html">
+          <div class="site-card__plate"><span class="site-card__era">1951 to present</span></div>
+          <div class="site-card__body">
+            <span class="site-card__name">Nevada Test Site</span>
+            <span class="site-card__loc">Nye County, ~65 miles northwest of Las Vegas</span>
+            <span class="site-card__tag site-card__tag--sec">Special Exposure Cohort</span>
+            <span class="site-card__desc">The primary U.S. continental nuclear weapons test site, where 928 announced tests were conducted between 1951 and 1992. Now the Nevada National Security Site.</span>
+            <span class="site-card__go">Read the Test Site guide <span class="arrow" aria-hidden="true">&rarr;</span></span>
+          </div>
+        </a>
+
+        <a class="site-card" href="qualify.html">
+          <div class="site-card__plate"><span class="site-card__era">1956 to present</span></div>
+          <div class="site-card__body">
+            <span class="site-card__name">Tonopah Test Range</span>
+            <span class="site-card__loc">Near Tonopah, Nye County</span>
+            <span class="site-card__tag">Covered &middot; dose reconstruction</span>
+            <span class="site-card__desc">An isolated range operated for the AEC and DOE to test the ballistics and non-nuclear components of atomic weapons.</span>
+            <span class="site-card__go">See what applies to you <span class="arrow" aria-hidden="true">&rarr;</span></span>
+          </div>
+        </a>
+
+        <a class="site-card" href="qualify.html">
+          <div class="site-card__plate"><span class="site-card__era">1962 to present</span></div>
+          <div class="site-card__body">
+            <span class="site-card__name">Nevada Site Office</span>
+            <span class="site-card__loc">North Las Vegas</span>
+            <span class="site-card__tag">Covered &middot; dose reconstruction</span>
+            <span class="site-card__desc">The Department of Energy command and administrative office that managed Nevada testing and cleanup operations, in North Las Vegas.</span>
+            <span class="site-card__go">See what applies to you <span class="arrow" aria-hidden="true">&rarr;</span></span>
+          </div>
+        </a>
+
+        <a class="site-card" href="qualify.html">
+          <div class="site-card__plate"><span class="site-card__era">1962 to 1964</span></div>
+          <div class="site-card__body">
+            <span class="site-card__name">Project Shoal</span>
+            <span class="site-card__loc">Sand Springs Range, ~30 miles southeast of Fallon, Churchill County</span>
+            <span class="site-card__tag">Covered &middot; dose reconstruction</span>
+            <span class="site-card__desc">A single underground nuclear test in granite, part of the Vela Uniform program to improve the seismic detection of nuclear explosions.</span>
+            <span class="site-card__go">See what applies to you <span class="arrow" aria-hidden="true">&rarr;</span></span>
+          </div>
+        </a>
+
+        <a class="site-card" href="qualify.html">
+          <div class="site-card__plate"><span class="site-card__era">1967 to 1974</span></div>
+          <div class="site-card__body">
+            <span class="site-card__name">Central Nevada Test Area</span>
+            <span class="site-card__loc">Hot Creek Valley, Nye County (Project Faultless)</span>
+            <span class="site-card__tag">Covered &middot; dose reconstruction</span>
+            <span class="site-card__desc">Site of the &ldquo;Faultless&rdquo; underground nuclear test, which evaluated the valley as a possible second location for high-yield testing.</span>
+            <span class="site-card__go">See what applies to you <span class="arrow" aria-hidden="true">&rarr;</span></span>
+          </div>
+        </a>
+
+        <a class="site-card" href="qualify.html">
+          <div class="site-card__plate"><span class="site-card__era">1987 to present</span></div>
+          <div class="site-card__body">
+            <span class="site-card__name">Yucca Mountain</span>
+            <span class="site-card__loc">Adjacent to the Test Site, Nye County</span>
+            <span class="site-card__tag">Covered &middot; dose reconstruction</span>
+            <span class="site-card__desc">The Department of Energy study of Yucca Mountain as a geologic repository for spent nuclear fuel and high-level radioactive waste.</span>
+            <span class="site-card__go">See what applies to you <span class="arrow" aria-hidden="true">&rarr;</span></span>
+          </div>
+        </a>
+
+      </div>
+
+      <div class="contractors">
+        <h2>Did you work for a contractor?</h2>
+        <p>Most of the work at these sites was done by contractors, not the government directly. If you worked for one of these companies, you were likely a Department of Energy contractor or subcontractor, and <strong>contractor and subcontractor employees are often covered by the White Card too.</strong></p>
+        <div class="contractors__list">
+          <span>EG&amp;G</span>
+          <span>Reynolds Electrical &amp; Engineering (REECo)</span>
+          <span>Bechtel Nevada</span>
+          <span>National Security Technologies (NSTec)</span>
+          <span>Mission Support and Test Services (MSTS)</span>
+          <span>Holmes &amp; Narver</span>
+          <span>Raytheon Services Nevada</span>
+        </div>
+        <p class="contractors__note">Not sure whether your employer counts? The Resource Center can check your work history. Many people who assume they do not qualify actually do.</p>
+      </div>
+
+      <p class="sites-note">Covered periods are listed as the Department of Labor records them, and the Department of Labor determines coverage for every claim. If you worked at one of these sites, <strong>confirm your dates and eligibility with the DOL Las Vegas Resource Center</strong>. General information, not a coverage determination.</p>
+
+      <div class="doe-cta">
+        <h2>Same White Card. Your place in it.</h2>
+        <p>Whichever Nevada site you worked, the path is the same: an accepted illness brings lifetime medical benefits, including skilled home health, at no cost to you. A nurse can explain the home-health side, and the Resource Center can help you file.</p>
+        <div class="doe-cta__actions">
+          <a class="btn btn--on" href="qualify.html">See what applies to you <span class="arrow" aria-hidden="true">&rarr;</span></a>
+          <a class="doe-cta__call" href="tel:+17028149630">Talk to a nurse: (702) 814-9630</a>
+          <a class="doe-cta__call" href="tel:+17026970841">DOL Resource Center: (702) 697-0841</a>
+        </div>
+      </div>
+
+      <div class="doe-src">
+        <p class="doe-src__label">Federal sources</p>
+        <ul>
+          <li><a href="https://www.dol.gov/agencies/owcp/energy" target="_blank" rel="noopener">U.S. Department of Labor, EEOICPA covered facilities &nearr;</a></li>
+          <li><a href="https://www.cdc.gov/niosh/ocas/nts.html" target="_blank" rel="noopener">NIOSH, Nevada Test Site Special Exposure Cohort &nearr;</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <section class="disclaimer">
+      <div class="container disclaimer__inner">
+        Alara helps you understand and reach benefits you may already be entitled to. It does not replace your Resource Center, physician, attorney, authorized representative, or any federal agency. It helps you work with them. Nothing here is a coverage determination.
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care">
+        <svg class="brand__mark" viewBox="0 0 100 92" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
+      </a>
+      <div class="site-footer__meta">Serving all of Clark County and Southern Nevada<br /><a href="tel:+17028149630">(702) 814-9630</a></div>
+    </div>
+  </footer>
+
+  <script>
+    var header = document.getElementById('siteHeader');
+    var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 24); };
+    onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+    var toggle = document.getElementById('navToggle'); var menu = document.getElementById('site-menu');
+    if (toggle && menu) { toggle.addEventListener('click', function () {
+      var open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!open));
+      toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+      menu.setAttribute('data-open', String(!open)); }); }
+  </script>
+  <script src="site-nav.js" defer></script>
+</body>
+</html>
