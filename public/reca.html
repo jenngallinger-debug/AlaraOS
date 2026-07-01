@@ -19,9 +19,9 @@
     :root {
       --cream:   #F5EFE6;   /* warm page ground — "feels like home" */
       --ivory:   #FCFAF5;   /* warm card surface */
-      --bronze:  #A87A3A;   /* honey bronze — the focal warmth */
-      --bronze-d:#875F26;   /* deeper bronze — solid actions, AA on light */
-      --bronze-l:#E7C892;   /* light bronze — accents on espresso */
+      --bronze:  #8C5E2A;   /* deep bronze — the focal warmth (browner, not yellow) */
+      --bronze-d:#6E4A1E;   /* rich brown-bronze — solid actions, AA on light */
+      --bronze-l:#CBA875;   /* muted antique bronze — used sparingly on espresso */
       --warm-hair:#E4DBCB;  /* warm hairline */
       --warm-shadow: 0 2px 10px rgba(70,52,28,.05), 0 18px 46px rgba(70,52,28,.09);
     }
@@ -38,7 +38,7 @@
 
     /* The deadline — an unmissable urgency block. */
     .rdead { margin-top: clamp(30px, 4vw, 44px); background: var(--espresso); color: var(--on-dark); border-radius: 18px; padding: clamp(26px, 3.4vw, 40px); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; box-shadow: var(--warm-shadow); }
-    .rdead__k { font-family: var(--display); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--bronze-l); }
+    .rdead__k { font-family: var(--display); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--on-dark-soft); }
     .rdead__d { font-family: var(--display); font-size: clamp(2rem, 5vw, 3.25rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1; margin-top: 8px; color: var(--on-dark); }
     .rdead__note { font-size: 1rem; color: var(--on-dark-soft); max-width: 30ch; }
 
@@ -67,7 +67,7 @@
 
     /* THE HOOK — the biggest moment on the page. */
     .rhook { margin-top: clamp(56px, 7vw, 100px); background: var(--espresso); color: var(--on-dark); border-radius: 22px; padding: clamp(36px, 5vw, 68px); box-shadow: var(--warm-shadow); }
-    .rhook__k { font-family: var(--display); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--bronze-l); }
+    .rhook__k { font-family: var(--display); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--on-dark-soft); }
     .rhook__big { margin-top: 18px; font-family: var(--display); font-size: clamp(2rem, 5.2vw, 3.75rem); font-weight: 500; letter-spacing: -0.028em; line-height: 1.02; color: var(--on-dark); max-width: 18ch; }
     .rhook__big .gold { color: var(--bronze-l); }
     .rhook__p { margin-top: 24px; font-size: 1.125rem; line-height: 1.6; color: var(--on-dark-soft); max-width: 54ch; }

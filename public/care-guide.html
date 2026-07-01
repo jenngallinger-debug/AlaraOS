@@ -19,9 +19,9 @@
     :root {
       --cream:   #F5EFE6;
       --ivory:   #FCFAF5;
-      --bronze:  #A87A3A;
-      --bronze-d:#875F26;
-      --bronze-l:#E7C892;
+      --bronze:  #8C5E2A;   /* deep bronze (browner, not yellow) */
+      --bronze-d:#6E4A1E;
+      --bronze-l:#CBA875;   /* muted antique bronze — used sparingly on espresso */
       --warm-hair:#E4DBCB;
       --warm-shadow: 0 2px 10px rgba(70,52,28,.05), 0 18px 46px rgba(70,52,28,.09);
     }
@@ -49,12 +49,12 @@
     .wedge__col--them { background: var(--ivory); border:1px solid var(--warm-hair); }
     .wedge__col--us { background: var(--espresso); color: var(--on-dark); }
     .wedge__k { font-family: var(--display); font-size:0.6875rem; letter-spacing:0.14em; text-transform:uppercase; color: var(--taupe); margin-bottom: 18px; }
-    .wedge__col--us .wedge__k { color: var(--bronze-l); }
+    .wedge__col--us .wedge__k { color: var(--on-dark-soft); }
     .wedge__list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap: 15px; }
     .wedge__list li { font-size: 1.0625rem; line-height:1.45; color:var(--taupe-ink); padding-left: 24px; position:relative; }
     .wedge__col--us .wedge__list li { color: var(--on-dark); }
     .wedge__list li::before { content:""; position:absolute; left:0; top:0.55em; width:7px; height:7px; border-radius:50%; background: var(--taupe); }
-    .wedge__col--us .wedge__list li::before { background: var(--bronze-l); }
+    .wedge__col--us .wedge__list li::before { background: var(--on-dark-soft); }
     @media (max-width: 640px) { .wedge { grid-template-columns: 1fr; } }
 
     /* SECTION heading */
@@ -74,12 +74,12 @@
 
     /* THE BIG HOOK — espresso panel, journey inside. */
     .chook { margin-top: clamp(56px, 7vw, 96px); background: var(--espresso); color: var(--on-dark); border-radius:22px; padding: clamp(32px, 4.6vw, 60px); box-shadow: var(--warm-shadow); }
-    .chook__k { font-family:var(--display); font-size:0.75rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--bronze-l); }
+    .chook__k { font-family:var(--display); font-size:0.75rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--on-dark-soft); }
     .chook__big { margin-top:16px; font-family:var(--display); font-size:clamp(1.9rem, 4.6vw, 3.1rem); font-weight:500; letter-spacing:-0.026em; line-height:1.06; color:var(--on-dark); max-width:22ch; }
     .chook__big .gold { color: var(--bronze-l); }
     .journey { margin-top: clamp(28px, 3.4vw, 40px); display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
     .journey__step { background: color-mix(in srgb, var(--on-dark) 6%, transparent); border:1px solid color-mix(in srgb, var(--bronze-l) 22%, transparent); border-radius:14px; padding: clamp(20px,2.4vw,26px); }
-    .journey__n { font-family:var(--display); font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--bronze-l); }
+    .journey__n { font-family:var(--display); font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--on-dark-soft); }
     .journey__h { margin-top:8px; font-family:var(--display); font-size:1.25rem; font-weight:500; color:var(--on-dark); }
     .journey__p { margin-top:10px; font-size:0.9375rem; line-height:1.55; color:var(--on-dark-soft); }
     @media (max-width: 640px) { .journey { grid-template-columns: 1fr; } }
@@ -210,13 +210,13 @@
             <div class="cfeat__card">
               <div class="cfeat__i">02</div>
               <div class="cfeat__n">Backed by AlaraOS, so nothing waits on memory.</div>
-              <p class="cfeat__p">AlaraOS tracks every authorization, renewal, and change, and flags what is due before it lapses. <strong>We reach out when something needs doing</strong> — you never wait a month to find out.</p>
+              <p class="cfeat__p">AlaraOS tracks every authorization, renewal, and change, and flags what is due before it lapses. <strong>We reach out when something needs doing</strong>, so you never wait a month to find out.</p>
               <a class="cfeat__link" href="inside-alaraos.html">See how AlaraOS works <span class="arrow" aria-hidden="true">&rarr;</span></a>
             </div>
             <div class="cfeat__card">
               <div class="cfeat__i">03</div>
               <div class="cfeat__n">See what applies to you yourself, anytime.</div>
-              <p class="cfeat__p">The <strong>Benefit Navigator</strong> walks you through what generally applies in about a minute — no forms, nothing saved. Use it whenever you want. This is general education, not a determination.</p>
+              <p class="cfeat__p">The <strong>Benefit Navigator</strong> walks you through what generally applies in about a minute, with no forms and nothing saved. Use it whenever you want. This is general education, not a determination.</p>
               <a class="cfeat__link" href="qualify.html">Open the Benefit Navigator <span class="arrow" aria-hidden="true">&rarr;</span></a>
             </div>
           </div>
