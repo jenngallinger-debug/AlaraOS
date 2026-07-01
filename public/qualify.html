@@ -25,7 +25,11 @@
        screen to assistive tech; no visible ring for that. Real controls keep theirs. */
     #nav [tabindex="-1"]:focus { outline: none; }
 
-    .nav-shell { max-width: 760px; margin-inline: auto; }
+    /* Warm band + framed panel so even the question screen has structure, not a white sheet. */
+    .nav-band { background: var(--greige); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+    .nav-band > .container { padding-block: clamp(40px, 5.5vw, 80px); }
+    .nav-shell { max-width: 760px; margin-inline: auto; background: var(--paper); border: 1px solid var(--hairline); border-radius: 16px; padding: clamp(26px, 4vw, 52px); }
+    .nav-orient { padding-bottom: clamp(24px, 3vw, 34px); border-bottom: 2px solid var(--rule); }
 
     /* Orientation — a person talking, shown only on the first step. */
     .nav-orient { margin-bottom: clamp(28px, 4vw, 44px); }
@@ -216,6 +220,7 @@
       </div>
     </section>
 
+    <section class="nav-band">
     <div class="container">
       <div class="nav-shell">
         <div class="nav-orient" id="navOrient">
@@ -226,6 +231,7 @@
         <div id="nav"><!-- rendered by JS --></div>
       </div>
     </div>
+    </section>
 
     <section class="disclaimer">
       <div class="container disclaimer__inner">

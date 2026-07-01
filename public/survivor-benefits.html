@@ -11,31 +11,56 @@
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="site.css" />
   <style>
-    /* Guide — plain reading column on the canonical neutral system. */
+    /* Guide — editorial reading layout: numbered rail, structural rules, warm panels. */
     .guidewrap { max-width: 760px; margin-inline: auto; }
+    .page-hero--guide { background: var(--mist); border-bottom: 1px solid var(--rule); }
     .crumbs { font-size: 0.8125rem; color: var(--taupe); margin-bottom: 18px; }
     .crumbs a { color: var(--taupe-ink); } .crumbs a:hover { color: var(--espresso); }
     .crumbs span { margin: 0 8px; }
-    .gprose section { padding-top: clamp(40px, 4.5vw, 64px); }
-    .gprose h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 500; letter-spacing: -0.018em; line-height: 1.16; color: var(--espresso); max-width: 24ch; }
+
+    .guidewrap.gprose { max-width: 900px; counter-reset: gsec; }
+    .gprose > section {
+      display: grid;
+      grid-template-columns: 3.25rem minmax(0, 1fr);
+      column-gap: clamp(18px, 2.8vw, 44px);
+      border-top: 2px solid var(--rule);
+      margin-top: clamp(38px, 4.5vw, 60px);
+      padding-top: clamp(30px, 3.6vw, 50px);
+      counter-increment: gsec;
+    }
+    .gprose > section:first-of-type { border-top: none; margin-top: clamp(16px, 2vw, 28px); padding-top: 0; }
+    .gprose > section::before {
+      content: counter(gsec, decimal-leading-zero);
+      grid-column: 1; grid-row: 1 / 40;
+      font-family: var(--display); font-weight: 300; font-size: 1.5rem;
+      color: var(--bronze); letter-spacing: 0.04em; line-height: 1.2;
+    }
+    .gprose > section > * { grid-column: 2; min-width: 0; }
+    .gprose h2 { font-size: clamp(1.625rem, 2.8vw, 2.125rem); font-weight: 500; letter-spacing: -0.018em; line-height: 1.14; color: var(--espresso); max-width: 24ch; }
     .gprose p { margin-top: 16px; font-size: 1.0625rem; line-height: 1.7; color: var(--taupe-ink); }
     .gprose p strong, .gprose li strong { color: var(--espresso); font-weight: 500; }
-    .gprose .lede { font-size: 1.25rem; line-height: 1.5; color: var(--espresso); max-width: 34ch; margin-top: 18px; }
+    .gprose .lede { margin-top: 20px; padding: 20px 24px; background: var(--mist); border-left: 3px solid var(--bronze); border-radius: 0 8px 8px 0; font-size: 1.1875rem; line-height: 1.5; color: var(--espresso); max-width: none; }
     .gprose ul { margin-top: 16px; padding-left: 0; list-style: none; display: grid; gap: 10px; }
     .gprose ul li { position: relative; padding-left: 26px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); }
-    .gprose ul li::before { content: ""; position: absolute; left: 4px; top: 11px; width: 7px; height: 7px; border: 1px solid var(--taupe); border-radius: 50%; }
+    .gprose ul li::before { content: ""; position: absolute; left: 4px; top: 11px; width: 7px; height: 7px; border: 1.5px solid var(--bronze); border-radius: 50%; }
+    /* Money figures — warm greige cards with a bronze figure, not hairline boxes. */
     .gfig { margin-top: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .gfig__card { border: 1px solid var(--hairline); border-radius: 6px; padding: 22px 20px; }
-    .gfig__fig { font-family: var(--display); font-size: clamp(1.5rem, 2.6vw, 2.125rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1; color: var(--espresso); }
-    .gfig__k { margin-top: 10px; font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--taupe); }
+    .gfig__card { background: var(--greige); border: none; border-top: 2px solid var(--bronze); border-radius: 4px 4px 6px 6px; padding: 24px 22px; }
+    .gfig__fig { font-family: var(--display); font-size: clamp(1.75rem, 2.8vw, 2.375rem); font-weight: 400; letter-spacing: -0.02em; line-height: 1; color: var(--espresso); }
+    .gfig__k { margin-top: 10px; font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--bronze); }
     .gfig__p { margin-top: 8px; font-size: 0.9375rem; line-height: 1.5; color: var(--taupe-ink); }
     @media (max-width: 560px) { .gfig { grid-template-columns: 1fr; } }
-    .callout { margin-top: 26px; border: 1px solid var(--hairline); border-left: 2px solid var(--espresso); border-radius: 0 4px 4px 0; padding: 22px 24px; }
+    .callout { margin-top: 26px; background: var(--greige); border: none; border-left: 3px solid var(--bronze); border-radius: 0 8px 8px 0; padding: 24px 26px; }
     .callout h3 { font-size: 1.0625rem; font-weight: 500; color: var(--espresso); }
     .callout p { margin-top: 8px; font-size: 1rem; }
-    .callout .num { color: var(--espresso); font-weight: 500; }
+    .callout .num { color: var(--espresso); font-weight: 600; }
     .gsrc { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--hairline); font-size: 0.8125rem; line-height: 1.7; color: var(--taupe); }
     .gsrc a { color: var(--taupe-ink); }
+    @media (max-width: 620px) {
+      .gprose > section { grid-template-columns: 1fr; }
+      .gprose > section::before { grid-row: auto; margin-bottom: 4px; font-size: 1.25rem; }
+      .gprose > section > * { grid-column: 1; }
+    }
   </style>
 </head>
 <body>
@@ -96,7 +121,7 @@
   </header>
 
   <main>
-    <section class="page-hero">
+    <section class="page-hero page-hero--guide">
       <div class="container">
         <div class="guidewrap">
           <nav class="crumbs" aria-label="Breadcrumb"><a href="learn.html">Learn</a><span aria-hidden="true">/</span>Survivor benefits</nav>
