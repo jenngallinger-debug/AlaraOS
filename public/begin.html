@@ -32,6 +32,24 @@
       padding-left: 14px; border-left: 2px solid var(--espresso);
     }
     .intake__field input[aria-invalid="true"] { border-color: var(--espresso); }
+
+    /* Two-column intake: warm band, white form card, dark "what happens" panel. */
+    .begin-band { background: var(--greige); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+    .begin-grid { display: grid; grid-template-columns: 1.08fr 0.92fr; gap: clamp(24px, 3.6vw, 56px); align-items: start; padding-block: clamp(40px, 5.5vw, 80px); }
+    .begin-form { background: var(--paper); border: 1px solid var(--hairline); border-radius: 14px; padding: clamp(26px, 3.4vw, 44px); }
+    .begin-form .intake, .begin-form .confirm { max-width: none; margin: 0; padding-block: 0; }
+    .begin-aside { background: var(--espresso); color: var(--on-dark); border-radius: 14px; padding: clamp(28px, 3.4vw, 40px); position: sticky; top: 100px; }
+    .begin-aside .eyebrow { display: block; margin-bottom: 16px; color: var(--bronze-l); }
+    .begin-aside .eyebrow::before { background: var(--bronze-l); }
+    .begin-aside h2 { color: var(--on-dark); font-size: clamp(1.375rem, 2.2vw, 1.75rem); font-weight: 500; letter-spacing: -0.015em; line-height: 1.16; }
+    .begin-steps { margin-top: 22px; list-style: none; counter-reset: bs; padding: 0; }
+    .begin-steps li { counter-increment: bs; display: grid; grid-template-columns: 2.2rem 1fr; gap: 14px; padding-block: 18px; border-top: 1px solid rgba(201,196,193,.18); }
+    .begin-steps li:first-child { border-top: none; padding-top: 4px; }
+    .begin-steps li::before { content: counter(bs, decimal-leading-zero); font-family: var(--display); font-size: 0.875rem; letter-spacing: 0.08em; color: var(--bronze-l); }
+    .begin-steps h3 { font-size: 1.0625rem; font-weight: 500; color: var(--on-dark); }
+    .begin-steps p { margin-top: 6px; font-size: 0.9375rem; line-height: 1.55; color: var(--on-dark-soft); }
+    .begin-steps a { color: var(--on-dark); }
+    @media (max-width: 820px) { .begin-grid { grid-template-columns: 1fr; } .begin-aside { position: static; } }
   </style>
 </head>
 <body>
@@ -108,7 +126,9 @@
       </div>
     </section>
 
-    <div class="container">
+    <section class="begin-band">
+      <div class="container begin-grid">
+       <div class="begin-form">
       <!-- INTAKE FORM (phone-first, minimal: name + phone, optional story + who) -->
       <form class="intake" id="intakeForm" novalidate>
         <div class="intake__field">
@@ -166,7 +186,19 @@
 
         <p class="intake__reassure">Your call back from the nurse is your confirmation. There is no number for you to keep or track.</p>
       </div>
-    </div>
+       </div><!-- /.begin-form -->
+
+       <aside class="begin-aside">
+         <span class="eyebrow">What happens next</span>
+         <h2>A nurse calls you back.</h2>
+         <ol class="begin-steps">
+           <li><div><h3>Usually within the hour</h3><p>During business hours. After 6 PM, we call first thing the next business day.</p></div></li>
+           <li><div><h3>A few plain questions</h3><p>A nurse asks what is going on and walks you through whether your care is covered.</p></div></li>
+           <li><div><h3>No forms, no program to name</h3><p>You never have to know which benefit applies. Finding that is our job, at no cost to you.</p></div></li>
+         </ol>
+       </aside>
+      </div><!-- /.container.begin-grid -->
+    </section>
 
     <section class="disclaimer">
       <div class="container disclaimer__inner">
