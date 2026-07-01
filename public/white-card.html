@@ -147,6 +147,14 @@
       .faq details { break-inside: avoid; }
       .faq details:not([open]) p { display: block !important; padding-bottom: 16px; }
     }
+    /* What it can be worth — scannable money figures that beat rivals' text walls. */
+    .worth { margin-top: 22px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+    .worth__card { border: 1px solid var(--hairline); border-radius: 6px; padding: 22px 20px; }
+    .worth__fig { font-family: var(--display); font-size: clamp(1.625rem, 2.8vw, 2.25rem); font-weight: 500; letter-spacing: -0.02em; color: var(--espresso); line-height: 1; }
+    .worth__k { margin-top: 12px; font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--taupe); }
+    .worth__p { margin-top: 8px; font-size: 0.9375rem; line-height: 1.5; color: var(--taupe-ink); }
+    .worth__note { margin-top: 16px; font-size: 0.9375rem; line-height: 1.6; color: var(--taupe-ink); }
+    .worth__note a { color: var(--espresso); }
   </style>
 </head>
 <body>
@@ -246,6 +254,7 @@
           <ol id="tocList">
             <li><a href="#missed">Benefits most people miss</a></li>
             <li><a href="#covers">What it covers at home</a></li>
+            <li><a href="#worth">What it can be worth</a></li>
             <li><a href="#picture">What the White Card is</a></li>
             <li><a href="#consequential">Consequential conditions</a></li>
             <li><a href="#file">If you do not have a card yet</a></li>
@@ -314,6 +323,34 @@
             </ul>
             <p>Beyond home health, your benefits can also include prescription medications, durable medical equipment (hospital beds, wheelchairs, walkers, oxygen), medically necessary home safety modifications such as grab bars and ramps, travel reimbursement, and diagnostic and specialist visits, all tied to your accepted conditions.</p>
             <p><strong>One correction worth thousands of dollars:</strong> home health is not only for after a hospital stay. If a physician orders it and it relates to an accepted condition, it is covered any time, ongoing, for as long as it is medically necessary.</p>
+          </section>
+
+          <section id="worth">
+            <h2>What the White Card can be worth.</h2>
+            <p class="section-intro">Beyond the home health it pays for, EEOICPA can include one-time and ongoing compensation. The Department of Labor sets the amounts and they depend on your claim; these are the program figures, for context.</p>
+            <div class="worth">
+              <div class="worth__card">
+                <div class="worth__fig">$150,000</div>
+                <div class="worth__k">Part B</div>
+                <p class="worth__p">A one-time, tax-free lump sum for an accepted covered illness, plus lifetime medical benefits.</p>
+              </div>
+              <div class="worth__card">
+                <div class="worth__fig">Up to $250,000</div>
+                <div class="worth__k">Part E</div>
+                <p class="worth__p">For illness tied to toxic exposure: impairment and wage-loss compensation, on top of medical benefits.</p>
+              </div>
+              <div class="worth__card">
+                <div class="worth__fig">$2,500</div>
+                <div class="worth__k">Per 1% impairment</div>
+                <p class="worth__p">Part E pays $2,500 for each percentage point of whole-body impairment. If your condition worsens, a re-rating can add more.</p>
+              </div>
+              <div class="worth__card">
+                <div class="worth__fig">Up to $125,000</div>
+                <div class="worth__k">Survivors (Part E)</div>
+                <p class="worth__p">Eligible survivors of a worker who died from an accepted condition may receive compensation of their own.</p>
+              </div>
+            </div>
+            <p class="worth__note">Combined, EEOICPA can reach <strong>up to $400,000 in tax-free compensation</strong>. Only the Department of Labor determines your amount. <a href="nevada-test-site.html#estimator">See an illustrative impairment estimate &rarr;</a></p>
           </section>
 
           <section id="picture">
