@@ -20,6 +20,10 @@
     .sec--tint { background: var(--mist); }
     .sec--dark { background: var(--espresso); color: var(--on-dark); }
     .s-lede { max-width: 30ch; }
+    /* Centered section intro — used above the full-width lane chooser so the
+       heading sits balanced over the choices instead of hugging the far left. */
+    .s-lede--center { max-width: 48ch; margin-inline: auto; text-align: center; }
+    .s-lede--center .s-lede__sub { margin-inline: auto; }
     .s-lede__eyebrow { display: block; margin-bottom: 24px; }
     .s-lede h2 { font-size: clamp(1.875rem, 3.6vw, 3rem); font-weight: 500; letter-spacing: -0.022em; line-height: 1.1; }
     .sec--dark .s-lede h2 { color: var(--on-dark); }
@@ -259,7 +263,7 @@
       <div class="container">
         <div class="lede-hero__grid">
           <div class="lede-hero__text">
-            <p class="eyebrow lede-hero__eyebrow">Nurse-owned &middot; Las Vegas</p>
+            <p class="eyebrow lede-hero__eyebrow">White Card &middot; OWCP &middot; VA &middot; Las Vegas</p>
             <h1 class="lede-hero__headline">
               Skilled home health for complex patients <span class="soft">on federal programs.</span>
             </h1>
@@ -296,9 +300,9 @@
             <div class="os__catch" style="margin-top: clamp(32px, 4vw, 48px);">
               <p class="os__catch-lead">And every day</p>
               <div class="os__catch-row"><span class="os__catch-k">01</span><span class="os__catch-t">Your nurse looks at you, not a laptop.</span></div>
-              <div class="os__catch-row"><span class="os__catch-k">02</span><span class="os__catch-t">A fall is caught before it happens.</span></div>
+              <div class="os__catch-row"><span class="os__catch-k">02</span><span class="os__catch-t">A decline is caught early, before it becomes a fall.</span></div>
               <div class="os__catch-row"><span class="os__catch-k">03</span><span class="os__catch-t">Your doctor hears about a change before your next visit.</span></div>
-              <div class="os__catch-row"><span class="os__catch-k">04</span><span class="os__catch-t">Your daughter knows your medication changed before she visits.</span></div>
+              <div class="os__catch-row"><span class="os__catch-k">04</span><span class="os__catch-t">A change in your care reaches your family, so no one is left guessing.</span></div>
               <div class="os__catch-row"><span class="os__catch-k">05</span><span class="os__catch-t">A benefit you qualified for gets found and put to use.</span></div>
               <div class="os__catch-row"><span class="os__catch-k">06</span><span class="os__catch-t">Follow-up is confirmed, not assumed.</span></div>
             </div>
@@ -310,16 +314,16 @@
     <!-- 3 · TRUST STRIP — credentials + proof, right as desire peaks, before we ask them to choose. -->
     <section class="trust" aria-label="Why families and physicians trust Alara">
       <div class="container trust__inner reveal">
-        <span class="trust__item"><b>Nurse-owned, DON-led</b>A Director of Nursing reviews every start of care. Almost no one does. We do.</span>
+        <span class="trust__item"><b>Nurse-owned, DON-led</b>A Director of Nursing reviews every start of care, before the first visit.</span>
         <span class="trust__item"><b>One of a kind here</b>The only White Card agency in Las Vegas with medical social work built in.</span>
-        <span class="trust__item"><b>Local and accountable</b>Nurse-owned, serving all of Clark County.</span>
+        <span class="trust__item"><b>Local and accountable</b>Nurse-owned, serving all of Clark County and Southern Nevada.</span>
       </div>
     </section>
 
     <!-- 4 · FIND YOUR LANE — the path chooser (dual-voiced) + a distinct professional door. -->
     <section class="sec sec--tint" aria-label="Where you are starting from">
       <div class="container">
-        <div class="s-lede reveal">
+        <div class="s-lede s-lede--center reveal">
           <span class="eyebrow s-lede__eyebrow">Start here</span>
           <h2>Which of these sounds like you?</h2>
           <p class="s-lede__sub">You don&rsquo;t need to know the programs or the paperwork. Pick the line that fits. Not sure? We&rsquo;ll figure it out together.</p>
@@ -422,9 +426,9 @@
           </div>
           <div class="split__body">
             <div class="owns" style="margin-top: 0; border-top: none;">
-              <div class="owns__row" style="border-top: 1px solid var(--hairline);"><span class="owns__k">DON-reviewed</span><span class="owns__t">A Director of Nursing reviews every start of care. Almost no one does. We do.</span></div>
+              <div class="owns__row" style="border-top: 1px solid var(--hairline);"><span class="owns__k">DON-reviewed</span><span class="owns__t">A Director of Nursing reviews every start of care, before the first visit.</span></div>
               <div class="owns__row"><span class="owns__k">Whole-person</span><span class="owns__t">The only White Card agency in Las Vegas with medical social work built in.</span></div>
-              <div class="owns__row"><span class="owns__k">Local</span><span class="owns__t">Nurse-owned, serving all of Clark County.</span></div>
+              <div class="owns__row"><span class="owns__k">Local</span><span class="owns__t">Nurse-owned, serving all of Clark County and Southern Nevada.</span></div>
               <div class="owns__row"><span class="owns__k">Built to last</span><span class="owns__t">Founded by a healthcare executive who spent twenty years building care systems across the country.</span></div>
             </div>
           </div>
