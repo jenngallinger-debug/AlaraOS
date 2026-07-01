@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Benefit Navigator &middot; See what your benefits cover at home &middot; Alara Home Care</title>
-  <meta name="description" content="Tell the Navigator a little about your situation and it explains, in plain language, what White Card (EEOICPA), OWCP, and VA home-health benefits generally cover for someone like you, and the one next step to take. General information, not a coverage determination. Nothing you enter is saved." />
+  <meta name="description" content="Tell the Navigator a little about you and it explains, in plain language, what White Card (EEOICPA), OWCP, and VA home-health benefits generally cover for someone like you, and the one next step to take. General information, not a coverage determination. Nothing you enter is saved." />
   <link rel="icon" href="logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -178,14 +178,14 @@
       <div class="container">
         <span class="eyebrow">Benefit Navigator</span>
         <h1>Let&rsquo;s find what your benefits cover at home.</h1>
-        <p class="page-hero__lead" id="navHeroLead">Tell me a little about your situation, and I&rsquo;ll show you what these benefits generally cover for someone like you, and the one thing to do next. No forms, and nothing you enter is saved.</p>
+        <p class="page-hero__lead" id="navHeroLead">Tell me a little about you, and I&rsquo;ll show you what these benefits generally cover for someone like you, and the one thing to do next. No forms, and nothing you enter is saved.</p>
       </div>
     </section>
 
     <div class="container">
       <div class="nav-shell">
         <div class="nav-orient" id="navOrient">
-          <p class="nav-orient__lead">This is a guide, not a decision. It reads a few plain things about your situation and explains what White Card, OWCP, and VA home health generally cover, <strong>including the coverage that is easy to miss.</strong> You can change direction or go back at any point.</p>
+          <p class="nav-orient__lead">This is a guide, not a decision. It reads a few plain things about you and explains what White Card, OWCP, and VA home health generally cover, <strong>including the coverage that is easy to miss.</strong> You can change direction or go back at any point.</p>
           <p class="nav-orient__note">General information only, never a coverage determination, and it asks for nothing private, no diagnosis and no claim number. Your Resource Center, physician, and the VA confirm what applies to you.</p>
         </div>
         <p class="sr-only" id="navStatus" role="status" aria-live="polite"></p>
@@ -474,7 +474,7 @@
 
     nav.innerHTML =
       '<div class="think" aria-hidden="true">' +
-        '<p class="think__lead">Reading your situation&hellip;</p>' +
+        '<p class="think__lead">Reading what you told me&hellip;</p>' +
         '<div class="think__chips">' + chips + '</div>' +
       '</div>';
     if (statusEl) statusEl.textContent = 'Preparing what these benefits mean for you.';

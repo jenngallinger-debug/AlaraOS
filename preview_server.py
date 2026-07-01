@@ -180,7 +180,7 @@ WHY_PILLARS = [
     ("Whole-person, hospital-avoidance care", "We screen for what determines whether treatment actually works, and act before a small problem becomes a hospitalization."),
 ]
 STEPS = [
-    ("Call", "Tell us your situation. A nurse listens &mdash; no script, no pressure."),
+    ("Call", "Tell us what's going on. A nurse listens, no script, no pressure."),
     ("We verify &amp; authorize", "We confirm your benefit and handle the paperwork with the DOL, OWCP, or VA."),
     ("Care begins", "Skilled care at home, usually within days."),
 ]
