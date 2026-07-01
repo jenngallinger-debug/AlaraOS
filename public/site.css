@@ -685,3 +685,41 @@ a.trust-strip__item:hover, a.trust-strip__item:focus-visible { border-bottom-col
 .section-nav__links a { font-size: 0.9375rem; color: var(--taupe-ink); text-decoration: none; white-space: nowrap; padding-block: 4px; border-bottom: 2px solid transparent; transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease); }
 .section-nav__links a:hover { color: var(--espresso); }
 .section-nav__links a.is-active { color: var(--espresso); border-bottom-color: var(--espresso); }
+
+/* ============================================================================
+   WARMTH & FOCUS LAYER — a restrained evolution of the five-neutral system.
+   One warm clay accent marks where the eye should go; warm sand adds depth of
+   field; soft espresso-tinted shadows make the interface tactile instead of
+   flat. Aman/RH restraint: the accent guides, it never shouts.
+   ========================================================================= */
+:root {
+  --accent:       #A85D3E;   /* rich warm terracotta — the single focal accent */
+  --accent-deep:  #8A4A2E;   /* deeper clay for solid CTAs (white text, AA) */
+  --accent-soft:  #F3E9E2;   /* pale clay wash — hovers, soft fills */
+  --accent-light: #D99B7C;   /* light clay — accents on espresso/dark grounds */
+  --sand:         #ECE5DB;   /* warm sand — warmer alternative to cold mist */
+  --shadow-sm: 0 1px 3px rgba(52,46,46,.05), 0 6px 18px rgba(52,46,46,.05);
+  --shadow-md: 0 10px 26px rgba(52,46,46,.07), 0 24px 60px rgba(52,46,46,.09);
+}
+
+/* The warm accent on every section label — the site-wide focal cue. */
+.eyebrow { color: var(--accent); }
+.sec--dark .eyebrow, .os .eyebrow, .invite .eyebrow { color: var(--accent-light); }
+
+/* One bold action per view: the primary CTA in clay, lifted off the page. */
+.btn--primary { background: var(--accent-deep); border-color: var(--accent-deep); color: var(--on-dark); box-shadow: var(--shadow-sm); }
+.btn--primary:hover { background: #743E26; border-color: #743E26; }
+.site-header__actions .btn--sm { box-shadow: var(--shadow-sm); }
+
+/* Nav gains warmth on hover + active, and the dropdown reads as a real surface. */
+.site-nav__link:hover, .site-nav__link[aria-current="page"] { color: var(--accent-deep); }
+.nav-dd { box-shadow: var(--shadow-md); }
+.nav-dd__link:hover { background: var(--accent-soft); color: var(--accent-deep); }
+.nav-dd__link--cta { color: var(--accent-deep); }
+.nav-dd__link--cta .arrow { color: var(--accent); }
+.section-nav__links a:hover { color: var(--accent-deep); }
+.section-nav__links a.is-active { color: var(--accent-deep); border-bottom-color: var(--accent); }
+.section-nav__title.is-active { color: var(--accent-deep); }
+
+/* Warm band utility for depth-of-field rhythm. */
+.section--sand, .sec--sand { background: var(--sand); }
