@@ -1,5 +1,41 @@
 # The source of every line — AlaraOS value truths
 
+## The North Star (provisional — pending the 10-stranger test)
+
+> # Less coordinating. More connecting.
+
+This is **not the hero**. It is the design principle every page, section, feature, and product
+decision must answer:
+
+> **Does this help someone spend less time coordinating and more time connecting?**
+
+The universal form is a sentence each stakeholder completes in their own words:
+
+> **Because of Alara, I spend less time ______ and more time ______.**
+
+| Stakeholder | less time… | more time… |
+|---|---|---|
+| **Patient** | navigating healthcare | living |
+| **Daughter / family** | coordinating care | being with the person they love |
+| **Nurse** | documenting | caring |
+| **Physician** | tracking / chasing | treating |
+| **Case manager** | following up | moving patients safely |
+
+**How it governs:**
+- It's a **promise, so it always sits on proof** — never a naked slogan.
+- It is **not the headline.** The hero must still say who Alara is and what to do next; each
+  hero/section is one stakeholder **finishing the sentence.** (The family hero — *"More time being
+  family. Less time managing care."* — is literally the family's completion of it.)
+- "Coordinating" is the **umbrella verb**; in a specific stakeholder's section, their real words
+  ("on the phone all day," "running around," "chasing approvals") often hit harder. Hold it loosely.
+- **Validation gate before locking forever:** read the four words to 10 people who know nothing
+  about Alara. Ask "what's this about?" and "does it remind you of anything in your life?" If they
+  map it to their own experience without explanation, lock it permanently.
+
+Every page below is built to help its reader spend **less time coordinating, more time connecting.**
+
+---
+
 ## The copy engine: feature → truth
 
 Every stakeholder's value is written the same way: **not the feature everyone else sells — the
