@@ -88,15 +88,47 @@ function logEvent(req, res) {
 
 // ---------------------------------------------------------------------------
 // Form submissions (case review / referral / begin).
-// Delivery is key-ready: if RESEND_API_KEY is set (Render env), the submission
-// is emailed to EMAIL_TO via the Resend HTTP API. Every submission is ALSO
-// appended to data/submissions.log as a local safety net. The client asks
+// Delivery is key-ready: set ONE of SENDGRID_API_KEY (Twilio SendGrid) or
+// RESEND_API_KEY in the Render env and submissions are emailed to EMAIL_TO.
+// EMAIL_FROM must be a sender the provider has verified. Every submission is
+// ALSO appended to data/submissions.log as a local safety net. The client asks
 // /api/config whether email delivery is live; until it is, pages keep their
 // mailto flow and this endpoint is the backup record.
 const SUBMISSIONS_LOG = path.join(__dirname, 'data', 'submissions.log');
 const EMAIL_TO = process.env.EMAIL_TO || 'referrals@alarahomecare.com';
 const EMAIL_FROM = process.env.EMAIL_FROM || 'website@alarahomecare.com';
 const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
+const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY || '';
+const EMAIL_DELIVERY = !!(SENDGRID_API_KEY || RESEND_API_KEY);
+
+// Send via whichever provider has a key (SendGrid wins if both are set).
+// Resolves true on acceptance; logs and resolves false on any failure.
+async function sendEmail(subject, text) {
+  try {
+    let r;
+    if (SENDGRID_API_KEY) {
+      r = await fetch('https://api.sendgrid.com/v3/mail/send', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + SENDGRID_API_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          personalizations: [{ to: [{ email: EMAIL_TO }] }],
+          from: { email: EMAIL_FROM, name: 'Alara Website' },
+          subject: subject,
+          content: [{ type: 'text/plain', value: text }]
+        })
+      });
+    } else {
+      r = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + RESEND_API_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from: EMAIL_FROM, to: [EMAIL_TO], subject: subject, text: text })
+      });
+    }
+    if (r.ok || r.status === 202) return true; // SendGrid acceptance is 202
+    console.error('[submit] email send failed', r.status, await r.text().catch(() => ''));
+  } catch (e) { console.error('[submit] email send error', e.message); }
+  return false;
+}
 
 function handleSubmit(req, res) {
   let raw = '';
@@ -114,17 +146,7 @@ function handleSubmit(req, res) {
     try { fs.appendFileSync(SUBMISSIONS_LOG, JSON.stringify(rec) + '\n'); } catch (e) {}
 
     let delivered = 'log';
-    if (RESEND_API_KEY) {
-      try {
-        const r = await fetch('https://api.resend.com/emails', {
-          method: 'POST',
-          headers: { 'Authorization': 'Bearer ' + RESEND_API_KEY, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ from: EMAIL_FROM, to: [EMAIL_TO], subject, text })
-        });
-        if (r.ok) delivered = 'email';
-        else console.error('[submit] email send failed', r.status, await r.text().catch(() => ''));
-      } catch (e) { console.error('[submit] email send error', e.message); }
-    }
+    if (EMAIL_DELIVERY && await sendEmail(subject, text)) delivered = 'email';
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ ok: true, delivered }));
   });
@@ -143,7 +165,7 @@ const server = http.createServer((req, res) => {
     if (p === '/robots.txt') return send(res, 200, MIME['.txt'], robotsTxt());
     if (p === '/api/event' && req.method === 'POST') return logEvent(req, res);
     if (p === '/api/submit' && req.method === 'POST') return handleSubmit(req, res);
-    if (p === '/api/config') return send(res, 200, MIME['.json'], JSON.stringify({ emailDelivery: !!RESEND_API_KEY }));
+    if (p === '/api/config') return send(res, 200, MIME['.json'], JSON.stringify({ emailDelivery: EMAIL_DELIVERY }));
 
     const file = resolveFile(p);
     if (file) return serveFile(res, file);
