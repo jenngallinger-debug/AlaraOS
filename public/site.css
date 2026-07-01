@@ -15,6 +15,10 @@
   --on-dark:  #FBFBFB;
   --on-dark-soft: #C9C4C1;
 
+  --bronze:   #6E5330;   /* deep bronze — the highlight accent (rich, brown, not yellow) */
+  --bronze-d: #543F20;   /* darker bronze — hover / active */
+  --bronze-l: #B7935E;   /* muted bronze that reads on espresso — accents on dark only */
+
   --display: "Jost", "Century Gothic", system-ui, sans-serif;
   --text:    "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 
@@ -56,11 +60,11 @@ img, svg { display: block; }
 
 .eyebrow {
   font-family: var(--display);
-  font-weight: 400;
+  font-weight: 500;
   font-size: 0.6875rem;
   letter-spacing: var(--ls-eyebrow);
   text-transform: uppercase;
-  color: var(--taupe);
+  color: var(--bronze);
 }
 
 /* Headings: Inter, restrained weight. Authority from space, not from a serif. */
@@ -96,11 +100,11 @@ h1, h2, h3 { font-family: var(--text); font-weight: 500; line-height: 1.18; lett
   display: inline-flex; align-items: center; gap: 10px;
   font-family: var(--text); font-size: 0.9375rem; font-weight: 500;
   padding: 15px 26px; border-radius: 2px;
-  border: 1px solid var(--espresso); background: var(--espresso); color: var(--on-dark);
+  border: 1px solid var(--bronze); background: var(--bronze); color: var(--on-dark);
   text-decoration: none; cursor: pointer;
   transition: background var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
-.btn:hover { background: #443D3C; border-color: #443D3C; }
+.btn:hover { background: var(--bronze-d); border-color: var(--bronze-d); }
 .btn .arrow { transition: transform var(--dur) var(--ease); }
 .btn:hover .arrow { transform: translateX(3px); }
 .btn--on-dark { background: var(--paper); color: var(--espresso); border-color: var(--paper); }
