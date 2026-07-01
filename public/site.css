@@ -457,6 +457,9 @@ html.js-reveal .reveal.is-in { opacity: 1; transform: none; }
 .trust-strip__label { font-family: var(--display); font-size: 0.6875rem; letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--taupe); margin-right: 8px; }
 .trust-strip__items { display: flex; flex-wrap: wrap; align-items: center; gap: 12px clamp(20px, 3vw, 40px); }
 .trust-strip__item { font-family: var(--display); font-weight: 400; font-size: 0.9375rem; letter-spacing: 0.04em; color: var(--espresso); white-space: nowrap; }
+/* Program chips can be links into their guide/reference block. */
+a.trust-strip__item { text-decoration: none; border-bottom: 1px solid var(--hairline); padding-bottom: 2px; transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease); }
+a.trust-strip__item:hover, a.trust-strip__item:focus-visible { border-bottom-color: var(--espresso); }
 .trust-strip--center .trust-strip__inner { justify-content: center; text-align: center; }
 
 /* ============================================================================
