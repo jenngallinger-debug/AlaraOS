@@ -8,7 +8,7 @@
 //
 // Run: node scripts/check-content.mjs   (exit 1 on any violation)
 
-import { readFileSync, readdirSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -19,6 +19,9 @@ const data = JSON.parse(readFileSync(join(ROOT, 'data/programs.json'), 'utf8'));
 // what alarahc.com serves today.
 const SURFACES = [
   ...readdirSync(join(ROOT, 'public')).filter(f => f.endsWith('.html')).map(f => 'public/' + f),
+  ...(existsSync(join(ROOT, 'public/articles'))
+    ? readdirSync(join(ROOT, 'public/articles')).filter(f => f.endsWith('.html')).map(f => 'public/articles/' + f)
+    : []),
   'preview_server.py',
 ];
 
