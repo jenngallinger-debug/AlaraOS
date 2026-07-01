@@ -69,34 +69,48 @@
     .pic__title { font-family: var(--display, 'Jost', sans-serif); font-size: clamp(1.7rem, 3.6vw, 2.5rem); font-weight:500; letter-spacing:-0.02em; line-height:1.12; color:var(--espresso); }
     .pic__sub { margin-top: 16px; font-size: 1.0625rem; line-height:1.6; color:var(--taupe-ink); max-width: 60ch; }
 
-    .tier { margin-top: clamp(30px, 4vw, 44px); }
-    .tier__label { font-family: var(--display, 'Jost', sans-serif); font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--taupe); margin-bottom: 16px; }
+    /* Section header — number + title + rule. Gives the page real structure. */
+    .pic-sec { margin-top: clamp(40px, 5.5vw, 64px); }
+    .pic-sec__head { display:flex; align-items:center; gap:16px; margin-bottom: clamp(18px, 2.4vw, 26px); }
+    .pic-sec__num { flex:none; width:30px; height:30px; display:inline-flex; align-items:center; justify-content:center;
+      font-family: var(--display, 'Jost', sans-serif); font-size:0.8125rem; font-weight:500; color:var(--taupe);
+      border:1px solid var(--hairline); border-radius:100px; }
+    .pic-sec__title { font-family: var(--display, 'Jost', sans-serif); font-size: clamp(1.25rem, 2.4vw, 1.6rem); font-weight:500; letter-spacing:-0.015em; color:var(--espresso); }
+    .pic-sec__rule { flex:1; height:1px; background:var(--hairline); }
 
-    .prog { border:1px solid var(--hairline); border-radius: 8px; padding: clamp(20px, 2.6vw, 28px); margin-bottom: 14px; background: var(--paper); }
-    .prog--strong { border-left: 3px solid var(--espresso); }
-    .prog--possible { background: transparent; }
-    .prog__top { display:flex; align-items:baseline; justify-content:space-between; gap:14px; flex-wrap:wrap; }
-    .prog__name { font-family: var(--display, 'Jost', sans-serif); font-size: 1.3125rem; font-weight:500; letter-spacing:-0.01em; color:var(--espresso); }
-    .prog__tag { font-family: var(--display, 'Jost', sans-serif); font-size:0.75rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--taupe); }
-    .prog__because { margin-top: 12px; font-size: 1rem; line-height:1.6; color: var(--taupe-ink); }
+    .tier__label { font-family: var(--display, 'Jost', sans-serif); font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--taupe); margin: 6px 0 14px; }
+    .tier__label + .tier__label, .tier + .tier__label { margin-top: 30px; }
+
+    /* Program card — filled header bar for contrast, calm body beneath. */
+    .prog { border:1px solid var(--hairline); border-radius: 10px; overflow:hidden; margin-bottom: 16px; background: var(--paper); }
+    .prog__bar { display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; padding: 15px clamp(18px, 2.4vw, 24px); border-bottom:1px solid var(--hairline); }
+    .prog--strong .prog__bar { background: var(--espresso); border-bottom-color: var(--espresso); }
+    .prog--strong .prog__name { color: var(--on-dark); }
+    .prog--strong .prog__tag { color: var(--on-dark-soft); }
+    .prog--possible .prog__bar { background: var(--mist); }
+    .prog__name { font-family: var(--display, 'Jost', sans-serif); font-size: 1.25rem; font-weight:500; letter-spacing:-0.01em; color:var(--espresso); }
+    .prog__tag { font-family: var(--display, 'Jost', sans-serif); font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--taupe); }
+    .prog__body { padding: clamp(18px, 2.4vw, 24px); }
+    .prog__because { font-size: 1rem; line-height:1.6; color: var(--taupe-ink); }
     .prog__because b { color: var(--espresso); font-weight:500; }
     .prog__covered { margin-top: 16px; display:flex; flex-wrap:wrap; gap:8px; }
     .prog__chip { font-size: 0.875rem; color:var(--espresso); background:#fff; border:1px solid var(--hairline); border-radius:4px; padding:6px 11px; }
     .prog__chip--match { border-color: var(--espresso); font-weight:500; }
-    .prog__cost { margin-top: 14px; font-size:0.9375rem; color: var(--taupe-ink); }
-    .prog__clarify { margin-top: 12px; font-size:0.9375rem; line-height:1.55; color: var(--taupe); }
+    .prog__cost { margin-top: 16px; padding-top: 14px; border-top:1px solid var(--hairline); font-size:0.9375rem; color: var(--taupe-ink); }
+    .prog__clarify { margin-top: 10px; font-size:0.9375rem; line-height:1.55; color: var(--taupe); }
     .prog__foot { margin-top: 16px; display:flex; flex-wrap:wrap; gap:10px 20px; align-items:center; font-size:0.9375rem; }
     .prog__foot a { color: var(--espresso); }
     .prog__src { color: var(--taupe); text-decoration:none; }
     .prog__src:hover { color: var(--espresso); }
 
-    /* Easy to miss */
-    .miss { margin-top: clamp(34px, 4.5vw, 52px); border-top:1px solid var(--hairline); padding-top: clamp(24px, 3vw, 32px); }
-    .miss__title { font-size: 1.125rem; font-weight:500; color:var(--espresso); }
-    .miss__intro { margin-top: 8px; font-size:0.9375rem; line-height:1.6; color:var(--taupe-ink); max-width: 58ch; }
-    .miss__list { margin-top: 16px; display:flex; flex-direction:column; gap:10px; }
-    .miss__item { font-size: 1rem; line-height:1.55; color:var(--espresso); padding-left: 18px; position:relative; }
-    .miss__item::before { content:""; position:absolute; left:0; top:0.62em; width:6px; height:6px; border-radius:50%; background:var(--taupe); }
+    /* Easy to miss — a tinted band, so it reads as its own moment. */
+    .miss { background: var(--mist); border-radius: 12px; padding: clamp(24px, 3.2vw, 38px); }
+    .miss__intro { font-size:0.9375rem; line-height:1.6; color:var(--taupe-ink); max-width: 58ch; }
+    .miss__list { margin-top: 18px; display:flex; flex-direction:column; gap:0; }
+    .miss__item { font-size: 1.0625rem; line-height:1.55; color:var(--espresso); padding: 16px 0 16px 22px; position:relative; border-top:1px solid var(--hairline); }
+    .miss__item:first-child { border-top:none; padding-top:0; }
+    .miss__item::before { content:""; position:absolute; left:0; top:1.32em; width:6px; height:6px; border-radius:50%; background:var(--espresso); }
+    .miss__item:first-child::before { top:0.62em; }
     .miss__item a { color: var(--espresso); }
 
     /* One next step */
@@ -503,21 +517,25 @@
               '<p class="pic__sub">' + sub + '</p>' +
             '</div>';
 
+    // 01 — what applies
+    html += '<div class="pic-sec">' + secHead('01', strong.length ? 'What applies to you' : 'Paths worth checking');
     if (strong.length) {
-      html += '<div class="tier"><p class="tier__label">Generally covered for someone like you</p>' +
-              strong.map(function(r){ return progCard(r, 'strong'); }).join('') + '</div>';
+      html += '<p class="tier__label">Generally covered for someone like you</p>' +
+              strong.map(function(r){ return progCard(r, 'strong'); }).join('');
     }
     if (possible.length) {
-      html += '<div class="tier"><p class="tier__label">Worth asking about</p>' +
-              possible.map(function(r){ return progCard(r, 'possible'); }).join('') + '</div>';
+      html += '<p class="tier__label">Worth asking about</p>' +
+              possible.map(function(r){ return progCard(r, 'possible'); }).join('');
     }
+    html += '</div>';
 
-    // Easy to miss
+    // 02 — easy to miss
     var miss = missed(results, sig);
-    html += '<div class="miss">' +
-              '<p class="miss__title">Easy to miss</p>' +
-              '<p class="miss__intro">These programs are complex, so real coverage is easy to overlook. Worth raising:</p>' +
-              '<div class="miss__list">' + miss.map(function(m){ return '<p class="miss__item">' + m + '</p>'; }).join('') + '</div>' +
+    html += '<div class="pic-sec">' + secHead('02', 'Easy to miss') +
+              '<div class="miss">' +
+                '<p class="miss__intro">These programs are complex, so real coverage is easy to overlook. Worth raising:</p>' +
+                '<div class="miss__list">' + miss.map(function(m){ return '<p class="miss__item">' + m + '</p>'; }).join('') + '</div>' +
+              '</div>' +
             '</div>';
 
     // One next step
@@ -553,16 +571,22 @@
       return '<span class="prog__chip' + (match ? ' prog__chip--match' : '') + '">' + esc(c.label) + '</span>';
     }).join('');
     return '<div class="prog prog--' + tier + '">' +
-             '<div class="prog__top"><span class="prog__name">' + esc(p.name) + '</span><span class="prog__tag">' + esc(p.tag) + '</span></div>' +
-             '<p class="prog__because">' + r.because + '</p>' +
-             '<div class="prog__covered">' + chips + '</div>' +
-             '<p class="prog__cost">Covered care tied to your accepted condition is at ' + COST + '.</p>' +
-             '<p class="prog__clarify">' + esc(r.clarify) + '</p>' +
-             '<div class="prog__foot">' +
-               '<a href="' + p.guide + '">See the full ' + esc(p.name) + ' guide <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
-               '<a class="prog__src" href="' + p.source.url + '" target="_blank" rel="noopener">Source: ' + esc(p.source.label) + ' &nearr;</a>' +
+             '<div class="prog__bar"><span class="prog__name">' + esc(p.name) + '</span><span class="prog__tag">' + esc(p.tag) + '</span></div>' +
+             '<div class="prog__body">' +
+               '<p class="prog__because">' + r.because + '</p>' +
+               '<div class="prog__covered">' + chips + '</div>' +
+               '<p class="prog__cost">Covered care tied to your accepted condition is at ' + COST + '.</p>' +
+               '<p class="prog__clarify">' + esc(r.clarify) + '</p>' +
+               '<div class="prog__foot">' +
+                 '<a href="' + p.guide + '">See the full ' + esc(p.name) + ' guide <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
+                 '<a class="prog__src" href="' + p.source.url + '" target="_blank" rel="noopener">Source: ' + esc(p.source.label) + ' &nearr;</a>' +
+               '</div>' +
              '</div>' +
            '</div>';
+  }
+
+  function secHead(num, title){
+    return '<div class="pic-sec__head"><span class="pic-sec__num">' + num + '</span><span class="pic-sec__title">' + esc(title) + '</span><span class="pic-sec__rule"></span></div>';
   }
 
   function restart(){ sig = {}; stack = []; renderQuestion(0); }
