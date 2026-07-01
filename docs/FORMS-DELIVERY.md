@@ -11,7 +11,29 @@ submissions are **emailed straight to the nurse inbox** and the visitor gets
 an in-page confirmation instead of an email app popping open. No code change,
 no redeploy of anything but the environment variable.
 
-## What you do (once, ~10 minutes)
+The server accepts **either provider** — set whichever key you have:
+`SENDGRID_API_KEY` (Twilio SendGrid) or `RESEND_API_KEY` (Resend). If both
+are set, SendGrid is used.
+
+## Option A — you already have Twilio SendGrid (fastest)
+
+1. **Make sure a verified sender exists.** SendGrid dashboard → *Settings →
+   Sender Authentication*. Either the `alarahomecare.com` domain is
+   authenticated, or a Single Sender (an email address) is verified. Note the
+   verified address — SendGrid rejects sends "from" anything unverified.
+2. **Create an API key.** *Settings → API Keys → Create API Key* →
+   "Restricted Access" with only **Mail Send** enabled. Copy it (starts
+   with `SG.`).
+3. **Add it in Render.** Render dashboard → this service → *Environment* →
+   add:
+   - `SENDGRID_API_KEY` = the key
+   - `EMAIL_FROM` = the verified sender from step 1 (only needed if it is
+     not `website@alarahomecare.com`)
+   - `EMAIL_TO` = where submissions arrive (default
+     `referrals@alarahomecare.com`)
+4. **Save.** Render restarts automatically.
+
+## Option B — Resend (if starting from nothing)
 
 1. **Create a Resend account** — <https://resend.com> (free tier: 3,000
    emails/month, far more than we need). Sign up with the business email.
@@ -21,13 +43,8 @@ no redeploy of anything but the environment variable.
    "Verified" check — usually minutes.
 3. **Create an API key.** In Resend: *API Keys → Create*. Scope "Sending
    access" is enough. Copy the key (starts with `re_`).
-4. **Add it in Render.** Render dashboard → this service → *Environment* →
-   add variable:
-   - `RESEND_API_KEY` = the key you copied
-   Optional overrides (defaults shown; only set them to change something):
-   - `EMAIL_TO` = `referrals@alarahomecare.com` (where submissions arrive)
-   - `EMAIL_FROM` = `website@alarahomecare.com` (must be on the verified domain)
-5. **Save.** Render restarts the service automatically.
+4. **Add it in Render** as `RESEND_API_KEY` (same `EMAIL_TO`/`EMAIL_FROM`
+   notes as above). Save; Render restarts automatically.
 
 ## How to check it worked
 
