@@ -4,75 +4,142 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Benefit Navigator &middot; See what your benefits cover at home &middot; Alara Home Care</title>
-  <meta name="description" content="Start anywhere and, in about a minute, see what your home health benefits generally cover, including coverage that is easy to miss. White Card (EEOICPA), OWCP, and VA. General information, not a coverage determination." />
+  <meta name="description" content="Tell the Navigator a little about you and it explains, in plain language, what White Card (EEOICPA), OWCP, and VA home-health benefits generally cover for someone like you, and the one next step to take. General information, not a coverage determination. Nothing you enter is saved." />
   <link rel="icon" href="logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="site.css" />
   <style>
-    /* Page-scoped additions for the Navigator only. Five swatches, hairlines,
-       no new color. These extend the existing .wiz / .ans vocabulary. */
+    /* =====================================================================
+       BENEFIT NAVIGATOR — a governed educational reasoner.
+       Purely educational: no PHI, no eligibility determination. It reasons
+       across White Card / OWCP / VA at once to TEACH what generally applies
+       for a situation like yours, never to hand a personal verdict.
+       Palette is the shared system only — no new colors. Reduced-motion safe.
+       ===================================================================== */
 
-    /* Visually-hidden status node for the navigator live region. */
-    .sr-only {
-      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
-    }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 
-    /* Calm acknowledgment line above "Your next step" on answer cards. */
-    .ans__ack {
-      margin: 0 0 18px; padding-bottom: 18px; border-bottom: 1px solid var(--hairline);
-      font-size: 1rem; line-height: 1.6; color: var(--espresso);
-    }
+    /* Headings receive programmatic focus (tabindex -1) only to announce the new
+       screen to assistive tech; no visible ring for that. Real controls keep theirs. */
+    #nav [tabindex="-1"]:focus { outline: none; }
 
-    /* Orientation panel above the very first step: calm "here is what this does". */
-    .nav-orient { max-width: 720px; margin-inline: auto; margin-bottom: clamp(28px, 4vw, 44px); }
-    .nav-orient__lead {
-      font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); max-width: 60ch;
-    }
+    .nav-shell { max-width: 760px; margin-inline: auto; }
+
+    /* Orientation — a person talking, shown only on the first step. */
+    .nav-orient { margin-bottom: clamp(28px, 4vw, 44px); }
+    .nav-orient__lead { font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); max-width: 62ch; }
     .nav-orient__lead strong { color: var(--espresso); font-weight: 500; }
-    .nav-orient__note {
-      margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--hairline);
-      font-size: 0.875rem; line-height: 1.6; color: var(--taupe); max-width: 60ch;
-    }
+    .nav-orient__note { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--hairline); font-size: 0.875rem; line-height: 1.6; color: var(--taupe); max-width: 62ch; }
 
-    /* "Benefits you may be missing": a deliberate, framed discovery module that
-       appears at the bottom of an expected answer card, never as the opener. */
-    .ans-discover {
-      border-top: 1px solid var(--hairline);
-      padding-top: clamp(20px, 2.6vw, 28px);
-    }
-    .ans-discover__kicker { display: block; margin-bottom: 12px; }
-    .ans-discover__title { font-size: 1.125rem; font-weight: 500; letter-spacing: -0.01em; color: var(--espresso); }
-    .ans-discover__intro { margin-top: 10px; font-size: 0.9375rem; line-height: 1.6; color: var(--taupe-ink); max-width: 56ch; }
-    .ans-discover__list { margin-top: 18px; display: flex; flex-direction: column; gap: 10px; }
-    .ans-discover__item {
-      display: flex; align-items: center; justify-content: space-between; gap: 16px;
-      width: 100%; text-align: left; cursor: pointer;
-      background: var(--paper); border: 1px solid var(--hairline); border-radius: 4px;
-      padding: 16px 18px; font-family: var(--text); font-size: 1rem; color: var(--espresso);
-      transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
-    }
-    .ans-discover__item:hover { border-color: var(--espresso); background: #fff; }
-    .ans-discover__item .arrow { color: var(--taupe); transition: transform var(--dur) var(--ease); }
-    .ans-discover__item:hover .arrow { transform: translateX(3px); color: var(--espresso); }
+    /* Progress + back */
+    .q__crumbs { display:flex; align-items:center; justify-content:space-between; margin-bottom: 22px; min-height: 24px; }
+    .q__back { background:none; border:none; padding:0; font:inherit; color:var(--taupe-ink); cursor:pointer; display:inline-flex; align-items:center; gap:8px; }
+    .q__back:hover { color:var(--espresso); }
+    .q__dots { display:flex; gap:7px; }
+    .q__dot { width:7px; height:7px; border-radius:50%; background:var(--hairline); transition: background var(--dur) var(--ease); }
+    .q__dot.is-on { background:var(--espresso); }
 
-    /* The one obvious door: the "start another way" escape hatch is quieter than
-       the real questions above it. */
-    .wiz__option--secondary { color: var(--taupe-ink); font-size: 0.9375rem; }
+    /* Question */
+    .q__title { font-family: var(--display, 'Jost', sans-serif); font-size: clamp(1.6rem, 3.4vw, 2.4rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.12; color: var(--espresso); }
+    .q__opts { margin-top: clamp(22px, 3vw, 30px); display:flex; flex-direction:column; gap: 12px; }
+    .opt { display:flex; align-items:center; justify-content:space-between; gap:16px; width:100%; text-align:left; cursor:pointer;
+      background: var(--paper); border:1px solid var(--hairline); border-radius: 6px; padding: 18px 20px;
+      font-family: var(--text, 'Inter', sans-serif); font-size: 1.0625rem; color: var(--espresso);
+      transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), transform var(--dur) var(--ease); }
+    .opt:hover { border-color: var(--espresso); background:#fff; }
+    .opt:active { transform: translateY(1px); }
+    .opt .arrow { color: var(--taupe); transition: transform var(--dur) var(--ease), color var(--dur) var(--ease); }
+    .opt:hover .arrow { transform: translateX(3px); color: var(--espresso); }
+    .opt--quiet { border-style:dashed; color: var(--taupe-ink); font-size: 1rem; }
 
-    /* One primary action on the answer screen; everything else is a quiet text
-       row underneath it. */
-    .ans__cta-sub {
-      margin-top: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px;
-      font-size: 0.9375rem;
+    /* The thinking beat — reasoning made visible. */
+    .think { padding: clamp(28px, 6vw, 56px) 0; text-align:center; }
+    .think__lead { font-size: 1.0625rem; color: var(--taupe-ink); }
+    .think__chips { margin-top: 22px; display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+    .think__chip { font-family: var(--display, 'Jost', sans-serif); font-size:0.8125rem; letter-spacing:0.03em; color:var(--espresso);
+      border:1px solid var(--hairline); border-radius: 100px; padding: 7px 14px; opacity:0; transform: translateY(6px);
+      animation: chipIn 0.42s var(--ease) forwards; }
+    @keyframes chipIn { to { opacity:1; transform:none; } }
+
+    /* The educational picture */
+    .pic__head { margin-bottom: clamp(24px, 3.5vw, 36px); }
+    .pic__eyebrow { display:block; margin-bottom: 16px; }
+    .pic__title { font-family: var(--display, 'Jost', sans-serif); font-size: clamp(1.7rem, 3.6vw, 2.5rem); font-weight:500; letter-spacing:-0.02em; line-height:1.12; color:var(--espresso); }
+    .pic__sub { margin-top: 16px; font-size: 1.0625rem; line-height:1.6; color:var(--taupe-ink); max-width: 60ch; }
+
+    /* Section header — number + title + rule. Gives the page real structure. */
+    .pic-sec { margin-top: clamp(40px, 5.5vw, 64px); }
+    .pic-sec__head { display:flex; align-items:center; gap:16px; margin-bottom: clamp(18px, 2.4vw, 26px); }
+    .pic-sec__num { flex:none; width:30px; height:30px; display:inline-flex; align-items:center; justify-content:center;
+      font-family: var(--display, 'Jost', sans-serif); font-size:0.8125rem; font-weight:500; color:var(--taupe);
+      border:1px solid var(--hairline); border-radius:100px; }
+    .pic-sec__title { font-family: var(--display, 'Jost', sans-serif); font-size: clamp(1.25rem, 2.4vw, 1.6rem); font-weight:500; letter-spacing:-0.015em; color:var(--espresso); }
+    .pic-sec__rule { flex:1; height:1px; background:var(--hairline); }
+
+    .tier__label { font-family: var(--display, 'Jost', sans-serif); font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--taupe); margin: 6px 0 14px; }
+    .tier__label + .tier__label, .tier + .tier__label { margin-top: 30px; }
+
+    /* Program card — filled header bar for contrast, calm body beneath. */
+    .prog { border:1px solid var(--hairline); border-radius: 10px; overflow:hidden; margin-bottom: 16px; background: var(--paper); }
+    .prog__bar { display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; padding: 15px clamp(18px, 2.4vw, 24px); border-bottom:1px solid var(--hairline); }
+    .prog--strong .prog__bar { background: var(--espresso); border-bottom-color: var(--espresso); }
+    .prog--strong .prog__name { color: var(--on-dark); }
+    .prog--strong .prog__tag { color: var(--on-dark-soft); }
+    .prog--possible .prog__bar { background: var(--mist); }
+    .prog__name { font-family: var(--display, 'Jost', sans-serif); font-size: 1.25rem; font-weight:500; letter-spacing:-0.01em; color:var(--espresso); }
+    .prog__tag { font-family: var(--display, 'Jost', sans-serif); font-size:0.7rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--taupe); }
+    .prog__body { padding: clamp(18px, 2.4vw, 24px); }
+    .prog__because { font-size: 1rem; line-height:1.6; color: var(--taupe-ink); }
+    .prog__because b { color: var(--espresso); font-weight:500; }
+    .prog__covered { margin-top: 16px; display:flex; flex-wrap:wrap; gap:8px; }
+    .prog__chip { font-size: 0.875rem; color:var(--espresso); background:#fff; border:1px solid var(--hairline); border-radius:4px; padding:6px 11px; }
+    .prog__chip--match { border-color: var(--espresso); font-weight:500; }
+    .prog__cost { margin-top: 16px; padding-top: 14px; border-top:1px solid var(--hairline); font-size:0.9375rem; color: var(--taupe-ink); }
+    .prog__clarify { margin-top: 10px; font-size:0.9375rem; line-height:1.55; color: var(--taupe); }
+    .prog__foot { margin-top: 16px; display:flex; flex-wrap:wrap; gap:10px 20px; align-items:center; font-size:0.9375rem; }
+    .prog__foot a { color: var(--espresso); }
+    .prog__src { color: var(--taupe); text-decoration:none; }
+    .prog__src:hover { color: var(--espresso); }
+
+    /* Easy to miss — a tinted band, so it reads as its own moment. */
+    .miss { background: var(--mist); border-radius: 12px; padding: clamp(24px, 3.2vw, 38px); }
+    .miss__intro { font-size:0.9375rem; line-height:1.6; color:var(--taupe-ink); max-width: 58ch; }
+    .miss__list { margin-top: 18px; display:flex; flex-direction:column; gap:0; }
+    .miss__item { font-size: 1.0625rem; line-height:1.55; color:var(--espresso); padding: 16px 0 16px 22px; position:relative; border-top:1px solid var(--hairline); }
+    .miss__item:first-child { border-top:none; padding-top:0; }
+    .miss__item::before { content:""; position:absolute; left:0; top:1.32em; width:6px; height:6px; border-radius:50%; background:var(--espresso); }
+    .miss__item:first-child::before { top:0.62em; }
+    .miss__item a { color: var(--espresso); }
+
+    /* One next step */
+    .step { margin-top: clamp(34px, 4.5vw, 52px); background: var(--espresso); color: var(--on-dark); border-radius: 10px; padding: clamp(26px, 3.4vw, 38px); }
+    .step__label { font-family: var(--display, 'Jost', sans-serif); font-size:0.6875rem; letter-spacing:0.14em; text-transform:uppercase; color: var(--on-dark-soft); }
+    .step__body { margin-top: 12px; font-size: 1.1875rem; line-height:1.5; color: var(--on-dark); }
+    .step__actions { margin-top: 22px; display:flex; flex-wrap:wrap; gap:12px 20px; align-items:center; }
+    .step__call { color: var(--on-dark); font-size:0.9375rem; }
+
+    .pic__foot { margin-top: 28px; display:flex; flex-wrap:wrap; gap: 10px 22px; align-items:center; font-size:0.9375rem; }
+    .pic__foot a, .pic__restart { color: var(--taupe-ink); background:none; border:none; padding:0; font:inherit; cursor:pointer; text-decoration:none; }
+    .pic__foot a:hover, .pic__restart:hover { color: var(--espresso); }
+    .pic__trust { margin-top: 22px; font-size:0.8125rem; line-height:1.6; color: var(--taupe); max-width: 66ch; }
+
+    /* Entrance for each rendered screen (reduced-motion safe below). */
+    .nav-in { opacity:0; transform: translateY(8px); animation: navIn 0.4s var(--ease) forwards; }
+    @keyframes navIn { to { opacity:1; transform:none; } }
+    /* Staggered build for the picture's sections. */
+    .stagger > * { opacity:0; transform: translateY(10px); animation: navIn 0.5s var(--ease) forwards; }
+    .stagger > *:nth-child(1){ animation-delay: 0.02s; }
+    .stagger > *:nth-child(2){ animation-delay: 0.12s; }
+    .stagger > *:nth-child(3){ animation-delay: 0.22s; }
+    .stagger > *:nth-child(4){ animation-delay: 0.32s; }
+    .stagger > *:nth-child(5){ animation-delay: 0.42s; }
+    .stagger > *:nth-child(6){ animation-delay: 0.52s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .nav-in, .stagger > *, .think__chip { animation: none !important; opacity:1 !important; transform:none !important; }
     }
-    .ans__cta-sub a, .ans__cta-sub .restart {
-      color: var(--taupe-ink); text-decoration: none; background: none; border: none;
-      padding: 0; cursor: pointer; font: inherit;
-    }
-    .ans__cta-sub a:hover, .ans__cta-sub .restart:hover { color: var(--espresso); }
   </style>
 </head>
 <body>
@@ -124,21 +191,20 @@
     <section class="page-hero">
       <div class="container">
         <span class="eyebrow">Benefit Navigator</span>
-        <h1>What your benefits cover at home.</h1>
-        <p class="page-hero__lead" id="navHeroLead">Start with a question. In about a minute, you will see what your benefits generally cover and the one next step to take. No form, no account.</p>
+        <h1>Let&rsquo;s find what your benefits cover at home.</h1>
+        <p class="page-hero__lead" id="navHeroLead">Tell me a little about you, and I&rsquo;ll show you what these benefits generally cover for someone like you, and the one thing to do next. No forms, and nothing you enter is saved.</p>
       </div>
     </section>
 
     <div class="container">
-      <!-- Orientation frame: legible purpose before any specific benefit is named.
-           Shown only on the first step; the JS hides it once you choose a path. -->
-      <div class="nav-orient" id="navOrient">
-        <p class="nav-orient__lead">Pick the question closest to yours, and we will show what your benefits generally cover, <strong>including the coverage that is easy to miss.</strong> You can change direction or go back at any point.</p>
-        <p class="nav-orient__note">This is general information, not a coverage determination. Nothing you choose is saved, and nothing here decides your claim.</p>
+      <div class="nav-shell">
+        <div class="nav-orient" id="navOrient">
+          <p class="nav-orient__lead">This is a guide, not a decision. It reads a few plain things about you and explains what White Card, OWCP, and VA home health generally cover, <strong>including the coverage that is easy to miss.</strong> You can change direction or go back at any point.</p>
+          <p class="nav-orient__note">General information only, never a coverage determination, and it asks for nothing private, no diagnosis and no claim number. Your Resource Center, physician, and the VA confirm what applies to you.</p>
+        </div>
+        <p class="sr-only" id="navStatus" role="status" aria-live="polite"></p>
+        <div id="nav"><!-- rendered by JS --></div>
       </div>
-
-      <p class="sr-only" id="wizStatus" role="status" aria-live="polite"></p>
-      <div class="wiz" id="wiz"><!-- rendered by JS --></div>
     </div>
 
     <section class="disclaimer">
@@ -156,231 +222,377 @@
         </svg>
         <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
       </a>
-      <div class="site-footer__meta">Serving all of Clark County, Nevada<br /><a href="tel:+17028149630">(702) 814-9630</a></div>
+      <div class="site-footer__meta">Serving all of Clark County and Southern Nevada<br /><a href="tel:+17028149630">(702) 814-9630</a></div>
     </div>
   </footer>
 
-  <!-- Benefit Navigator tree. In production this is served from /api/navigator
-       (data/navigator.json); inlined here so the page runs standalone.
-       Patient-facing copy uses "Alara" (never the internal system name).
-       by-question is ordered common -> consequential -> rare, so the
-       paid-caregiver question is never the opener. The "you may be missing this"
-       benefits surface as a framed discovery module on expected answer cards
-       (see discover[] below), not as a cold open. -->
-  <script id="nav-data" type="application/json">
-  {
-    "start": { "id": "start", "type": "branch", "question": "Where would you like to start?", "options": [
-      { "label": "My program (EEOICPA, OWCP, VA…)", "next": "by-program" },
-      { "label": "Who I am / my job", "next": "by-who" },
-      { "label": "A health condition", "next": "by-condition" },
-      { "label": "A benefit or service", "next": "by-service" },
-      { "label": "A specific question", "next": "by-question" },
-      { "label": "My location", "next": "by-geo" } ] },
-    "by-program": { "id": "by-program", "type": "branch", "question": "Which program are you under?", "options": [
-      { "label": "EEOICPA / White Card", "next": "eeoicpa-need" },
-      { "label": "OWCP / FECA (federal or postal worker)", "next": "owcp-need" },
-      { "label": "VA / Veteran", "next": "va-need" },
-      { "label": "I'm not sure yet", "next": "by-who" } ] },
-    "by-who": { "id": "by-who", "type": "branch", "question": "Which best describes you?", "options": [
-      { "label": "Nevada Test Site / DOE worker", "next": "ans-nts" },
-      { "label": "Atomic Weapons Employer worker", "next": "ans-nts" },
-      { "label": "Federal or postal worker", "next": "owcp-need" },
-      { "label": "Veteran", "next": "va-need" },
-      { "label": "Family member or survivor", "next": "ans-survivor" } ] },
-    "by-condition": { "id": "by-condition", "type": "branch", "question": "What kind of care is needed?", "options": [
-      { "label": "A wound that won't heal", "next": "cond-program-wound" },
-      { "label": "IV / infusion therapy", "next": "cond-program-infusion" },
-      { "label": "Skilled nursing / chronic disease", "next": "cond-program-nursing" } ] },
-    "by-service": { "id": "by-service", "type": "branch", "question": "Which service do you want to understand?", "options": [
-      { "label": "Home health (overview)", "next": "ans-home-health" },
-      { "label": "Wound care at home", "next": "cond-program-wound" },
-      { "label": "Infusion therapy at home", "next": "cond-program-infusion" } ] },
-    "by-question": { "id": "by-question", "type": "branch", "question": "What would you like to know?", "options": [
-      { "label": "Does my White Card cover home health?", "next": "ans-eeoicpa-hh" },
-      { "label": "Does OWCP cover home health?", "next": "ans-owcp-hh" },
-      { "label": "Does the VA cover home health?", "next": "ans-va-hh" },
-      { "label": "Can I have the White Card and Medicare?", "next": "ans-white-card-medicare" },
-      { "label": "Can I get paid to care for a family member?", "next": "ans-paid-caregiver" },
-      { "label": "Start another way: by program, who I am, or a condition", "next": "start", "secondary": true } ] },
-    "by-geo": { "id": "by-geo", "type": "branch", "question": "Where are you located?", "options": [
-      { "label": "Las Vegas / Clark County / Southern Nevada", "next": "ans-local" },
-      { "label": "Somewhere else", "next": "ans-local" } ] },
-    "eeoicpa-need": { "id": "eeoicpa-need", "type": "branch", "question": "What do you need help with?", "options": [
-      { "label": "Getting a White Card / eligibility", "next": "ans-get-white-card" },
-      { "label": "Home health coverage", "next": "ans-eeoicpa-hh" },
-      { "label": "Wound care", "next": "ans-eeoicpa-wound" },
-      { "label": "A condition caused by my accepted condition", "next": "ans-consequential" },
-      { "label": "Getting paid to care for a family member", "next": "ans-paid-caregiver" } ] },
-    "owcp-need": { "id": "owcp-need", "type": "branch", "question": "What do you need help with?", "options": [
-      { "label": "Home health coverage", "next": "ans-owcp-hh" },
-      { "label": "Skilled nursing or wound care", "next": "ans-owcp-nursing" } ] },
-    "va-need": { "id": "va-need", "type": "branch", "question": "What do you need help with?", "options": [
-      { "label": "Home health eligibility", "next": "ans-va-hh" },
-      { "label": "Wound care at home", "next": "ans-va-wound" } ] },
-    "cond-program-wound": { "id": "cond-program-wound", "type": "branch", "question": "Which program covers you?", "options": [
-      { "label": "EEOICPA / White Card", "next": "ans-eeoicpa-wound" },
-      { "label": "OWCP / FECA", "next": "ans-owcp-nursing" },
-      { "label": "VA / Veteran", "next": "ans-va-wound" } ] },
-    "cond-program-infusion": { "id": "cond-program-infusion", "type": "branch", "question": "Which program covers you?", "options": [
-      { "label": "EEOICPA / White Card", "next": "ans-eeoicpa-infusion" },
-      { "label": "OWCP / FECA", "next": "ans-owcp-nursing" } ] },
-    "cond-program-nursing": { "id": "cond-program-nursing", "type": "branch", "question": "Which program covers you?", "options": [
-      { "label": "EEOICPA / White Card", "next": "ans-eeoicpa-hh" },
-      { "label": "OWCP / FECA", "next": "ans-owcp-nursing" },
-      { "label": "VA / Veteran", "next": "ans-va-hh" } ] },
-    "ans-eeoicpa-hh": { "id": "ans-eeoicpa-hh", "type": "answer", "title": "Yes. The White Card generally covers home health", "answer": "If you have an accepted EEOICPA condition and a physician orders home health, your White Card generally covers skilled nursing, wound care, therapy, and home health aide services for that condition at no out-of-pocket cost.", "covered": ["Skilled nursing", "Wound care", "Physical & occupational therapy", "Home health aide", "Caregiver training"], "term": "white-card", "source": { "label": "U.S. Department of Labor, EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "Bring your accepted condition(s) and your physician's order. A nurse can verify your authorization and explain what's covered.", "trust": "This is general information, not a coverage determination. Your DOL Resource Center and physician confirm what applies to your claim.", "discover": ["ans-consequential", "ans-paid-caregiver", "ans-white-card-medicare"] },
-    "ans-eeoicpa-wound": { "id": "ans-eeoicpa-wound", "type": "answer", "title": "Yes. Home wound care is generally covered", "answer": "For approved EEOICPA beneficiaries, skilled home wound care ordered by a physician is generally covered at no out-of-pocket cost, including assessment, dressing changes, infection monitoring, and advanced wound therapy.", "covered": ["Wound assessment & staging", "Sterile dressing changes", "Infection monitoring", "Advanced/negative-pressure therapy when ordered"], "term": "wound-care", "source": { "label": "U.S. Department of Labor, EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "If the wound results from a consequential condition, it may need DOL acceptance first. A nurse can help document it.", "trust": "General information only. Your Resource Center and physician confirm coverage for your accepted condition.", "discover": ["ans-consequential", "ans-paid-caregiver", "ans-white-card-medicare"] },
-    "ans-eeoicpa-infusion": { "id": "ans-eeoicpa-infusion", "type": "answer", "title": "Home infusion therapy is generally covered", "answer": "When ordered by a physician for an accepted EEOICPA condition, home infusion / IV therapy is generally covered at no out-of-pocket cost, with a nurse managing the line and treatment in your home.", "covered": ["IV antibiotics", "Hydration & nutrition support", "PICC/line management", "Nurse-administered infusions"], "term": "home-health", "source": { "label": "U.S. Department of Labor, EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "Have your physician's order and accepted condition ready for verification.", "trust": "General information only. Confirm specifics with your Resource Center and physician.", "discover": ["ans-consequential", "ans-paid-caregiver", "ans-white-card-medicare"] },
-    "ans-consequential": { "id": "ans-consequential", "type": "answer", "title": "A consequential condition may also be covered", "answer": "A consequential condition is a new problem caused by your already-accepted EEOICPA condition or its treatment. Once the Department of Labor accepts it as consequential, related care, including home health, may also be covered.", "covered": ["Documentation support", "Physician coordination", "Home health for the accepted consequential condition"], "term": "consequential-condition", "source": { "label": "U.S. Department of Labor, EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "Documentation is key. A clinician can help link the new condition to your accepted one for DOL review.", "trust": "Acceptance is determined by the Department of Labor, not by Alara." },
-    "ans-paid-caregiver": { "id": "ans-paid-caregiver", "type": "answer", "title": "The family member already caring for you can be paid for it", "answer": "If a spouse, son, or daughter already helps you bathe, dress, cook, or get to appointments, the White Card can pay them for that care. They are enrolled as a trained, nurse-supervised home health aide, and the program covers their wages. This is not a job to go find, it is payment for care that is already happening.", "covered": ["Paid wages for care already given", "Trained as a home health aide", "Registered-nurse supervision", "No cost to the family"], "term": "white-card", "source": { "label": "U.S. Department of Labor, EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "Ask Alara to enroll your family member when you set up care. One rule: that person cannot also serve as your Authorized Representative with the DOL.", "trust": "General information only; enrollment and the level of care are confirmed through your claim." },
-    "ans-white-card-medicare": { "id": "ans-white-card-medicare", "type": "answer", "title": "Yes. You can have the White Card and Medicare", "answer": "The White Card and Medicare operate independently. Having one does not cancel the other. For care tied to your accepted EEOICPA condition, the White Card generally pays with no out-of-pocket cost.", "covered": ["No loss of Medicare", "No premiums/copays for covered EEOICPA care"], "term": "white-card", "source": { "label": "U.S. Department of Labor, EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "Keep both. They cover different things and can work together.", "trust": "General information only. Confirm coordination details with your Resource Center." },
-    "ans-get-white-card": { "id": "ans-get-white-card", "type": "answer", "title": "How to get a White Card (EEOICPA)", "answer": "You file an EEOICPA claim (Form EE-1 as a worker, or EE-2 as a survivor) with the Department of Labor. When a condition is accepted, you receive a White Card for covered medical care. The DOL Las Vegas Resource Center can help you file.", "covered": ["Eligibility screening", "Help understanding EE-1 / EE-2", "Resource Center referral"], "term": "eeoicpa", "source": { "label": "U.S. Department of Labor, EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "Contact the DOL Resource Center to file. Alara can help you understand the steps and what care follows acceptance.", "trust": "Alara does not file claims or determine eligibility. The Department of Labor does." },
-    "ans-nts": { "id": "ans-nts", "type": "answer", "title": "Nevada Test Site & DOE workers may qualify for EEOICPA", "answer": "Workers at the Nevada Test Site / Nevada National Security Site, the Tonopah Test Range, and Atomic Weapons Employer facilities may qualify for EEOICPA benefits, including a White Card and covered home health, depending on their work history and condition.", "covered": ["Eligibility overview", "Covered conditions", "What the White Card covers"], "term": "eeoicpa", "source": { "label": "U.S. Department of Labor, EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "The DOL Resource Center can review your specific facility and dates of employment.", "trust": "Eligibility is determined by the Department of Labor.", "discover": ["ans-eeoicpa-hh", "ans-consequential", "ans-paid-caregiver"] },
-    "ans-survivor": { "id": "ans-survivor", "type": "answer", "title": "Survivors may qualify for EEOICPA benefits", "answer": "Eligible survivors of a worker who would have qualified under EEOICPA may file a claim (Form EE-2) and may receive compensation. A representative or the DOL Resource Center can help determine eligibility.", "covered": ["Survivor eligibility overview", "Form EE-2 guidance"], "term": "eeoicpa", "source": { "label": "U.S. Department of Labor, EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "Gather the worker's employment and medical history; contact the Resource Center to file.", "trust": "Alara provides information; the Department of Labor determines survivor eligibility." },
-    "ans-owcp-hh": { "id": "ans-owcp-hh", "type": "answer", "title": "Yes. OWCP can cover home health when authorized", "answer": "If you are a federal or postal worker with an OWCP-accepted injury or illness, and a physician orders home health, OWCP can authorize it at no out-of-pocket cost.", "covered": ["Skilled nursing", "Wound care", "Physical & occupational therapy", "Home health aide"], "term": "owcp", "source": { "label": "U.S. Department of Labor, OWCP/FECA", "url": "https://www.dol.gov/agencies/owcp/FECA" }, "nextStep": "Your physician's order plus OWCP authorization start care. A nurse can help track the authorization.", "trust": "Coverage depends on OWCP acceptance and authorization for your claim." },
-    "ans-owcp-nursing": { "id": "ans-owcp-nursing", "type": "answer", "title": "Skilled nursing & wound care under OWCP", "answer": "OWCP can authorize skilled nursing and home wound care for an accepted federal/postal work injury when a physician orders it. Postal (USPS) workers are covered the same way as other federal employees.", "covered": ["RN skilled nursing", "Wound care", "Medication management", "Post-surgical care"], "term": "feca", "source": { "label": "U.S. Department of Labor, OWCP/FECA", "url": "https://www.dol.gov/agencies/owcp/FECA" }, "nextStep": "Confirm your accepted conditions and obtain a physician order; Alara can explain the authorization path.", "trust": "Authorization is determined by OWCP." },
-    "ans-va-hh": { "id": "ans-va-hh", "type": "answer", "title": "The VA can cover home health for eligible veterans", "answer": "Enrolled veterans can receive home health through VA Community Care when the VA cannot readily provide it. A VA referral/authorization and a provider order are required. In Region 4 (including Nevada), the network is administered by TriWest.", "covered": ["Skilled nursing", "Wound care", "Therapy", "Home health aide"], "term": "community-care", "source": { "label": "U.S. Department of Veterans Affairs, Community Care", "url": "https://www.va.gov/communitycare/" }, "nextStep": "Ask your VA care team for a community-care referral; a provider can begin once authorized.", "trust": "Eligibility and referrals are determined by the VA." },
-    "ans-va-wound": { "id": "ans-va-wound", "type": "answer", "title": "Home wound care for veterans through VA Community Care", "answer": "Eligible veterans can receive skilled home wound care through VA Community Care when referred and authorized by the VA, delivered by an approved community provider.", "covered": ["Wound assessment", "Dressing changes", "Infection monitoring", "Advanced wound therapy"], "term": "wound-care", "source": { "label": "U.S. Department of Veterans Affairs, Community Care", "url": "https://www.va.gov/communitycare/" }, "nextStep": "Request a community-care referral from your VA care team.", "trust": "Referral and eligibility are determined by the VA." },
-    "ans-home-health": { "id": "ans-home-health", "type": "answer", "title": "What home health is", "answer": "Home health is skilled, physician-ordered medical care delivered in your home: nursing, wound care, infusion, and rehabilitation. It is different from non-medical home care, and federal programs (EEOICPA, OWCP, VA) can cover it.", "covered": ["Skilled nursing", "Wound care", "Infusion therapy", "Therapy", "Care coordination"], "term": "home-health", "source": { "label": "Centers for Medicare & Medicaid Services", "url": "https://www.cms.gov/" }, "nextStep": "Tell us your program and we'll show what's covered and how to start.", "trust": "General information only." },
-    "ans-local": { "id": "ans-local", "type": "answer", "title": "Federal-benefits home health in Southern Nevada", "answer": "In Las Vegas, Clark County, and Southern Nevada, EEOICPA White Card holders, OWCP-covered federal/postal workers, and VA Community Care veterans can receive covered home health. Local resources include the DOL Las Vegas Resource Center and the VA Southern Nevada Healthcare System.", "covered": ["Local eligibility overview", "Resource Center & VA pointers", "Covered services"], "term": "home-health", "source": { "label": "U.S. Department of Labor, EEOICP", "url": "https://www.dol.gov/agencies/owcp/energy" }, "nextStep": "We can connect your program to local, covered care and the right Resource Center.", "trust": "Alara complements your Resource Center, physician, and the VA. It does not replace them." }
+  <script>
+  /* ======================================================================
+     THE GOVERNED REASONER
+     Program facts mirror data/programs.json (single source of truth). The
+     rules below map general, non-medical signals to an EDUCATIONAL tier per
+     program. They never assert "you qualify" — they teach what generally
+     applies for a situation like yours. Cost phrasing is the canonical
+     "no cost to you". No PHI is collected or stored.
+     ====================================================================== */
+
+  var PROGRAMS = {
+    eeoicpa: {
+      name: 'White Card', tag: 'EEOICPA', guide: 'white-card.html',
+      covered: [
+        { key:'nursing', label:'Skilled nursing' },
+        { key:'wound', label:'Wound care' },
+        { key:'therapy', label:'Physical & occupational therapy' },
+        { key:'aide', label:'Home health aide' },
+        { key:'other', label:'Caregiver training' }
+      ],
+      source: { label:'U.S. Department of Labor, EEOICP', url:'https://www.dol.gov/agencies/owcp/energy' }
+    },
+    owcp: {
+      name: 'OWCP / FECA', tag: 'Federal & postal', guide: 'owcp.html',
+      covered: [
+        { key:'nursing', label:'Skilled nursing' },
+        { key:'wound', label:'Wound care' },
+        { key:'therapy', label:'Physical & occupational therapy' },
+        { key:'aide', label:'Home health aide' },
+        { key:'other', label:'Medical social work' }
+      ],
+      source: { label:'U.S. Department of Labor, OWCP/FECA', url:'https://www.dol.gov/agencies/owcp/FECA' }
+    },
+    va: {
+      name: 'VA Community Care', tag: 'Veterans', guide: 'programs.html#community-care',
+      covered: [
+        { key:'nursing', label:'Skilled nursing' },
+        { key:'wound', label:'Wound care' },
+        { key:'therapy', label:'Therapy' },
+        { key:'aide', label:'Home health aide' }
+      ],
+      source: { label:'U.S. Department of Veterans Affairs, Community Care', url:'https://www.va.gov/communitycare/' }
+    }
+  };
+
+  var COST = 'no cost to you'; // canonical (data.constants.costPhrase)
+
+  // Reason each program to an educational tier from the signals.
+  function reason(sig) {
+    var out = [];
+    function push(id, tier, because, clarify) { out.push({ id:id, tier:tier, because:because, clarify:clarify }); }
+
+    var unsure = (sig.situation === 'unsure');
+    var openProgram = (!sig.program || sig.program === 'none');
+
+    // EEOICPA / White Card
+    if (sig.situation === 'energy' || sig.program === 'whitecard') {
+      push('eeoicpa', 'strong',
+        'You worked at the <b>Test Site, DOE, or an Atomic Weapons Employer</b> facility, the work EEOICPA was written for.',
+        'What confirms it: an illness the Department of Labor has linked to that work.');
+    } else if (unsure && openProgram) {
+      push('eeoicpa', 'possible',
+        'If your illness traces back to Test Site, DOE, or atomic-weapons work, the White Card may apply.',
+        'What would tell us: where you worked, and whether that work made you sick.');
+    }
+
+    // OWCP / FECA
+    if (sig.situation === 'fedpostal' || sig.program === 'owcp') {
+      push('owcp', 'strong',
+        'You were injured working for the <b>federal government or the Postal Service</b>, which is what OWCP covers.',
+        'What confirms it: OWCP accepting the injury, and a physician’s order for home health.');
+    } else if (unsure && openProgram) {
+      push('owcp', 'possible',
+        'If a job with the federal government or Postal Service caused the injury, OWCP may cover care at home.',
+        'What would tell us: whether the injury happened at federal or postal work.');
+    }
+
+    // VA Community Care
+    if (sig.situation === 'veteran' || sig.program === 'va') {
+      push('va', 'strong',
+        'You are a <b>veteran</b>, and the VA can bring home health through Community Care.',
+        'What confirms it: VA enrollment and a community-care authorization for your area.');
+    } else if (unsure && openProgram) {
+      push('va', 'possible',
+        'If you served and are enrolled with the VA, Community Care may bring home health to you.',
+        'What would tell us: whether you are a veteran enrolled with the VA.');
+    }
+
+    return out;
+  }
+
+  // The one next step, chosen from the strongest program present.
+  function nextStep(results, sig) {
+    var strong = results.filter(function(r){ return r.tier === 'strong'; });
+    var top = strong[0];
+    if (top && top.id === 'eeoicpa') return 'Bring your accepted condition and your physician’s order. A nurse can verify what your White Card covers and start care, at ' + COST + '.';
+    if (top && top.id === 'owcp') return 'Confirm your accepted injury and get your physician’s order. A nurse can track the OWCP authorization and start care, at ' + COST + '.';
+    if (top && top.id === 'va') return 'Ask your VA care team for a community-care referral. A nurse can begin once it is authorized, at ' + COST + '.';
+    return 'A short call with a nurse, or your DOL Resource Center, will tell you which path fits. No cost, and no commitment.';
+  }
+
+  // "Easy to miss" is educational and program-aware. Neutral framing only.
+  function missed(results, sig) {
+    var ids = results.map(function(r){ return r.id; });
+    var items = [];
+    if (ids.indexOf('eeoicpa') > -1) {
+      items.push('A <a href="white-card.html#consequential">consequential condition</a>: a new problem caused by your accepted illness can be added and covered.');
+    }
+    if (ids.indexOf('eeoicpa') > -1 || ids.indexOf('owcp') > -1 || sig.situation === 'caregiver') {
+      items.push('A family member already helping with care can often be trained and <a href="white-card.html">paid as a home health aide</a>.');
+    }
+    items.push('Travel reimbursement, durable medical equipment, and home-safety changes are commonly covered and commonly overlooked.');
+    return items;
   }
   </script>
 
   <script>
-    var TREE = JSON.parse(document.getElementById('nav-data').textContent);
-    var wiz = document.getElementById('wiz');
-    var orient = document.getElementById('navOrient');
-    var status = document.getElementById('wizStatus');
-    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var trail = [];   // our own back-stack (NOT window.history)
-    var HOME_NODE = 'by-question';  // the one obvious door
-    var currentId = HOME_NODE;
-    var heroLead = document.getElementById('navHeroLead');
+  /* ======================================================================
+     THE FLOW — adaptive intake, a visible thinking beat, the picture.
+     ====================================================================== */
+  var nav = document.getElementById('nav');
+  var orient = document.getElementById('navOrient');
+  var heroLead = document.getElementById('navHeroLead');
+  var statusEl = document.getElementById('navStatus');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  var sig = {};          // { situation, program, care } — never persisted
+  var stack = [];        // question ids answered, for Back
 
-    // The deep guide a term routes to, if any. EEOICPA family -> white-card.html,
-    // OWCP family -> owcp.html. Everything else falls back to the Library.
-    var GUIDE_FOR = {
-      'white-card': 'white-card.html', 'eeoicpa': 'white-card.html',
-      'consequential-condition': 'white-card.html', 'impairment-evaluation': 'white-card.html',
-      'owcp': 'owcp.html', 'feca': 'owcp.html'
-    };
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function track(){ /* In production: POST anonymous, no-PII counts to /api/navigator/events for the guidance loop. */ }
 
-    function scrollTop(){ window.scrollTo({ top: 0, behavior: prefersReduced ? 'auto' : 'smooth' }); }
-
-    // Move focus to the new question/answer heading and announce it via the
-    // small status node, instead of re-reading the whole .wiz on every step.
-    function focusHeading(){
-      var h = wiz.querySelector('.wiz__question, .ans__title');
-      if (h) {
-        if (!h.hasAttribute('tabindex')) h.setAttribute('tabindex', '-1');
-        h.focus();
-        if (status) status.textContent = h.textContent;
-      }
+  // Question definitions. `when` decides if a question is still needed (adaptive).
+  var QUESTIONS = [
+    {
+      id: 'situation',
+      title: 'Which of these sounds most like you?',
+      when: function(){ return true; },
+      options: [
+        { label: 'I worked at the Nevada Test Site, DOE, or an atomic-weapons plant', set:{ situation:'energy' } },
+        { label: 'I was injured working for the federal government or Postal Service', set:{ situation:'fedpostal' } },
+        { label: 'I’m a veteran', set:{ situation:'veteran' } },
+        { label: 'I’m caring for a family member', set:{ situation:'caregiver' } },
+        { label: 'I’m not sure yet', set:{ situation:'unsure' } }
+      ]
+    },
+    {
+      id: 'program',
+      // Only needed when we can't infer the program from the situation.
+      when: function(){ return sig.situation === 'unsure' || sig.situation === 'caregiver'; },
+      title: function(){ return sig.situation === 'caregiver' ? 'Which program is the person you care for under?' : 'Do you already hold any of these?'; },
+      options: [
+        { label: 'White Card (EEOICPA)', set:{ program:'whitecard' } },
+        { label: 'OWCP / FECA', set:{ program:'owcp' } },
+        { label: 'VA', set:{ program:'va' } },
+        { label: 'None, or I’m not sure', set:{ program:'none' } }
+      ]
+    },
+    {
+      id: 'care',
+      when: function(){ return true; },
+      title: 'What kind of care is needed?',
+      options: [
+        { label: 'Skilled nursing', set:{ care:'nursing' } },
+        { label: 'Wound care', set:{ care:'wound' } },
+        { label: 'Physical or occupational therapy', set:{ care:'therapy' } },
+        { label: 'Help with daily activities at home', set:{ care:'aide' } },
+        { label: 'Not sure yet', set:{ care:'unsure' } }
+      ]
     }
+  ];
 
-    function go(id, push){ if (push !== false) trail.push(currentId); currentId = id; render(); scrollTop(); focusHeading(); }
+  // The list of questions that actually apply, given current signals.
+  function activeQuestions(){ return QUESTIONS.filter(function(q){ return q.when(); }); }
 
-    // The orientation frame and the hero lead belong only to the very first step.
-    function setOrient(){
-      var first = (currentId === HOME_NODE && trail.length === 0);
-      if (orient) orient.style.display = first ? '' : 'none';
-      if (heroLead) heroLead.style.display = first ? '' : 'none';
-    }
+  function focusMain(){
+    var h = nav.querySelector('.q__title, .pic__title');
+    if (h) { if (!h.hasAttribute('tabindex')) h.setAttribute('tabindex','-1'); h.focus(); if (statusEl) statusEl.textContent = h.textContent; }
+  }
+  function scrollTop(){ window.scrollTo({ top:0, behavior: reduce ? 'auto' : 'smooth' }); }
 
-    function render(){
-      var node = TREE[currentId] || TREE['start'];
-      var depth = trail.length;
-      setOrient();
-      var crumbs = '<div class="wiz__crumbs">' +
-        (trail.length ? '<button class="wiz__back" type="button" id="back"><span aria-hidden="true">&larr;</span> Back</button>' : '<span></span>') +
-        '<span class="wiz__step">' + (node.type === 'answer' ? 'Your answer' : 'Step ' + (depth + 1)) + '</span></div>';
+  function setOrient(first){
+    if (orient) orient.style.display = first ? '' : 'none';
+    if (heroLead) heroLead.style.display = first ? '' : 'none';
+  }
 
-      if (node.type === 'branch') {
-        var opts = node.options.map(function(o){
-          return '<button class="wiz__option' + (o.secondary ? ' wiz__option--secondary' : '') + '" type="button" data-next="' + o.next + '">' + esc(o.label) +
-                 ' <span class="arrow" aria-hidden="true">&rarr;</span></button>';
-        }).join('');
-        wiz.innerHTML = crumbs +
-          '<h2 class="wiz__question">' + esc(node.question) + '</h2>' +
-          '<div class="wiz__options">' + opts + '</div>' +
-          (node.help ? '<p class="wiz__help">' + esc(node.help) + '</p>' : '');
-        Array.prototype.forEach.call(wiz.querySelectorAll('.wiz__option'), function(b){
-          b.addEventListener('click', function(){ go(b.getAttribute('data-next')); });
-        });
-      } else {
-        var covered = (node.covered || []).map(function(c){ return '<li>' + esc(c) + '</li>'; }).join('');
+  function stepText(id){ var vals={ situation:'situation', program:'program', care:'care' }; return vals[id]; }
 
-        // "Benefits families in your situation are often missing": a deliberate,
-        // framed discovery module. Only built when the answer card lists discover[]
-        // ids, so it appears after an expected answer, never as the opener.
-        var discoverHtml = '';
-        var discoverIds = (node.discover || []).filter(function(id){ return TREE[id]; });
-        if (discoverIds.length) {
-          var items = discoverIds.map(function(id){
-            return '<button class="ans-discover__item" type="button" data-next="' + id + '">' +
-                     esc(TREE[id].title) + ' <span class="arrow" aria-hidden="true">&rarr;</span></button>';
-          }).join('');
-          discoverHtml =
-            '<div class="ans-discover">' +
-              '<span class="eyebrow ans-discover__kicker">You may be missing this</span>' +
-              '<p class="ans-discover__title">Benefits that often apply alongside this one.</p>' +
-              '<p class="ans-discover__intro">Because these programs are complex, valuable coverage is easy to miss. Here is what else may be yours.</p>' +
-              '<div class="ans-discover__list">' + items + '</div>' +
+  function renderQuestion(idx) {
+    var qs = activeQuestions();
+    var q = qs[idx];
+    var title = (typeof q.title === 'function') ? q.title() : q.title;
+    setOrient(idx === 0);
+
+    var dots = qs.map(function(_, i){ return '<span class="q__dot' + (i <= idx ? ' is-on' : '') + '"></span>'; }).join('');
+    var back = idx > 0
+      ? '<button class="q__back" type="button" id="qback"><span aria-hidden="true">&larr;</span> Back</button>'
+      : '<span></span>';
+
+    var opts = q.options.map(function(o, i){
+      return '<button class="opt" type="button" data-i="' + i + '">' + esc(o.label) +
+             ' <span class="arrow" aria-hidden="true">&rarr;</span></button>';
+    }).join('');
+
+    nav.innerHTML =
+      '<div class="nav-in">' +
+        '<div class="q__crumbs">' + back + '<span class="q__dots" aria-hidden="true">' + dots + '</span></div>' +
+        '<h2 class="q__title">' + esc(title) + '</h2>' +
+        '<div class="q__opts">' + opts + '</div>' +
+      '</div>';
+
+    Array.prototype.forEach.call(nav.querySelectorAll('.opt'), function(b){
+      b.addEventListener('click', function(){
+        var chosen = q.options[+b.getAttribute('data-i')];
+        Object.keys(chosen.set).forEach(function(k){ sig[k] = chosen.set[k]; });
+        stack.push(q.id);
+        advance();
+      });
+    });
+    var bk = document.getElementById('qback');
+    if (bk) bk.addEventListener('click', goBack);
+
+    scrollTop(); focusMain();
+  }
+
+  function goBack(){
+    var lastId = stack.pop();
+    if (lastId && sig.hasOwnProperty(mapSignal(lastId))) delete sig[mapSignal(lastId)];
+    // Re-derive where we are and render that question again.
+    var qs = activeQuestions();
+    var idx = Math.max(0, qs.length - 1);
+    // Find the first unanswered active question.
+    for (var i = 0; i < qs.length; i++) { if (!isAnswered(qs[i])) { idx = i; break; } }
+    renderQuestion(idx);
+  }
+  function mapSignal(qid){ return qid; } // question id === signal key here
+  function isAnswered(q){
+    if (q.id === 'situation') return !!sig.situation;
+    if (q.id === 'program') return !!sig.program;
+    if (q.id === 'care') return !!sig.care;
+    return false;
+  }
+
+  function advance(){
+    var qs = activeQuestions();
+    for (var i = 0; i < qs.length; i++) { if (!isAnswered(qs[i])) { renderQuestion(i); return; } }
+    think();
+  }
+
+  // The visible reasoning beat, then the picture.
+  function think(){
+    setOrient(false);
+    var chipLabels = [];
+    if (sig.situation) chipLabels.push(situationChip(sig.situation));
+    if (sig.program && sig.program !== 'none') chipLabels.push(programChip(sig.program));
+    if (sig.care && sig.care !== 'unsure') chipLabels.push(careChip(sig.care));
+    var chips = chipLabels.map(function(l, i){
+      return '<span class="think__chip" style="animation-delay:' + (0.15 + i*0.12) + 's">' + esc(l) + '</span>';
+    }).join('');
+
+    nav.innerHTML =
+      '<div class="think" aria-hidden="true">' +
+        '<p class="think__lead">Reading what you told me&hellip;</p>' +
+        '<div class="think__chips">' + chips + '</div>' +
+      '</div>';
+    if (statusEl) statusEl.textContent = 'Preparing what these benefits mean for you.';
+
+    var delay = reduce ? 0 : 1150;
+    window.setTimeout(renderPicture, delay);
+  }
+
+  function situationChip(s){ return { energy:'Energy / Test Site worker', fedpostal:'Federal or postal worker', veteran:'Veteran', caregiver:'Family caregiver', unsure:'Still sorting it out' }[s]; }
+  function programChip(p){ return { whitecard:'Holds a White Card', owcp:'Under OWCP', va:'With the VA' }[p]; }
+  function careChip(c){ return { nursing:'Skilled nursing', wound:'Wound care', therapy:'Therapy', aide:'Help at home' }[c]; }
+
+  function renderPicture(){
+    var results = reason(sig);
+    var strong = results.filter(function(r){ return r.tier === 'strong'; });
+    var possible = results.filter(function(r){ return r.tier === 'possible'; });
+
+    var sub = strong.length
+      ? 'Based on what you told me, here is what generally applies, and the one thing to do next. This is general information, not a decision about your case.'
+      : 'From what you told me, here are the paths worth a closer look, and the one thing to do next. This is general information, not a decision about your case.';
+
+    var html = '<div class="stagger">';
+    html += '<div class="pic__head">' +
+              '<span class="eyebrow pic__eyebrow">What this means for you</span>' +
+              '<h2 class="pic__title">' + (strong.length ? 'Here is what these benefits generally cover for you.' : 'Here are the paths worth checking.') + '</h2>' +
+              '<p class="pic__sub">' + sub + '</p>' +
             '</div>';
-        }
 
-        // The single primary action for this answer: a deep guide if one maps to
-        // the term, otherwise the Library entry. Null only if there is no term.
-        var guideHref = GUIDE_FOR[node.term];
-        var primary = guideHref
-          ? { href: guideHref, label: (guideHref.indexOf('white-card') >= 0 ? 'Read the complete White Card guide' : 'Read the complete OWCP guide') }
-          : (node.term ? { href: 'learn.html#' + node.term, label: 'See this in the Library' } : null);
-
-        wiz.innerHTML = crumbs +
-          '<article class="ans">' +
-            '<div class="ans__head">' +
-              '<span class="eyebrow ans__kicker">What your benefits generally cover</span>' +
-              '<h2 class="ans__title">' + esc(node.title) + '</h2>' +
-              '<p class="ans__answer">' + esc(node.answer) + '</p>' +
-            '</div>' +
-            '<div class="ans__body">' +
-              (covered ? '<div><p class="ans__label">Generally included</p><ul class="ans__covered">' + covered + '</ul></div>' : '') +
-              '<p class="ans__ack">This is a benefit you earned. Here is how to use it.</p>' +
-              '<div><p class="ans__label">Your next step</p><div class="ans__next">' + esc(node.nextStep || '') + '</div></div>' +
-              discoverHtml +
-              // One primary action: keep learning. The deep guide if there is one,
-              // otherwise the Library. "Have a nurse call you" stays available, but
-              // quiet — the ethos is to inform, not to push a call.
-              '<div class="ans__cta">' +
-                (primary ? '<a class="btn" href="' + primary.href + '">' + esc(primary.label) + ' <span class="arrow" aria-hidden="true">&rarr;</span></a>' : '') +
-              '</div>' +
-              '<div class="ans__cta-sub">' +
-                '<a href="begin.html">Have a nurse call you</a>' +
-                '<button class="restart" type="button" id="restart">Start over</button>' +
-                (node.source ? '<a href="' + esc(node.source.url) + '" target="_blank" rel="noopener">Source: ' + esc(node.source.label) + ' &nearr;</a>' : '') +
-              '</div>' +
-              (node.trust ? '<p class="ans__trust">' + esc(node.trust) + '</p>' : '') +
-            '</div>' +
-          '</article>';
-
-        Array.prototype.forEach.call(wiz.querySelectorAll('.ans-discover__item'), function(b){
-          b.addEventListener('click', function(){ go(b.getAttribute('data-next')); });
-        });
-        var r = document.getElementById('restart');
-        if (r) r.addEventListener('click', function(){ trail = []; currentId = HOME_NODE; render(); scrollTop(); focusHeading(); });
-      }
-      var back = document.getElementById('back');
-      if (back) back.addEventListener('click', function(){ currentId = trail.pop(); render(); scrollTop(); focusHeading(); });
+    // 01 — what applies
+    html += '<div class="pic-sec">' + secHead('01', strong.length ? 'What applies to you' : 'Paths worth checking');
+    if (strong.length) {
+      html += '<p class="tier__label">Generally covered for someone like you</p>' +
+              strong.map(function(r){ return progCard(r, 'strong'); }).join('');
     }
+    if (possible.length) {
+      html += '<p class="tier__label">Worth asking about</p>' +
+              possible.map(function(r){ return progCard(r, 'possible'); }).join('');
+    }
+    html += '</div>';
 
-    // deep link: ?node=by-program  or  ?node=ans-eeoicpa-hh
-    // Edge-case nodes remain reachable by deep link but are never the default opener.
-    var params = new URLSearchParams(location.search);
-    var startNode = params.get('node');
-    if (startNode && TREE[startNode]) { currentId = startNode; }
-    render();
+    // 02 — easy to miss
+    var miss = missed(results, sig);
+    html += '<div class="pic-sec">' + secHead('02', 'Easy to miss') +
+              '<div class="miss">' +
+                '<p class="miss__intro">These programs are complex, so real coverage is easy to overlook. Worth raising:</p>' +
+                '<div class="miss__list">' + miss.map(function(m){ return '<p class="miss__item">' + m + '</p>'; }).join('') + '</div>' +
+              '</div>' +
+            '</div>';
+
+    // One next step
+    html += '<div class="step">' +
+              '<p class="step__label">Your one next step</p>' +
+              '<p class="step__body">' + esc(nextStep(results, sig)) + '</p>' +
+              '<div class="step__actions">' +
+                '<a class="btn btn--on" href="begin.html">Have a nurse call you <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
+                '<a class="step__call" href="tel:+17028149630">Or call (702) 814-9630</a>' +
+              '</div>' +
+            '</div>';
+
+    // Footer: keep learning + restart + disclaimer
+    var guideLink = strong.length ? PROGRAMS[strong[0].id].guide : (possible.length ? PROGRAMS[possible[0].id].guide : 'programs.html');
+    html += '<div class="pic__foot">' +
+              '<a href="' + guideLink + '">Read the full guide <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
+              '<button class="pic__restart" type="button" id="restart">Start over</button>' +
+            '</div>';
+    html += '<p class="pic__trust">General information only, not a coverage determination. Your DOL Resource Center, physician, and the VA confirm what applies to your claim. Nothing you entered here was saved.</p>';
+    html += '</div>';
+
+    nav.innerHTML = html;
+    var r = document.getElementById('restart');
+    if (r) r.addEventListener('click', restart);
+    track();
+    scrollTop(); focusMain();
+  }
+
+  function progCard(r, tier){
+    var p = PROGRAMS[r.id];
+    var chips = p.covered.map(function(c){
+      var match = (sig.care && sig.care === c.key);
+      return '<span class="prog__chip' + (match ? ' prog__chip--match' : '') + '">' + esc(c.label) + '</span>';
+    }).join('');
+    return '<div class="prog prog--' + tier + '">' +
+             '<div class="prog__bar"><span class="prog__name">' + esc(p.name) + '</span><span class="prog__tag">' + esc(p.tag) + '</span></div>' +
+             '<div class="prog__body">' +
+               '<p class="prog__because">' + r.because + '</p>' +
+               '<div class="prog__covered">' + chips + '</div>' +
+               '<p class="prog__cost">Covered care tied to your accepted condition is at ' + COST + '.</p>' +
+               '<p class="prog__clarify">' + esc(r.clarify) + '</p>' +
+               '<div class="prog__foot">' +
+                 '<a href="' + p.guide + '">See the full ' + esc(p.name) + ' guide <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
+                 '<a class="prog__src" href="' + p.source.url + '" target="_blank" rel="noopener">Source: ' + esc(p.source.label) + ' &nearr;</a>' +
+               '</div>' +
+             '</div>' +
+           '</div>';
+  }
+
+  function secHead(num, title){
+    return '<div class="pic-sec__head"><span class="pic-sec__num">' + num + '</span><span class="pic-sec__title">' + esc(title) + '</span><span class="pic-sec__rule"></span></div>';
+  }
+
+  function restart(){ sig = {}; stack = []; renderQuestion(0); }
+
+  // Boot
+  renderQuestion(0);
   </script>
 
   <script>
@@ -393,14 +605,6 @@
       toggle.setAttribute('aria-expanded', String(!open));
       toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
       menu.setAttribute('data-open', String(!open)); }); }
-    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!prefersReduced && 'IntersectionObserver' in window) {
-      document.documentElement.classList.add('js-reveal');
-      var io = new IntersectionObserver(function (entries) { entries.forEach(function (e) {
-        if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
-      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
-      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
-    } else { document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('is-in'); }); }
   </script>
   <script src="site-nav.js" defer></script>
 </body>

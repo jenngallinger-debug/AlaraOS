@@ -40,6 +40,7 @@ const BANNED_VOICE = [
   'anyone told',
   'never told',
   'been told about',
+  'your situation',
   'never knew you had',
   'were never told',
   'hard part',
