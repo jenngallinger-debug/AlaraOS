@@ -156,6 +156,18 @@
     .worth__note { margin-top: 16px; font-size: 0.9375rem; line-height: 1.6; color: var(--taupe-ink); }
     .worth__note a { color: var(--espresso); }
 
+    /* Worked example — how the parts stack, clearly illustrative. */
+    .stack-ex { margin-top: 26px; background: var(--greige); border-radius: 12px; padding: clamp(24px, 3.2vw, 36px); }
+    .stack-ex__k { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--bronze); }
+    .stack-ex__lead { margin-top: 12px; font-size: 1.0625rem; line-height: 1.6; color: var(--espresso); max-width: 62ch; }
+    .stack-ex__rows { margin-top: 18px; border-top: 1px solid var(--hairline); }
+    .stack-ex__row { display: flex; justify-content: space-between; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--hairline); font-size: 1.0625rem; color: var(--taupe-ink); }
+    .stack-ex__row span:last-child { font-variant-numeric: tabular-nums; color: var(--espresso); white-space: nowrap; }
+    .stack-ex__row--total { font-weight: 500; color: var(--espresso); border-bottom: none; border-top: 2px solid var(--bronze); }
+    .stack-ex__row--total span:last-child { font-family: var(--display); font-size: 1.25rem; }
+    .stack-ex__note { margin-top: 16px; font-size: 0.875rem; line-height: 1.6; color: var(--taupe); }
+    .stack-ex__note a { color: var(--espresso); }
+
     /* Quick eligibility check — the self-serve tool no competitor has. */
     .qcheck { padding-block: clamp(40px, 5vw, 72px); background: var(--mist); border-bottom: 1px solid var(--hairline); }
     .qcheck__box { max-width: 720px; margin-inline: auto; background: var(--paper); border: 1px solid var(--hairline); border-radius: 12px; padding: clamp(28px, 4vw, 44px); box-shadow: 0 1px 2px rgba(52,46,46,.03); }
@@ -419,7 +431,19 @@
                 <p class="worth__p">Eligible survivors of a worker who died from an accepted condition may receive compensation of their own.</p>
               </div>
             </div>
-            <p class="worth__note">Combined, EEOICPA can reach <strong>up to $400,000 in tax-free compensation</strong>. Only the Department of Labor determines your amount. <a href="nevada-test-site.html#estimator">See an illustrative impairment estimate &rarr;</a></p>
+            <p class="worth__note">Combined, EEOICPA can reach <strong>up to $400,000 in tax-free compensation</strong>. Only the Department of Labor determines your amount.</p>
+
+            <div class="stack-ex">
+              <p class="stack-ex__k">How the parts can stack &mdash; an illustration</p>
+              <p class="stack-ex__lead">Say a worker has an accepted Part&nbsp;B cancer, and an accepted Part&nbsp;E toxic-exposure condition rated at 20% whole-body impairment. Here is how the pieces add together:</p>
+              <div class="stack-ex__rows">
+                <div class="stack-ex__row"><span>Part B lump sum</span><span>$150,000</span></div>
+                <div class="stack-ex__row"><span>Part E impairment (20% &times; $2,500)</span><span>$50,000</span></div>
+                <div class="stack-ex__row"><span>White Card home health &amp; medical care</span><span>No cost to you</span></div>
+                <div class="stack-ex__row stack-ex__row--total"><span>Illustrative total, before any wage loss</span><span>$200,000</span></div>
+              </div>
+              <p class="stack-ex__note">Illustrative only, to show how the parts combine. Part E can also pay wage-loss compensation, and eligible survivors may have a claim of their own, so an actual case can differ in both directions. Only the Department of Labor determines your amounts. <a href="nevada-test-site.html#estimator">Try the illustrative impairment estimator &rarr;</a></p>
+            </div>
           </section>
 
           <section id="consequential">
