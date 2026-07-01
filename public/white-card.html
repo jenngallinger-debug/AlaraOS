@@ -175,6 +175,20 @@
     .qc-result__actions { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 12px 14px; }
     .qc-restart { margin-top: 20px; background: none; border: none; padding: 0; font: inherit; font-size: 0.875rem; color: var(--taupe); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
     .qc-restart:hover { color: var(--espresso); }
+
+    /* Audience fork — routes holders vs. pre-card readers right after the definition. */
+    .fork { margin-top: clamp(28px, 4vw, 44px); display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .fork__card { display: flex; flex-direction: column; gap: 7px; padding: 24px 26px; border: 1px solid var(--hairline); border-radius: 12px; background: var(--paper); text-decoration: none; transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease); }
+    .fork__card:hover { border-color: var(--espresso); }
+    .fork__card--strong { background: var(--espresso); border-color: var(--espresso); }
+    .fork__card--strong:hover { border-color: #443D3C; }
+    .fork__k { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--taupe); }
+    .fork__card--strong .fork__k { color: var(--bronze-l); }
+    .fork__h { font-size: 1.125rem; font-weight: 500; color: var(--espresso); letter-spacing: -0.01em; line-height: 1.25; }
+    .fork__card--strong .fork__h { color: var(--on-dark); }
+    .fork__p { font-size: 0.9375rem; line-height: 1.55; color: var(--taupe-ink); }
+    .fork__card--strong .fork__p { color: var(--on-dark-soft); }
+    @media (max-width: 600px) { .fork { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -284,10 +298,10 @@
         <nav class="toc" aria-label="On this page">
           <span class="eyebrow toc__label">On this page</span>
           <ol id="tocList">
+            <li><a href="#picture">What the White Card is</a></li>
             <li><a href="#missed">Benefits most people miss</a></li>
             <li><a href="#covers">What it covers at home</a></li>
             <li><a href="#worth">What it can be worth</a></li>
-            <li><a href="#picture">What the White Card is</a></li>
             <li><a href="#consequential">Consequential conditions</a></li>
             <li><a href="#file">If you do not have a card yet</a></li>
             <li><a href="#medicare">The White Card and Medicare</a></li>
@@ -298,6 +312,29 @@
         </nav>
 
         <div class="prose">
+
+          <section id="picture">
+            <h2>What the White Card actually is.</h2>
+            <p class="section-intro">Before anything else, the ground floor, in four facts.</p>
+            <div class="defs">
+              <div class="defs__row"><span class="defs__term">EEOICPA</span><span class="defs__desc">The Energy Employees Occupational Illness Compensation Program Act: the federal law that pays people who got sick from work at the Nevada Test Site, a Department of Energy site, or an atomic-weapons plant. It provides two separate things: <strong>cash compensation</strong> and <strong>medical care for life</strong>.</span></div>
+              <div class="defs__row"><span class="defs__term">The White Card</span><span class="defs__desc">Proof you have been approved for the medical side. It works like an insurance card, except no copays, no deductibles, and no limits on covered care. The Department of Labor pays the provider directly, and you never receive a bill.</span></div>
+              <div class="defs__row"><span class="defs__term">Who qualifies</span><span class="defs__desc">You may qualify if you, or a family member, worked at one of those sites <strong>in any job</strong> &mdash; trades, security, cleaning, office, cafeteria, not only the scientists &mdash; and later became ill. Whether the illness is covered is the one thing to check next.</span></div>
+              <div class="defs__row"><span class="defs__term">Where Alara fits</span><span class="defs__desc">We are enrolled with the Department of Labor&rsquo;s billing system (WCMBP) and accept the card directly. We provide the covered care, handle the authorization, do the billing, and make sure you receive every benefit you are entitled to.</span></div>
+            </div>
+            <div class="fork">
+              <a class="fork__card" href="#missed">
+                <span class="fork__k">You already have a White Card</span>
+                <span class="fork__h">See the benefits most people never claim &rarr;</span>
+                <span class="fork__p">Travel money, a paid family caregiver, consequential conditions, and more. Most holders leave some of it on the table.</span>
+              </a>
+              <a class="fork__card fork__card--strong" href="case-review.html">
+                <span class="fork__k">You think you might qualify</span>
+                <span class="fork__h">Start a free case review &rarr;</span>
+                <span class="fork__p">A nurse reads your worksite, your work, and your illness together and tells you plainly whether the card can be opened.</span>
+              </a>
+            </div>
+          </section>
 
           <section id="missed">
             <h2>The benefits most people never claim.</h2>
@@ -383,16 +420,6 @@
               </div>
             </div>
             <p class="worth__note">Combined, EEOICPA can reach <strong>up to $400,000 in tax-free compensation</strong>. Only the Department of Labor determines your amount. <a href="nevada-test-site.html#estimator">See an illustrative impairment estimate &rarr;</a></p>
-          </section>
-
-          <section id="picture">
-            <h2>What the White Card actually is.</h2>
-            <p class="section-intro">If you want the ground floor first, here it is in three facts.</p>
-            <div class="defs">
-              <div class="defs__row"><span class="defs__term">EEOICPA</span><span class="defs__desc">The federal law that pays Test Site and DOE workers who got sick from the work. It provides two things: <strong>cash compensation</strong> and <strong>medical benefits for life</strong>.</span></div>
-              <div class="defs__row"><span class="defs__term">The White Card</span><span class="defs__desc">Proof you have been approved for the medical benefits. It works like an insurance card, except no copays, no deductibles, and no limits on covered care. The Department of Labor pays the provider directly. You never receive a bill.</span></div>
-              <div class="defs__row"><span class="defs__term">Where Alara fits</span><span class="defs__desc">We are enrolled with the DOL&rsquo;s WCMBP billing system and accept the card directly. We provide the covered care, handle the authorization, do the billing, and make sure you are receiving every benefit you are entitled to, including the ones above.</span></div>
-            </div>
           </section>
 
           <section id="consequential">
