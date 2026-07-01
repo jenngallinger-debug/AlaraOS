@@ -86,6 +86,50 @@ function logEvent(req, res) {
   });
 }
 
+// ---------------------------------------------------------------------------
+// Form submissions (case review / referral / begin).
+// Delivery is key-ready: if RESEND_API_KEY is set (Render env), the submission
+// is emailed to EMAIL_TO via the Resend HTTP API. Every submission is ALSO
+// appended to data/submissions.log as a local safety net. The client asks
+// /api/config whether email delivery is live; until it is, pages keep their
+// mailto flow and this endpoint is the backup record.
+const SUBMISSIONS_LOG = path.join(__dirname, 'data', 'submissions.log');
+const EMAIL_TO = process.env.EMAIL_TO || 'referrals@alarahomecare.com';
+const EMAIL_FROM = process.env.EMAIL_FROM || 'website@alarahomecare.com';
+const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
+
+function handleSubmit(req, res) {
+  let raw = '';
+  req.on('data', c => { raw += c; if (raw.length > 16384) req.destroy(); });
+  req.on('end', async () => {
+    let body = {};
+    try { body = JSON.parse(raw || '{}'); } catch (e) {}
+    const kind = String(body.kind || 'submission').slice(0, 40);
+    const subject = String(body.subject || ('Website ' + kind)).slice(0, 140);
+    const text = String(body.text || '').slice(0, 8000);
+    if (!text.trim()) { res.writeHead(400, { 'Content-Type': 'application/json' }); return res.end('{"ok":false,"error":"empty"}'); }
+
+    // Safety net first: the local log always gets the record.
+    const rec = { ts: new Date().toISOString(), kind, subject, text };
+    try { fs.appendFileSync(SUBMISSIONS_LOG, JSON.stringify(rec) + '\n'); } catch (e) {}
+
+    let delivered = 'log';
+    if (RESEND_API_KEY) {
+      try {
+        const r = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + RESEND_API_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ from: EMAIL_FROM, to: [EMAIL_TO], subject, text })
+        });
+        if (r.ok) delivered = 'email';
+        else console.error('[submit] email send failed', r.status, await r.text().catch(() => ''));
+      } catch (e) { console.error('[submit] email send error', e.message); }
+    }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, delivered }));
+  });
+}
+
 function robotsTxt() {
   // Staging: disallow everything. Production: allow.
   return IS_PRODUCTION ? 'User-agent: *\nAllow: /\n' : 'User-agent: *\nDisallow: /\n';
@@ -98,6 +142,8 @@ const server = http.createServer((req, res) => {
     if (p === '/healthz') return send(res, 200, 'text/plain', 'ok');
     if (p === '/robots.txt') return send(res, 200, MIME['.txt'], robotsTxt());
     if (p === '/api/event' && req.method === 'POST') return logEvent(req, res);
+    if (p === '/api/submit' && req.method === 'POST') return handleSubmit(req, res);
+    if (p === '/api/config') return send(res, 200, MIME['.json'], JSON.stringify({ emailDelivery: !!RESEND_API_KEY }));
 
     const file = resolveFile(p);
     if (file) return serveFile(res, file);

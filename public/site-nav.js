@@ -37,3 +37,31 @@
   // Following a menu link closes the panel (covers in-page anchors).
   menu.addEventListener('click', function (e) { if (e.target.closest('a')) close(); });
 })();
+
+/* Anonymous usage signals -> /api/event. One page_view per load, one cta event
+   per primary-button tap. No name, no phone, no email, no IP, no cookies, no
+   cross-visit identity — just "which pages and buttons matter to families"
+   (see privacy.html). */
+(function () {
+  function beacon(type, nodeId, label) {
+    var payload = JSON.stringify({ type: type, nodeId: nodeId, label: label || '' });
+    try {
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon('/api/event', new Blob([payload], { type: 'application/json' }));
+      } else {
+        fetch('/api/event', { method: 'POST', body: payload, keepalive: true });
+      }
+    } catch (e) {}
+  }
+
+  var page = window.location.pathname.replace(/\.html$/, '') || '/';
+  beacon('page_view', page);
+
+  // Primary CTAs only: .btn links/buttons and anything opting in via data-evt.
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('a.btn, button.btn, [data-evt]');
+    if (!el) return;
+    var label = el.getAttribute('data-evt') || (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 80);
+    beacon('cta', page, label);
+  });
+})();

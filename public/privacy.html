@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Privacy &middot; Alara Home Care</title>
+  <meta name="description" content="How the Alara Home Care website handles your information: what the forms send, what the anonymous analytics record, and what we never collect. No ads, no third-party trackers, no data sold." />
+  <meta property="og:title" content="Privacy" />
+  <meta property="og:description" content="How the Alara Home Care website handles your information: what the forms send, what the anonymous analytics record, and what we never collect. No ads, no third-party trackers, no data sold." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://alarahc.com/hero-arches.webp" />
+  <link rel="icon" href="logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="site.css" />
+  <style>
+    /* Privacy — the guide reading layout, quiet and factual. */
+    .page-hero--guide { background: var(--mist); border-bottom: 1px solid var(--rule); }
+    .pvwrap { max-width: 760px; margin-inline: auto; padding-block: clamp(40px, 5vw, 72px); }
+    .pvwrap section { border-top: 2px solid var(--rule); margin-top: clamp(34px, 4vw, 52px); padding-top: clamp(24px, 3vw, 36px); }
+    .pvwrap section:first-child { border-top: none; margin-top: 0; padding-top: 0; }
+    .pvwrap h2 { font-size: clamp(1.375rem, 2.4vw, 1.75rem); font-weight: 500; letter-spacing: -0.018em; color: var(--espresso); max-width: 30ch; }
+    .pvwrap p { margin-top: 14px; font-size: 1.0625rem; line-height: 1.7; color: var(--taupe-ink); }
+    .pvwrap p strong { color: var(--espresso); font-weight: 500; }
+    .pvwrap a { color: var(--espresso); }
+    .pvwrap ul { margin-top: 14px; padding-left: 0; list-style: none; display: grid; gap: 10px; }
+    .pvwrap ul li { position: relative; padding-left: 26px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); }
+    .pvwrap ul li::before { content: ""; position: absolute; left: 4px; top: 11px; width: 7px; height: 7px; border: 1.5px solid var(--bronze); border-radius: 50%; }
+    .pvwrap ul li strong { color: var(--espresso); font-weight: 500; }
+    .pv-note { margin-top: 18px; background: var(--greige); border-left: 3px solid var(--bronze); border-radius: 0 8px 8px 0; padding: 20px 22px; }
+    .pv-note p { margin-top: 8px; font-size: 1rem; }
+    .pv-note p:first-child { margin-top: 0; }
+    .pv-updated { margin-top: clamp(34px, 4vw, 52px); padding-top: 20px; border-top: 1px solid var(--hairline); font-size: 0.875rem; color: var(--taupe); }
+  </style>
+</head>
+<body>
+
+  <header class="site-header" id="siteHeader">
+    <div class="container site-header__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care, home">
+        <svg class="brand__mark" viewBox="0 0 100 92" role="img" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
+      </a>
+      <div class="site-header__actions">
+        <nav class="site-nav site-nav--primary" aria-label="Primary">
+          <a class="site-nav__link" href="services.html">Get Care</a>
+          <span class="site-nav__item">
+            <a class="site-nav__link site-nav__link--dd" href="programs.html" aria-haspopup="true">Benefits <span class="nav-caret" aria-hidden="true">&#9662;</span></a>
+            <span class="nav-dd" role="menu">
+              <a class="nav-dd__link nav-dd__link--cta" role="menuitem" href="qualify.html">Do I qualify? <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              <span class="nav-dd__sep" aria-hidden="true"></span>
+              <a class="nav-dd__link" role="menuitem" href="white-card.html">White Card (EEOICPA)</a>
+              <a class="nav-dd__link" role="menuitem" href="reca.html">RECA (Radiation Exposure)</a>
+              <a class="nav-dd__link" role="menuitem" href="owcp.html">Federal Workers (OWCP / FECA)</a>
+              <a class="nav-dd__link" role="menuitem" href="veterans.html">Veterans</a>
+              <span class="nav-dd__sep" aria-hidden="true"></span>
+              <a class="nav-dd__link nav-dd__link--cta" role="menuitem" href="case-review.html">Start a White Card case review <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            </span>
+          </span>
+          <a class="site-nav__link" href="learn.html">Learning Hub</a>
+          <a class="site-nav__link" href="about.html">Why Alara</a>
+          <a class="site-nav__link" href="refer.html">Refer a Patient</a>
+          <a class="header-call" href="tel:+17028149630">
+            <span class="header-call__label">Call us</span>
+            <span class="header-call__num">(702) 814-9630</span>
+          </a>
+        </nav>
+        <a class="btn btn--sm" href="qualify.html">See if you qualify</a>
+        <button class="nav-toggle" type="button" id="navToggle" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu"><span class="nav-toggle__bar" aria-hidden="true"></span></button>
+      </div>
+    </div>
+    <nav class="mobile-menu" id="site-menu" data-open="false" aria-label="Primary (mobile)">
+      <div class="container mobile-menu__inner">
+        <a class="mobile-menu__link" href="services.html">Get Care <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="programs.html">Benefits <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="qualify.html">Do I qualify?</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="white-card.html">White Card (EEOICPA)</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="reca.html">RECA (Radiation Exposure)</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="owcp.html">Federal Workers (OWCP / FECA)</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="veterans.html">Veterans</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="case-review.html">Start a White Card case review</a>
+        <a class="mobile-menu__link" href="learn.html">Learning Hub <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="about.html">Why Alara <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="refer.html">Refer a Patient <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="btn btn--block mobile-menu__cta" href="qualify.html">See if you qualify</a>
+        <p class="mobile-menu__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></p>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-hero page-hero--guide">
+      <div class="container">
+        <div class="pvwrap" style="padding-block: 0;">
+          <span class="eyebrow">Privacy</span>
+          <h1 style="margin-top:14px;">What this website knows about you, and what it never asks.</h1>
+          <p class="page-hero__lead" style="margin-top:16px;">The tools on this site work without an account, without cookies that follow you, and without ads. This page says exactly what happens to anything you type here.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="pvwrap">
+        <section>
+          <h2>What you send us when you use a form</h2>
+          <p>The <a href="case-review.html">case review</a>, <a href="refer.html">referral</a>, and <a href="begin.html">call-back</a> tools send only what you type: a name, a phone number, and whatever you choose to add. Each submission goes to our nurse team so we can call you back &mdash; it is delivered to our care coordination inbox and kept in a submission record on our server so nothing is lost. It is used to respond to you and for nothing else.</p>
+          <ul>
+            <li><strong>Nothing is stored in your browser.</strong> No account is created and there is nothing for you to log into or delete.</li>
+            <li><strong>Nothing is sold or shared for marketing.</strong> Submissions go to Alara&rsquo;s clinical team only.</li>
+            <li><strong>Please keep clinical records out of the forms.</strong> When care begins, medical records are handled through secure clinical channels, not this website.</li>
+          </ul>
+          <div class="pv-note">
+            <p><strong>Once you become a patient,</strong> your health information is protected under HIPAA and handled in our clinical systems. This website is the front door, not the medical record.</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>The estimators and the Navigator</h2>
+          <p>The <a href="qualify.html">benefit Navigator</a>, the impairment estimator, and the other calculators run entirely on your device. What you enter into them is not transmitted, recorded, or seen by anyone at Alara. Close the page and it is gone.</p>
+        </section>
+
+        <section>
+          <h2>Anonymous usage signals</h2>
+          <p>To learn which questions matter most to families, the site records anonymous events &mdash; for example, &ldquo;a visitor opened the care-hours guide&rdquo; or &ldquo;someone started a case review.&rdquo; These events contain <strong>no name, no phone number, no email, and no IP address</strong>, and they are not tied to you across visits. There is no Google Analytics, no Facebook pixel, and no advertising tracker on this site.</p>
+        </section>
+
+        <section>
+          <h2>Calling or emailing us</h2>
+          <p>If you call <a href="tel:+17028149630">(702) 814-9630</a> or email <a href="mailto:referrals@alarahomecare.com">referrals@alarahomecare.com</a>, that conversation lives in our phone and email systems like any call or message to a clinic, and is used to coordinate your care.</p>
+        </section>
+
+        <section>
+          <h2>Questions</h2>
+          <p>Ask us directly. Call <a href="tel:+17028149630">(702) 814-9630</a> or write to <a href="mailto:referrals@alarahomecare.com">referrals@alarahomecare.com</a> and a member of our team will answer.</p>
+        </section>
+
+        <p class="pv-updated">Last updated July 2026. If our practices change, this page changes with them.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care">
+        <svg class="brand__mark" viewBox="0 0 100 92" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
+      </a>
+      <div class="site-footer__meta">Serving all of <a href="las-vegas.html" style="color:inherit;">Clark County and Southern Nevada</a><br /><a href="tel:+17028149630">(702) 814-9630</a> &middot; <a href="privacy.html" style="color:inherit;">Privacy</a></div>
+    </div>
+  </footer>
+
+  <script>
+    var header = document.getElementById('siteHeader');
+    var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 24); };
+    onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+    var toggle = document.getElementById('navToggle'); var menu = document.getElementById('site-menu');
+    if (toggle && menu) { toggle.addEventListener('click', function () {
+      var open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!open));
+      toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+      menu.setAttribute('data-open', String(!open)); }); }
+  </script>
+  <script src="site-nav.js" defer></script>
+</body>
+</html>

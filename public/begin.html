@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Begin &middot; Alara Home Care</title>
   <meta name="description" content="Tell us what's going on, in your own words, and a nurse takes it from there. Leave your name and a number. A nurse calls you, usually within the hour during business hours." />
+  <meta property="og:title" content="Begin" />
+  <meta property="og:description" content="Tell us what's going on, in your own words, and a nurse takes it from there. Leave your name and a number. A nurse calls you, usually within the hour during business hours." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://alarahc.com/hero-arches.webp" />
   <link rel="icon" href="logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -215,10 +219,11 @@
         </svg>
         <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
       </a>
-      <div class="site-footer__meta">Serving all of <a href="las-vegas.html" style="color:inherit;">Clark County, Nevada</a><br /><a href="tel:+17028149630">(702) 814-9630</a></div>
+      <div class="site-footer__meta">Serving all of <a href="las-vegas.html" style="color:inherit;">Clark County, Nevada</a><br /><a href="tel:+17028149630">(702) 814-9630</a> &middot; <a href="privacy.html" style="color:inherit;">Privacy</a></div>
     </div>
   </footer>
 
+  <script src="site-submit.js"></script>
   <script>
     var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -252,11 +257,10 @@
     }
 
     // --- Intake validation + submit ---
-    // In production this POSTs to /commands/referrals and the call back from a
-    // nurse is the system of record. Here we simulate the receipt client-side.
-    // We claim only what is true at submit time: the request was received and a
-    // nurse will call within a real window. No present-tense "someone is already
-    // on it", no browser-clock reference toy.
+    // Submits POST to /api/submit (emailed to the nurse team when delivery is
+    // live, always appended to the server log). The nurse call back is the
+    // system of record. We claim only what is true at submit time: the request
+    // was received and a nurse will call within a real window.
     var form = document.getElementById('intakeForm');
     var nameInput = document.getElementById('name');
     var phoneInput = document.getElementById('phone');
@@ -317,6 +321,20 @@
       submitBtn.disabled = true;
       submitBtn.dataset.label = submitBtn.innerHTML;
       submitBtn.textContent = 'Sending…';
+
+      // Deliver the request to the nurse team (emailed when delivery is live,
+      // always written to the server log). Fire-and-forget: the confirmation
+      // below never waits on the network.
+      var reqLines = [
+        (isReferrer ? 'Referrer callback request' : 'Callback request'),
+        '',
+        'Name: ' + name,
+        'Phone: ' + phoneInput.value.trim()
+      ];
+      var story = document.getElementById('story').value.trim();
+      if (story) reqLines.push('', 'Note: ' + story);
+      reqLines.push('', 'Sent from the Alara begin page. Please call this number back.');
+      AlaraForms.logOnly('callback-request', 'Callback request — ' + name, reqLines.join('\n'));
 
       if (isReferrer) {
         document.getElementById('confirmTitle').textContent = 'Thank you. Your referral is logged.';

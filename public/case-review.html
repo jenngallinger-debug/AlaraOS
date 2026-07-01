@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Start your White Card case review &middot; Alara Home Care</title>
   <meta name="description" content="Start a free White Card (EEOICPA) case review with Alara. A few questions about where you worked and what happened, and a nurse reviews whether the White Card and its lifetime home health can be opened for you. No claim forms, no cost." />
+  <meta property="og:title" content="Start your White Card case review" />
+  <meta property="og:description" content="Start a free White Card (EEOICPA) case review with Alara. A few questions about where you worked and what happened, and a nurse reviews whether the White Card and its lifetime home health can be opened for you. No claim forms, no cost." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://alarahc.com/hero-arches.webp" />
   <link rel="icon" href="logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -192,13 +196,17 @@
         </svg>
         <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
       </a>
-      <div class="site-footer__meta">Serving all of <a href="las-vegas.html" style="color:inherit;">Clark County and Southern Nevada</a><br /><a href="tel:+17028149630">(702) 814-9630</a></div>
+      <div class="site-footer__meta">Serving all of <a href="las-vegas.html" style="color:inherit;">Clark County and Southern Nevada</a><br /><a href="tel:+17028149630">(702) 814-9630</a> &middot; <a href="privacy.html" style="color:inherit;">Privacy</a></div>
     </div>
   </footer>
 
+  <script src="site-submit.js"></script>
   <script>
     // --- Canonical header behavior ---
     var header = document.getElementById('siteHeader');
+    // Is server email delivery live? Set once; read when the contact step renders.
+    var crDelivery = false;
+    AlaraForms.config().then(function (c) { crDelivery = !!c.emailDelivery; });
     var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 24); };
     onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
     var toggle = document.getElementById('navToggle'); var menu = document.getElementById('site-menu');
@@ -385,7 +393,10 @@
         '</div>';
       html += '<div class="cr-actions"><button type="button" class="btn btn--lg" id="crSubmit">Start my case review <span class="arrow" aria-hidden="true">&rarr;</span></button>' +
         '<span class="cr-alt">or call a nurse: <a href="tel:+17028149630">(702) 814-9630</a></span></div>';
-      html += '<p class="cr-trust">Sending this opens a pre-filled email to our nurse team at ' + REVIEW_EMAIL + '. Nothing is stored on this site, and this is not a determination of eligibility.</p>';
+      html += '<p class="cr-trust">' + (crDelivery
+        ? 'Sending this delivers your request directly to our nurse team.'
+        : 'Sending this opens a pre-filled email to our nurse team at ' + REVIEW_EMAIL + '.')
+        + ' Nothing is stored in your browser, and this is not a determination of eligibility.</p>';
       html += '</div>';
       cr.innerHTML = html;
       document.getElementById('crBack').addEventListener('click', goBack);
@@ -422,18 +433,35 @@
       STEPS.forEach(function (s) { if (answers[s.id]) lines.push(recapLabel(s.id) + ': ' + answers[s.id]); });
       lines.push('', 'Sent from the Alara case-review tool. Please review and call this family back.');
       var subject = 'White Card case review — ' + name.value.trim();
-      var href = 'mailto:' + REVIEW_EMAIL + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(lines.join('\n'));
-      // Open the pre-filled email, then show confirmation regardless.
-      window.location.href = href;
-      renderDone(name.value.trim());
+      var body = lines.join('\n');
+
+      // When server email delivery is live (/api/config), the review POSTs to
+      // /api/submit and confirms in-page — no email app needed. Until then the
+      // pre-filled mailto stays, with the POST as a backup record.
+      AlaraForms.config().then(function (c) {
+        if (c.emailDelivery) {
+          AlaraForms.post('case-review', subject, body).then(function (sent) {
+            if (sent) return renderDone(true);
+            window.location.href = 'mailto:' + REVIEW_EMAIL + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+            renderDone(false);
+          });
+        } else {
+          AlaraForms.logOnly('case-review', subject, body);
+          window.location.href = 'mailto:' + REVIEW_EMAIL + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+          renderDone(false);
+        }
+      });
     }
 
-    function renderDone(name) {
+    function renderDone(delivered) {
       mode = 'done';
+      var lede = delivered
+        ? '<p>Your request is with our nurse team. Nothing else to send &mdash; a nurse calls the number you gave.</p>'
+        : '<p>We just opened a pre-filled email to our nurse team. Press send in your email app and we will take it from there. If nothing opened, email <a href="mailto:' + REVIEW_EMAIL + '">' + REVIEW_EMAIL + '</a> or call <a href="tel:+17028149630">(702) 814-9630</a>.</p>';
       var html = '<div class="cr-in cr-panel">' +
         '<svg class="cr-panel__mark" viewBox="0 0 100 92" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/></svg>' +
         '<h2 tabindex="-1" id="crFocus">Your case review is on its way.</h2>' +
-        '<p>We just opened a pre-filled email to our nurse team. Press send in your email app and we will take it from there. If nothing opened, email <a href="mailto:' + REVIEW_EMAIL + '">' + REVIEW_EMAIL + '</a> or call <a href="tel:+17028149630">(702) 814-9630</a>.</p>' +
+        lede +
         '<div class="cr-next"><span class="eyebrow">What happens next</span><ol>' +
         '<li><div><b>A nurse reads your case</b><span>Usually within one business hour. We look at the worksite, the work, and the illness together.</span></div></li>' +
         '<li><div><b>We call you back</b><span>To confirm the details privately and explain what the White Card can open for you.</span></div></li>' +
@@ -441,7 +469,9 @@
         '</ol></div></div>';
       cr.innerHTML = html;
       focusStep();
-      announce('Your case review request is ready to send from your email app.');
+      announce(delivered
+        ? 'Your case review request is with our nurse team.'
+        : 'Your case review request is ready to send from your email app.');
     }
 
     renderStep();
