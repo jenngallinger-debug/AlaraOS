@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>RECA (Radiation Exposure Compensation Act) &middot; reopened in 2025 &middot; Alara Home Care</title>
-  <meta name="description" content="RECA reopened in 2025 and the deadline to file is December 31, 2027. A plain, Nevada-focused guide: who may qualify (downwinders, Nevada Test Site participants, uranium workers), what it pays, and how a RECA award can open the White Card that covers home health at no cost to you. Cited to the Department of Justice and NIOSH." />
+  <meta name="description" content="RECA reopened in 2025 and the deadline to file is December 31, 2027. A plain, Nevada-focused guide: who may qualify (downwinders, Nevada Test Site participants, uranium workers), the one-time $100,000 payment, and how a RECA award can open the White Card that covers home health at no cost to you. Cited to the Department of Justice and NIOSH." />
   <link rel="icon" href="logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -12,88 +12,71 @@
   <link rel="stylesheet" href="site.css" />
   <style>
     /* ─────────────────────────────────────────────────────────────────────
-       RECA — the warm, hook-forward direction. Hearth palette (cream +
-       honey-bronze + espresso), big surfaced hooks, little text. Page-scoped
-       so it can be judged before rolling the system site-wide.
+       RECA — rebuilt on the canonical Alara system: neutral only (charcoal,
+       greige, mist, paper), warmth from a full-bleed photo, plain fact-first
+       copy. No invented palette. Page-scoped rules are LAYOUT only and use
+       shared tokens.
        ───────────────────────────────────────────────────────────────────── */
-    :root {
-      --cream:   #F5EFE6;   /* warm page ground — "feels like home" */
-      --ivory:   #FCFAF5;   /* warm card surface */
-      --bronze:  #8C5E2A;   /* deep bronze — the focal warmth (browner, not yellow) */
-      --bronze-d:#6E4A1E;   /* rich brown-bronze — solid actions, AA on light */
-      --bronze-l:#CBA875;   /* muted antique bronze — used sparingly on espresso */
-      --warm-hair:#E4DBCB;  /* warm hairline */
-      --warm-shadow: 0 2px 10px rgba(70,52,28,.05), 0 18px 46px rgba(70,52,28,.09);
-    }
-    body { background: var(--cream); }
-    .site-header { background: color-mix(in srgb, var(--cream) 88%, transparent); }
-    .reca-wrap { max-width: 960px; margin-inline: auto; }
 
-    /* HERO — big, warm, urgent. The deadline is the first hook. */
-    .rhero { padding-block: clamp(40px, 6vw, 84px) clamp(30px, 4vw, 48px); }
-    .rhero .eyebrow { color: var(--bronze); display:block; margin-bottom: 18px; }
-    .rhero h1 { font-family: var(--display); font-size: clamp(2.4rem, 6vw, 4.25rem); font-weight: 500; letter-spacing: -0.03em; line-height: 1.0; color: var(--espresso); max-width: 16ch; }
-    .rhero__lead { margin-top: 24px; font-size: 1.25rem; line-height: 1.5; color: var(--taupe-ink); max-width: 46ch; }
-    .rhero__lead strong { color: var(--espresso); font-weight: 500; }
+    /* Full-bleed photographic hero — the brand's real move. */
+    .phero { position: relative; min-height: clamp(440px, 70vh, 680px); display: flex; align-items: flex-end; }
+    .phero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .phero__scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(24,21,21,.30) 0%, rgba(24,21,21,.44) 55%, rgba(24,21,21,.72) 100%); }
+    .phero__inner { position: relative; width: 100%; padding-block: clamp(40px, 6vw, 76px); }
+    .phero .eyebrow { color: var(--on-dark-soft); display: block; margin-bottom: 18px; }
+    .phero h1 { font-family: var(--display); font-size: clamp(2.4rem, 6vw, 4.5rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.02; color: var(--on-dark); max-width: 16ch; }
+    .phero__lead { margin-top: 22px; font-size: 1.1875rem; line-height: 1.55; color: var(--on-dark); opacity: .92; max-width: 50ch; }
+    .phero__actions { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 14px 18px; align-items: center; }
+    .phero .btn--ghost { color: var(--on-dark); border-color: rgba(251,251,251,.55); }
+    .phero .btn--ghost:hover { border-color: var(--on-dark); background: rgba(251,251,251,.08); }
 
-    /* The deadline — an unmissable urgency block. */
-    .rdead { margin-top: clamp(30px, 4vw, 44px); background: var(--espresso); color: var(--on-dark); border-radius: 18px; padding: clamp(26px, 3.4vw, 40px); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; box-shadow: var(--warm-shadow); }
-    .rdead__k { font-family: var(--display); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--on-dark-soft); }
-    .rdead__d { font-family: var(--display); font-size: clamp(2rem, 5vw, 3.25rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1; margin-top: 8px; color: var(--on-dark); }
-    .rdead__note { font-size: 1rem; color: var(--on-dark-soft); max-width: 30ch; }
+    .rwrap { max-width: 1040px; margin-inline: auto; }
+    .crumbs { font-size: 0.8125rem; color: var(--taupe); margin-bottom: 0; }
+    .crumbs a { color: var(--on-dark-soft); }
+    .crumbs a:hover { color: var(--on-dark); }
 
-    /* STAT — the money hook, blown up. */
-    .rstat { margin-top: clamp(40px, 5vw, 64px); display: grid; grid-template-columns: auto 1fr; gap: clamp(20px, 3vw, 40px); align-items: center; }
-    .rstat__fig { font-family: var(--display); font-size: clamp(3.5rem, 10vw, 6.5rem); font-weight: 500; letter-spacing: -0.04em; line-height: 0.9; color: var(--bronze); }
-    .rstat__txt { font-size: 1.1875rem; line-height: 1.5; color: var(--taupe-ink); max-width: 40ch; }
-    .rstat__txt strong { color: var(--espresso); font-weight: 500; }
-    .rstat__txt .sub { display:block; margin-top: 10px; font-size: 0.9375rem; color: var(--taupe); }
-    .rstat__txt a { color: var(--bronze-d); }
-    @media (max-width: 620px){ .rstat { grid-template-columns: 1fr; gap: 12px; } }
+    /* FACTS — two clean stat blocks on mist. Charcoal, no accent color. */
+    .rfacts { background: var(--mist); border-bottom: 1px solid var(--hairline); }
+    .rfacts__inner { padding-block: clamp(48px, 6vw, 84px); display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 4vw, 64px); }
+    .rfact__fig { font-family: var(--display); font-size: clamp(2.75rem, 6vw, 4.5rem); font-weight: 500; letter-spacing: -0.03em; line-height: 1; color: var(--espresso); }
+    .rfact__txt { margin-top: 14px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); max-width: 40ch; }
+    .rfact__txt strong { color: var(--espresso); font-weight: 500; }
+    .rfacts__note { grid-column: 1 / -1; margin-top: 4px; font-size: 0.875rem; line-height: 1.6; color: var(--taupe); max-width: 68ch; }
+    .rfacts__note a { color: var(--taupe-ink); }
+    @media (max-width: 640px) { .rfacts__inner { grid-template-columns: 1fr; gap: 32px; } }
 
-    /* SECTION heading — big, warm, with a bronze rule. */
-    .rsec { margin-top: clamp(52px, 7vw, 96px); }
-    .rsec__h { font-family: var(--display); font-size: clamp(1.75rem, 3.6vw, 2.75rem); font-weight: 500; letter-spacing: -0.024em; line-height: 1.05; color: var(--espresso); max-width: 20ch; }
-    .rsec__h::after { content:""; display:block; width: 56px; height: 3px; background: var(--bronze); border-radius: 2px; margin-top: 20px; }
-    .rsec__intro { margin-top: 22px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); max-width: 58ch; }
+    /* SECTION scaffolding on paper. */
+    .rsec { padding-block: clamp(56px, 7vw, 104px); }
+    .rsec__h { font-family: var(--display); font-size: clamp(1.75rem, 3.4vw, 2.625rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.08; color: var(--espresso); max-width: 22ch; }
+    .rsec__intro { margin-top: 18px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); max-width: 58ch; }
 
-    /* WHO — warm cards, scannable. */
-    .rwho { margin-top: clamp(28px, 3.4vw, 40px); display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
-    .rwho__card { background: var(--ivory); border: 1px solid var(--warm-hair); border-radius: 16px; padding: clamp(24px, 2.8vw, 30px); box-shadow: var(--warm-shadow); }
-    .rwho__i { width: 40px; height: 40px; border-radius: 12px; background: var(--cream); border: 1px solid var(--warm-hair); display:flex; align-items:center; justify-content:center; color: var(--bronze); font-family: var(--display); font-weight: 500; font-size: 1.125rem; }
-    .rwho__n { margin-top: 16px; font-family: var(--display); font-size: 1.25rem; font-weight: 500; color: var(--espresso); }
-    .rwho__p { margin-top: 10px; font-size: 0.9875rem; line-height: 1.55; color: var(--taupe-ink); }
-    .rwho__tag { display:inline-block; margin-top: 14px; font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--bronze-d); background: color-mix(in srgb, var(--bronze) 12%, transparent); border-radius: 100px; padding: 5px 11px; }
+    /* WHO — plain neutral cards. */
+    .rwho { margin-top: clamp(28px, 3.4vw, 44px); display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; }
+    .rwho__card { background: var(--paper); border: 1px solid var(--hairline); border-radius: 4px; padding: clamp(24px, 2.6vw, 32px); }
+    .rwho__k { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--taupe); }
+    .rwho__n { margin-top: 12px; font-family: var(--display); font-size: 1.375rem; font-weight: 500; color: var(--espresso); }
+    .rwho__p { margin-top: 12px; font-size: 0.9875rem; line-height: 1.6; color: var(--taupe-ink); }
 
-    /* THE HOOK — the biggest moment on the page. */
-    .rhook { margin-top: clamp(56px, 7vw, 100px); background: var(--espresso); color: var(--on-dark); border-radius: 22px; padding: clamp(36px, 5vw, 68px); box-shadow: var(--warm-shadow); }
-    .rhook__k { font-family: var(--display); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--on-dark-soft); }
-    .rhook__big { margin-top: 18px; font-family: var(--display); font-size: clamp(2rem, 5.2vw, 3.75rem); font-weight: 500; letter-spacing: -0.028em; line-height: 1.02; color: var(--on-dark); max-width: 18ch; }
-    .rhook__big .gold { color: var(--bronze-l); }
-    .rhook__p { margin-top: 24px; font-size: 1.125rem; line-height: 1.6; color: var(--on-dark-soft); max-width: 54ch; }
-    .rhook__p strong { color: var(--on-dark); font-weight: 500; }
-    .rhook__link { margin-top: 26px; display:inline-flex; align-items:center; gap: 10px; color: var(--bronze-l); font-size: 1.0625rem; }
+    /* WHITE CARD — dark charcoal section. The one big turn. */
+    .rturn { background: var(--espresso); color: var(--on-dark); }
+    .rturn__inner { padding-block: clamp(56px, 7vw, 104px); }
+    .rturn h2 { font-family: var(--display); font-size: clamp(1.9rem, 4.4vw, 3.25rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.06; color: var(--on-dark); max-width: 20ch; }
+    .rturn p { margin-top: 22px; font-size: 1.125rem; line-height: 1.62; color: var(--on-dark-soft); max-width: 56ch; }
+    .rturn p strong { color: var(--on-dark); font-weight: 500; }
+    .rturn__link { margin-top: 26px; display: inline-flex; align-items: center; gap: 10px; color: var(--on-dark); font-size: 1.0625rem; text-underline-offset: 4px; }
 
-    /* PAYS note (the hedge, kept honest but quiet). */
-    .rnote { margin-top: 22px; font-size: 0.9375rem; line-height: 1.6; color: var(--taupe); max-width: 66ch; }
-    .rnote a { color: var(--bronze-d); }
-
-    /* CTA. */
-    .rcta { margin-top: clamp(56px, 7vw, 96px); text-align: center; }
-    .rcta h2 { font-family: var(--display); font-size: clamp(1.75rem, 4vw, 2.75rem); font-weight: 500; letter-spacing: -0.024em; color: var(--espresso); max-width: 20ch; margin-inline: auto; }
-    .rcta p { margin-top: 18px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); max-width: 52ch; margin-inline: auto; }
-    .rcta__actions { margin-top: 30px; display:flex; flex-wrap:wrap; gap: 14px 22px; align-items:center; justify-content:center; }
-    .btn--gold { background: var(--bronze-d); border-color: var(--bronze-d); color: var(--on-dark); box-shadow: var(--warm-shadow); }
-    .btn--gold:hover { background: #6F4D1D; border-color: #6F4D1D; }
+    /* CTA on mist. */
+    .rcta { background: var(--mist); border-top: 1px solid var(--hairline); }
+    .rcta__inner { padding-block: clamp(56px, 7vw, 96px); text-align: center; }
+    .rcta h2 { font-family: var(--display); font-size: clamp(1.75rem, 3.6vw, 2.5rem); font-weight: 500; letter-spacing: -0.02em; color: var(--espresso); max-width: 22ch; margin-inline: auto; }
+    .rcta p { margin-top: 16px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); max-width: 54ch; margin-inline: auto; }
+    .rcta__actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; justify-content: center; }
     .rcta__call { color: var(--espresso); font-size: 0.9375rem; }
     .rcta__call a { color: var(--espresso); }
 
-    .rsrc { margin-top: clamp(48px, 6vw, 72px); border-top: 1px solid var(--warm-hair); padding-top: 24px; display:flex; flex-wrap:wrap; gap: 8px 28px; }
+    .rsrc { padding-block: 28px 8px; display: flex; flex-wrap: wrap; gap: 8px 28px; }
     .rsrc__label { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--taupe); width: 100%; margin-bottom: 6px; }
     .rsrc a { font-size: 0.875rem; color: var(--taupe-ink); }
-    .rsrc a:hover { color: var(--bronze-d); }
-    .crumbs a { color: var(--taupe-ink); }
-    .crumbs a:hover { color: var(--bronze-d); }
   </style>
 </head>
 <body>
@@ -162,81 +145,103 @@
   </header>
 
   <main>
-    <div class="container">
-      <div class="reca-wrap">
 
-        <section class="rhero">
-          <nav class="crumbs" aria-label="Breadcrumb" style="font-size:0.8125rem; color:var(--taupe); margin-bottom:18px;">
-            <a href="programs.html">Benefits</a><span aria-hidden="true" style="margin:0 8px;">/</span>RECA
-          </nav>
-          <span class="eyebrow">Radiation Exposure Compensation Act</span>
-          <h1>RECA is open again.</h1>
-          <p class="rhero__lead">It compensates people made sick by the government&rsquo;s nuclear testing and uranium work. It lapsed, and <strong>in 2025 it was reopened and expanded.</strong></p>
-
-          <div class="rdead">
-            <div>
-              <div class="rdead__k">The deadline to file</div>
-              <div class="rdead__d">December 31, 2027</div>
+    <!-- HERO — full-bleed photo. PLACEHOLDER image: swap src for a Nevada Test
+         Site / downwinder photo when you drop one in (keep object-fit cover). -->
+    <section class="phero" aria-label="RECA is open again">
+      <img class="phero__img" src="hero-arches.webp" alt="" />
+      <div class="phero__scrim" aria-hidden="true"></div>
+      <div class="phero__inner">
+        <div class="container">
+          <div class="rwrap">
+            <nav class="crumbs" aria-label="Breadcrumb"><a href="programs.html">Benefits</a><span aria-hidden="true" style="margin:0 8px;">/</span><span style="color:var(--on-dark-soft);">RECA</span></nav>
+            <span class="eyebrow" style="margin-top:16px;">Radiation Exposure Compensation Act</span>
+            <h1>RECA is open again.</h1>
+            <p class="phero__lead">It reopened in 2025. If nuclear testing or uranium work made you sick, you have until December 31, 2027 to file for a one-time $100,000 payment.</p>
+            <div class="phero__actions">
+              <a class="btn btn--on-dark" href="qualify.html">See if you qualify <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              <a class="btn btn--ghost" href="https://www.justice.gov/civil/reca" target="_blank" rel="noopener">File at justice.gov <span class="arrow" aria-hidden="true">&nearr;</span></a>
             </div>
-            <p class="rdead__note">The window is not permanent. If it may apply to you, this is the time.</p>
           </div>
+        </div>
+      </div>
+    </section>
 
-          <div class="rstat">
-            <div class="rstat__fig">$100,000</div>
-            <p class="rstat__txt"><strong>A one-time payment</strong> for those who qualify, under the 2025 reauthorization. Survivors may claim if the worker has passed.
-              <span class="sub">Amounts and eligibility are set by the Department of Justice and can change. Confirm the current figure at <a href="https://www.justice.gov/civil/reca" target="_blank" rel="noopener">justice.gov/civil/reca</a>.</span>
-            </p>
+    <!-- FACTS -->
+    <section class="rfacts" aria-label="What RECA pays and when">
+      <div class="container">
+        <div class="rwrap rfacts__inner">
+          <div>
+            <div class="rfact__fig">$100,000</div>
+            <p class="rfact__txt"><strong>A one-time payment</strong> for those who qualify, under the 2025 reauthorization. If the worker has passed, survivors may file.</p>
           </div>
-        </section>
+          <div>
+            <div class="rfact__fig">Dec 31, 2027</div>
+            <p class="rfact__txt"><strong>The deadline to file.</strong> The window is not permanent, so if RECA may apply to you, file before it closes.</p>
+          </div>
+          <p class="rfacts__note">Amounts and covered areas are set by the U.S. Department of Justice and can change. Confirm the current figure and covered ZIP codes at <a href="https://www.justice.gov/civil/reca" target="_blank" rel="noopener">justice.gov/civil/reca</a>.</p>
+        </div>
+      </div>
+    </section>
 
-        <section class="rsec">
+    <!-- WHO -->
+    <section class="rsec" aria-label="Who may qualify">
+      <div class="container">
+        <div class="rwrap">
           <h2 class="rsec__h">Who may qualify</h2>
-          <p class="rsec__intro">RECA covers three groups. The Nevada Test Site connection makes the first two especially close to home.</p>
+          <p class="rsec__intro">RECA covers three groups. Two of them run straight through the Nevada Test Site, an hour from Las Vegas.</p>
           <div class="rwho">
             <div class="rwho__card">
-              <div class="rwho__i">01</div>
+              <div class="rwho__k">Group 01</div>
               <div class="rwho__n">Downwinders</div>
               <p class="rwho__p">You lived in a covered area during the years of atmospheric testing and later developed a covered cancer. The 2025 law expanded the covered areas.</p>
-              <span class="rwho__tag">DOJ determines the area</span>
             </div>
             <div class="rwho__card">
-              <div class="rwho__i">02</div>
+              <div class="rwho__k">Group 02 &middot; Nevada Test Site</div>
               <div class="rwho__n">Onsite participants</div>
               <p class="rwho__p">You were physically present at a U.S. atmospheric nuclear test, including the Nevada Test Site, and later developed a covered illness.</p>
-              <span class="rwho__tag">Nevada Test Site</span>
             </div>
             <div class="rwho__card">
-              <div class="rwho__i">03</div>
+              <div class="rwho__k">Group 03 &middot; Opens the White Card</div>
               <div class="rwho__n">Uranium workers</div>
               <p class="rwho__p">You were a miner, miller, ore transporter, or related worker in the uranium industry during the covered years. The 2025 law extended that window.</p>
-              <span class="rwho__tag">Opens the White Card</span>
             </div>
           </div>
-        </section>
+        </div>
+      </div>
+    </section>
 
-        <section class="rhook">
-          <div class="rhook__k">The part most people miss</div>
-          <p class="rhook__big">RECA pays cash. It does not pay for care. <span class="gold">The White Card does.</span></p>
-          <p class="rhook__p">If you are a <strong>uranium worker</strong> who receives RECA, you may also qualify for the <strong>White Card</strong>, which covers medical care, including <strong>skilled home health, at no cost to you</strong>, plus an additional payment. RECA is the cash. The White Card is the care. That is where Alara comes in.</p>
-          <a class="rhook__link" href="white-card.html">See what the White Card covers at home <span class="arrow" aria-hidden="true">&rarr;</span></a>
-        </section>
+    <!-- THE TURN — RECA vs the White Card -->
+    <section class="rturn" aria-label="RECA and the White Card">
+      <div class="container">
+        <div class="rwrap rturn__inner">
+          <h2>RECA pays cash. It doesn&rsquo;t pay for your care.</h2>
+          <p>If uranium work made you sick and you receive RECA, you may also qualify for the <strong>White Card</strong>. The White Card covers medical care, including <strong>skilled home health at no cost to you</strong>, plus an additional payment. RECA is the money. The White Card is the care, and that is what Alara provides.</p>
+          <a class="rturn__link" href="white-card.html">See what the White Card covers at home <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        </div>
+      </div>
+    </section>
 
-        <section class="rcta">
-          <h2>Not sure where you stand? Start here.</h2>
+    <!-- CTA -->
+    <section class="rcta" aria-label="Where to start">
+      <div class="container">
+        <div class="rwrap rcta__inner">
+          <h2>Not sure where you stand?</h2>
           <p>RECA claims are filed with the Department of Justice, not with Alara. What we do is help you understand the White Card a RECA award can open, and provide the home health it covers.</p>
           <div class="rcta__actions">
-            <a class="btn btn--gold" href="https://www.justice.gov/civil/reca" target="_blank" rel="noopener">File or check RECA at justice.gov <span class="arrow" aria-hidden="true">&nearr;</span></a>
+            <a class="btn" href="qualify.html">See if you qualify <span class="arrow" aria-hidden="true">&rarr;</span></a>
             <span class="rcta__call">Talk to a nurse: <a href="tel:+17028149630">(702) 814-9630</a> &middot; Resource Center: <a href="tel:+17026970841">(702) 697-0841</a></span>
           </div>
-        </section>
-
-        <div class="rsrc">
-          <span class="rsrc__label">Federal sources</span>
-          <a href="https://www.justice.gov/civil/reca" target="_blank" rel="noopener">U.S. Department of Justice, RECA &nearr;</a>
-          <a href="https://www.cdc.gov/niosh/ocas/reca.html" target="_blank" rel="noopener">NIOSH, RECA Section 5 &amp; EEOICPA &nearr;</a>
-          <a href="https://www.dol.gov/agencies/owcp/energy" target="_blank" rel="noopener">U.S. Department of Labor, EEOICPA &nearr;</a>
         </div>
+      </div>
+    </section>
 
+    <div class="container">
+      <div class="rwrap rsrc">
+        <span class="rsrc__label">Federal sources</span>
+        <a href="https://www.justice.gov/civil/reca" target="_blank" rel="noopener">U.S. Department of Justice, RECA &nearr;</a>
+        <a href="https://www.cdc.gov/niosh/ocas/reca.html" target="_blank" rel="noopener">NIOSH, RECA Section 5 &amp; EEOICPA &nearr;</a>
+        <a href="https://www.dol.gov/agencies/owcp/energy" target="_blank" rel="noopener">U.S. Department of Labor, EEOICPA &nearr;</a>
       </div>
     </div>
 
