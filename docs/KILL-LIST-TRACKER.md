@@ -12,7 +12,7 @@ Updated as we go. Full analysis: `docs/COMPETITIVE-KILL-LIST.md`.
 | 2 | **Learn hub**: survivor benefits + "White Card denied" + RECA deadline (all rivals thin here) | 5 | 5 | 25 | ✅ core done — Guides layer + Survivor Benefits + White Card Denied guides (RECA/White Card/NTS linked). More guides can be added over time |
 | 3 | **$400k money funnel** on the EEOICPA page (hero → breakdown → trust → CTA) | 5 | 4 | 20 | ✅ done |
 | 4 | **Local Nevada depth** — real NTS/NNSS worker content, communities served, local moat (their NV pages are boilerplate) | 4 | 5 | 20 | ✅ done — las-vegas.html + sitewide footer service-area link |
-| 5 | **Self-serve eligibility / White-Card checker** — none of them have any online tool | 4 | 5 | 20 | ⬜ todo |
+| 5 | **Self-serve eligibility / White-Card checker** — none of them have any online tool | 4 | 5 | 20 | ✅ done — 2-tap governed quick-check on the White Card page, feeds the Navigator |
 | 6 | **Benefits breakdown + estimator** on the money pages (beat their text walls) | 4 | 4 | 16 | ✅ done |
 | 7 | **AlaraOS "stays ahead of your care"** — the only care-tech story in the market | 3 | 5 | 15 | 🟡 partial (page exists) |
 | 8 | **Testimonials** — real patient/family stories (2 rivals have them; we have none) | 5 | 3 | 15 | ⛔ needs owner (real quotes) |
@@ -22,9 +22,9 @@ Updated as we go. Full analysis: `docs/COMPETITIVE-KILL-LIST.md`.
 ## Attack order (what's left, top-down)
 1. ~~Learn hub~~ ✅ core done
 2. ~~Local Nevada depth~~ ✅ done (las-vegas.html)
-3. **Self-serve eligibility / White-Card checker** ← next
-4. **AlaraOS page polish**
-5. Blocked on owner: **testimonials**, **reviews/BBB**
+3. ~~Self-serve eligibility / White-Card checker~~ ✅ done (quick-check on White Card page)
+4. **AlaraOS page polish** ← next (the only care-tech story in the market)
+5. Blocked on owner: **testimonials** (real quotes), **reviews/BBB** (off-site)
 
 ## Done so far (live on PR #26)
 - Nurse-owned moat (home) + "who owns your care" (About)
