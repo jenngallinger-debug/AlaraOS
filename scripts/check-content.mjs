@@ -61,7 +61,26 @@ for (const k of Object.keys(c)) if (c[k] && c[k].phone) allowedPhones.add(c[k].p
 
 const PHONE_RE = /\(?\d{3}\)?[ .-]?\d{3}[ .-]\d{4}/g;
 
+// LOCKED by owner approval (do not change without it). The homepage hero
+// headline is fixed. If you are intentionally changing it WITH approval,
+// update this string in the same commit — that update IS the approval step.
+const LOCKED = [
+  {
+    file: 'public/home.html',
+    what: 'homepage hero headline',
+    text: 'Skilled home health. <span class="soft">You earned it. Let&rsquo;s bring it home.</span>',
+  },
+];
+
 const violations = [];
+
+for (const lock of LOCKED) {
+  let text;
+  try { text = readFileSync(join(ROOT, lock.file), 'utf8'); } catch { text = ''; }
+  if (!text.includes(lock.text)) {
+    violations.push(`${lock.file}  LOCKED ${lock.what} changed or missing — this line is fixed by owner approval. If the change is approved, update LOCKED[] in scripts/check-content.mjs in the same commit.`);
+  }
+}
 
 for (const rel of SURFACES) {
   let text;
