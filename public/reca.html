@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RECA (Radiation Exposure Compensation Act) &middot; reopened in 2025 &middot; Alara Home Care</title>
+  <meta name="description" content="RECA reopened in 2025 and the filing deadline is December 31, 2027. A plain-language guide for Nevada: who may qualify (downwinders, Nevada Test Site participants, uranium workers), what it pays, and how a RECA award can open the White Card that covers home health at no cost to you. General information, cited to the Department of Justice and NIOSH." />
+  <link rel="icon" href="logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="site.css" />
+  <style>
+    /* RECA guide — page-scoped structure only, shared palette. */
+    .reca { max-width: 820px; margin-inline: auto; }
+    .reca__sec { margin-top: clamp(44px, 6vw, 72px); }
+    .reca__head { display:flex; align-items:center; gap:16px; margin-bottom: clamp(18px, 2.4vw, 26px); }
+    .reca__num { flex:none; width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center;
+      font-family: var(--display); font-size:0.8125rem; font-weight:500; color:var(--taupe); border:1px solid var(--hairline); border-radius:100px; }
+    .reca__title { font-family: var(--display); font-size: clamp(1.4rem, 2.8vw, 2rem); font-weight:500; letter-spacing:-0.018em; line-height:1.14; color:var(--espresso); }
+    .reca__rule { flex:1; height:1px; background:var(--hairline); }
+    .reca p { font-size: 1.0625rem; line-height:1.65; color: var(--taupe-ink); max-width: 68ch; }
+    .reca p strong { color: var(--espresso); font-weight:500; }
+    .reca__lead { font-size: 1.125rem; line-height:1.62; color: var(--taupe-ink); max-width: 68ch; }
+    .reca__lead strong { color: var(--espresso); font-weight:500; }
+
+    /* Deadline banner — the urgency. */
+    .deadline { margin-top: 26px; display:flex; flex-wrap:wrap; align-items:center; gap: 8px 16px; background: var(--espresso); color: var(--on-dark); border-radius: 10px; padding: 16px clamp(18px,2.4vw,24px); }
+    .deadline__k { font-family: var(--display); font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; color: var(--on-dark-soft); }
+    .deadline__d { font-family: var(--display); font-size: 1.1875rem; font-weight:500; color: var(--on-dark); }
+
+    /* Who-qualifies cards. */
+    .who { margin-top: 24px; display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .who-card { border:1px solid var(--hairline); border-radius:10px; padding: clamp(20px,2.4vw,26px); background: var(--paper); }
+    .who-card__name { font-family: var(--display); font-size:1.125rem; font-weight:500; color:var(--espresso); }
+    .who-card__p { margin-top:10px; font-size:0.9875rem; line-height:1.55; color:var(--taupe-ink); }
+
+    /* Pays row. */
+    .pays { margin-top: 24px; border:1px solid var(--hairline); border-radius:12px; padding: clamp(22px,2.8vw,30px); }
+    .pays__fig { font-family: var(--display); font-size: clamp(1.75rem, 3.4vw, 2.5rem); font-weight:500; letter-spacing:-0.02em; color: var(--espresso); }
+    .pays__desc { margin-top: 8px; font-size:1rem; line-height:1.55; color: var(--taupe-ink); max-width: 62ch; }
+    .pays__note { margin-top: 16px; padding-top: 14px; border-top:1px solid var(--hairline); font-size:0.9375rem; line-height:1.6; color: var(--taupe); }
+
+    /* Bridge — the Alara angle. */
+    .bridge { margin-top: 24px; background: var(--mist); border-radius: 12px; padding: clamp(24px,3vw,36px); }
+    .bridge h3 { font-family: var(--display); font-size: clamp(1.25rem,2.2vw,1.625rem); font-weight:500; letter-spacing:-0.015em; color:var(--espresso); max-width: 26ch; }
+    .bridge p { margin-top: 12px; font-size:1.0625rem; line-height:1.62; color:var(--taupe-ink); max-width: 64ch; }
+    .bridge p strong { color: var(--espresso); font-weight:500; }
+    .bridge a.link { margin-top: 16px; display:inline-flex; align-items:center; gap:8px; font-size:0.9375rem; color:var(--espresso); }
+
+    .reca-cta { margin-top: clamp(44px, 6vw, 72px); background: var(--espresso); color: var(--on-dark); border-radius:14px; padding: clamp(30px, 4vw, 48px); }
+    .reca-cta h2 { font-family: var(--display); font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight:500; letter-spacing:-0.02em; color: var(--on-dark); max-width: 22ch; }
+    .reca-cta p { color: var(--on-dark-soft); font-size:1.0625rem; line-height:1.6; margin-top:14px; max-width: 60ch; }
+    .reca-cta__actions { margin-top: 24px; display:flex; flex-wrap:wrap; gap: 12px 22px; align-items:center; }
+    .reca-cta__call { color: var(--on-dark); font-size:0.9375rem; }
+
+    .reca-src { margin-top: clamp(34px,4vw,48px); border-top:1px solid var(--hairline); padding-top: 22px; }
+    .reca-src__label { font-family: var(--display); font-size:0.6875rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--taupe); margin-bottom:12px; }
+    .reca-src ul { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
+    .reca-src a { font-size:0.9375rem; color:var(--taupe-ink); }
+    .reca-src a:hover { color:var(--espresso); }
+  </style>
+</head>
+<body>
+
+  <header class="site-header" id="siteHeader">
+    <div class="container site-header__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care, home">
+        <svg class="brand__mark" viewBox="0 0 100 92" role="img" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd"
+            d="M22,88 V34 L50,8 L78,34 V88 Z
+               M37,88 V66 A13,13 0 0 1 63,66 V88 Z
+               M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word">
+          <span class="brand__name">ALARA</span>
+          <span class="brand__sub">Home Care</span>
+        </span>
+      </a>
+      <div class="site-header__actions">
+        <nav class="site-nav site-nav--primary" aria-label="Primary">
+          <a class="site-nav__link" href="services.html">Get Care</a>
+          <span class="site-nav__item">
+            <a class="site-nav__link site-nav__link--dd" href="programs.html" aria-haspopup="true">Benefits <span class="nav-caret" aria-hidden="true">&#9662;</span></a>
+            <span class="nav-dd" role="menu">
+              <a class="nav-dd__link nav-dd__link--cta" role="menuitem" href="qualify.html">Do I qualify? <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              <span class="nav-dd__sep" aria-hidden="true"></span>
+              <a class="nav-dd__link" role="menuitem" href="white-card.html">White Card (EEOICPA)</a>
+              <a class="nav-dd__link" role="menuitem" href="reca.html">RECA (Radiation Exposure)</a>
+              <a class="nav-dd__link" role="menuitem" href="owcp.html">Federal Workers (OWCP / FECA)</a>
+              <a class="nav-dd__link" role="menuitem" href="programs.html#community-care">Veterans</a>
+              <span class="nav-dd__sep" aria-hidden="true"></span>
+              <a class="nav-dd__link nav-dd__link--cta" role="menuitem" href="begin.html">Not sure? Start here <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            </span>
+          </span>
+          <a class="site-nav__link" href="learn.html">Learn</a>
+          <a class="site-nav__link" href="about.html">Why Alara</a>
+          <a class="site-nav__link" href="begin.html?who=referrer">Refer a Patient</a>
+          <a class="header-call" href="tel:+17028149630">
+            <span class="header-call__label">Call us</span>
+            <span class="header-call__num">(702) 814-9630</span>
+          </a>
+        </nav>
+        <a class="btn btn--sm" href="qualify.html">See if you qualify</a>
+        <button class="nav-toggle" type="button" id="navToggle" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu">
+          <span class="nav-toggle__bar" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+    <nav class="mobile-menu" id="site-menu" data-open="false" aria-label="Primary (mobile)">
+      <div class="container mobile-menu__inner">
+        <a class="mobile-menu__link" href="services.html">Get Care <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="programs.html">Benefits <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="qualify.html">Do I qualify?</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="white-card.html">White Card (EEOICPA)</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="reca.html">RECA (Radiation Exposure)</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="owcp.html">Federal Workers (OWCP / FECA)</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="programs.html#community-care">Veterans</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="begin.html">Not sure? Start here</a>
+        <a class="mobile-menu__link" href="learn.html">Learn <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="about.html">Why Alara <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="begin.html?who=referrer">Refer a Patient <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="btn btn--block mobile-menu__cta" href="qualify.html">See if you qualify</a>
+        <p class="mobile-menu__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></p>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href="programs.html">Benefits</a><span aria-hidden="true">/</span>RECA
+        </nav>
+        <span class="eyebrow">Radiation Exposure Compensation Act</span>
+        <h1>RECA is open again. The deadline to file is December 31, 2027.</h1>
+        <p class="page-hero__lead">RECA compensates people made sick by the government&rsquo;s nuclear-weapons testing and uranium work. It lapsed in 2024, and in 2025 it was reauthorized and expanded. If you were downwind of the testing, present at the Nevada Test Site, or a uranium worker, you may qualify, and a RECA award can open the door to the White Card that covers home health at no cost to you.</p>
+        <div class="deadline">
+          <span class="deadline__k">File by</span>
+          <span class="deadline__d">December 31, 2027</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="reca">
+
+        <section class="reca__sec">
+          <div class="reca__head"><span class="reca__num">01</span><span class="reca__title">What RECA is</span><span class="reca__rule"></span></div>
+          <p class="reca__lead">RECA is a <strong>one-time payment from the U.S. Department of Justice</strong> for people who developed certain illnesses after radiation exposure from the nation&rsquo;s atomic-weapons program. It is compassionate and <strong>non-adversarial</strong>: you do not have to prove fault, only that you meet the eligibility criteria. It is separate from the White Card, which is run by the Department of Labor.</p>
+          <p>After expiring in 2024, RECA was <strong>reauthorized and expanded in 2025</strong>, and it is accepting claims again through the Department of Justice. The window is not permanent, which is why the December 31, 2027 deadline matters.</p>
+        </section>
+
+        <section class="reca__sec">
+          <div class="reca__head"><span class="reca__num">02</span><span class="reca__title">Who may qualify</span><span class="reca__rule"></span></div>
+          <p>RECA covers three groups. The Nevada Test Site connection makes the first two especially relevant here.</p>
+          <div class="who">
+            <div class="who-card">
+              <span class="who-card__name">Downwinders</span>
+              <p class="who-card__p">People who lived in a covered area during the years of atmospheric testing and later developed a covered cancer. The 2025 law expanded the covered areas; which ones apply to you is determined by the Department of Justice.</p>
+            </div>
+            <div class="who-card">
+              <span class="who-card__name">Onsite participants</span>
+              <p class="who-card__p">People who were physically present at a U.S. atmospheric nuclear test, including the Nevada Test Site, and later developed a covered illness.</p>
+            </div>
+            <div class="who-card">
+              <span class="who-card__name">Uranium workers</span>
+              <p class="who-card__p">Miners, millers, ore transporters, and related workers in the uranium industry during the covered years. The 2025 law extended the covered work period.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="reca__sec">
+          <div class="reca__head"><span class="reca__num">03</span><span class="reca__title">What it pays</span><span class="reca__rule"></span></div>
+          <div class="pays">
+            <div class="pays__fig">A one-time lump sum</div>
+            <p class="pays__desc">Under the 2025 reauthorization, the payment for these categories is reported at <strong style="color:var(--espresso);">$100,000</strong>. If the worker has passed away, eligible survivors may claim.</p>
+            <p class="pays__note">Amounts, covered areas, and eligibility are set by the Department of Justice and can change. Confirm the current figure and whether you qualify at <a href="https://www.justice.gov/civil/reca" target="_blank" rel="noopener">justice.gov/civil/reca</a>. This page is general information, not a determination.</p>
+          </div>
+        </section>
+
+        <section class="reca__sec">
+          <div class="reca__head"><span class="reca__num">04</span><span class="reca__title">Why this matters for your care</span><span class="reca__rule"></span></div>
+          <div class="bridge">
+            <h3>RECA pays cash. It does not pay for care. The White Card does.</h3>
+            <p>Here is the part most people miss. If you are a <strong>uranium worker</strong> who receives RECA, you may also qualify under EEOICPA for the <strong>White Card</strong>, which covers medical care, including <strong>skilled home health, at no cost to you</strong>, plus an additional payment. RECA is the cash; the White Card is the care. That is where Alara comes in.</p>
+            <a class="link" href="white-card.html">See what the White Card covers at home <span class="arrow" aria-hidden="true">&rarr;</span></a>
+          </div>
+        </section>
+
+        <div class="reca-cta">
+          <h2>Not sure where you stand? Start here.</h2>
+          <p>RECA claims are filed with the Department of Justice, not with Alara. What we do is help you understand the White Card a RECA award can open, and provide the home health it covers. A nurse can walk you through it, and the DOL Las Vegas Resource Center can help with the White Card side.</p>
+          <div class="reca-cta__actions">
+            <a class="btn btn--on" href="https://www.justice.gov/civil/reca" target="_blank" rel="noopener">File or check RECA at justice.gov <span class="arrow" aria-hidden="true">&nearr;</span></a>
+            <a class="reca-cta__call" href="tel:+17028149630">Talk to a nurse: (702) 814-9630</a>
+            <a class="reca-cta__call" href="tel:+17026970841">DOL Resource Center: (702) 697-0841</a>
+          </div>
+        </div>
+
+        <div class="reca-src">
+          <p class="reca-src__label">Federal sources</p>
+          <ul>
+            <li><a href="https://www.justice.gov/civil/reca" target="_blank" rel="noopener">U.S. Department of Justice, Radiation Exposure Compensation Program &nearr;</a></li>
+            <li><a href="https://www.cdc.gov/niosh/ocas/reca.html" target="_blank" rel="noopener">NIOSH, RECA Section 5 and the EEOICPA connection &nearr;</a></li>
+            <li><a href="https://www.dol.gov/agencies/owcp/energy" target="_blank" rel="noopener">U.S. Department of Labor, EEOICPA (the White Card) &nearr;</a></li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+    <section class="disclaimer">
+      <div class="container disclaimer__inner">
+        Alara helps you understand and reach benefits you may already be entitled to. It does not replace the Department of Justice, your Resource Center, physician, attorney, authorized representative, or any federal agency. It helps you work with them. Nothing here is a coverage or eligibility determination.
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care">
+        <svg class="brand__mark" viewBox="0 0 100 92" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
+      </a>
+      <div class="site-footer__meta">Serving all of Clark County and Southern Nevada<br /><a href="tel:+17028149630">(702) 814-9630</a></div>
+    </div>
+  </footer>
+
+  <script>
+    var header = document.getElementById('siteHeader');
+    var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 24); };
+    onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+    var toggle = document.getElementById('navToggle'); var menu = document.getElementById('site-menu');
+    if (toggle && menu) { toggle.addEventListener('click', function () {
+      var open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!open));
+      toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+      menu.setAttribute('data-open', String(!open)); }); }
+  </script>
+  <script src="site-nav.js" defer></script>
+</body>
+</html>
