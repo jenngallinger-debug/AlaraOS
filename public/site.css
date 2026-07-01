@@ -693,10 +693,10 @@ a.trust-strip__item:hover, a.trust-strip__item:focus-visible { border-bottom-col
    flat. Aman/RH restraint: the accent guides, it never shouts.
    ========================================================================= */
 :root {
-  --accent:       #A85D3E;   /* rich warm terracotta — the single focal accent */
-  --accent-deep:  #8A4A2E;   /* deeper clay for solid CTAs (white text, AA) */
-  --accent-soft:  #F3E9E2;   /* pale clay wash — hovers, soft fills */
-  --accent-light: #D99B7C;   /* light clay — accents on espresso/dark grounds */
+  --accent:       #6E5A34;   /* deep bronze — the single focal accent */
+  --accent-deep:  #564727;   /* darker bronze for solid CTAs (white text, AA) */
+  --accent-soft:  #EEEADF;   /* pale bronze/sand wash — hovers, soft fills */
+  --accent-light: #C3AC7E;   /* light bronze — accents on espresso/dark grounds */
   --sand:         #ECE5DB;   /* warm sand — warmer alternative to cold mist */
   --shadow-sm: 0 1px 3px rgba(52,46,46,.05), 0 6px 18px rgba(52,46,46,.05);
   --shadow-md: 0 10px 26px rgba(52,46,46,.07), 0 24px 60px rgba(52,46,46,.09);
