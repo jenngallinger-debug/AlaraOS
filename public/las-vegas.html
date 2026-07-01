@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Home health in Las Vegas &amp; Southern Nevada &middot; White Card, OWCP, VA &middot; Alara Home Care</title>
+  <meta name="description" content="Nurse-owned home health in Las Vegas and Southern Nevada for patients on federal programs: the EEOICPA White Card for Nevada Test Site and DOE workers, OWCP for federal and postal workers, and VA Community Care for veterans. Local, independent, and accountable, with covered care at no cost to you." />
+  <link rel="icon" href="logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="site.css" />
+  <style>
+    /* Local page — canonical neutral system, warmth from the skyline photo. */
+    .phero { position: relative; min-height: clamp(420px, 60vh, 620px); display: flex; align-items: flex-end; }
+    .phero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .phero__scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(24,21,21,.34) 0%, rgba(24,21,21,.5) 55%, rgba(24,21,21,.78) 100%); }
+    .phero__inner { position: relative; width: 100%; padding-block: clamp(38px, 5vw, 68px); }
+    .lvwrap { max-width: 1040px; margin-inline: auto; }
+    .phero .crumbs, .phero .crumbs a { color: var(--on-dark-soft); }
+    .phero .crumbs a:hover { color: var(--on-dark); }
+    .phero .eyebrow { color: var(--on-dark-soft); display: block; margin-bottom: 16px; }
+    .phero h1 { font-family: var(--display); font-size: clamp(2.3rem, 5.4vw, 3.875rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.03; color: var(--on-dark); max-width: 18ch; }
+    .phero__lead { margin-top: 20px; font-size: 1.1875rem; line-height: 1.5; color: var(--on-dark); opacity: .92; max-width: 54ch; }
+    .phero__actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 14px 18px; align-items: center; }
+    .phero .btn--ghost { color: var(--on-dark); border-color: rgba(251,251,251,.5); }
+    .phero .btn--ghost:hover { border-color: var(--on-dark); background: rgba(251,251,251,.08); }
+
+    .lvsec { padding-block: clamp(56px, 7vw, 100px); }
+    .lvsec--tint { background: var(--mist); border-block: 1px solid var(--hairline); }
+    .lvsec__h { font-family: var(--display); font-size: clamp(1.75rem, 3.4vw, 2.5rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.08; color: var(--espresso); max-width: 24ch; }
+    .lvsec__intro { margin-top: 18px; font-size: 1.0625rem; line-height: 1.65; color: var(--taupe-ink); max-width: 62ch; }
+    .lvsec__intro strong { color: var(--espresso); font-weight: 500; }
+
+    /* Communities grid. */
+    .areas { margin-top: clamp(26px, 3vw, 40px); display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+    .area { border: 1px solid var(--hairline); border-radius: 6px; padding: 16px 18px; font-family: var(--display); font-size: 1.0625rem; font-weight: 500; color: var(--espresso); background: var(--paper); }
+    .area span { display: block; font-family: var(--text); font-size: 0.8125rem; font-weight: 400; color: var(--taupe); margin-top: 2px; }
+
+    /* Local program cards. */
+    .lvprog { margin-top: clamp(26px, 3vw, 40px); display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+    .lvprog__card { display: block; text-decoration: none; background: var(--paper); border: 1px solid var(--hairline); border-radius: 8px; padding: clamp(22px, 2.6vw, 28px); transition: border-color var(--dur) var(--ease); }
+    .lvprog__card:hover { border-color: var(--espresso); }
+    .lvprog__k { display: block; font-family: var(--display); font-size: 0.625rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--taupe); }
+    .lvprog__h { display: block; margin-top: 10px; font-family: var(--display); font-size: 1.1875rem; font-weight: 500; color: var(--espresso); }
+    .lvprog__p { display: block; margin-top: 8px; font-size: 0.9375rem; line-height: 1.55; color: var(--taupe-ink); }
+    .lvprog__go { display: inline-flex; margin-top: 14px; font-size: 0.875rem; color: var(--espresso); align-items: center; gap: 7px; }
+
+    .callout { margin-top: 28px; max-width: 62ch; border: 1px solid var(--hairline); border-left: 2px solid var(--espresso); border-radius: 0 4px 4px 0; padding: 22px 24px; }
+    .callout h3 { font-size: 1.0625rem; font-weight: 500; color: var(--espresso); }
+    .callout p { margin-top: 8px; font-size: 1rem; line-height: 1.6; color: var(--taupe-ink); }
+    .callout .num { color: var(--espresso); font-weight: 500; }
+
+    .lvcta { padding-block: clamp(56px, 7vw, 96px); text-align: center; }
+    .lvcta h2 { font-family: var(--display); font-size: clamp(1.75rem, 3.6vw, 2.5rem); font-weight: 500; letter-spacing: -0.02em; color: var(--espresso); max-width: 22ch; margin-inline: auto; }
+    .lvcta p { margin-top: 16px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); max-width: 52ch; margin-inline: auto; }
+    .lvcta__actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; justify-content: center; }
+    .lvcta__call { color: var(--espresso); font-size: 0.9375rem; }
+    .lvcta__call a { color: var(--espresso); }
+  </style>
+</head>
+<body>
+
+  <header class="site-header" id="siteHeader">
+    <div class="container site-header__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care, home">
+        <svg class="brand__mark" viewBox="0 0 100 92" role="img" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
+      </a>
+      <div class="site-header__actions">
+        <nav class="site-nav site-nav--primary" aria-label="Primary">
+          <a class="site-nav__link" href="services.html">Get Care</a>
+          <span class="site-nav__item">
+            <a class="site-nav__link site-nav__link--dd" href="programs.html" aria-haspopup="true">Benefits <span class="nav-caret" aria-hidden="true">&#9662;</span></a>
+            <span class="nav-dd" role="menu">
+              <a class="nav-dd__link nav-dd__link--cta" role="menuitem" href="qualify.html">Do I qualify? <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              <span class="nav-dd__sep" aria-hidden="true"></span>
+              <a class="nav-dd__link" role="menuitem" href="white-card.html">White Card (EEOICPA)</a>
+              <a class="nav-dd__link" role="menuitem" href="reca.html">RECA (Radiation Exposure)</a>
+              <a class="nav-dd__link" role="menuitem" href="owcp.html">Federal Workers (OWCP / FECA)</a>
+              <a class="nav-dd__link" role="menuitem" href="veterans.html">Veterans</a>
+              <span class="nav-dd__sep" aria-hidden="true"></span>
+              <a class="nav-dd__link nav-dd__link--cta" role="menuitem" href="begin.html">Not sure? Start here <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            </span>
+          </span>
+          <a class="site-nav__link" href="learn.html">Learn</a>
+          <a class="site-nav__link" href="about.html">Why Alara</a>
+          <a class="site-nav__link" href="begin.html?who=referrer">Refer a Patient</a>
+          <a class="header-call" href="tel:+17028149630">
+            <span class="header-call__label">Call us</span>
+            <span class="header-call__num">(702) 814-9630</span>
+          </a>
+        </nav>
+        <a class="btn btn--sm" href="qualify.html">See if you qualify</a>
+        <button class="nav-toggle" type="button" id="navToggle" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu"><span class="nav-toggle__bar" aria-hidden="true"></span></button>
+      </div>
+    </div>
+    <nav class="mobile-menu" id="site-menu" data-open="false" aria-label="Primary (mobile)">
+      <div class="container mobile-menu__inner">
+        <a class="mobile-menu__link" href="services.html">Get Care <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="programs.html">Benefits <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="qualify.html">Do I qualify?</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="white-card.html">White Card (EEOICPA)</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="reca.html">RECA (Radiation Exposure)</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="owcp.html">Federal Workers (OWCP / FECA)</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="veterans.html">Veterans</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="begin.html">Not sure? Start here</a>
+        <a class="mobile-menu__link" href="learn.html">Learn <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="about.html">Why Alara <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="begin.html?who=referrer">Refer a Patient <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="btn btn--block mobile-menu__cta" href="qualify.html">See if you qualify</a>
+        <p class="mobile-menu__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></p>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+
+    <section class="phero" aria-label="Home health in Las Vegas and Southern Nevada">
+      <img class="phero__img" src="home-hero.webp" alt="The Las Vegas skyline at sunset, with the mountains of Southern Nevada behind it" onerror="this.onerror=null;this.src='hero-arches.webp';" />
+      <div class="phero__scrim" aria-hidden="true"></div>
+      <div class="phero__inner">
+        <div class="container">
+          <div class="lvwrap">
+            <nav class="crumbs" aria-label="Breadcrumb"><a href="services.html">Get Care</a><span aria-hidden="true" style="margin:0 8px;">/</span><span style="color:var(--on-dark-soft);">Las Vegas &amp; Southern Nevada</span></nav>
+            <span class="eyebrow">Las Vegas &middot; Southern Nevada</span>
+            <h1>Home health in Las Vegas, for the people who served the nation here.</h1>
+            <p class="phero__lead">The Nevada Test Site sits an hour northwest of the valley, and thousands who worked there and at other federal sites live here still. Alara is the nurse-owned agency that brings their covered care home, at no cost to you.</p>
+            <div class="phero__actions">
+              <a class="btn btn--on-dark btn--lg" href="qualify.html">See if you qualify <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              <a class="btn btn--ghost" href="tel:+17028149630">Call (702) 814-9630</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lvsec" aria-label="Where we serve">
+      <div class="container">
+        <div class="lvwrap">
+          <h2 class="lvsec__h">Where we go.</h2>
+          <p class="lvsec__intro">We bring skilled nursing, therapy, and home health aide care into the home across <strong>Clark County and Southern Nevada</strong>. If you live in the valley, we come to you.</p>
+          <div class="areas">
+            <div class="area">Las Vegas</div>
+            <div class="area">Henderson</div>
+            <div class="area">North Las Vegas</div>
+            <div class="area">Summerlin</div>
+            <div class="area">Boulder City</div>
+            <div class="area">Mesquite</div>
+            <div class="area">Laughlin</div>
+            <div class="area">Across Clark County<span>and Southern Nevada</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lvsec lvsec--tint" aria-label="Nevada's federal-program patients">
+      <div class="container">
+        <div class="lvwrap">
+          <h2 class="lvsec__h">Nevada&rsquo;s own, and the benefits they earned here.</h2>
+          <p class="lvsec__intro">Las Vegas is home to the workers who built and ran the <strong>Nevada Test Site</strong>, now the Nevada National Security Site, along with federal and postal employees and veterans across the valley. Each of those groups has a federal benefit that can bring skilled care home. We work with all of them.</p>
+          <div class="lvprog">
+            <a class="lvprog__card" href="white-card.html">
+              <span class="lvprog__k">EEOICPA</span>
+              <span class="lvprog__h">White Card &middot; Test Site &amp; DOE workers</span>
+              <span class="lvprog__p">Compensation and free home health for life for workers made sick by nuclear weapons work.</span>
+              <span class="lvprog__go">Learn about the White Card <span class="arrow" aria-hidden="true">&rarr;</span></span>
+            </a>
+            <a class="lvprog__card" href="owcp.html">
+              <span class="lvprog__k">OWCP / FECA</span>
+              <span class="lvprog__h">Federal &amp; postal workers</span>
+              <span class="lvprog__p">If an accepted work injury or illness is covered by OWCP, home health can be authorized at no cost to you.</span>
+              <span class="lvprog__go">Learn about OWCP <span class="arrow" aria-hidden="true">&rarr;</span></span>
+            </a>
+            <a class="lvprog__card" href="veterans.html">
+              <span class="lvprog__k">VA Community Care</span>
+              <span class="lvprog__h">Veterans in Southern Nevada</span>
+              <span class="lvprog__p">When the VA authorizes home health through Community Care, your covered care comes at no cost to you.</span>
+              <span class="lvprog__go">Learn about VA care <span class="arrow" aria-hidden="true">&rarr;</span></span>
+            </a>
+          </div>
+          <p class="lvsec__intro" style="margin-top:22px;">Worked at the Test Site yourself? We keep a full local guide to who is covered, the illnesses that qualify, and what the benefit is worth. <a href="nevada-test-site.html" style="color:var(--espresso);">See the Nevada Test Site guide &rarr;</a></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="lvsec" aria-label="Why local matters">
+      <div class="container">
+        <div class="lvwrap">
+          <h2 class="lvsec__h">Local help, not a national call center.</h2>
+          <p class="lvsec__intro">The biggest names in White Card home health are run from Colorado and Utah, and two of them are owned by private-equity firms. Alara is <strong>nurse-owned and based here</strong>. When you call, you reach a local team, and a Director of Nursing reviews every start of care. We are independent, we are of this valley, and we intend to stay both.</p>
+          <div class="callout">
+            <h3>DOL Las Vegas Resource Center</h3>
+            <p><span class="num">(702) 697-0841</span></p>
+            <p>The federal government&rsquo;s no-cost help for Nevada Test Site and DOE workers in Southern Nevada. They assist with filing and benefit questions at no charge. If you are just starting, they are a good first call, and so are we.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lvcta" aria-label="Get started">
+      <div class="container">
+        <div class="lvwrap">
+          <h2>Care that comes to you, here in the valley.</h2>
+          <p>See what applies to you in about a minute, or have a local nurse call you. Covered care tied to your accepted condition is paid by the federal program, so you never receive a bill.</p>
+          <div class="lvcta__actions">
+            <a class="btn" href="qualify.html">See if you qualify <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <span class="lvcta__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="disclaimer">
+      <div class="container disclaimer__inner">
+        Alara helps you understand and reach benefits you may already be entitled to. It does not replace the Department of Labor, the Department of Veterans Affairs, your Resource Center, an authorized representative, or any federal agency. It helps you work with them. Nothing here is a coverage or eligibility determination.
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care">
+        <svg class="brand__mark" viewBox="0 0 100 92" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
+      </a>
+      <div class="site-footer__meta">Serving all of <a href="las-vegas.html" style="color:inherit;">Clark County and Southern Nevada</a><br /><a href="tel:+17028149630">(702) 814-9630</a></div>
+    </div>
+  </footer>
+
+  <script>
+    var header = document.getElementById('siteHeader');
+    var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 24); };
+    onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+    var toggle = document.getElementById('navToggle'); var menu = document.getElementById('site-menu');
+    if (toggle && menu) { toggle.addEventListener('click', function () {
+      var open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!open));
+      toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+      menu.setAttribute('data-open', String(!open)); }); }
+  </script>
+  <script src="site-nav.js" defer></script>
+</body>
+</html>
