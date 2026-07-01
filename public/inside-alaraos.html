@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The AlaraOS difference &middot; Alara Home Care</title>
+  <meta name="description" content="We see it coming before you do. AlaraOS runs behind every Alara nurse: it reads the early signs, lines up everyone on your care, and handles what's next before it lands on you." />
+  <meta property="og:title" content="The AlaraOS difference" />
+  <meta property="og:description" content="Care that stays ahead of what's coming. AlaraOS knows before, keeps everyone in concert, and makes sure each person already has exactly what they need." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="site.css" />
+  <style>
+    /* ─────────────────────────────────────────────────────────────
+       The AlaraOS difference — felt, not explained. Outcome over
+       mechanism. Dark cinematic moments, full-width compositions.
+       ───────────────────────────────────────────────────────────── */
+    .io { --io-pad: clamp(68px, 8.5vw, 132px); }
+
+    /* HERO — dark, centered, ambient. The felt promise. */
+    .io-hero { position: relative; overflow: hidden; background: var(--espresso); color: var(--on-dark); padding-block: clamp(108px, 14vw, 200px); text-align: center; }
+    .io-hero > .container { position: relative; z-index: 2; }
+    .io-amb { position: absolute; inset: -20%; z-index: 0; pointer-events: none; contain: paint; }
+    .io-amb i { position: absolute; display: block; width: 54vw; height: 54vw; border-radius: 50%; filter: blur(66px); }
+    .io-amb i:nth-child(1) { background: radial-gradient(circle, rgba(193,166,134,0.36), transparent 70%); top: -18%; left: 30%; animation: ioDrift1 26s ease-in-out infinite; }
+    .io-amb i:nth-child(2) { background: radial-gradient(circle, rgba(151,124,98,0.30), transparent 70%); top: 4%; left: -8%; animation: ioDrift2 30s ease-in-out infinite; }
+    .io-amb i:nth-child(3) { background: radial-gradient(circle, rgba(214,196,176,0.20), transparent 72%); top: 22%; left: 62%; animation: ioDrift3 34s ease-in-out infinite; }
+    @keyframes ioDrift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-5%,6%)} }
+    @keyframes ioDrift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(7%,-4%)} }
+    @keyframes ioDrift3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-6%,-5%)} }
+    .io-hero__eyebrow { font-family: var(--display); font-size: 0.8125rem; letter-spacing: 0.34em; text-transform: uppercase; color: var(--on-dark-soft); }
+    .io-hero h1 { margin: clamp(22px, 3vw, 36px) auto 0; font-size: clamp(2.625rem, 6vw, 5rem); font-weight: 500; line-height: 1.0; letter-spacing: -0.035em; max-width: 17ch; color: var(--on-dark); }
+    .io-hero__sub { margin: clamp(26px, 3vw, 38px) auto 0; font-size: clamp(1.0625rem, 1.55vw, 1.375rem); line-height: 1.55; color: var(--on-dark-soft); max-width: 58ch; }
+
+    /* THE DIFFERENCE — felt outcomes, each with a concrete line. Fills width. */
+    .io-feel { padding-block: var(--io-pad); }
+    .io-feel__head { text-align: center; }
+    .io-feel__head h2 { font-size: clamp(2rem, 4.4vw, 3.5rem); font-weight: 500; line-height: 1.02; letter-spacing: -0.03em; max-width: 24ch; margin-inline: auto; }
+    .io-feel__head .eyebrow { display: block; margin-bottom: 18px; }
+    .feel-grid { margin-top: clamp(44px, 5.5vw, 80px); display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(36px, 4vw, 56px); }
+    .feel-item { border-top: 1px solid var(--hairline); padding-top: clamp(22px, 2.6vw, 32px); }
+    .feel-item h3 { font-size: clamp(1.375rem, 2vw, 1.875rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.1; }
+    .feel-item p { margin-top: 14px; font-size: clamp(1.0625rem, 1.4vw, 1.1875rem); line-height: 1.56; color: var(--taupe-ink); }
+    @media (max-width: 900px) { .feel-grid { grid-template-columns: 1fr; gap: 0; } .feel-item { padding-block: clamp(24px,5vw,30px); padding-top: clamp(24px,5vw,30px); } }
+
+    /* WHY — dark, centered. Names AlaraOS, keeps the human in charge. Brief. */
+    .io-why { background: var(--espresso); color: var(--on-dark); padding-block: var(--io-pad); text-align: center; }
+    .io-why h2 { margin: 0 auto; font-size: clamp(2rem, 4.4vw, 3.25rem); font-weight: 500; line-height: 1.04; letter-spacing: -0.03em; color: var(--on-dark); max-width: 20ch; }
+    .io-why p { margin: clamp(24px, 3vw, 36px) auto 0; font-size: clamp(1.0625rem, 1.5vw, 1.3125rem); line-height: 1.6; color: var(--on-dark-soft); max-width: 56ch; }
+
+    /* MOTION — cinematic reveals + hero entrance; reduced-motion safe. */
+    .js-reveal .io-reveal { opacity: 0; transform: translateY(28px); transition: opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); }
+    .js-reveal .io-reveal.is-in { opacity: 1; transform: none; }
+    .io-hero__eyebrow, .io-hero h1, .io-hero__sub { animation: ioUp 1s cubic-bezier(.2,.7,.2,1) both; }
+    .io-hero h1 { animation-delay: .08s; }
+    .io-hero__sub { animation-delay: .18s; }
+    @keyframes ioUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) {
+      .io-amb i { animation: none; }
+      .io-hero__eyebrow, .io-hero h1, .io-hero__sub { animation: none; }
+      .js-reveal .io-reveal { opacity: 1; transform: none; transition: none; }
+    }
+  </style>
+</head>
+<body class="io">
+
+  <!-- HEADER -->
+  <header class="site-header" id="siteHeader">
+    <div class="container site-header__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care, home">
+        <svg class="brand__mark" viewBox="0 0 100 92" role="img" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd"
+            d="M22,88 V34 L50,8 L78,34 V88 Z
+               M37,88 V66 A13,13 0 0 1 63,66 V88 Z
+               M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word">
+          <span class="brand__name">ALARA</span>
+          <span class="brand__sub">Home Care</span>
+        </span>
+      </a>
+      <div class="site-header__actions">
+        <nav class="site-nav site-nav--primary" aria-label="Primary">
+          <a class="site-nav__link" href="services.html">Services</a>
+          <a class="site-nav__link" href="programs.html">Benefits</a>
+          <a class="site-nav__link" href="learn.html">Library</a>
+          <a class="site-nav__link" href="about.html">About</a>
+          <a class="header-call" href="tel:+17028149630">
+            <span class="header-call__label">Call us</span>
+            <span class="header-call__num">(702) 814-9630</span>
+          </a>
+        </nav>
+        <a class="btn btn--sm" href="qualify.html">See what you qualify for</a>
+        <button class="nav-toggle" type="button" id="navToggle" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu">
+          <span class="nav-toggle__bar" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+    <nav class="mobile-menu" id="site-menu" data-open="false" aria-label="Primary (mobile)">
+      <div class="container mobile-menu__inner">
+        <a class="mobile-menu__link" href="services.html">Services <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="programs.html">Benefits <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="learn.html">Library <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="about.html">About <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="btn btn--block mobile-menu__cta" href="qualify.html">See what you qualify for</a>
+        <p class="mobile-menu__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></p>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- HERO — the felt promise. -->
+    <section class="io-hero" aria-label="The AlaraOS difference">
+      <div class="io-amb" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="container">
+        <p class="io-hero__eyebrow">The AlaraOS difference</p>
+        <h1>We see it coming before you do.</h1>
+        <p class="io-hero__sub">
+          AlaraOS runs behind every nurse. It reads the early signs, lines up everyone on your care, and
+          handles what&rsquo;s next before it lands on you.
+        </p>
+      </div>
+    </section>
+
+    <!-- THE DIFFERENCE YOU FEEL — outcomes, each made concrete. -->
+    <section class="io-feel" aria-label="The difference you feel">
+      <div class="container">
+        <div class="io-feel__head io-reveal">
+          <span class="eyebrow">What sets us apart</span>
+          <h2>We don&rsquo;t keep up with your care. We stay ahead of it.</h2>
+        </div>
+        <div class="feel-grid">
+          <div class="feel-item io-reveal">
+            <h3>We knew before you did.</h3>
+            <p>AlaraOS reads the early signs. A missed refill. A small decline. A lab that drifted. We act before any of it turns into a crisis. Families always ask the same thing: how did you know?</p>
+          </div>
+          <div class="feel-item io-reveal">
+            <h3>Everyone moves together.</h3>
+            <p>Your nurse, your doctor, your pharmacy, your family. All in step, with no one waiting on a call that never came.</p>
+          </div>
+          <div class="feel-item io-reveal">
+            <h3>The right person already knows.</h3>
+            <p>Updates reach who needs them, on their own. Your doctor has what they need before they ask. Your daughter sees what changed. You hear what matters, and nothing you don&rsquo;t.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHY — names AlaraOS, keeps people in charge. Brief, felt, not a manual. -->
+    <section class="io-why" aria-label="Why Alara is different">
+      <div class="container">
+        <h2 class="io-reveal">One picture of you. Watched without stopping.</h2>
+        <p class="io-reveal">
+          AlaraOS keeps one current picture of your whole care and never looks away. That is how we see
+          what&rsquo;s next and keep everyone in step. People still make every decision. Nothing happens
+          without your say.
+        </p>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-band cta-band--arched" aria-label="Begin">
+      <div class="container cta-band__inner io-reveal">
+        <h2 class="cta-band__title">See what your benefits actually cover.</h2>
+        <p class="cta-band__sub">
+          A few questions. A plain answer. The one step to take next. No forms. Or call a nurse and
+          we&rsquo;ll take it from there.
+        </p>
+        <div class="cta-band__actions">
+          <a class="btn btn--on-dark btn--lg" href="qualify.html">See what you qualify for <span class="arrow" aria-hidden="true">&rarr;</span></a>
+          <a class="cta-band__call" href="tel:+17028149630">Or call (702) 814-9630</a>
+        </div>
+        <p class="cta-band__reassure">A nurse answers, usually within the hour during business hours.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care">
+        <svg class="brand__mark" viewBox="0 0 100 92" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd"
+            d="M22,88 V34 L50,8 L78,34 V88 Z
+               M37,88 V66 A13,13 0 0 1 63,66 V88 Z
+               M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word">
+          <span class="brand__name">ALARA</span>
+          <span class="brand__sub">Home Care</span>
+        </span>
+      </a>
+      <div class="site-footer__meta">
+        Serving all of Clark County, Nevada<br />
+        <a href="tel:+17028149630">(702) 814-9630</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    var header = document.getElementById('siteHeader');
+    var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 24); };
+    onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+    var toggle = document.getElementById('navToggle'); var menu = document.getElementById('site-menu');
+    if (toggle && menu) { toggle.addEventListener('click', function () {
+      var open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!open));
+      toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+      menu.setAttribute('data-open', String(!open)); }); }
+    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!prefersReduced && 'IntersectionObserver' in window) {
+      document.documentElement.classList.add('js-reveal');
+      var io = new IntersectionObserver(function (entries) { entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
+      }, { threshold: 0.14, rootMargin: '0px 0px -8% 0px' });
+      document.querySelectorAll('.io-reveal').forEach(function (el) { io.observe(el); });
+    } else { document.querySelectorAll('.io-reveal').forEach(function (el) { el.classList.add('is-in'); }); }
+  </script>
+  <script src="site-nav.js" defer></script>
+</body>
+</html>

@@ -199,7 +199,7 @@ def view_home(site):
     told_html = "".join('<p class="told">&ldquo;' + x + '&rdquo;</p>' for x in told)
     steps = [
         ("You call.", "Tell us what&rsquo;s happening."),
-        ("The hard part is ours.", "The DOL, the denials, the authorizations &mdash; you never see them."),
+        ("The paperwork is ours.", "The DOL, the denials, the authorizations. You never see them."),
         ("Care begins.", "Skilled care at your door, usually within days."),
     ]
     steps_html = "".join('<div class="step"><p class="step__t">' + t + '</p><p class="step__d">' + d + '</p></div>' for (t, d) in steps)
@@ -229,7 +229,7 @@ def view_home(site):
         '</div>'
       '</section>'
 
-      '<section class="bridge"><p class="bridge__line">For many families, the hardest part isn&rsquo;t the care. It&rsquo;s knowing what comes next.</p></section>'
+      '<section class="bridge"><p class="bridge__line">For many families, the care isn&rsquo;t the problem. It&rsquo;s knowing what comes next.</p></section>'
 
       '<section class="band band--tint" id="process">'
         '<h2 class="sec-h">We take it from there.</h2>'
