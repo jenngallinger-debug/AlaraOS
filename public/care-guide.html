@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Your Care Guide &middot; one named person who owns your case &middot; Alara Home Care</title>
+  <meta name="description" content="Not a call center. A named Care Guide who owns your whole journey, from RECA to the White Card to home health, backed by AlaraOS so nothing waits on memory, plus a Navigator you can use yourself. At no cost to you." />
+  <link rel="icon" href="logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="site.css" />
+  <style>
+    /* Your Care Guide — canonical neutral system. Warmth from the photo, not
+       from color. Page-scoped rules are layout only, on shared tokens. */
+
+    /* Full-bleed photographic hero. */
+    .phero { position: relative; min-height: clamp(420px, 62vh, 620px); display: flex; align-items: flex-end; }
+    .phero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .phero__scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(24,21,21,.36) 0%, rgba(24,21,21,.5) 55%, rgba(24,21,21,.76) 100%); }
+    .phero__inner { position: relative; width: 100%; padding-block: clamp(38px, 5vw, 68px); }
+    .cg-wrap { max-width: 960px; margin-inline: auto; }
+    .phero .crumbs, .phero .crumbs a { color: var(--on-dark-soft); }
+    .phero .crumbs a:hover { color: var(--on-dark); }
+    .phero .eyebrow { color: var(--on-dark-soft); display: block; margin-bottom: 16px; }
+    .phero h1 { font-family: var(--display); font-size: clamp(2.2rem, 5.2vw, 3.75rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.04; color: var(--on-dark); max-width: 18ch; }
+    .phero__lead { margin-top: 20px; font-size: 1.1875rem; line-height: 1.5; color: var(--on-dark); opacity: .92; max-width: 50ch; }
+
+    /* First hook, on paper. */
+    .cline { padding-block: clamp(44px, 6vw, 80px) 0; }
+    .cline__big { font-family: var(--display); font-size: clamp(1.75rem, 4vw, 2.875rem); font-weight: 500; letter-spacing: -0.024em; line-height: 1.1; color: var(--espresso); max-width: 22ch; }
+
+    /* Them vs us. */
+    .wedge { margin-top: clamp(28px, 3.4vw, 40px); display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--hairline); border-radius: 4px; overflow: hidden; }
+    .wedge__col { padding: clamp(24px, 3vw, 36px); }
+    .wedge__col--them { background: var(--paper); }
+    .wedge__col--us { background: var(--espresso); color: var(--on-dark); }
+    .wedge__k { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--taupe); margin-bottom: 18px; }
+    .wedge__col--us .wedge__k { color: var(--on-dark-soft); }
+    .wedge__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 15px; }
+    .wedge__list li { font-size: 1.0625rem; line-height: 1.45; color: var(--taupe-ink); padding-left: 24px; position: relative; }
+    .wedge__col--us .wedge__list li { color: var(--on-dark); }
+    .wedge__list li::before { content: ""; position: absolute; left: 0; top: 0.55em; width: 7px; height: 7px; border-radius: 50%; background: var(--taupe); }
+    .wedge__col--us .wedge__list li::before { background: var(--on-dark-soft); }
+    @media (max-width: 640px) { .wedge { grid-template-columns: 1fr; } }
+
+    .csec { padding-block: clamp(52px, 7vw, 92px) 0; }
+    .csec__h { font-family: var(--display); font-size: clamp(1.75rem, 3.4vw, 2.5rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.08; color: var(--espresso); max-width: 22ch; }
+    .csec__intro { margin-top: 18px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); max-width: 58ch; }
+
+    .cfeat { margin-top: clamp(26px, 3vw, 40px); display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; }
+    .cfeat__card { background: var(--paper); border: 1px solid var(--hairline); border-radius: 4px; padding: clamp(24px, 2.8vw, 32px); display: flex; flex-direction: column; }
+    .cfeat__k { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--taupe); }
+    .cfeat__n { margin-top: 12px; font-family: var(--display); font-size: 1.25rem; font-weight: 500; line-height: 1.2; color: var(--espresso); }
+    .cfeat__p { margin-top: 10px; font-size: 0.9875rem; line-height: 1.55; color: var(--taupe-ink); }
+    .cfeat__p strong { color: var(--espresso); font-weight: 500; }
+    .cfeat__link { margin-top: 16px; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9375rem; color: var(--espresso); }
+
+    .chook { margin-top: clamp(52px, 7vw, 92px); background: var(--espresso); color: var(--on-dark); border-radius: 4px; padding: clamp(32px, 4.6vw, 60px); }
+    .chook__k { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--on-dark-soft); }
+    .chook__big { margin-top: 14px; font-family: var(--display); font-size: clamp(1.75rem, 4vw, 2.75rem); font-weight: 500; letter-spacing: -0.022em; line-height: 1.08; color: var(--on-dark); max-width: 24ch; }
+    .journey { margin-top: clamp(26px, 3.2vw, 38px); display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .journey__step { border: 1px solid rgba(201,196,193,.25); border-radius: 4px; padding: clamp(18px, 2.2vw, 24px); }
+    .journey__n { font-family: var(--display); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--on-dark-soft); }
+    .journey__h { margin-top: 8px; font-family: var(--display); font-size: 1.25rem; font-weight: 500; color: var(--on-dark); }
+    .journey__p { margin-top: 10px; font-size: 0.9375rem; line-height: 1.55; color: var(--on-dark-soft); }
+    @media (max-width: 640px) { .journey { grid-template-columns: 1fr; } }
+
+    .cg-cta { padding-block: clamp(52px, 7vw, 92px); text-align: center; }
+    .cg-cta h2 { font-family: var(--display); font-size: clamp(1.75rem, 4vw, 2.75rem); font-weight: 500; letter-spacing: -0.022em; color: var(--espresso); max-width: 20ch; margin-inline: auto; }
+    .cg-cta p { margin-top: 18px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); max-width: 56ch; margin-inline: auto; }
+    .cg-cta__actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; justify-content: center; }
+    .cg-cta__call { color: var(--espresso); font-size: 0.9375rem; }
+    .cg-cta__call a { color: var(--espresso); }
+  </style>
+</head>
+<body>
+
+  <header class="site-header" id="siteHeader">
+    <div class="container site-header__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care, home">
+        <svg class="brand__mark" viewBox="0 0 100 92" role="img" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd"
+            d="M22,88 V34 L50,8 L78,34 V88 Z
+               M37,88 V66 A13,13 0 0 1 63,66 V88 Z
+               M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word">
+          <span class="brand__name">ALARA</span>
+          <span class="brand__sub">Home Care</span>
+        </span>
+      </a>
+      <div class="site-header__actions">
+        <nav class="site-nav site-nav--primary" aria-label="Primary">
+          <a class="site-nav__link" href="services.html">Get Care</a>
+          <span class="site-nav__item">
+            <a class="site-nav__link site-nav__link--dd" href="programs.html" aria-haspopup="true">Benefits <span class="nav-caret" aria-hidden="true">&#9662;</span></a>
+            <span class="nav-dd" role="menu">
+              <a class="nav-dd__link nav-dd__link--cta" role="menuitem" href="qualify.html">Do I qualify? <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              <span class="nav-dd__sep" aria-hidden="true"></span>
+              <a class="nav-dd__link" role="menuitem" href="white-card.html">White Card (EEOICPA)</a>
+              <a class="nav-dd__link" role="menuitem" href="reca.html">RECA (Radiation Exposure)</a>
+              <a class="nav-dd__link" role="menuitem" href="owcp.html">Federal Workers (OWCP / FECA)</a>
+              <a class="nav-dd__link" role="menuitem" href="veterans.html">Veterans</a>
+              <span class="nav-dd__sep" aria-hidden="true"></span>
+              <a class="nav-dd__link nav-dd__link--cta" role="menuitem" href="begin.html">Not sure? Start here <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            </span>
+          </span>
+          <a class="site-nav__link" href="learn.html">Learn</a>
+          <a class="site-nav__link" href="about.html">Why Alara</a>
+          <a class="site-nav__link" href="begin.html?who=referrer">Refer a Patient</a>
+          <a class="header-call" href="tel:+17028149630">
+            <span class="header-call__label">Call us</span>
+            <span class="header-call__num">(702) 814-9630</span>
+          </a>
+        </nav>
+        <a class="btn btn--sm" href="qualify.html">See if you qualify</a>
+        <button class="nav-toggle" type="button" id="navToggle" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu">
+          <span class="nav-toggle__bar" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+    <nav class="mobile-menu" id="site-menu" data-open="false" aria-label="Primary (mobile)">
+      <div class="container mobile-menu__inner">
+        <a class="mobile-menu__link" href="services.html">Get Care <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="programs.html">Benefits <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="qualify.html">Do I qualify?</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="white-card.html">White Card (EEOICPA)</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="reca.html">RECA (Radiation Exposure)</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="owcp.html">Federal Workers (OWCP / FECA)</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="veterans.html">Veterans</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="begin.html">Not sure? Start here</a>
+        <a class="mobile-menu__link" href="learn.html">Learn <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="about.html">Why Alara <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="begin.html?who=referrer">Refer a Patient <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="btn btn--block mobile-menu__cta" href="qualify.html">See if you qualify</a>
+        <p class="mobile-menu__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></p>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+
+    <section class="phero" aria-label="Your Care Guide">
+      <img class="phero__img" src="care-hands.webp" alt="The clasped hands of an older person resting quietly" onerror="this.onerror=null;this.src='hero-arches.webp';" />
+      <div class="phero__scrim" aria-hidden="true"></div>
+      <div class="phero__inner">
+        <div class="container">
+          <div class="cg-wrap">
+            <nav class="crumbs" aria-label="Breadcrumb" style="font-size:0.8125rem; margin-bottom:16px;">
+              <a href="about.html">Why Alara</a><span aria-hidden="true" style="margin:0 8px;">/</span><span style="color:var(--on-dark-soft);">Your Care Guide</span>
+            </nav>
+            <span class="eyebrow">Your Care Guide</span>
+            <h1>Not a call center. A named person who owns your case.</h1>
+            <p class="phero__lead">Most agencies hand you a helpful voice that checks in now and then. Alara gives you one named Care Guide who owns your whole journey, from RECA to the White Card to home health. At no cost to you.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="cg-wrap">
+
+        <section class="cline">
+          <p class="cline__big">With Alara, you never explain yourself twice.</p>
+          <div class="wedge">
+            <div class="wedge__col wedge__col--them">
+              <p class="wedge__k">What most agencies give you</p>
+              <ul class="wedge__list">
+                <li>A helpful voice that checks in</li>
+                <li>A team, not a name you can call</li>
+                <li>You wait to be told what is next</li>
+                <li>Help that starts at the White Card</li>
+              </ul>
+            </div>
+            <div class="wedge__col wedge__col--us">
+              <p class="wedge__k">What Alara gives you</p>
+              <ul class="wedge__list">
+                <li>A named Care Guide who owns it</li>
+                <li>AlaraOS that stays ahead of it</li>
+                <li>A Navigator to see it yourself</li>
+                <li>The whole journey, RECA to home health</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="csec">
+          <h2 class="csec__h">One person, three ways they stay ahead of it.</h2>
+          <p class="csec__intro">Your Care Guide is a name, not a phone tree. Behind them is the system and the tools that keep your case from ever going quiet.</p>
+          <div class="cfeat">
+            <div class="cfeat__card">
+              <div class="cfeat__k">01</div>
+              <div class="cfeat__n">One name, not a phone tree.</div>
+              <p class="cfeat__p">One person, by name, coordinates your doctors, your authorizations, and the benefits you qualify for. <strong>You never explain yourself twice.</strong> Not a rotating team. Your person, who knows your case.</p>
+            </div>
+            <div class="cfeat__card">
+              <div class="cfeat__k">02</div>
+              <div class="cfeat__n">Backed by AlaraOS, so nothing waits on memory.</div>
+              <p class="cfeat__p">AlaraOS tracks every authorization, renewal, and change, and flags what is due before it lapses. <strong>We reach out when something needs doing</strong>, so you never wait a month to find out.</p>
+              <a class="cfeat__link" href="inside-alaraos.html">See how AlaraOS works <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            </div>
+            <div class="cfeat__card">
+              <div class="cfeat__k">03</div>
+              <div class="cfeat__n">See what applies to you yourself, anytime.</div>
+              <p class="cfeat__p">The <strong>Benefit Navigator</strong> walks you through what generally applies in about a minute, with no forms and nothing saved. Use it whenever you want. This is general education, not a determination.</p>
+              <a class="cfeat__link" href="qualify.html">Open the Benefit Navigator <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            </div>
+          </div>
+        </section>
+
+        <section class="chook">
+          <div class="chook__k">The whole journey, one owner</div>
+          <p class="chook__big">Most help starts at the White Card. Alara starts earlier and stays later.</p>
+          <div class="journey">
+            <div class="journey__step">
+              <span class="journey__n">Upstream</span>
+              <p class="journey__h">RECA</p>
+              <p class="journey__p">If radiation compensation applies to you, we help you understand it and where it can lead.</p>
+            </div>
+            <div class="journey__step">
+              <span class="journey__n">The card</span>
+              <p class="journey__h">White Card</p>
+              <p class="journey__p">Consequential conditions, the benefits most families never claim, and the authorizations, handled.</p>
+            </div>
+            <div class="journey__step">
+              <span class="journey__n">The care</span>
+              <p class="journey__h">Home health</p>
+              <p class="journey__p">Skilled nursing, wound care, therapy, and an aide, delivered and coordinated at home.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="cg-cta">
+          <h2>Meet your Care Guide.</h2>
+          <p>One call, and a named person takes it from there, at no cost to you. Covered care tied to your accepted condition is paid by the federal program. You never receive a bill.</p>
+          <div class="cg-cta__actions">
+            <a class="btn" href="begin.html">Have a nurse call you <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <span class="cg-cta__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></span>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <section class="disclaimer">
+      <div class="container disclaimer__inner">
+        Alara helps you understand and reach benefits you may already be entitled to. It does not replace your Resource Center, physician, attorney, authorized representative, or any federal agency. It helps you work with them. Nothing here is a coverage determination.
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care">
+        <svg class="brand__mark" viewBox="0 0 100 92" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
+      </a>
+      <div class="site-footer__meta">Serving all of <a href="las-vegas.html" style="color:inherit;">Clark County and Southern Nevada</a><br /><a href="tel:+17028149630">(702) 814-9630</a></div>
+    </div>
+  </footer>
+
+  <script>
+    var header = document.getElementById('siteHeader');
+    var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 24); };
+    onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+    var toggle = document.getElementById('navToggle'); var menu = document.getElementById('site-menu');
+    if (toggle && menu) { toggle.addEventListener('click', function () {
+      var open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!open));
+      toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+      menu.setAttribute('data-open', String(!open)); }); }
+  </script>
+  <script src="site-nav.js" defer></script>
+</body>
+</html>

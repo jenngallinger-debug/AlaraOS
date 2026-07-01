@@ -35,6 +35,21 @@
     .page-hero__aside { margin-top: 14px; font-size: 0.9375rem; color: var(--taupe-ink); }
     .page-hero__aside a { color: var(--espresso); }
 
+    /* Full-bleed photographic hero (shared brand move). Neutral tokens only. */
+    .phero { position: relative; min-height: clamp(380px, 56vh, 560px); display: flex; align-items: flex-end; }
+    .phero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .phero__scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(24,21,21,.32) 0%, rgba(24,21,21,.46) 55%, rgba(24,21,21,.74) 100%); }
+    .phero__inner { position: relative; width: 100%; padding-block: clamp(36px, 5vw, 64px); }
+    .phero .crumbs, .phero .crumbs a { color: var(--on-dark-soft); }
+    .phero .crumbs a:hover { color: var(--on-dark); }
+    .phero .eyebrow { color: var(--on-dark-soft); }
+    .phero h1 { color: var(--on-dark); }
+    .phero .page-hero__lead { color: var(--on-dark); opacity: .92; }
+    .phero .page-hero__aside { color: var(--on-dark-soft); }
+    .phero .page-hero__aside strong, .phero .page-hero__aside a { color: var(--on-dark); }
+    .phero .btn--ghost { color: var(--on-dark); border-color: rgba(251,251,251,.5); }
+    .phero .btn--ghost:hover { border-color: var(--on-dark); background: rgba(251,251,251,.08); }
+
     .prose { max-width: 720px; }
     .prose section { padding-top: clamp(40px, 4.5vw, 64px); }
     .prose section:first-child { padding-top: 0; }
@@ -132,6 +147,34 @@
       .faq details { break-inside: avoid; }
       .faq details:not([open]) p { display: block !important; padding-bottom: 16px; }
     }
+    /* What it can be worth — scannable money figures that beat rivals' text walls. */
+    .worth { margin-top: 22px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+    .worth__card { border: 1px solid var(--hairline); border-radius: 6px; padding: 22px 20px; }
+    .worth__fig { font-family: var(--display); font-size: clamp(1.625rem, 2.8vw, 2.25rem); font-weight: 500; letter-spacing: -0.02em; color: var(--espresso); line-height: 1; }
+    .worth__k { margin-top: 12px; font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--taupe); }
+    .worth__p { margin-top: 8px; font-size: 0.9375rem; line-height: 1.5; color: var(--taupe-ink); }
+    .worth__note { margin-top: 16px; font-size: 0.9375rem; line-height: 1.6; color: var(--taupe-ink); }
+    .worth__note a { color: var(--espresso); }
+
+    /* Quick eligibility check — the self-serve tool no competitor has. */
+    .qcheck { padding-block: clamp(40px, 5vw, 72px); background: var(--mist); border-bottom: 1px solid var(--hairline); }
+    .qcheck__box { max-width: 720px; margin-inline: auto; background: var(--paper); border: 1px solid var(--hairline); border-radius: 12px; padding: clamp(28px, 4vw, 44px); box-shadow: 0 1px 2px rgba(52,46,46,.03); }
+    .qcheck__eyebrow { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--taupe); }
+    .qcheck__h { margin-top: 10px; font-family: var(--display); font-size: clamp(1.5rem, 3vw, 2.125rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.1; color: var(--espresso); }
+    .qcheck__sub { margin-top: 12px; font-size: 0.9375rem; line-height: 1.55; color: var(--taupe); max-width: 52ch; }
+    .qcheck__stage { margin-top: clamp(24px, 3vw, 32px); }
+    .qc-progress { margin-bottom: 14px; font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--taupe); }
+    .qc-q { font-family: var(--display); font-size: 1.1875rem; font-weight: 500; line-height: 1.3; color: var(--espresso); max-width: 36ch; }
+    .qc-opts { margin-top: 18px; display: grid; gap: 10px; }
+    .qc-opt { text-align: left; font: inherit; font-size: 1.0625rem; color: var(--espresso); background: var(--paper); border: 1px solid var(--hairline); border-radius: 8px; padding: 15px 18px; cursor: pointer; transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .qc-opt:hover { border-color: var(--espresso); background: var(--mist); }
+    .qc-opt .arrow { color: var(--taupe); }
+    .qc-result__k { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--taupe); }
+    .qc-result__h { margin-top: 10px; font-family: var(--display); font-size: clamp(1.375rem, 2.6vw, 1.75rem); font-weight: 500; letter-spacing: -0.018em; line-height: 1.15; color: var(--espresso); max-width: 30ch; }
+    .qc-result__p { margin-top: 12px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); max-width: 54ch; }
+    .qc-result__actions { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 12px 14px; }
+    .qc-restart { margin-top: 20px; background: none; border: none; padding: 0; font: inherit; font-size: 0.875rem; color: var(--taupe); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+    .qc-restart:hover { color: var(--espresso); }
   </style>
 </head>
 <body>
@@ -155,7 +198,7 @@
               <a class="nav-dd__link" role="menuitem" href="white-card.html">White Card (EEOICPA)</a>
               <a class="nav-dd__link" role="menuitem" href="reca.html">RECA (Radiation Exposure)</a>
               <a class="nav-dd__link" role="menuitem" href="owcp.html">Federal Workers (OWCP / FECA)</a>
-              <a class="nav-dd__link" role="menuitem" href="programs.html#community-care">Veterans</a>
+              <a class="nav-dd__link" role="menuitem" href="veterans.html">Veterans</a>
               <span class="nav-dd__sep" aria-hidden="true"></span>
               <a class="nav-dd__link nav-dd__link--cta" role="menuitem" href="begin.html">Not sure? Start here <span class="arrow" aria-hidden="true">&rarr;</span></a>
             </span>
@@ -180,7 +223,7 @@
         <a class="mobile-menu__link mobile-menu__link--sub" href="white-card.html">White Card (EEOICPA)</a>
         <a class="mobile-menu__link mobile-menu__link--sub" href="reca.html">RECA (Radiation Exposure)</a>
         <a class="mobile-menu__link mobile-menu__link--sub" href="owcp.html">Federal Workers (OWCP / FECA)</a>
-        <a class="mobile-menu__link mobile-menu__link--sub" href="programs.html#community-care">Veterans</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="veterans.html">Veterans</a>
         <a class="mobile-menu__link mobile-menu__link--sub" href="begin.html">Not sure? Start here</a>
         <a class="mobile-menu__link" href="learn.html">Learn <span class="arrow" aria-hidden="true">&rarr;</span></a>
         <a class="mobile-menu__link" href="about.html">Why Alara <span class="arrow" aria-hidden="true">&rarr;</span></a>
@@ -203,19 +246,35 @@
   </nav>
 
   <main>
-    <section class="page-hero">
-      <div class="container">
-        <nav class="crumbs" aria-label="Breadcrumb">
-          <a href="programs.html">Benefits</a><span aria-hidden="true">/</span>White Card
-        </nav>
-        <span class="eyebrow">A complete guide &middot; White Card (EEOICPA)</span>
-        <h1>Your White Card covers more than most families claim.</h1>
-        <p class="page-hero__lead">If you or someone in your family worked at the Nevada Test Site or another Department of Energy site and has a White Card, skilled home health for the accepted conditions comes at no cost to you. The program is complicated, and that is the only reason families miss what they have earned. Here is the whole picture, in plain language, with the exact step to claim each part. Alara does the claiming, so you spend less time on the paperwork and more time on your life.</p>
-        <div class="page-hero__actions">
-          <a class="btn btn--primary btn--lg" href="#missed">See the benefits most people miss <span class="arrow" aria-hidden="true">&darr;</span></a>
-          <button class="btn btn--ghost" type="button" id="printGuide">Print or save this guide</button>
+    <section class="phero" aria-label="The White Card, explained">
+      <img class="phero__img" src="nevada-test-site-hero.jpg" alt="Aerial view of subsidence craters at Yucca Flat, Nevada Test Site" onerror="this.onerror=null;this.src='hero-arches.webp';" />
+      <div class="phero__scrim" aria-hidden="true"></div>
+      <div class="phero__inner">
+        <div class="container">
+          <nav class="crumbs" aria-label="Breadcrumb">
+            <a href="programs.html">Benefits</a><span aria-hidden="true">/</span>White Card
+          </nav>
+          <span class="eyebrow">White Card &middot; EEOICPA</span>
+          <h1>Up to $400,000, tax-free. And free home health care.</h1>
+          <p class="page-hero__lead">If nuclear weapons work made you or a family member sick, the EEOICPA White Card pays compensation and covers skilled home health for life. Alara helps you claim all of it, and unlike a benefits guide, we are the nurses who deliver the care. Here is the whole picture, in plain language.</p>
+          <div class="page-hero__actions">
+            <a class="btn btn--on-dark btn--lg" href="#worth">See what it can be worth <span class="arrow" aria-hidden="true">&darr;</span></a>
+            <button class="btn btn--ghost" type="button" id="printGuide">Print or save this guide</button>
+          </div>
+          <p class="page-hero__aside">This guide is for people who <strong>already have a White Card</strong>. Care can start right away. <a href="#file">Don&rsquo;t have one yet? That is a different path &rarr;</a></p>
         </div>
-        <p class="page-hero__aside">This guide is for people who <strong>already have a White Card</strong>. Care can start right away. <a href="#file">Don&rsquo;t have one yet? That is a different path &rarr;</a></p>
+      </div>
+    </section>
+
+    <section class="qcheck" aria-label="Quick eligibility check">
+      <div class="container">
+        <div class="qcheck__box">
+          <span class="qcheck__eyebrow">Quick check</span>
+          <h2 class="qcheck__h">Could the White Card apply to you?</h2>
+          <p class="qcheck__sub">Two taps, no forms, nothing saved. This is general information, not a determination of your eligibility.</p>
+          <div class="qcheck__stage" id="qcStage" aria-live="polite"></div>
+          <noscript><p class="qc-q" style="margin-top:24px;">To check instantly, use the <a href="qualify.html" style="color:var(--espresso);">Benefit Navigator</a>, or call a nurse at <a href="tel:+17028149630" style="color:var(--espresso);">(702) 814-9630</a>.</p></noscript>
+        </div>
       </div>
     </section>
 
@@ -227,6 +286,7 @@
           <ol id="tocList">
             <li><a href="#missed">Benefits most people miss</a></li>
             <li><a href="#covers">What it covers at home</a></li>
+            <li><a href="#worth">What it can be worth</a></li>
             <li><a href="#picture">What the White Card is</a></li>
             <li><a href="#consequential">Consequential conditions</a></li>
             <li><a href="#file">If you do not have a card yet</a></li>
@@ -295,6 +355,34 @@
             </ul>
             <p>Beyond home health, your benefits can also include prescription medications, durable medical equipment (hospital beds, wheelchairs, walkers, oxygen), medically necessary home safety modifications such as grab bars and ramps, travel reimbursement, and diagnostic and specialist visits, all tied to your accepted conditions.</p>
             <p><strong>One correction worth thousands of dollars:</strong> home health is not only for after a hospital stay. If a physician orders it and it relates to an accepted condition, it is covered any time, ongoing, for as long as it is medically necessary.</p>
+          </section>
+
+          <section id="worth">
+            <h2>What the White Card can be worth.</h2>
+            <p class="section-intro">Beyond the home health it pays for, EEOICPA can include one-time and ongoing compensation. The Department of Labor sets the amounts and they depend on your claim; these are the program figures, for context.</p>
+            <div class="worth">
+              <div class="worth__card">
+                <div class="worth__fig">$150,000</div>
+                <div class="worth__k">Part B</div>
+                <p class="worth__p">A one-time, tax-free lump sum for an accepted covered illness, plus lifetime medical benefits.</p>
+              </div>
+              <div class="worth__card">
+                <div class="worth__fig">Up to $250,000</div>
+                <div class="worth__k">Part E</div>
+                <p class="worth__p">For illness tied to toxic exposure: impairment and wage-loss compensation, on top of medical benefits.</p>
+              </div>
+              <div class="worth__card">
+                <div class="worth__fig">$2,500</div>
+                <div class="worth__k">Per 1% impairment</div>
+                <p class="worth__p">Part E pays $2,500 for each percentage point of whole-body impairment. If your condition worsens, a re-rating can add more.</p>
+              </div>
+              <div class="worth__card">
+                <div class="worth__fig">Up to $125,000</div>
+                <div class="worth__k">Survivors (Part E)</div>
+                <p class="worth__p">Eligible survivors of a worker who died from an accepted condition may receive compensation of their own.</p>
+              </div>
+            </div>
+            <p class="worth__note">Combined, EEOICPA can reach <strong>up to $400,000 in tax-free compensation</strong>. Only the Department of Labor determines your amount. <a href="nevada-test-site.html#estimator">See an illustrative impairment estimate &rarr;</a></p>
           </section>
 
           <section id="picture">
@@ -421,7 +509,7 @@
         </svg>
         <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
       </a>
-      <div class="site-footer__meta">Serving all of Clark County, Nevada<br /><a href="tel:+17028149630">(702) 814-9630</a></div>
+      <div class="site-footer__meta">Serving all of <a href="las-vegas.html" style="color:inherit;">Clark County, Nevada</a><br /><a href="tel:+17028149630">(702) 814-9630</a></div>
     </div>
   </footer>
 
@@ -452,6 +540,97 @@
       }, { rootMargin: '-20% 0px -70% 0px' });
       Object.keys(map).forEach(function (id) { io.observe(document.getElementById(id)); });
     }
+  </script>
+  <script>
+    // Quick eligibility check — governed, educational, no PHI, nothing saved.
+    (function () {
+      var stage = document.getElementById('qcStage');
+      if (!stage) return;
+      var steps = {
+        who: {
+          n: 'Step 1 of 2',
+          q: 'Did you, or a family member, work at the Nevada Test Site or another Department of Energy or nuclear-weapons site?',
+          opts: [
+            { label: 'Yes', go: 'illness' },
+            { label: 'No', go: 'r_other' },
+            { label: 'I am not sure', go: 'r_notsure' }
+          ]
+        },
+        illness: {
+          n: 'Step 2 of 2',
+          q: 'Has a doctor connected an illness to that work, or diagnosed a covered condition such as certain cancers or lung disease?',
+          opts: [
+            { label: 'Yes', go: 'r_likely' },
+            { label: 'Not yet, or I am not sure', go: 'r_maybe' }
+          ]
+        }
+      };
+      var results = {
+        r_likely: {
+          k: 'You may qualify',
+          h: 'The EEOICPA White Card may apply to you.',
+          p: 'That can mean compensation and skilled home health for life, at no cost to you for the accepted condition. The next step is to see what specifically applies, or to talk to a nurse.',
+          actions: [
+            { label: 'See what applies', href: 'qualify.html', primary: true },
+            { label: 'What it can be worth', href: '#worth' },
+            { label: 'Talk to a nurse: (702) 814-9630', href: 'tel:+17028149630' }
+          ]
+        },
+        r_maybe: {
+          k: 'You may still qualify',
+          h: 'It may still apply, and it is worth checking.',
+          p: 'The list of covered conditions has expanded over the years, and a family member may qualify as a survivor. The Benefit Navigator walks through what generally applies in about a minute.',
+          actions: [
+            { label: 'See what applies', href: 'qualify.html', primary: true },
+            { label: 'Talk to a nurse: (702) 814-9630', href: 'tel:+17028149630' }
+          ]
+        },
+        r_other: {
+          k: 'A different path may fit',
+          h: 'The White Card is for DOE and nuclear-weapons workers.',
+          p: 'You may still qualify for other federal home health: OWCP for federal and postal workers, or VA Community Care for veterans. The Navigator can check all of them.',
+          actions: [
+            { label: 'Check all programs', href: 'qualify.html', primary: true },
+            { label: 'Federal workers (OWCP)', href: 'owcp.html' },
+            { label: 'Veterans (VA)', href: 'veterans.html' }
+          ]
+        },
+        r_notsure: {
+          k: 'Worth checking',
+          h: 'Not sure counts as worth a look.',
+          p: 'Many families do not realize the work qualifies. The Benefit Navigator walks you through it in about a minute, with no forms and nothing saved.',
+          actions: [
+            { label: 'Open the Navigator', href: 'qualify.html', primary: true },
+            { label: 'Read the Nevada Test Site guide', href: 'nevada-test-site.html' }
+          ]
+        }
+      };
+      function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+      function render(key) {
+        var s = steps[key];
+        if (s) {
+          var opts = s.opts.map(function (o) {
+            return '<button class="qc-opt" type="button" data-go="' + o.go + '"><span>' + esc(o.label) + '</span><span class="arrow" aria-hidden="true">&rarr;</span></button>';
+          }).join('');
+          stage.innerHTML = '<p class="qc-progress">' + esc(s.n) + '</p><p class="qc-q">' + esc(s.q) + '</p><div class="qc-opts">' + opts + '</div>';
+          Array.prototype.forEach.call(stage.querySelectorAll('.qc-opt'), function (b) {
+            b.addEventListener('click', function () { render(b.getAttribute('data-go')); });
+          });
+        } else {
+          var r = results[key];
+          if (!r) { render('who'); return; }
+          var acts = r.actions.map(function (a) {
+            var cls = a.primary ? 'btn' : 'btn btn--ghost';
+            var arrow = a.primary ? ' <span class="arrow" aria-hidden="true">&rarr;</span>' : '';
+            return '<a class="' + cls + '" href="' + a.href + '">' + esc(a.label) + arrow + '</a>';
+          }).join('');
+          stage.innerHTML = '<p class="qc-result__k">' + esc(r.k) + '</p><p class="qc-result__h">' + esc(r.h) + '</p><p class="qc-result__p">' + esc(r.p) + '</p><div class="qc-result__actions">' + acts + '</div><button class="qc-restart" type="button">Start over</button>';
+          var rs = stage.querySelector('.qc-restart');
+          if (rs) rs.addEventListener('click', function () { render('who'); });
+        }
+      }
+      render('who');
+    })();
   </script>
   <script src="site-nav.js" defer></script>
 </body>

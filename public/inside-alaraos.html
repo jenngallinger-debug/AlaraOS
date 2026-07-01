@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>The AlaraOS difference &middot; Alara Home Care</title>
-  <meta name="description" content="We see it coming before you do. AlaraOS runs behind every Alara nurse: it reads the early signs, lines up everyone on your care, and handles what's next before it lands on you." />
+  <meta name="description" content="Behind every Alara nurse, AlaraOS watches the details that slip through elsewhere: a refill that never happened, a lab that drifted, an authorization about to lapse. It acts before they reach you, and keeps your nurse, doctor, and family in step." />
   <meta property="og:title" content="The AlaraOS difference" />
   <meta property="og:description" content="Care that stays ahead of what's coming. AlaraOS knows before, keeps everyone in concert, and makes sure each person already has exactly what they need." />
   <meta property="og:type" content="website" />
@@ -25,9 +25,9 @@
     .io-hero > .container { position: relative; z-index: 2; }
     .io-amb { position: absolute; inset: -20%; z-index: 0; pointer-events: none; contain: paint; }
     .io-amb i { position: absolute; display: block; width: 54vw; height: 54vw; border-radius: 50%; filter: blur(66px); }
-    .io-amb i:nth-child(1) { background: radial-gradient(circle, rgba(193,166,134,0.36), transparent 70%); top: -18%; left: 30%; animation: ioDrift1 26s ease-in-out infinite; }
-    .io-amb i:nth-child(2) { background: radial-gradient(circle, rgba(151,124,98,0.30), transparent 70%); top: 4%; left: -8%; animation: ioDrift2 30s ease-in-out infinite; }
-    .io-amb i:nth-child(3) { background: radial-gradient(circle, rgba(214,196,176,0.20), transparent 72%); top: 22%; left: 62%; animation: ioDrift3 34s ease-in-out infinite; }
+    .io-amb i:nth-child(1) { background: radial-gradient(circle, rgba(216,214,211,0.20), transparent 70%); top: -18%; left: 30%; animation: ioDrift1 26s ease-in-out infinite; }
+    .io-amb i:nth-child(2) { background: radial-gradient(circle, rgba(160,158,163,0.15), transparent 70%); top: 4%; left: -8%; animation: ioDrift2 30s ease-in-out infinite; }
+    .io-amb i:nth-child(3) { background: radial-gradient(circle, rgba(232,232,235,0.12), transparent 72%); top: 22%; left: 62%; animation: ioDrift3 34s ease-in-out infinite; }
     @keyframes ioDrift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-5%,6%)} }
     @keyframes ioDrift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(7%,-4%)} }
     @keyframes ioDrift3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-6%,-5%)} }
@@ -50,6 +50,19 @@
     .io-why { background: var(--espresso); color: var(--on-dark); padding-block: var(--io-pad); text-align: center; }
     .io-why h2 { margin: 0 auto; font-size: clamp(2rem, 4.4vw, 3.25rem); font-weight: 500; line-height: 1.04; letter-spacing: -0.03em; color: var(--on-dark); max-width: 20ch; }
     .io-why p { margin: clamp(24px, 3vw, 36px) auto 0; font-size: clamp(1.0625rem, 1.5vw, 1.3125rem); line-height: 1.6; color: var(--on-dark-soft); max-width: 56ch; }
+
+    /* MOAT — the competitive point: no one else has care technology. */
+    .io-moat { padding-block: var(--io-pad); }
+    .io-moat__head { max-width: 60ch; }
+    .io-moat__head .eyebrow { display: block; margin-bottom: 18px; }
+    .io-moat__head h2 { font-size: clamp(1.75rem, 3.8vw, 3rem); font-weight: 500; line-height: 1.05; letter-spacing: -0.03em; color: var(--espresso); max-width: 20ch; }
+    .io-moat__lead { margin-top: 22px; font-size: clamp(1.0625rem, 1.5vw, 1.25rem); line-height: 1.6; color: var(--taupe-ink); max-width: 60ch; }
+    .io-moat__lead strong { color: var(--espresso); font-weight: 500; }
+    .io-caps { margin-top: clamp(36px, 4.5vw, 60px); display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(28px, 3vw, 44px); }
+    .io-cap { border-top: 1px solid var(--hairline); padding-top: clamp(18px, 2.2vw, 26px); }
+    .io-cap h3 { font-size: clamp(1.125rem, 1.6vw, 1.375rem); font-weight: 500; letter-spacing: -0.015em; line-height: 1.2; color: var(--espresso); }
+    .io-cap p { margin-top: 12px; font-size: 1.0625rem; line-height: 1.55; color: var(--taupe-ink); }
+    @media (max-width: 760px) { .io-caps { grid-template-columns: 1fr; gap: 0; } .io-cap { padding-block: clamp(22px, 5vw, 28px); } }
 
     /* MOTION — cinematic reveals + hero entrance; reduced-motion safe. */
     .js-reveal .io-reveal { opacity: 0; transform: translateY(28px); transition: opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); }
@@ -93,7 +106,7 @@
               <a class="nav-dd__link" role="menuitem" href="white-card.html">White Card (EEOICPA)</a>
               <a class="nav-dd__link" role="menuitem" href="reca.html">RECA (Radiation Exposure)</a>
               <a class="nav-dd__link" role="menuitem" href="owcp.html">Federal Workers (OWCP / FECA)</a>
-              <a class="nav-dd__link" role="menuitem" href="programs.html#community-care">Veterans</a>
+              <a class="nav-dd__link" role="menuitem" href="veterans.html">Veterans</a>
               <span class="nav-dd__sep" aria-hidden="true"></span>
               <a class="nav-dd__link nav-dd__link--cta" role="menuitem" href="begin.html">Not sure? Start here <span class="arrow" aria-hidden="true">&rarr;</span></a>
             </span>
@@ -120,7 +133,7 @@
         <a class="mobile-menu__link mobile-menu__link--sub" href="white-card.html">White Card (EEOICPA)</a>
         <a class="mobile-menu__link mobile-menu__link--sub" href="reca.html">RECA (Radiation Exposure)</a>
         <a class="mobile-menu__link mobile-menu__link--sub" href="owcp.html">Federal Workers (OWCP / FECA)</a>
-        <a class="mobile-menu__link mobile-menu__link--sub" href="programs.html#community-care">Veterans</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="veterans.html">Veterans</a>
         <a class="mobile-menu__link mobile-menu__link--sub" href="begin.html">Not sure? Start here</a>
         <a class="mobile-menu__link" href="learn.html">Learn <span class="arrow" aria-hidden="true">&rarr;</span></a>
         <a class="mobile-menu__link" href="about.html">Why Alara <span class="arrow" aria-hidden="true">&rarr;</span></a>
@@ -138,10 +151,11 @@
       <div class="io-amb" aria-hidden="true"><i></i><i></i><i></i></div>
       <div class="container">
         <p class="io-hero__eyebrow">The AlaraOS difference</p>
-        <h1>We see it coming before you do.</h1>
+        <h1>We catch the small things before they become a hospital trip.</h1>
         <p class="io-hero__sub">
-          AlaraOS runs behind every nurse. It reads the early signs, lines up everyone on your care, and
-          handles what&rsquo;s next before it lands on you.
+          Behind every Alara nurse, AlaraOS watches the details that slip through elsewhere: a refill that
+          never happened, a lab that drifted, an authorization about to lapse. It acts on them before they
+          reach you.
         </p>
       </div>
     </section>
@@ -165,6 +179,35 @@
           <div class="feel-item io-reveal">
             <h3>The right person already knows.</h3>
             <p>Updates reach who needs them, on their own. Your doctor has what they need before they ask. Your daughter sees what changed. You hear what matters, and nothing you don&rsquo;t.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MOAT — the competitive point: no one else has care technology. -->
+    <section class="io-moat" aria-label="Why no one else has this">
+      <div class="container">
+        <div class="io-moat__head io-reveal">
+          <span class="eyebrow">Why no one else has this</span>
+          <h2>Most home health runs on memory. Alara runs on a system.</h2>
+          <p class="io-moat__lead">Across this field, care is tracked in someone&rsquo;s head, on sticky notes, and over phone tag. That is why authorizations lapse, renewals get missed, and a decline is caught only after the fall. The benefits companies you have heard of are guides, national chains, or owned by private equity. <strong>None of them built the technology to stay ahead of your care.</strong> We did.</p>
+        </div>
+        <div class="io-caps io-reveal">
+          <div class="io-cap">
+            <h3>Coverage that never lapses</h3>
+            <p>Authorizations and renewals are tracked in advance, so care does not stop mid-episode over a missed date.</p>
+          </div>
+          <div class="io-cap">
+            <h3>Problems caught early</h3>
+            <p>A missed refill, a drifting lab, a small decline, flagged before any of it becomes a crisis.</p>
+          </div>
+          <div class="io-cap">
+            <h3>Everyone in step</h3>
+            <p>Your nurse, doctor, pharmacy, and family stay in sync on their own, with no one waiting on a call that never came.</p>
+          </div>
+          <div class="io-cap">
+            <h3>Benefits put to use</h3>
+            <p>Benefits you qualified for get surfaced and claimed, not left on the table because no one was watching.</p>
           </div>
         </div>
       </div>

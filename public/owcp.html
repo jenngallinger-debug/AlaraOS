@@ -33,6 +33,21 @@
     .page-hero__aside { margin-top: 14px; font-size: 0.9375rem; color: var(--taupe-ink); }
     .page-hero__aside a { color: var(--espresso); }
 
+    /* Full-bleed photographic hero (shared brand move). Neutral tokens only. */
+    .phero { position: relative; min-height: clamp(380px, 56vh, 560px); display: flex; align-items: flex-end; }
+    .phero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .phero__scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(24,21,21,.34) 0%, rgba(24,21,21,.48) 55%, rgba(24,21,21,.74) 100%); }
+    .phero__inner { position: relative; width: 100%; padding-block: clamp(36px, 5vw, 64px); }
+    .phero .crumbs, .phero .crumbs a { color: var(--on-dark-soft); }
+    .phero .crumbs a:hover { color: var(--on-dark); }
+    .phero .eyebrow { color: var(--on-dark-soft); }
+    .phero h1 { color: var(--on-dark); }
+    .phero .page-hero__lead { color: var(--on-dark); opacity: .92; }
+    .phero .page-hero__aside { color: var(--on-dark-soft); }
+    .phero .page-hero__aside strong, .phero .page-hero__aside a { color: var(--on-dark); }
+    .phero .btn--ghost { color: var(--on-dark); border-color: rgba(251,251,251,.5); }
+    .phero .btn--ghost:hover { border-color: var(--on-dark); background: rgba(251,251,251,.08); }
+
     .prose { max-width: 720px; }
     .prose section { padding-top: clamp(40px, 4.5vw, 64px); }
     .prose section:first-child { padding-top: 0; }
@@ -139,7 +154,7 @@
               <a class="nav-dd__link" role="menuitem" href="white-card.html">White Card (EEOICPA)</a>
               <a class="nav-dd__link" role="menuitem" href="reca.html">RECA (Radiation Exposure)</a>
               <a class="nav-dd__link" role="menuitem" href="owcp.html">Federal Workers (OWCP / FECA)</a>
-              <a class="nav-dd__link" role="menuitem" href="programs.html#community-care">Veterans</a>
+              <a class="nav-dd__link" role="menuitem" href="veterans.html">Veterans</a>
               <span class="nav-dd__sep" aria-hidden="true"></span>
               <a class="nav-dd__link nav-dd__link--cta" role="menuitem" href="begin.html">Not sure? Start here <span class="arrow" aria-hidden="true">&rarr;</span></a>
             </span>
@@ -164,7 +179,7 @@
         <a class="mobile-menu__link mobile-menu__link--sub" href="white-card.html">White Card (EEOICPA)</a>
         <a class="mobile-menu__link mobile-menu__link--sub" href="reca.html">RECA (Radiation Exposure)</a>
         <a class="mobile-menu__link mobile-menu__link--sub" href="owcp.html">Federal Workers (OWCP / FECA)</a>
-        <a class="mobile-menu__link mobile-menu__link--sub" href="programs.html#community-care">Veterans</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="veterans.html">Veterans</a>
         <a class="mobile-menu__link mobile-menu__link--sub" href="begin.html">Not sure? Start here</a>
         <a class="mobile-menu__link" href="learn.html">Learn <span class="arrow" aria-hidden="true">&rarr;</span></a>
         <a class="mobile-menu__link" href="about.html">Why Alara <span class="arrow" aria-hidden="true">&rarr;</span></a>
@@ -176,19 +191,23 @@
   </header>
 
   <main>
-    <section class="page-hero">
-      <div class="container">
-        <nav class="crumbs" aria-label="Breadcrumb">
-          <a href="programs.html">Benefits</a><span aria-hidden="true">/</span>OWCP / FECA
-        </nav>
-        <span class="eyebrow">A complete guide &middot; OWCP / FECA</span>
-        <h1>Federal workers&rsquo; comp can bring your care home, without making you manage the claim.</h1>
-        <p class="page-hero__lead">If you are a federal or postal employee with an accepted OWCP injury or illness, and your physician orders home health, your care is covered at no cost to you. You have already spent enough time inside this system. This guide explains how the home-health side works, where the authorizations go wrong, and what we take off your hands.</p>
-        <div class="page-hero__actions">
-          <a class="btn btn--primary btn--lg" href="#covers">See what OWCP covers at home <span class="arrow" aria-hidden="true">&darr;</span></a>
-          <button class="btn btn--ghost" type="button" id="printGuide">Print or save this guide</button>
+    <section class="phero" aria-label="OWCP / FECA home health, explained">
+      <img class="phero__img" src="owcp-hero.webp" alt="A United States Postal Service letter carrier at work in a mail truck" onerror="this.onerror=null;this.src='hero-arches.webp';" />
+      <div class="phero__scrim" aria-hidden="true"></div>
+      <div class="phero__inner">
+        <div class="container">
+          <nav class="crumbs" aria-label="Breadcrumb">
+            <a href="programs.html">Benefits</a><span aria-hidden="true">/</span>OWCP / FECA
+          </nav>
+          <span class="eyebrow">A complete guide &middot; OWCP / FECA</span>
+          <h1>Federal workers&rsquo; comp can bring your care home, without making you manage the claim.</h1>
+          <p class="page-hero__lead">If you are a federal or postal employee with an accepted OWCP injury or illness, and your physician orders home health, your care is covered at no cost to you. This guide explains how the home-health side works, where the authorizations go wrong, and what we take off your hands.</p>
+          <div class="page-hero__actions">
+            <a class="btn btn--on-dark btn--lg" href="#covers">See what OWCP covers at home <span class="arrow" aria-hidden="true">&darr;</span></a>
+            <button class="btn btn--ghost" type="button" id="printGuide">Print or save this guide</button>
+          </div>
+          <p class="page-hero__aside">This guide is for people with an <strong>accepted OWCP claim</strong>. Injured at work but your claim is not established yet? <a href="#new">That is a different path &rarr;</a></p>
         </div>
-        <p class="page-hero__aside">This guide is for people with an <strong>accepted OWCP claim</strong>. Injured at work but your claim is not established yet? <a href="#new">That is a different path &rarr;</a></p>
       </div>
     </section>
 
@@ -343,7 +362,7 @@
         </svg>
         <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
       </a>
-      <div class="site-footer__meta">Serving all of Clark County, Nevada<br /><a href="tel:+17028149630">(702) 814-9630</a></div>
+      <div class="site-footer__meta">Serving all of <a href="las-vegas.html" style="color:inherit;">Clark County, Nevada</a><br /><a href="tel:+17028149630">(702) 814-9630</a></div>
     </div>
   </footer>
 

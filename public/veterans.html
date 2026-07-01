@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VA home health care for veterans in Las Vegas &middot; Alara Home Care</title>
+  <meta name="description" content="VA Community Care home health for veterans in Southern Nevada: what the VA covers at home at no cost to you, and how VA providers refer to Alara. We contact the veteran within 4 business hours and typically start care within 48 to 72 hours." />
+  <link rel="icon" href="logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="site.css" />
+  <style>
+    /* Veterans — canonical neutral system, warmth from photography. */
+    .phero { position: relative; min-height: clamp(420px, 62vh, 640px); display: flex; align-items: flex-end; }
+    .phero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .phero__scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(24,21,21,.34) 0%, rgba(24,21,21,.5) 55%, rgba(24,21,21,.78) 100%); }
+    .phero__inner { position: relative; width: 100%; padding-block: clamp(38px, 5vw, 68px); }
+    .vwrap { max-width: 1040px; margin-inline: auto; }
+    .phero .crumbs, .phero .crumbs a { color: var(--on-dark-soft); }
+    .phero .crumbs a:hover { color: var(--on-dark); }
+    .phero .eyebrow { color: var(--on-dark-soft); display: block; margin-bottom: 16px; }
+    .phero h1 { font-family: var(--display); font-size: clamp(2.3rem, 5.6vw, 4rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.03; color: var(--on-dark); max-width: 17ch; }
+    .phero__lead { margin-top: 20px; font-size: 1.1875rem; line-height: 1.5; color: var(--on-dark); opacity: .92; max-width: 52ch; }
+    .phero__actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 14px 18px; align-items: center; }
+    .phero .btn--ghost { color: var(--on-dark); border-color: rgba(251,251,251,.5); }
+    .phero .btn--ghost:hover { border-color: var(--on-dark); background: rgba(251,251,251,.08); }
+
+    .vsec { padding-block: clamp(56px, 7vw, 100px); }
+    .vsec__h { font-family: var(--display); font-size: clamp(1.75rem, 3.4vw, 2.625rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.08; color: var(--espresso); max-width: 22ch; }
+    .vsec__intro { margin-top: 18px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); max-width: 60ch; }
+    .vlist { margin-top: 24px; padding: 0; list-style: none; display: grid; gap: 12px; max-width: 62ch; }
+    .vlist li { position: relative; padding-left: 26px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); }
+    .vlist li::before { content: ""; position: absolute; left: 4px; top: 11px; width: 7px; height: 7px; border: 1px solid var(--taupe); border-radius: 50%; }
+    .vlist li strong { color: var(--espresso); font-weight: 500; }
+
+    /* Provider block: text + portrait, two columns. */
+    .refer { background: var(--mist); border-block: 1px solid var(--hairline); }
+    .refer__inner { padding-block: clamp(52px, 7vw, 96px); display: grid; grid-template-columns: 1.1fr 0.9fr; gap: clamp(28px, 5vw, 64px); align-items: center; }
+    .refer__media { border-radius: 4px; overflow: hidden; aspect-ratio: 4 / 3; }
+    .refer__media img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .refer__h { font-family: var(--display); font-size: clamp(1.5rem, 3vw, 2.125rem); font-weight: 500; letter-spacing: -0.018em; line-height: 1.12; color: var(--espresso); max-width: 20ch; }
+    .refer p { margin-top: 16px; font-size: 1.0625rem; line-height: 1.65; color: var(--taupe-ink); max-width: 52ch; }
+    .refer p strong { color: var(--espresso); font-weight: 500; }
+    .refer__sub { margin-top: 22px; font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--taupe); }
+    .refer__steps { margin-top: 12px; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 10px; }
+    .refer__steps li { position: relative; padding-left: 30px; font-size: 1rem; line-height: 1.55; color: var(--taupe-ink); counter-increment: s; }
+    .refer__steps li::before { content: counter(s); position: absolute; left: 0; top: 0; font-family: var(--display); font-size: 0.8125rem; color: var(--espresso); font-weight: 500; }
+    .refer__steps li strong { color: var(--espresso); font-weight: 500; }
+    .refer__need { margin-top: 12px; padding-left: 0; list-style: none; display: grid; gap: 8px; }
+    .refer__need li { position: relative; padding-left: 26px; font-size: 1rem; line-height: 1.5; color: var(--taupe-ink); }
+    .refer__need li::before { content: ""; position: absolute; left: 4px; top: 10px; width: 6px; height: 6px; border: 1px solid var(--taupe); border-radius: 50%; }
+    @media (max-width: 760px) { .refer__inner { grid-template-columns: 1fr; } .refer__media { order: -1; max-width: 480px; } }
+
+    .vcta { padding-block: clamp(56px, 7vw, 96px); text-align: center; }
+    .vcta h2 { font-family: var(--display); font-size: clamp(1.75rem, 3.6vw, 2.5rem); font-weight: 500; letter-spacing: -0.02em; color: var(--espresso); max-width: 22ch; margin-inline: auto; }
+    .vcta p { margin-top: 16px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); max-width: 52ch; margin-inline: auto; }
+    .vcta__actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center; justify-content: center; }
+    .vcta__call { color: var(--espresso); font-size: 0.9375rem; }
+    .vcta__call a { color: var(--espresso); }
+  </style>
+</head>
+<body>
+
+  <header class="site-header" id="siteHeader">
+    <div class="container site-header__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care, home">
+        <svg class="brand__mark" viewBox="0 0 100 92" role="img" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd"
+            d="M22,88 V34 L50,8 L78,34 V88 Z
+               M37,88 V66 A13,13 0 0 1 63,66 V88 Z
+               M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word">
+          <span class="brand__name">ALARA</span>
+          <span class="brand__sub">Home Care</span>
+        </span>
+      </a>
+      <div class="site-header__actions">
+        <nav class="site-nav site-nav--primary" aria-label="Primary">
+          <a class="site-nav__link" href="services.html">Get Care</a>
+          <span class="site-nav__item">
+            <a class="site-nav__link site-nav__link--dd" href="programs.html" aria-haspopup="true">Benefits <span class="nav-caret" aria-hidden="true">&#9662;</span></a>
+            <span class="nav-dd" role="menu">
+              <a class="nav-dd__link nav-dd__link--cta" role="menuitem" href="qualify.html">Do I qualify? <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              <span class="nav-dd__sep" aria-hidden="true"></span>
+              <a class="nav-dd__link" role="menuitem" href="white-card.html">White Card (EEOICPA)</a>
+              <a class="nav-dd__link" role="menuitem" href="reca.html">RECA (Radiation Exposure)</a>
+              <a class="nav-dd__link" role="menuitem" href="owcp.html">Federal Workers (OWCP / FECA)</a>
+              <a class="nav-dd__link" role="menuitem" href="veterans.html">Veterans</a>
+              <span class="nav-dd__sep" aria-hidden="true"></span>
+              <a class="nav-dd__link nav-dd__link--cta" role="menuitem" href="begin.html">Not sure? Start here <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            </span>
+          </span>
+          <a class="site-nav__link" href="learn.html">Learn</a>
+          <a class="site-nav__link" href="about.html">Why Alara</a>
+          <a class="site-nav__link" href="begin.html?who=referrer">Refer a Patient</a>
+          <a class="header-call" href="tel:+17028149630">
+            <span class="header-call__label">Call us</span>
+            <span class="header-call__num">(702) 814-9630</span>
+          </a>
+        </nav>
+        <a class="btn btn--sm" href="qualify.html">See if you qualify</a>
+        <button class="nav-toggle" type="button" id="navToggle" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu">
+          <span class="nav-toggle__bar" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+    <nav class="mobile-menu" id="site-menu" data-open="false" aria-label="Primary (mobile)">
+      <div class="container mobile-menu__inner">
+        <a class="mobile-menu__link" href="services.html">Get Care <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="programs.html">Benefits <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="qualify.html">Do I qualify?</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="white-card.html">White Card (EEOICPA)</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="reca.html">RECA (Radiation Exposure)</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="owcp.html">Federal Workers (OWCP / FECA)</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="veterans.html">Veterans</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="begin.html">Not sure? Start here</a>
+        <a class="mobile-menu__link" href="learn.html">Learn <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="about.html">Why Alara <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="begin.html?who=referrer">Refer a Patient <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="btn btn--block mobile-menu__cta" href="qualify.html">See if you qualify</a>
+        <p class="mobile-menu__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></p>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+
+    <section class="phero" aria-label="VA home health care for veterans">
+      <img class="phero__img" src="veterans-hero.webp" alt="An American flag in a field at sunset" onerror="this.onerror=null;this.src='hero-arches.webp';" />
+      <div class="phero__scrim" aria-hidden="true"></div>
+      <div class="phero__inner">
+        <div class="container">
+          <div class="vwrap">
+            <nav class="crumbs" aria-label="Breadcrumb" style="font-size:0.8125rem; margin-bottom:16px;">
+              <a href="programs.html">Benefits</a><span aria-hidden="true" style="margin:0 8px;">/</span><span style="color:var(--on-dark-soft);">Veterans</span>
+            </nav>
+            <span class="eyebrow">Veterans &middot; VA Community Care</span>
+            <h1>VA home health care for veterans in Las Vegas.</h1>
+            <p class="phero__lead">Alara is enrolling as a VA Community Care Network provider for Region 4. If you are a veteran in Southern Nevada who needs skilled care at home, here is how it works and how to start.</p>
+            <div class="phero__actions">
+              <a class="btn btn--on-dark btn--lg" href="qualify.html">See if you qualify <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              <a class="btn btn--ghost" href="begin.html">Talk to a nurse</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="vsec" aria-label="What the VA covers at home">
+      <div class="container">
+        <div class="vwrap">
+          <h2 class="vsec__h">What the VA covers at home.</h2>
+          <p class="vsec__intro">When the VA authorizes home health through Community Care, your covered skilled care comes at no cost to you. For an authorized plan of care, that can include:</p>
+          <ul class="vlist">
+            <li><strong>Skilled nursing:</strong> assessment, wound care, medication management, and disease management at home.</li>
+            <li><strong>Physical and occupational therapy:</strong> strength, mobility, balance, and returning to daily activities safely.</li>
+            <li><strong>Home health aide services:</strong> personal care under nursing supervision.</li>
+            <li><strong>Medical social work:</strong> connecting you to resources and coordinating with your VA care team.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="refer" aria-label="For VA providers: how to refer">
+      <div class="container">
+        <div class="vwrap refer__inner">
+          <div class="refer__text">
+            <h2 class="refer__h">For VA providers: how to refer to Alara.</h2>
+            <p>Referring to Alara is straightforward, and we move fast. Call us at <strong>(702) 814-9630</strong>, or submit through your standard VA Community Care process.</p>
+            <p class="refer__sub">Once we receive the referral</p>
+            <ol class="refer__steps">
+              <li>We contact the veteran within <strong>4 business hours</strong>.</li>
+              <li>We verify the authorization.</li>
+              <li>We schedule start of care, <strong>typically within 48 to 72 hours</strong>.</li>
+            </ol>
+            <p class="refer__sub">What we need</p>
+            <ul class="refer__need">
+              <li>Veteran name and contact information</li>
+              <li>VA authorization number</li>
+              <li>Physician order (services and frequency)</li>
+              <li>Medication list, if available</li>
+            </ul>
+            <p>We handle everything else, including coordination, scheduling, and follow-up. For complex cases, our clinical director is available to consult before referral.</p>
+          </div>
+          <div class="refer__media">
+            <img src="veteran-portrait.webp" alt="A military veteran at home in conversation" onerror="this.onerror=null;this.src='hero-arches.webp';" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="vcta" aria-label="Get started">
+      <div class="container">
+        <div class="vwrap">
+          <h2>Care for those who served, at home.</h2>
+          <p>One call and we take it from there. Reach Alara at <a href="tel:+17028149630" style="color:var(--espresso);">(702) 814-9630</a>, or have a nurse call you.</p>
+          <div class="vcta__actions">
+            <a class="btn" href="begin.html">Have a nurse call you <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <span class="vcta__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="disclaimer">
+      <div class="container disclaimer__inner">
+        Alara helps you understand and reach benefits you may already be entitled to. It does not replace the U.S. Department of Veterans Affairs, your VA care team, or any federal agency. It helps you work with them. Nothing here is a coverage or eligibility determination.
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care">
+        <svg class="brand__mark" viewBox="0 0 100 92" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
+      </a>
+      <div class="site-footer__meta">Serving all of <a href="las-vegas.html" style="color:inherit;">Clark County and Southern Nevada</a><br /><a href="tel:+17028149630">(702) 814-9630</a></div>
+    </div>
+  </footer>
+
+  <script>
+    var header = document.getElementById('siteHeader');
+    var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 24); };
+    onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+    var toggle = document.getElementById('navToggle'); var menu = document.getElementById('site-menu');
+    if (toggle && menu) { toggle.addEventListener('click', function () {
+      var open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!open));
+      toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+      menu.setAttribute('data-open', String(!open)); }); }
+  </script>
+  <script src="site-nav.js" defer></script>
+</body>
+</html>

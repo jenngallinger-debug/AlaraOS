@@ -81,6 +81,19 @@
     .nts-src ul { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
     .nts-src a { font-size:0.9375rem; color:var(--taupe-ink); }
     .nts-src a:hover { color:var(--espresso); }
+
+    /* Full-bleed photographic hero (shared brand move). Neutral tokens only. */
+    .phero { position: relative; min-height: clamp(380px, 56vh, 560px); display: flex; align-items: flex-end; }
+    .phero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .phero__scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(24,21,21,.30) 0%, rgba(24,21,21,.44) 55%, rgba(24,21,21,.72) 100%); }
+    .phero__inner { position: relative; width: 100%; padding-block: clamp(36px, 5vw, 64px); }
+    .phero .crumbs, .phero .crumbs a { color: var(--on-dark-soft); }
+    .phero .crumbs a:hover { color: var(--on-dark); }
+    .phero .eyebrow { color: var(--on-dark-soft); }
+    .phero h1 { color: var(--on-dark); }
+    .phero .page-hero__lead { color: var(--on-dark); opacity: .92; }
+    .phero .btn--ghost { color: var(--on-dark); border-color: rgba(251,251,251,.5); }
+    .phero .btn--ghost:hover { border-color: var(--on-dark); background: rgba(251,251,251,.08); }
   </style>
 </head>
 <body>
@@ -110,7 +123,7 @@
               <a class="nav-dd__link" role="menuitem" href="white-card.html">White Card (EEOICPA)</a>
               <a class="nav-dd__link" role="menuitem" href="reca.html">RECA (Radiation Exposure)</a>
               <a class="nav-dd__link" role="menuitem" href="owcp.html">Federal Workers (OWCP / FECA)</a>
-              <a class="nav-dd__link" role="menuitem" href="programs.html#community-care">Veterans</a>
+              <a class="nav-dd__link" role="menuitem" href="veterans.html">Veterans</a>
               <span class="nav-dd__sep" aria-hidden="true"></span>
               <a class="nav-dd__link nav-dd__link--cta" role="menuitem" href="begin.html">Not sure? Start here <span class="arrow" aria-hidden="true">&rarr;</span></a>
             </span>
@@ -137,7 +150,7 @@
         <a class="mobile-menu__link mobile-menu__link--sub" href="white-card.html">White Card (EEOICPA)</a>
         <a class="mobile-menu__link mobile-menu__link--sub" href="reca.html">RECA (Radiation Exposure)</a>
         <a class="mobile-menu__link mobile-menu__link--sub" href="owcp.html">Federal Workers (OWCP / FECA)</a>
-        <a class="mobile-menu__link mobile-menu__link--sub" href="programs.html#community-care">Veterans</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="veterans.html">Veterans</a>
         <a class="mobile-menu__link mobile-menu__link--sub" href="begin.html">Not sure? Start here</a>
         <a class="mobile-menu__link" href="learn.html">Learn <span class="arrow" aria-hidden="true">&rarr;</span></a>
         <a class="mobile-menu__link" href="about.html">Why Alara <span class="arrow" aria-hidden="true">&rarr;</span></a>
@@ -160,17 +173,21 @@
   </nav>
 
   <main>
-    <section class="page-hero">
-      <div class="container">
-        <nav class="crumbs" aria-label="Breadcrumb">
-          <a href="programs.html">Benefits</a><span aria-hidden="true">/</span>Nevada Test Site
-        </nav>
-        <span class="eyebrow">Nevada Test Site &amp; NNSS &middot; White Card (EEOICPA)</span>
-        <h1>Worked at the Nevada Test Site? Your White Card can cover care at home.</h1>
-        <p class="page-hero__lead">Whether you remember it as the Nevada Test Site or know it today as the Nevada National Security Site, it is the same place, and the same benefits. The federal government recognizes that work there could make people sick. When an illness is accepted, it comes with a White Card: lifetime medical benefits at no cost to you, including skilled home health. Here is who is covered, which illnesses qualify, and what the benefit is worth, in plain language and drawn from the Department of Labor and NIOSH.</p>
-        <div class="page-hero__actions">
-          <a class="btn btn--primary btn--lg" href="qualify.html">See what applies to you <span class="arrow" aria-hidden="true">&rarr;</span></a>
-          <a class="btn btn--ghost" href="begin.html">Talk to a nurse</a>
+    <section class="phero" aria-label="Nevada Test Site workers and the White Card">
+      <img class="phero__img" src="sedan-crater.jpg" alt="Aerial view of the Sedan Crater at the Nevada Test Site" onerror="this.onerror=null;this.src='hero-arches.webp';" />
+      <div class="phero__scrim" aria-hidden="true"></div>
+      <div class="phero__inner">
+        <div class="container">
+          <nav class="crumbs" aria-label="Breadcrumb">
+            <a href="programs.html">Benefits</a><span aria-hidden="true">/</span>Nevada Test Site
+          </nav>
+          <span class="eyebrow">Nevada Test Site &amp; NNSS &middot; White Card (EEOICPA)</span>
+          <h1>Worked at the Nevada Test Site? Your White Card can cover care at home.</h1>
+          <p class="page-hero__lead">Whether you remember it as the Nevada Test Site or know it today as the Nevada National Security Site, it is the same place, and the same benefits. When an illness is accepted, it comes with a White Card: lifetime medical benefits at no cost to you, including skilled home health. Here is who is covered, which illnesses qualify, and what the benefit is worth, drawn from the Department of Labor and NIOSH.</p>
+          <div class="page-hero__actions">
+            <a class="btn btn--on-dark btn--lg" href="qualify.html">See what applies to you <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <a class="btn btn--ghost" href="begin.html">Talk to a nurse</a>
+          </div>
         </div>
       </div>
     </section>
@@ -266,7 +283,7 @@
           </div>
           <p class="worth__note">A White Card can also grow. A new problem caused by an accepted condition, called a consequential condition, can be added, which can open more care and, under Part E, more impairment compensation.</p>
 
-          <div class="estim" aria-label="Illustrative impairment compensation">
+          <div class="estim" id="estimator" aria-label="Illustrative impairment compensation">
             <p class="estim__label">See how it is figured</p>
             <p class="estim__intro">Move the slider to see how Part E impairment compensation is calculated. This is a general illustration, not a determination.</p>
             <div class="estim__control">
@@ -321,7 +338,7 @@
         </svg>
         <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
       </a>
-      <div class="site-footer__meta">Serving all of Clark County and Southern Nevada<br /><a href="tel:+17028149630">(702) 814-9630</a></div>
+      <div class="site-footer__meta">Serving all of <a href="las-vegas.html" style="color:inherit;">Clark County and Southern Nevada</a><br /><a href="tel:+17028149630">(702) 814-9630</a></div>
     </div>
   </footer>
 
