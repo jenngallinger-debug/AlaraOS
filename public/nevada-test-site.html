@@ -81,6 +81,19 @@
     .nts-src ul { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
     .nts-src a { font-size:0.9375rem; color:var(--taupe-ink); }
     .nts-src a:hover { color:var(--espresso); }
+
+    /* Full-bleed photographic hero (shared brand move). Neutral tokens only. */
+    .phero { position: relative; min-height: clamp(380px, 56vh, 560px); display: flex; align-items: flex-end; }
+    .phero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .phero__scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(24,21,21,.30) 0%, rgba(24,21,21,.44) 55%, rgba(24,21,21,.72) 100%); }
+    .phero__inner { position: relative; width: 100%; padding-block: clamp(36px, 5vw, 64px); }
+    .phero .crumbs, .phero .crumbs a { color: var(--on-dark-soft); }
+    .phero .crumbs a:hover { color: var(--on-dark); }
+    .phero .eyebrow { color: var(--on-dark-soft); }
+    .phero h1 { color: var(--on-dark); }
+    .phero .page-hero__lead { color: var(--on-dark); opacity: .92; }
+    .phero .btn--ghost { color: var(--on-dark); border-color: rgba(251,251,251,.5); }
+    .phero .btn--ghost:hover { border-color: var(--on-dark); background: rgba(251,251,251,.08); }
   </style>
 </head>
 <body>
@@ -160,17 +173,21 @@
   </nav>
 
   <main>
-    <section class="page-hero">
-      <div class="container">
-        <nav class="crumbs" aria-label="Breadcrumb">
-          <a href="programs.html">Benefits</a><span aria-hidden="true">/</span>Nevada Test Site
-        </nav>
-        <span class="eyebrow">Nevada Test Site &amp; NNSS &middot; White Card (EEOICPA)</span>
-        <h1>Worked at the Nevada Test Site? Your White Card can cover care at home.</h1>
-        <p class="page-hero__lead">Whether you remember it as the Nevada Test Site or know it today as the Nevada National Security Site, it is the same place, and the same benefits. The federal government recognizes that work there could make people sick. When an illness is accepted, it comes with a White Card: lifetime medical benefits at no cost to you, including skilled home health. Here is who is covered, which illnesses qualify, and what the benefit is worth, in plain language and drawn from the Department of Labor and NIOSH.</p>
-        <div class="page-hero__actions">
-          <a class="btn btn--primary btn--lg" href="qualify.html">See what applies to you <span class="arrow" aria-hidden="true">&rarr;</span></a>
-          <a class="btn btn--ghost" href="begin.html">Talk to a nurse</a>
+    <section class="phero" aria-label="Nevada Test Site workers and the White Card">
+      <img class="phero__img" src="sedan-crater.jpg" alt="Aerial view of the Sedan Crater at the Nevada Test Site" onerror="this.onerror=null;this.src='hero-arches.webp';" />
+      <div class="phero__scrim" aria-hidden="true"></div>
+      <div class="phero__inner">
+        <div class="container">
+          <nav class="crumbs" aria-label="Breadcrumb">
+            <a href="programs.html">Benefits</a><span aria-hidden="true">/</span>Nevada Test Site
+          </nav>
+          <span class="eyebrow">Nevada Test Site &amp; NNSS &middot; White Card (EEOICPA)</span>
+          <h1>Worked at the Nevada Test Site? Your White Card can cover care at home.</h1>
+          <p class="page-hero__lead">Whether you remember it as the Nevada Test Site or know it today as the Nevada National Security Site, it is the same place, and the same benefits. When an illness is accepted, it comes with a White Card: lifetime medical benefits at no cost to you, including skilled home health. Here is who is covered, which illnesses qualify, and what the benefit is worth, drawn from the Department of Labor and NIOSH.</p>
+          <div class="page-hero__actions">
+            <a class="btn btn--on-dark btn--lg" href="qualify.html">See what applies to you <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            <a class="btn btn--ghost" href="begin.html">Talk to a nurse</a>
+          </div>
         </div>
       </div>
     </section>

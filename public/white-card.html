@@ -35,6 +35,21 @@
     .page-hero__aside { margin-top: 14px; font-size: 0.9375rem; color: var(--taupe-ink); }
     .page-hero__aside a { color: var(--espresso); }
 
+    /* Full-bleed photographic hero (shared brand move). Neutral tokens only. */
+    .phero { position: relative; min-height: clamp(380px, 56vh, 560px); display: flex; align-items: flex-end; }
+    .phero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .phero__scrim { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(24,21,21,.32) 0%, rgba(24,21,21,.46) 55%, rgba(24,21,21,.74) 100%); }
+    .phero__inner { position: relative; width: 100%; padding-block: clamp(36px, 5vw, 64px); }
+    .phero .crumbs, .phero .crumbs a { color: var(--on-dark-soft); }
+    .phero .crumbs a:hover { color: var(--on-dark); }
+    .phero .eyebrow { color: var(--on-dark-soft); }
+    .phero h1 { color: var(--on-dark); }
+    .phero .page-hero__lead { color: var(--on-dark); opacity: .92; }
+    .phero .page-hero__aside { color: var(--on-dark-soft); }
+    .phero .page-hero__aside strong, .phero .page-hero__aside a { color: var(--on-dark); }
+    .phero .btn--ghost { color: var(--on-dark); border-color: rgba(251,251,251,.5); }
+    .phero .btn--ghost:hover { border-color: var(--on-dark); background: rgba(251,251,251,.08); }
+
     .prose { max-width: 720px; }
     .prose section { padding-top: clamp(40px, 4.5vw, 64px); }
     .prose section:first-child { padding-top: 0; }
@@ -203,19 +218,23 @@
   </nav>
 
   <main>
-    <section class="page-hero">
-      <div class="container">
-        <nav class="crumbs" aria-label="Breadcrumb">
-          <a href="programs.html">Benefits</a><span aria-hidden="true">/</span>White Card
-        </nav>
-        <span class="eyebrow">A complete guide &middot; White Card (EEOICPA)</span>
-        <h1>Your White Card covers more than most families claim.</h1>
-        <p class="page-hero__lead">If you or someone in your family worked at the Nevada Test Site or another Department of Energy site and has a White Card, skilled home health for the accepted conditions comes at no cost to you. The program is complicated, and that is the only reason families miss what they have earned. Here is the whole picture, in plain language, with the exact step to claim each part. Alara does the claiming, so you spend less time on the paperwork and more time on your life.</p>
-        <div class="page-hero__actions">
-          <a class="btn btn--primary btn--lg" href="#missed">See the benefits most people miss <span class="arrow" aria-hidden="true">&darr;</span></a>
-          <button class="btn btn--ghost" type="button" id="printGuide">Print or save this guide</button>
+    <section class="phero" aria-label="The White Card, explained">
+      <img class="phero__img" src="nevada-test-site-hero.jpg" alt="Aerial view of subsidence craters at Yucca Flat, Nevada Test Site" onerror="this.onerror=null;this.src='hero-arches.webp';" />
+      <div class="phero__scrim" aria-hidden="true"></div>
+      <div class="phero__inner">
+        <div class="container">
+          <nav class="crumbs" aria-label="Breadcrumb">
+            <a href="programs.html">Benefits</a><span aria-hidden="true">/</span>White Card
+          </nav>
+          <span class="eyebrow">A complete guide &middot; White Card (EEOICPA)</span>
+          <h1>Your White Card covers more than most families claim.</h1>
+          <p class="page-hero__lead">If you or someone in your family worked at the Nevada Test Site or another Department of Energy site and has a White Card, skilled home health for the accepted conditions comes at no cost to you. The program is complicated, and that is the only reason families miss what they have earned. Here is the whole picture, in plain language, with the exact step to claim each part.</p>
+          <div class="page-hero__actions">
+            <a class="btn btn--on-dark btn--lg" href="#missed">See the benefits most people miss <span class="arrow" aria-hidden="true">&darr;</span></a>
+            <button class="btn btn--ghost" type="button" id="printGuide">Print or save this guide</button>
+          </div>
+          <p class="page-hero__aside">This guide is for people who <strong>already have a White Card</strong>. Care can start right away. <a href="#file">Don&rsquo;t have one yet? That is a different path &rarr;</a></p>
         </div>
-        <p class="page-hero__aside">This guide is for people who <strong>already have a White Card</strong>. Care can start right away. <a href="#file">Don&rsquo;t have one yet? That is a different path &rarr;</a></p>
       </div>
     </section>
 
