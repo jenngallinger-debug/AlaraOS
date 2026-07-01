@@ -86,6 +86,10 @@ the concrete truths are the receipts.
 2. **Name the person who feels it.** The nurse. Your doctor. Your daughter. You.
 3. **No abstraction.** Ban: "the work becomes ours," "we take it from there," "backed by AlaraOS,"
    "one intelligent organization," "everything you qualify for" (say *which* benefit).
+   **No villain.** Never imply someone hid a benefit from the reader — banned: "no one told you,"
+   "more than anyone told you," "you were never told." Benefits are missed because the program is
+   complex, not because a person withheld them. Neutral: "benefits families miss," "more than most
+   families claim." (Enforced by `scripts/check-content.mjs`.)
 4. **Read it aloud.** If it sounds like an AI wrote it, rewrite it. Cut a third of the words.
 5. **No vague "it / this / that"** unless the referent is unmistakable.
 

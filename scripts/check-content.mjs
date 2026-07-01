@@ -31,6 +31,22 @@ const BANNED_COST = [
   '$0 out-of-pocket',
 ];
 
+// Retired "voice" phrasings. Conspiratorial framings ("no one told you") imply a
+// villain who hid the benefit; the rest are cliches the owner has banned. Neutral
+// alternatives: "benefits families miss", "more than most families claim".
+const BANNED_VOICE = [
+  'no one told',
+  'nobody told',
+  'anyone told',
+  'never told you',
+  'never knew you had',
+  'were never told',
+  'hard part',
+  'hardest part',
+  'fell through',
+  'fall through',
+];
+
 // Allowed phone numbers = every number declared in the source of truth.
 const allowedPhones = new Set();
 const c = data.contacts || {};
@@ -50,6 +66,15 @@ for (const rel of SURFACES) {
     while (i !== -1) {
       const line = text.slice(0, i).split('\n').length;
       violations.push(`${rel}:${line}  retired cost phrasing: "${phrase}"`);
+      i = lower.indexOf(phrase.toLowerCase(), i + 1);
+    }
+  }
+
+  for (const phrase of BANNED_VOICE) {
+    let i = lower.indexOf(phrase.toLowerCase());
+    while (i !== -1) {
+      const line = text.slice(0, i).split('\n').length;
+      violations.push(`${rel}:${line}  banned phrasing: "${phrase}"`);
       i = lower.indexOf(phrase.toLowerCase(), i + 1);
     }
   }
