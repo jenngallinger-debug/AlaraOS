@@ -2,15 +2,17 @@
   "_about": "Canonical source of truth for the federal benefit programs Alara accepts. Every surface (home.html, programs.html, white-card.html, learn.html, qualify.html, and the server) reads facts from here instead of hand-copying them. Promoted and reconciled from content/_examples/programs.json. When a fact changes, change it HERE.",
   "_version": "1.0.0",
   "_lastReconciled": "2026-06-30",
-
   "constants": {
     "costPhrase": "no cost to you",
     "costPhraseLong": "no premiums, copays, or deductibles for covered care tied to the accepted condition",
-    "_costNote": "CANONICAL. 'no cost to you' is the truthful, approved phrasing (the federal program pays in full, not just out-of-pocket). Do NOT use 'pay nothing', 'most patients pay nothing', or '$0 out-of-pocket' — those read cheap and were retired."
+    "_costNote": "CANONICAL. 'no cost to you' is the truthful, approved phrasing (the federal program pays in full, not just out-of-pocket). Do NOT use 'pay nothing', 'most patients pay nothing', or '$0 out-of-pocket' \u2014 those read cheap and were retired."
   },
-
   "contacts": {
-    "alara": { "label": "Alara Home Care", "phone": "(702) 814-9630", "tel": "+17028149630" },
+    "alara": {
+      "label": "Alara Home Care",
+      "phone": "(702) 814-9630",
+      "tel": "+17028149630"
+    },
     "dolResourceCenter": {
       "label": "DOL Las Vegas Resource Center",
       "phone": "(702) 697-0841",
@@ -20,34 +22,63 @@
       "label": "Acentra (DOL billing administrator)",
       "phone": "(800) 736-6001",
       "role": "Answers EEOICPA benefit and coverage questions directly."
+    },
+    "alaraFax": {
+      "label": "Alara Home Care fax",
+      "phone": "(725) 210-8285",
+      "role": "Referral and order fax line."
+    },
+    "alaraEmail": {
+      "label": "Alara info email",
+      "email": "info@alarahomecare.com"
     }
   },
-
   "programs": [
     {
       "id": "eeoicpa",
       "name": "White Card",
       "shortName": "EEOICPA / White Card",
       "fullName": "Energy Employees Occupational Illness Compensation Program Act",
-      "administeredBy": "U.S. Department of Labor — DEEOIC",
-      "sourceUrls": ["https://www.dol.gov/agencies/owcp/energy"],
+      "administeredBy": "U.S. Department of Labor \u2014 DEEOIC",
+      "sourceUrls": [
+        "https://www.dol.gov/agencies/owcp/energy"
+      ],
       "sourceLabel": "U.S. Department of Labor, EEOICP",
       "rank": 1,
       "isStar": true,
       "pillarPath": "white-card.html",
       "audience": "Former Nevada Test Site, Nevada National Security Site, Department of Energy, and Atomic Weapons Employer workers, and eligible survivors, with an accepted EEOICPA condition.",
-      "chips": ["Energy workers", "DOE contractors", "Survivors"],
-      "shortDefinition": "A federal program that provides cash compensation and lifetime medical benefits — including skilled home health — to Department of Energy and Nevada Test Site workers who became ill from their work. An accepted condition issues a White Card.",
+      "chips": [
+        "Energy workers",
+        "DOE contractors",
+        "Survivors"
+      ],
+      "shortDefinition": "A federal program that provides cash compensation and lifetime medical benefits \u2014 including skilled home health \u2014 to Department of Energy and Nevada Test Site workers who became ill from their work. An accepted condition issues a White Card.",
       "cost": {
         "summary": "Generally no cost to you for covered care tied to the accepted condition.",
         "detail": "No premiums, copays, or deductibles for those covered services. The Department of Labor pays the provider directly."
       },
       "coveredServices": [
-        { "key": "skilled-nursing", "label": "Skilled nursing" },
-        { "key": "wound-care", "label": "Wound care" },
-        { "key": "therapy", "label": "Physical and occupational therapy" },
-        { "key": "home-health-aide", "label": "Home health aide services" },
-        { "key": "caregiver-training", "label": "Caregiver training" }
+        {
+          "key": "skilled-nursing",
+          "label": "Skilled nursing"
+        },
+        {
+          "key": "wound-care",
+          "label": "Wound care"
+        },
+        {
+          "key": "therapy",
+          "label": "Physical and occupational therapy"
+        },
+        {
+          "key": "home-health-aide",
+          "label": "Home health aide services"
+        },
+        {
+          "key": "caregiver-training",
+          "label": "Caregiver training"
+        }
       ],
       "missedBenefits": [
         {
@@ -55,35 +86,50 @@
           "tag": "Almost always missed",
           "title": "Travel reimbursement (form OWCP-957)",
           "body": "Every trip to a doctor, specialist, hospital, lab, or pharmacy for an accepted condition is reimbursable at the federal mileage rate. A patient going to oncology twice a week and the pharmacy weekly can leave hundreds of dollars a month unclaimed.",
-          "action": { "label": "Do this yourself", "text": "Download form OWCP-957 from dol.gov, log your mileage or attach receipts, and submit it to DEEOIC. They mail you a check. You do not need us to do this, and you can claim past trips." }
+          "action": {
+            "label": "Do this yourself",
+            "text": "Download form OWCP-957 from dol.gov, log your mileage or attach receipts, and submit it to DEEOIC. They mail you a check. You do not need us to do this, and you can claim past trips."
+          }
         },
         {
           "id": "paid-caregiver",
           "tag": "Very often missed",
           "title": "A family member can be paid to provide your care",
           "body": "If a spouse, son, or daughter already helps you bathe, dress, cook, or get to appointments, they may be employed and paid for that care through your White Card. They become a trained, nurse-supervised home health aide, and the program covers their wages.",
-          "action": { "label": "How to start", "text": "This one runs through an agency. Ask Alara about enrolling your family member when you set up care. One rule: that family member cannot also serve as your Authorized Representative with the DOL." }
+          "action": {
+            "label": "How to start",
+            "text": "This one runs through an agency. Ask Alara about enrolling your family member when you set up care. One rule: that family member cannot also serve as your Authorized Representative with the DOL."
+          }
         },
         {
           "id": "medicare-copay",
           "tag": "Very often missed",
           "title": "You may be paying Medicare copays the White Card should cover",
           "body": "Many patients run their cancer treatment, medications, or equipment through Medicare and pay copays, when the White Card should cover those, related to an accepted condition, at no cost. A chemotherapy support drug at $200 a month, or a hospital bed at $150 a month, may already be covered.",
-          "action": { "label": "Check this", "text": "Ask whether your treatment, medications, and equipment for your accepted condition are billed through your White Card. If you are paying out of pocket for anything related to it, that is usually fixable." }
+          "action": {
+            "label": "Check this",
+            "text": "Ask whether your treatment, medications, and equipment for your accepted condition are billed through your White Card. If you are paying out of pocket for anything related to it, that is usually fixable."
+          }
         },
         {
           "id": "impairment",
           "tag": "Sometimes missed",
           "title": "An updated impairment rating",
           "body": "The DOL pays additional lump-sum compensation based on a physician's impairment rating. If your condition has worsened since your original claim, a re-evaluation may entitle you to more.",
-          "action": { "label": "Who handles it", "text": "Your Authorized Representative files impairment requests. Ask them whether a re-evaluation is worth doing. (Alara does not file these.)" }
+          "action": {
+            "label": "Who handles it",
+            "text": "Your Authorized Representative files impairment requests. Ask them whether a re-evaluation is worth doing. (Alara does not file these.)"
+          }
         },
         {
           "id": "survivor",
           "tag": "Often missed by survivors",
           "title": "Survivor benefits",
           "body": "When a covered worker dies from an accepted condition, the surviving spouse and eligible children may be entitled to compensation. Many widows of Test Site workers never learn this.",
-          "action": { "label": "Who handles it", "text": "An Authorized Representative can determine eligibility and file. If you are not sure whether you have one, the Resource Center can point you." }
+          "action": {
+            "label": "Who handles it",
+            "text": "An Authorized Representative can determine eligibility and file. If you are not sure whether you have one, the Resource Center can point you."
+          }
         }
       ],
       "boundary": {
@@ -101,68 +147,121 @@
           "Take any percentage of your compensation"
         ]
       },
-      "keyEntities": ["white-card", "eeoicpa", "eeoicpa-part-b", "eeoicpa-part-e", "consequential-condition", "impairment-evaluation"],
+      "keyEntities": [
+        "white-card",
+        "eeoicpa",
+        "eeoicpa-part-b",
+        "eeoicpa-part-e",
+        "consequential-condition",
+        "impairment-evaluation"
+      ],
       "reviewedBy": "Alara's Director of Nursing, RN",
       "lastReviewed": "2026-06-30"
     },
-
     {
       "id": "owcp",
       "name": "OWCP / FECA",
       "shortName": "OWCP / FECA",
       "fullName": "Office of Workers' Compensation Programs (Federal Employees' Compensation Act)",
-      "administeredBy": "U.S. Department of Labor — OWCP",
-      "sourceUrls": ["https://www.dol.gov/agencies/owcp/FECA"],
+      "administeredBy": "U.S. Department of Labor \u2014 OWCP",
+      "sourceUrls": [
+        "https://www.dol.gov/agencies/owcp/FECA"
+      ],
       "sourceLabel": "U.S. Department of Labor, OWCP/FECA",
       "rank": 2,
       "isStar": false,
       "pillarPath": "owcp.html",
       "audience": "Federal and postal (USPS) workers with an OWCP-accepted, work-related injury or illness, with care prescribed by a physician and authorized by OWCP.",
-      "chips": ["Federal employees", "Postal workers", "On-the-job injury"],
+      "chips": [
+        "Federal employees",
+        "Postal workers",
+        "On-the-job injury"
+      ],
       "shortDefinition": "Federal workers' compensation that may cover physician-prescribed home health services when an injury or illness is accepted and care is authorized.",
       "cost": {
         "summary": "Generally no cost to you for authorized care tied to the accepted injury or illness.",
         "detail": "No premiums, copays, or deductibles for those authorized services."
       },
       "coveredServices": [
-        { "key": "skilled-nursing", "label": "Skilled nursing" },
-        { "key": "wound-care", "label": "Wound care" },
-        { "key": "therapy", "label": "Physical and occupational therapy" },
-        { "key": "home-health-aide", "label": "Home health aide services" }
+        {
+          "key": "skilled-nursing",
+          "label": "Skilled nursing"
+        },
+        {
+          "key": "wound-care",
+          "label": "Wound care"
+        },
+        {
+          "key": "therapy",
+          "label": "Physical and occupational therapy"
+        },
+        {
+          "key": "home-health-aide",
+          "label": "Home health aide services"
+        }
       ],
       "missedBenefits": [],
-      "eligibleCategories": ["USPS", "VA employees", "federal law enforcement", "TSA", "DoD civilians", "federal administrative staff"],
-      "keyEntities": ["feca", "owcp"],
+      "eligibleCategories": [
+        "USPS",
+        "VA employees",
+        "federal law enforcement",
+        "TSA",
+        "DoD civilians",
+        "federal administrative staff"
+      ],
+      "keyEntities": [
+        "feca",
+        "owcp"
+      ],
       "reviewedBy": "Alara's Director of Nursing, RN",
       "lastReviewed": "2026-06-30"
     },
-
     {
       "id": "va",
       "name": "VA Community Care",
       "shortName": "VA Community Care",
       "fullName": "VA Community Care Network (CCN)",
       "administeredBy": "U.S. Department of Veterans Affairs",
-      "sourceUrls": ["https://www.va.gov/communitycare/"],
+      "sourceUrls": [
+        "https://www.va.gov/communitycare/"
+      ],
       "sourceLabel": "U.S. Department of Veterans Affairs",
       "rank": 3,
       "isStar": false,
       "pillarPath": "programs.html#va",
       "audience": "VA-enrolled veterans with a referral or authorization and a provider order. Alara is a TriWest provider for Region 4.",
-      "chips": ["Veterans", "TriWest Region 4"],
+      "chips": [
+        "Veterans",
+        "TriWest Region 4"
+      ],
       "shortDefinition": "A VA program that authorizes eligible veterans to receive skilled home health from approved community providers when VA facilities cannot readily provide the care.",
       "cost": {
         "summary": "Generally no cost to you for authorized community care.",
         "detail": "Covered through the VA Community Care Network on authorization."
       },
       "coveredServices": [
-        { "key": "skilled-nursing", "label": "Skilled nursing" },
-        { "key": "wound-care", "label": "Wound care" },
-        { "key": "therapy", "label": "Physical and occupational therapy" },
-        { "key": "home-health-aide", "label": "Home health aide services" }
+        {
+          "key": "skilled-nursing",
+          "label": "Skilled nursing"
+        },
+        {
+          "key": "wound-care",
+          "label": "Wound care"
+        },
+        {
+          "key": "therapy",
+          "label": "Physical and occupational therapy"
+        },
+        {
+          "key": "home-health-aide",
+          "label": "Home health aide services"
+        }
       ],
       "missedBenefits": [],
-      "keyEntities": ["community-care-network", "triwest"],
+      "keyEntities": [
+        "community-care-network",
+        "triwest"
+      ],
       "reviewedBy": "Alara's Director of Nursing, RN",
       "lastReviewed": "2026-06-30"
     }
