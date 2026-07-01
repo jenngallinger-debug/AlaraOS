@@ -701,3 +701,21 @@ a.trust-strip__item:hover, a.trust-strip__item:focus-visible { border-bottom-col
 .section-nav__links a { font-size: 0.9375rem; color: var(--taupe-ink); text-decoration: none; white-space: nowrap; padding-block: 4px; border-bottom: 2px solid transparent; transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease); }
 .section-nav__links a:hover { color: var(--espresso); }
 .section-nav__links a.is-active { color: var(--espresso); border-bottom-color: var(--espresso); }
+
+/* ============================================================================
+   PROGRAM COMPARISON TABLE — lets a reader self-identify their path in one look.
+   Horizontally scrollable on small screens; program names are row headers.
+   ========================================================================= */
+.cmp-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--rule); border-radius: 12px; }
+.cmp-hint { margin-top: 12px; font-size: 0.8125rem; color: var(--taupe); }
+.cmp { border-collapse: collapse; width: 100%; min-width: 940px; font-size: 0.9375rem; }
+.cmp caption { text-align: left; }
+.cmp th, .cmp td { text-align: left; vertical-align: top; padding: 15px 18px; border-bottom: 1px solid var(--hairline); line-height: 1.5; }
+.cmp thead th { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--taupe-ink); background: var(--mist); border-bottom: 2px solid var(--rule); }
+.cmp tbody th[scope="row"] { font-weight: 500; color: var(--espresso); background: var(--paper); min-width: 12ch; }
+.cmp tbody th[scope="row"] a { color: var(--espresso); text-decoration: none; border-bottom: 1px solid var(--bronze); padding-bottom: 1px; }
+.cmp tbody th[scope="row"] a:hover { border-bottom-color: var(--espresso); }
+.cmp tbody td { color: var(--taupe-ink); }
+.cmp tbody tr:last-child th, .cmp tbody tr:last-child td { border-bottom: none; }
+.cmp .cmp-cost { color: var(--espresso); font-weight: 500; }
+.cmp .cmp-none { color: var(--taupe); }
