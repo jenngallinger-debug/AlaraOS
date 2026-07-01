@@ -201,6 +201,21 @@
     @media (max-width: 720px) { .trust__inner { grid-template-columns: 1fr; gap: 18px; text-align: left; } }
 
     /* Professional door — a distinct callout under the patient lane chooser. */
+    /* The 2 a.m. stack — every self-serve tool, one screen. */
+    .stack2am { background: var(--espresso); color: var(--on-dark); }
+    .stack2am .s-lede { max-width: 64ch; }
+    .stack2am .s-lede h2 { max-width: 22ch; }
+    .stack2am .s-lede h2 { color: var(--on-dark); }
+    .stack2am .s-lede__sub { color: var(--on-dark-soft); }
+    .tools2 { margin-top: clamp(36px, 4.5vw, 56px); display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+    .tool2 { display: flex; flex-direction: column; gap: 6px; text-decoration: none; border: 1px solid rgba(201,196,193,.22); border-radius: 10px; padding: 20px 22px; transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease); }
+    .tool2:hover { border-color: var(--bronze-l); background: rgba(251,251,251,.04); }
+    .tool2__k { font-family: var(--display); font-size: 0.625rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bronze-l); }
+    .tool2__h { font-size: 1.0625rem; font-weight: 500; color: var(--on-dark); letter-spacing: -0.01em; line-height: 1.25; }
+    .tool2__p { font-size: 0.875rem; line-height: 1.5; color: var(--on-dark-soft); }
+    .stack2am__note { margin-top: 22px; font-size: 0.9375rem; color: var(--on-dark-soft); }
+    .stack2am__note a { color: var(--on-dark); }
+
     .pro-door { margin-top: clamp(28px, 3.4vw, 44px); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 28px; border: 1px solid var(--hairline); border-radius: 8px; padding: clamp(22px, 2.8vw, 32px) clamp(24px, 3vw, 36px); background: var(--paper); }
     .pro-door__text { max-width: 56ch; }
     .pro-door__text h3 { font-size: 1.1875rem; font-weight: 500; letter-spacing: -0.01em; }
@@ -340,7 +355,9 @@
               <li><strong>AlaraOS</strong> stays ahead of your care, catching what others miss</li>
               <li>A <strong>Benefit Navigator</strong> you can use yourself, anytime</li>
               <li><strong>One named Care Guide</strong>, not a call center</li>
+              <li>Your <strong>LMN and hours</strong> are drafted from your care record, not memory</li>
               <li>Local to <strong>Las Vegas and Southern Nevada</strong></li>
+              <li><a href="about.html#billing" style="color: var(--on-dark);">Billed for exactly the care that happened</a> &mdash; our standard, in writing</li>
             </ul>
           </div>
         </div>
@@ -368,6 +385,7 @@
               <div class="os__catch-row"><span class="os__catch-k">04</span><span class="os__catch-t">A change in your care reaches your family, so no one is left guessing.</span></div>
               <div class="os__catch-row"><span class="os__catch-k">05</span><span class="os__catch-t">A benefit you qualified for gets found and put to use.</span></div>
               <div class="os__catch-row"><span class="os__catch-k">06</span><span class="os__catch-t">Follow-up is confirmed, not assumed.</span></div>
+              <div class="os__catch-row"><span class="os__catch-k">07</span><span class="os__catch-t">The paperwork that sets your hours is drafted from your care record. <a href="care-hours.html" style="color: var(--on-dark);">How &rarr;</a></span></div>
             </div>
           </div>
         </div>
@@ -425,6 +443,26 @@
           </div>
           <a class="btn btn--ghost" href="refer.html">Refer a patient <span class="arrow" aria-hidden="true">&rarr;</span></a>
         </div>
+      </div>
+    </section>
+
+    <!-- THE 2 A.M. STACK — the self-serve moat, stated as the kill line. -->
+    <section class="sec stack2am" aria-label="Do it all from your phone">
+      <div class="container">
+        <div class="s-lede reveal">
+          <span class="eyebrow s-lede__eyebrow" style="color: var(--bronze-l);">Self-serve, anytime</span>
+          <h2>The town hall, the sales call, and the benefits rep. On your phone, at 2 a.m.</h2>
+          <p class="s-lede__sub" style="max-width: 56ch;">Other agencies make you wait for a seminar or sit through a pitch to learn what you are owed. Everything a first phone call does, you can do here &mdash; from the only agency in Las Vegas owned by the nurse accountable for your care.</p>
+        </div>
+        <div class="tools2 reveal">
+          <a class="tool2" href="qualify.html"><span class="tool2__k">1 minute</span><span class="tool2__h">Benefit Navigator</span><span class="tool2__p">What your benefits generally cover, and the one next step. Nothing saved.</span></a>
+          <a class="tool2" href="case-review.html"><span class="tool2__k">White Card</span><span class="tool2__h">Case review</span><span class="tool2__p">A nurse reads your worksite, work, and illness and tells you if the card can be opened.</span></a>
+          <a class="tool2" href="learn.html#compare"><span class="tool2__k">Side by side</span><span class="tool2__h">Compare the programs</span><span class="tool2__p">White Card, OWCP, VA, RECA, Medicare &mdash; who each is for and what it pays.</span></a>
+          <a class="tool2" href="nevada-test-site.html#estimator"><span class="tool2__k">Illustrative</span><span class="tool2__h">Impairment estimator</span><span class="tool2__p">How the compensation math works, with the figures the program uses.</span></a>
+          <a class="tool2" href="care-hours.html"><span class="tool2__k">The black box, opened</span><span class="tool2__h">How your hours are set</span><span class="tool2__p">Who decides, how renewals work, and how hours grow when needs change.</span></a>
+          <a class="tool2" href="refer.html"><span class="tool2__k">For physicians</span><span class="tool2__h">Send a referral</span><span class="tool2__p">Structured, answered within one business hour.</span></a>
+        </div>
+        <p class="stack2am__note reveal">No forms to create an account, nothing gated behind a callback. Prefer a person? <a href="tel:+17028149630">(702) 814-9630</a>.</p>
       </div>
     </section>
 
