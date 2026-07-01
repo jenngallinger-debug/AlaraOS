@@ -6,12 +6,12 @@
    ========================================================================= */
 :root {
   --espresso: #342E2E;   /* primary text, dark sections */
-  --taupe:    #817A7A;   /* secondary text, hairlines, dividers */
-  --taupe-ink:#645E5C;   /* darkened taupe for AA body on paper */
-  --greige:   #D9D8D3;   /* surfaces, arch fills */
-  --mist:     #E8E8E8;   /* alternate section tint */
-  --paper:    #FBFBFB;   /* page background — never pure white */
-  --hairline: #E2E0DC;   /* soft warm hairline */
+  --taupe:    #837A72;   /* secondary text, hairlines, dividers (warm taupe) */
+  --taupe-ink:#645C57;   /* darkened taupe for AA body on paper */
+  --greige:   #DBD3C8;   /* surfaces, arch fills (warm greige) */
+  --mist:     #EBE4DA;   /* alternate section tint (warm taupe) */
+  --paper:    #FCFAF6;   /* page background — warm off-white, never pure white */
+  --hairline: #E6DFD4;   /* soft warm taupe hairline */
   --on-dark:  #FBFBFB;
   --on-dark-soft: #C9C4C1;
 
