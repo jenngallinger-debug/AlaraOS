@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Page not found &middot; Alara Home Care</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="/logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/site.css" />
+  <style>
+    /* 404 — served at any path, so every URL on this page is absolute. */
+    .nf { min-height: 72vh; display: grid; place-items: center; background: var(--mist); border-bottom: 1px solid var(--rule); }
+    .nf__inner { max-width: 640px; padding: clamp(56px, 9vw, 120px) 24px; text-align: center; }
+    .nf__mark { width: 52px; height: 48px; color: var(--bronze); margin-bottom: 22px; }
+    .nf__code { font-family: var(--display); font-size: 0.8125rem; letter-spacing: 0.22em; color: var(--bronze); text-transform: uppercase; }
+    .nf h1 { margin-top: 12px; font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 500; letter-spacing: -0.02em; color: var(--espresso); }
+    .nf p { margin-top: 14px; font-size: 1.0625rem; line-height: 1.65; color: var(--taupe-ink); }
+    .nf p a { color: var(--espresso); }
+    .nf__links { margin-top: 30px; display: grid; gap: 10px; text-align: left; }
+    .nf__links a {
+      display: flex; justify-content: space-between; align-items: baseline; gap: 16px;
+      padding: 14px 18px; background: var(--paper); border: 1px solid var(--hairline); border-radius: 10px;
+      color: var(--espresso); text-decoration: none; font-size: 1rem; transition: border-color var(--dur) var(--ease);
+    }
+    .nf__links a:hover { border-color: var(--rule); }
+    .nf__links .arrow { color: var(--bronze); }
+    .nf__call { margin-top: 22px; font-size: 0.9375rem; color: var(--taupe); }
+    .nf__call a { color: var(--espresso); }
+  </style>
+</head>
+<body>
+  <main class="nf">
+    <div class="nf__inner">
+      <svg class="nf__mark" viewBox="0 0 100 92" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/></svg>
+      <span class="nf__code">404 &mdash; Page not found</span>
+      <h1>That page is not here.</h1>
+      <p>The address may have changed, or the link was mistyped. Everything on this site is a few taps from the <a href="/home.html">homepage</a> &mdash; or start where most families do:</p>
+      <div class="nf__links">
+        <a href="/qualify.html">See what you qualify for <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a href="/case-review.html">Start a White Card case review <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a href="/refer.html">Refer a patient <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a href="/learn.html">Browse the Learning Hub <span class="arrow" aria-hidden="true">&rarr;</span></a>
+      </div>
+      <p class="nf__call">Or call a nurse at <a href="tel:+17028149630">(702) 814-9630</a>.</p>
+    </div>
+  </main>
+</body>
+</html>
