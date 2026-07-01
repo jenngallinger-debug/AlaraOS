@@ -9,7 +9,7 @@ Updated as we go. Full analysis: `docs/COMPETITIVE-KILL-LIST.md`.
 | # | Move | Value | Kill | Score | Status |
 |---|---|---|---|---|---|
 | 1 | **Nurse-owned moat** (home + About) — owner is the nurse; beats 2 PE rivals + 1 non-clinician | 5 | 5 | 25 | ✅ done |
-| 2 | **Learn hub**: survivor benefits + "White Card denied" + RECA deadline (all rivals thin here) | 5 | 5 | 25 | 🔨 in progress |
+| 2 | **Learn hub**: survivor benefits + "White Card denied" + RECA deadline (all rivals thin here) | 5 | 5 | 25 | 🔨 in progress — Guides layer + Survivor Benefits guide ✅; "White Card denied" guide next |
 | 3 | **$400k money funnel** on the EEOICPA page (hero → breakdown → trust → CTA) | 5 | 4 | 20 | ✅ done |
 | 4 | **Local Nevada depth** — real NTS/NNSS worker content, Pahrump, named local nurse-owner (their NV pages are boilerplate) | 4 | 5 | 20 | ⬜ todo |
 | 5 | **Self-serve eligibility / White-Card checker** — none of them have any online tool | 4 | 5 | 20 | ⬜ todo |

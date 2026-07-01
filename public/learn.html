@@ -19,6 +19,22 @@
     .lib-group__title { font-size: clamp(1.375rem, 2.4vw, 1.875rem); font-weight: 500; letter-spacing: -0.016em; line-height: 1.16; color: var(--espresso); max-width: 24ch; }
     .lib-group__lead { margin-top: 14px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); max-width: 58ch; }
     .lib-group__list { border-top: 1px solid var(--hairline); }
+
+    /* Guides — deep, plain-language reads. The hub's front layer. */
+    .guides { padding-top: clamp(8px, 1.5vw, 16px); }
+    .guides__head { max-width: 64ch; margin-bottom: clamp(20px, 2.6vw, 32px); }
+    .guides__head .eyebrow { display: block; margin-bottom: 14px; }
+    .guides__head h2 { font-size: clamp(1.375rem, 2.4vw, 1.875rem); font-weight: 500; letter-spacing: -0.016em; line-height: 1.16; color: var(--espresso); max-width: 24ch; }
+    .guides__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+    .guide-card { display: block; text-decoration: none; background: var(--paper); border: 1px solid var(--hairline); border-radius: 8px; padding: clamp(22px, 2.6vw, 28px); transition: border-color var(--dur) var(--ease); }
+    .guide-card:hover { border-color: var(--espresso); }
+    .guide-card__k { display: block; font-family: var(--display); font-size: 0.625rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--taupe); }
+    .guide-card__h { display: block; margin-top: 10px; font-family: var(--display); font-size: 1.1875rem; font-weight: 500; letter-spacing: -0.01em; line-height: 1.2; color: var(--espresso); }
+    .guide-card__p { display: block; margin-top: 8px; font-size: 0.9375rem; line-height: 1.55; color: var(--taupe-ink); }
+    .guide-card__go { display: inline-flex; margin-top: 14px; font-size: 0.875rem; color: var(--espresso); align-items: center; gap: 7px; }
+    .lib-divider { margin-top: clamp(52px, 7vw, 88px); padding-top: clamp(20px, 2.6vw, 32px); border-top: 1px solid var(--hairline); }
+    .lib-divider .eyebrow { display: block; margin-bottom: 14px; }
+    .lib-divider h2 { font-size: clamp(1.375rem, 2.4vw, 1.875rem); font-weight: 500; letter-spacing: -0.016em; color: var(--espresso); }
   </style>
 </head>
 <body>
@@ -96,8 +112,45 @@
     </section>
 
     <div class="container">
+      <section class="guides" aria-label="Guides">
+        <div class="guides__head">
+          <span class="eyebrow">Guides</span>
+          <h2>Plain-language reads on the benefits families miss most.</h2>
+        </div>
+        <div class="guides__grid">
+          <a class="guide-card" href="survivor-benefits.html">
+            <span class="guide-card__k">EEOICPA &middot; Survivors</span>
+            <span class="guide-card__h">Survivor benefits, explained</span>
+            <span class="guide-card__p">Families are often owed compensation of their own, even if the worker never filed. Who qualifies, what it pays, how to claim it.</span>
+            <span class="guide-card__go">Read the guide <span class="arrow" aria-hidden="true">&rarr;</span></span>
+          </a>
+          <a class="guide-card" href="reca.html">
+            <span class="guide-card__k">RECA &middot; Radiation</span>
+            <span class="guide-card__h">RECA reopened, and the 2027 deadline</span>
+            <span class="guide-card__p">The Radiation Exposure Compensation Act came back in 2025, with a one-time payment and a hard filing deadline of December 31, 2027.</span>
+            <span class="guide-card__go">Read the guide <span class="arrow" aria-hidden="true">&rarr;</span></span>
+          </a>
+          <a class="guide-card" href="white-card.html">
+            <span class="guide-card__k">White Card &middot; EEOICPA</span>
+            <span class="guide-card__h">What your White Card is really worth</span>
+            <span class="guide-card__p">Compensation and free home health for life, plus the benefits most families never claim. The whole picture, in plain language.</span>
+            <span class="guide-card__go">Read the guide <span class="arrow" aria-hidden="true">&rarr;</span></span>
+          </a>
+          <a class="guide-card" href="nevada-test-site.html">
+            <span class="guide-card__k">Nevada Test Site</span>
+            <span class="guide-card__h">Worked at the Nevada Test Site?</span>
+            <span class="guide-card__p">Who is covered, which illnesses qualify, and what the benefit is worth, with an illustrative impairment estimate.</span>
+            <span class="guide-card__go">Read the guide <span class="arrow" aria-hidden="true">&rarr;</span></span>
+          </a>
+        </div>
+      </section>
+
       <div class="lib">
-        <p class="lib__intro">Start with the program you came for, or read straight through. When you are ready to see what applies to you, the <a href="qualify.html">Benefit Navigator</a> walks you there in about a minute.</p>
+        <div class="lib-divider">
+          <span class="eyebrow">Glossary</span>
+          <h2>The terms that matter, defined plainly.</h2>
+        </div>
+        <p class="lib__intro" style="margin-top:16px;">Start with the program you came for, or read straight through. When you are ready to see what applies to you, the <a href="qualify.html">Benefit Navigator</a> walks you there in about a minute.</p>
         <div class="lib__groups" id="lib"><!-- rendered from glossary data, grouped by program --></div>
       </div>
     </div>
