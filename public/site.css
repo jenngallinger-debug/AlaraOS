@@ -671,3 +671,17 @@ a.trust-strip__item:hover, a.trust-strip__item:focus-visible { border-bottom-col
 .nav-dd__link--cta { color: var(--espresso); font-weight: 500; }
 .nav-dd__link--cta .arrow { color: var(--taupe); }
 .mobile-menu__link--sub { padding-left: 28px; font-size: 0.9375rem; color: var(--taupe-ink); }
+
+/* ============================================================================
+   SECTION SUB-NAV — a secondary bar for a program section (e.g. White Card),
+   riding the section's pages. Horizontal, scrollable on small screens.
+   ========================================================================= */
+.section-nav { border-bottom: 1px solid var(--hairline); background: var(--paper); position: sticky; top: 0; z-index: 40; }
+.section-nav__inner { display: flex; align-items: center; gap: clamp(14px, 2.6vw, 36px); padding-block: 13px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.section-nav__inner::-webkit-scrollbar { display: none; }
+.section-nav__title { font-family: var(--display); font-size: 0.75rem; letter-spacing: 0.13em; text-transform: uppercase; color: var(--taupe); text-decoration: none; white-space: nowrap; flex: none; }
+.section-nav__title:hover, .section-nav__title.is-active { color: var(--espresso); }
+.section-nav__links { display: flex; align-items: center; gap: clamp(14px, 2.2vw, 28px); flex: none; }
+.section-nav__links a { font-size: 0.9375rem; color: var(--taupe-ink); text-decoration: none; white-space: nowrap; padding-block: 4px; border-bottom: 2px solid transparent; transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease); }
+.section-nav__links a:hover { color: var(--espresso); }
+.section-nav__links a.is-active { color: var(--espresso); border-bottom-color: var(--espresso); }
