@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Start your White Card case review &middot; Alara Home Care</title>
+  <meta name="description" content="Start a free White Card (EEOICPA) case review with Alara. A few plain questions about where you worked and what happened, and a nurse reviews whether the White Card and its lifetime home health can be opened for you. No claim forms, no cost." />
+  <link rel="icon" href="logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="site.css" />
+  <style>
+    /* =====================================================================
+       WHITE CARD CASE REVIEW — a progressive, tap-first intake that closes.
+       One question per step, contact last (foot-in-the-door). Ends by
+       composing a complete case-review email to referrals@alarahomecare.com.
+       Governed: this starts a review, it is not an eligibility determination.
+       Shared palette only. Reduced-motion safe.
+       ===================================================================== */
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+    #cr [tabindex="-1"]:focus { outline: none; }
+
+    .cr-band { background: var(--greige); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+    .cr-band > .container { padding-block: clamp(40px, 5.5vw, 80px); }
+    .cr-shell { max-width: 760px; margin-inline: auto; background: var(--paper); border: 1px solid var(--hairline); border-radius: 16px; padding: clamp(26px, 4vw, 52px); }
+
+    /* Progress */
+    .cr-top { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom: 24px; min-height: 26px; }
+    .cr-back { background:none; border:none; padding:0; font:inherit; color:var(--taupe-ink); cursor:pointer; display:inline-flex; align-items:center; gap:8px; }
+    .cr-back:hover { color:var(--espresso); }
+    .cr-prog { flex:1; height:3px; background:var(--hairline); border-radius:100px; overflow:hidden; max-width:180px; margin-left:auto; }
+    .cr-prog__fill { height:100%; background:var(--bronze); width:0; transition: width var(--dur) var(--ease); }
+    .cr-step-label { font-family:var(--display); font-size:0.6875rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--taupe); white-space:nowrap; }
+
+    /* Question */
+    .cr-eyebrow { display:block; margin-bottom:16px; }
+    .cr-q { font-family: var(--display); font-size: clamp(1.5rem, 3vw, 2.125rem); font-weight:500; letter-spacing:-0.02em; line-height:1.14; color:var(--espresso); }
+    .cr-help { margin-top:14px; font-size:1rem; line-height:1.6; color:var(--taupe-ink); max-width:56ch; }
+    .cr-opts { margin-top: clamp(22px, 3vw, 30px); display:flex; flex-direction:column; gap:12px; }
+    .cr-opt { display:flex; align-items:center; justify-content:space-between; gap:16px; width:100%; text-align:left; cursor:pointer;
+      background: var(--paper); border:1px solid var(--hairline); border-radius:8px; padding:18px 20px;
+      font-family: var(--text); font-size:1.0625rem; color:var(--espresso);
+      transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), transform var(--dur) var(--ease); }
+    .cr-opt:hover { border-color: var(--bronze); background:#fff; }
+    .cr-opt:active { transform: translateY(1px); }
+    .cr-opt .arrow { color:var(--taupe); transition: transform var(--dur) var(--ease), color var(--dur) var(--ease); }
+    .cr-opt:hover .arrow { transform: translateX(3px); color:var(--bronze); }
+    .cr-opt.is-sel { border-color: var(--espresso); background:#fff; }
+    .cr-opt.is-sel::after { content:"\2713"; color:var(--bronze); font-weight:600; }
+
+    /* Value / summary screen */
+    .cr-affirm { border-left:3px solid var(--bronze); background:var(--mist); border-radius:0 8px 8px 0; padding:20px 24px; margin-top:18px; }
+    .cr-affirm p { font-size:1.0625rem; line-height:1.6; color:var(--espresso); }
+    .cr-recap { margin-top:24px; border-top:2px solid var(--rule); }
+    .cr-recap__row { display:grid; grid-template-columns: 15ch 1fr; gap:16px; padding:14px 0; border-bottom:1px solid var(--hairline); align-items:baseline; }
+    .cr-recap__k { font-family:var(--display); font-size:0.6875rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--taupe); }
+    .cr-recap__v { font-size:1rem; color:var(--espresso); }
+    .cr-recap__edit { background:none; border:none; padding:0; font:inherit; font-size:0.8125rem; color:var(--taupe-ink); text-decoration:underline; text-underline-offset:3px; cursor:pointer; margin-left:8px; }
+    .cr-recap__edit:hover { color:var(--espresso); }
+
+    /* Contact fields */
+    .cr-fields { margin-top: clamp(20px, 3vw, 28px); display:grid; gap:18px; }
+    .cr-field label { display:block; font-size:0.9375rem; color:var(--espresso); margin-bottom:8px; }
+    .cr-field .hint { color:var(--taupe); }
+    .cr-field input, .cr-field select { width:100%; font-family:var(--text); font-size:1.0625rem; color:var(--espresso);
+      background:var(--paper); border:1px solid var(--hairline); border-radius:8px; padding:14px 16px; transition:border-color var(--dur) var(--ease); }
+    .cr-field input:focus, .cr-field select:focus { border-color:var(--espresso); outline:none; }
+    .cr-field input[aria-invalid="true"] { border-color:var(--espresso); }
+    .cr-err { margin-top:8px; font-size:0.9375rem; color:var(--espresso); font-weight:500; padding-left:12px; border-left:2px solid var(--espresso); }
+
+    .cr-actions { margin-top: clamp(24px, 3.4vw, 32px); display:flex; flex-wrap:wrap; gap:14px 20px; align-items:center; }
+    .cr-alt { font-size:0.9375rem; color:var(--taupe); }
+    .cr-alt a { color:var(--espresso); }
+    .cr-trust { margin-top:22px; font-size:0.8125rem; line-height:1.6; color:var(--taupe); max-width:66ch; }
+
+    /* Off-ramp + confirmation panels */
+    .cr-panel { text-align:center; padding-block: clamp(8px, 2vw, 20px); }
+    .cr-panel__mark { width:52px; height:52px; margin:0 auto 22px; color:var(--espresso); }
+    .cr-panel h2 { font-family:var(--display); font-size:clamp(1.6rem,3vw,2.25rem); font-weight:500; letter-spacing:-0.02em; line-height:1.14; color:var(--espresso); }
+    .cr-panel p { margin-top:16px; font-size:1.0625rem; line-height:1.6; color:var(--taupe-ink); max-width:52ch; margin-inline:auto; }
+    .cr-panel .cr-actions { justify-content:center; }
+    .cr-next { margin-top:26px; text-align:left; background:var(--espresso); color:var(--on-dark); border-radius:12px; padding:clamp(22px,3vw,30px); }
+    .cr-next .eyebrow { display:block; margin-bottom:14px; color:var(--bronze-l); }
+    .cr-next .eyebrow::before { background:var(--bronze-l); }
+    .cr-next ol { list-style:none; counter-reset:cn; margin:0; padding:0; }
+    .cr-next li { counter-increment:cn; display:grid; grid-template-columns:2rem 1fr; gap:12px; padding-block:12px; border-top:1px solid rgba(201,196,193,.18); }
+    .cr-next li:first-child { border-top:none; }
+    .cr-next li::before { content:counter(cn,decimal-leading-zero); font-family:var(--display); font-size:0.875rem; color:var(--bronze-l); }
+    .cr-next li b { color:var(--on-dark); font-weight:500; }
+    .cr-next li span { display:block; margin-top:4px; font-size:0.9375rem; color:var(--on-dark-soft); }
+
+    .cr-in { opacity:0; transform:translateY(8px); animation: crIn .4s var(--ease) forwards; }
+    @keyframes crIn { to { opacity:1; transform:none; } }
+    @media (prefers-reduced-motion: reduce) { .cr-in { animation:none; opacity:1; transform:none; } }
+    @media (max-width: 520px) {
+      .cr-recap__row { grid-template-columns:1fr; gap:4px; }
+      .cr-next li { grid-template-columns:1.6rem 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header" id="siteHeader">
+    <div class="container site-header__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care, home">
+        <svg class="brand__mark" viewBox="0 0 100 92" role="img" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
+      </a>
+      <div class="site-header__actions">
+        <nav class="site-nav site-nav--primary" aria-label="Primary">
+          <a class="site-nav__link" href="services.html">Get Care</a>
+          <span class="site-nav__item">
+            <a class="site-nav__link site-nav__link--dd" href="programs.html" aria-haspopup="true">Benefits <span class="nav-caret" aria-hidden="true">&#9662;</span></a>
+            <span class="nav-dd" role="menu">
+              <a class="nav-dd__link nav-dd__link--cta" role="menuitem" href="qualify.html">Do I qualify? <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              <span class="nav-dd__sep" aria-hidden="true"></span>
+              <a class="nav-dd__link" role="menuitem" href="white-card.html">White Card (EEOICPA)</a>
+              <a class="nav-dd__link" role="menuitem" href="reca.html">RECA (Radiation Exposure)</a>
+              <a class="nav-dd__link" role="menuitem" href="owcp.html">Federal Workers (OWCP / FECA)</a>
+              <a class="nav-dd__link" role="menuitem" href="veterans.html">Veterans</a>
+              <span class="nav-dd__sep" aria-hidden="true"></span>
+              <a class="nav-dd__link nav-dd__link--cta" role="menuitem" href="case-review.html">Start a White Card case review <span class="arrow" aria-hidden="true">&rarr;</span></a>
+            </span>
+          </span>
+          <a class="site-nav__link" href="learn.html">Learn</a>
+          <a class="site-nav__link" href="about.html">Why Alara</a>
+          <a class="site-nav__link" href="begin.html?who=referrer">Refer a Patient</a>
+          <a class="header-call" href="tel:+17028149630">
+            <span class="header-call__label">Call us</span>
+            <span class="header-call__num">(702) 814-9630</span>
+          </a>
+        </nav>
+        <a class="btn btn--sm" href="case-review.html">Start a case review</a>
+        <button class="nav-toggle" type="button" id="navToggle" aria-expanded="false" aria-controls="site-menu" aria-label="Open menu"><span class="nav-toggle__bar" aria-hidden="true"></span></button>
+      </div>
+    </div>
+    <nav class="mobile-menu" id="site-menu" data-open="false" aria-label="Primary (mobile)">
+      <div class="container mobile-menu__inner">
+        <a class="mobile-menu__link" href="services.html">Get Care <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="programs.html">Benefits <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="qualify.html">Do I qualify?</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="white-card.html">White Card (EEOICPA)</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="reca.html">RECA (Radiation Exposure)</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="owcp.html">Federal Workers (OWCP / FECA)</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="veterans.html">Veterans</a>
+        <a class="mobile-menu__link mobile-menu__link--sub" href="case-review.html">Start a White Card case review</a>
+        <a class="mobile-menu__link" href="learn.html">Learn <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="about.html">Why Alara <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="mobile-menu__link" href="begin.html?who=referrer">Refer a Patient <span class="arrow" aria-hidden="true">&rarr;</span></a>
+        <a class="btn btn--block mobile-menu__cta" href="case-review.html">Start a case review</a>
+        <p class="mobile-menu__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></p>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <span class="eyebrow">White Card &middot; Case review</span>
+        <h1>Start your White Card case review.</h1>
+        <p class="page-hero__lead">If you worked at the Nevada Test Site, a DOE site, or an atomic-weapons plant &mdash; in any job &mdash; the White Card can pay for skilled home health for life, at no cost to you. Answer a few plain questions and a nurse reviews whether it can be opened for you. No claim forms, and nothing here is a determination of eligibility.</p>
+      </div>
+    </section>
+
+    <section class="cr-band">
+    <div class="container">
+      <div class="cr-shell">
+        <p class="sr-only" id="crStatus" role="status" aria-live="polite"></p>
+        <div id="cr"><!-- rendered by JS --></div>
+        <noscript>
+          <p class="cr-help">To start a case review, email the worker's name, where they worked, the years, and the illness to <a href="mailto:referrals@alarahomecare.com">referrals@alarahomecare.com</a>, or call a nurse at <a href="tel:+17028149630">(702) 814-9630</a>.</p>
+        </noscript>
+      </div>
+    </div>
+    </section>
+
+    <section class="disclaimer">
+      <div class="container disclaimer__inner">
+        Alara helps you understand and reach benefits you may already be entitled to. A case review is a free clinical and eligibility read, not a coverage or eligibility determination. The Department of Labor decides EEOICPA claims. It does not replace your Resource Center, physician, or any federal agency.
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <a class="brand" href="home.html" aria-label="Alara Home Care">
+        <svg class="brand__mark" viewBox="0 0 100 92" aria-hidden="true">
+          <path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/>
+        </svg>
+        <span class="brand__word"><span class="brand__name">ALARA</span><span class="brand__sub">Home Care</span></span>
+      </a>
+      <div class="site-footer__meta">Serving all of <a href="las-vegas.html" style="color:inherit;">Clark County and Southern Nevada</a><br /><a href="tel:+17028149630">(702) 814-9630</a></div>
+    </div>
+  </footer>
+
+  <script>
+    // --- Canonical header behavior ---
+    var header = document.getElementById('siteHeader');
+    var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 24); };
+    onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+    var toggle = document.getElementById('navToggle'); var menu = document.getElementById('site-menu');
+    if (toggle && menu) { toggle.addEventListener('click', function () {
+      var open = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!open));
+      toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+      menu.setAttribute('data-open', String(!open)); }); }
+
+    // =====================================================================
+    // CASE REVIEW WIZARD — linear, tap-first, contact last.
+    // Answers are held in memory only until the person submits; submitting
+    // composes an email to referrals@alarahomecare.com. Nothing is stored.
+    // =====================================================================
+    var REVIEW_EMAIL = 'referrals@alarahomecare.com';
+
+    // Each step: id, eyebrow, question, help, and tap options. `value` is the
+    // human-readable answer recorded; `off` marks a gentle off-ramp.
+    var STEPS = [
+      { id:'worksite', eyebrow:'Step 1', q:'Did you, or a family member, work at a nuclear-weapons or Department of Energy site?',
+        help:'The White Card covers people who worked at these sites in ANY job — not only the scientists. Security, construction, cafeteria, cleaning, and office work all count.',
+        opts:[
+          { label:'Yes — the Nevada Test Site', value:'Nevada Test Site' },
+          { label:'Yes — another DOE or weapons site', value:'Another DOE / weapons site' },
+          { label:'I think so, but I am not sure', value:'Possible site — unsure' },
+          { label:'No', value:'No', off:'nosite' }
+        ] },
+      { id:'role', eyebrow:'Step 2', q:'What kind of work did they do there?',
+        help:'This never disqualifies you. It just helps the nurse see the exposure picture.',
+        opts:[
+          { label:'Trades or construction', value:'Trades / construction' },
+          { label:'Security, guard, or support', value:'Security / support' },
+          { label:'Lab, technical, or office', value:'Lab / technical / office' },
+          { label:'Something else / not sure', value:'Other / not sure' }
+        ] },
+      { id:'employer', eyebrow:'Step 3', q:'Who did they work for?',
+        help:'Most site work was done by contractors — EG&G, REECo, Bechtel, Wackenhut, and others. Contractor and subcontractor workers are usually covered too.',
+        opts:[
+          { label:'A contractor or subcontractor', value:'Contractor / subcontractor' },
+          { label:'The government directly', value:'Government directly' },
+          { label:'Not sure', value:'Not sure' }
+        ] },
+      { id:'years', eyebrow:'Step 4', q:'Roughly when did they work there?',
+        help:'An estimate is fine. Covered periods run for decades at most sites.',
+        opts:[
+          { label:'Before 1990', value:'Before 1990' },
+          { label:'1990s or 2000s', value:'1990s–2000s' },
+          { label:'2010 or later', value:'2010 or later' },
+          { label:'Not sure', value:'Not sure' }
+        ] },
+      { id:'illness', eyebrow:'Step 5', q:'Has a doctor said they have a serious illness?',
+        help:'You do not need to share a diagnosis here. Many cancers, lung and kidney conditions, and other illnesses are covered. A nurse will go through the details privately.',
+        opts:[
+          { label:'Yes', value:'Yes' },
+          { label:'Not yet, but they are unwell', value:'Unwell, no diagnosis yet' },
+          { label:'Prefer to discuss privately', value:'Prefers to discuss privately' }
+        ] },
+      { id:'history', eyebrow:'Step 6', q:'Have they ever filed for the White Card before?',
+        help:'A past denial is not the end — the program keeps expanding, and old claims can be reopened. It helps to know where things stand.',
+        opts:[
+          { label:'Never filed', value:'Never filed' },
+          { label:'Filed and was denied', value:'Filed — denied' },
+          { label:'Filed and was approved', value:'Filed — approved' },
+          { label:'Not sure', value:'Not sure' }
+        ] },
+      { id:'who', eyebrow:'Step 7', q:'And who am I speaking with?',
+        help:'',
+        opts:[
+          { label:'I am the worker', value:'The worker' },
+          { label:'A spouse or family member', value:'Family member' },
+          { label:'A survivor (the worker has passed)', value:'Survivor' },
+          { label:'A physician or provider referring', value:'Referrer', off:'referrer' }
+        ] }
+    ];
+
+    var answers = {}; // id -> value
+    var cr = document.getElementById('cr');
+    var statusEl = document.getElementById('crStatus');
+    var idx = 0;      // index into STEPS, or 'summary' / 'done'
+    var mode = 'step';
+
+    function pct() { return Math.round((idx / (STEPS.length + 1)) * 100); }
+    function esc(s){ return String(s).replace(/[<>&]/g, function(c){ return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c]; }); }
+
+    function announce(t){ statusEl.textContent = t; }
+
+    function topBar(showBack, labelText) {
+      return '<div class="cr-top">' +
+        (showBack ? '<button type="button" class="cr-back" id="crBack"><span aria-hidden="true">&larr;</span> Back</button>' : '<span></span>') +
+        '<span class="cr-step-label">' + labelText + '</span>' +
+        '<span class="cr-prog" aria-hidden="true"><span class="cr-prog__fill" style="width:' + pct() + '%"></span></span>' +
+        '</div>';
+    }
+
+    function renderStep() {
+      mode = 'step';
+      var s = STEPS[idx];
+      var html = topBar(idx > 0, s.eyebrow + ' of ' + STEPS.length);
+      html += '<div class="cr-in">';
+      html += '<h2 class="cr-q" tabindex="-1" id="crFocus">' + esc(s.q) + '</h2>';
+      if (s.help) html += '<p class="cr-help">' + esc(s.help) + '</p>';
+      html += '<div class="cr-opts" role="list">';
+      s.opts.forEach(function (o, i) {
+        var sel = answers[s.id] === o.value ? ' is-sel' : '';
+        html += '<button type="button" class="cr-opt' + sel + '" role="listitem" data-i="' + i + '">' +
+          '<span>' + esc(o.label) + '</span><span class="arrow" aria-hidden="true">&rarr;</span></button>';
+      });
+      html += '</div></div>';
+      cr.innerHTML = html;
+      wireStep(s);
+      focusStep();
+      announce(s.q);
+    }
+
+    function wireStep(s) {
+      var back = document.getElementById('crBack');
+      if (back) back.addEventListener('click', goBack);
+      cr.querySelectorAll('.cr-opt').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var o = s.opts[+btn.getAttribute('data-i')];
+          answers[s.id] = o.value;
+          if (o.off) { renderOfframp(o.off); return; }
+          idx++;
+          if (idx >= STEPS.length) renderSummary(); else renderStep();
+        });
+      });
+    }
+
+    function goBack() {
+      if (mode === 'summary') { idx = STEPS.length - 1; renderStep(); return; }
+      if (mode === 'offramp') { renderStep(); return; }
+      if (idx > 0) { idx--; renderStep(); }
+    }
+
+    function focusStep() {
+      var f = document.getElementById('crFocus');
+      if (f) f.focus({ preventScroll: true });
+    }
+
+    // Gentle off-ramps — never a dead end.
+    function renderOfframp(kind) {
+      mode = 'offramp';
+      var html = topBar(true, 'A quick note');
+      html += '<div class="cr-in cr-panel" style="text-align:left">';
+      if (kind === 'nosite') {
+        html += '<h2 class="cr-q" tabindex="-1" id="crFocus">The White Card may not be your path &mdash; but you may still have one.</h2>' +
+          '<p class="cr-help" style="margin-inline:0">The White Card is for people who worked at the Nevada Test Site, a DOE site, or an atomic-weapons plant. If that is not you, other programs may still cover home health &mdash; OWCP for federal and postal workers, or VA Community Care for veterans.</p>' +
+          '<div class="cr-actions"><a class="btn" href="qualify.html">See what you qualify for <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
+          '<span class="cr-alt">or <a href="programs.html">browse all programs</a></span></div>';
+      } else { // referrer
+        html += '<h2 class="cr-q" tabindex="-1" id="crFocus">Referring a patient? We make it easy.</h2>' +
+          '<p class="cr-help" style="margin-inline:0">Send the patient’s name, where they worked, and the concern to <a href="mailto:' + REVIEW_EMAIL + '">' + REVIEW_EMAIL + '</a>, or use the referral page. We complete the in-home assessment, document medical necessity, and handle the authorization. We respond within one business hour.</p>' +
+          '<div class="cr-actions"><a class="btn" href="begin.html?who=referrer">Refer a patient <span class="arrow" aria-hidden="true">&rarr;</span></a></div>';
+      }
+      html += '</div>';
+      cr.innerHTML = html;
+      var back = document.getElementById('crBack'); if (back) back.addEventListener('click', goBack);
+      focusStep();
+    }
+
+    // Value screen + recap + contact (contact LAST).
+    function renderSummary() {
+      mode = 'summary'; idx = STEPS.length;
+      var html = topBar(true, 'Last step');
+      html += '<div class="cr-in">';
+      html += '<span class="eyebrow cr-eyebrow">Your case, at a glance</span>';
+      html += '<h2 class="cr-q" tabindex="-1" id="crFocus">This looks worth a review.</h2>';
+      html += '<div class="cr-affirm"><p>Based on what you shared, a nurse should look at whether the White Card and its lifetime home health can be opened for you. The review is free, and you never pay anyone a percentage of an award.</p></div>';
+      html += '<div class="cr-recap">';
+      STEPS.forEach(function (s) {
+        if (!answers[s.id]) return;
+        html += '<div class="cr-recap__row"><span class="cr-recap__k">' + esc(recapLabel(s.id)) + '</span>' +
+          '<span class="cr-recap__v">' + esc(answers[s.id]) +
+          ' <button type="button" class="cr-recap__edit" data-id="' + s.id + '">edit</button></span></div>';
+      });
+      html += '</div>';
+      html += '<div class="cr-fields">' +
+        '<div class="cr-field"><label for="crName">Name <span class="hint">(the worker or yourself)</span></label>' +
+        '<input id="crName" type="text" autocomplete="name" placeholder="First and last" /><p class="cr-err" id="crNameErr" hidden>Please add a name so the nurse knows whose case to open.</p></div>' +
+        '<div class="cr-field"><label for="crPhone">Best phone number</label>' +
+        '<input id="crPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Where a nurse can reach you" /><p class="cr-err" id="crPhoneErr" hidden>Please add a phone number with at least 10 digits.</p></div>' +
+        '<div class="cr-field"><label for="crEmail">Email <span class="hint">(optional)</span></label>' +
+        '<input id="crEmail" type="email" autocomplete="email" placeholder="you@example.com" /></div>' +
+        '</div>';
+      html += '<div class="cr-actions"><button type="button" class="btn btn--lg" id="crSubmit">Start my case review <span class="arrow" aria-hidden="true">&rarr;</span></button>' +
+        '<span class="cr-alt">or call a nurse: <a href="tel:+17028149630">(702) 814-9630</a></span></div>';
+      html += '<p class="cr-trust">Sending this opens a pre-filled email to our nurse team at ' + REVIEW_EMAIL + '. Nothing is stored on this site, and this is not a determination of eligibility.</p>';
+      html += '</div>';
+      cr.innerHTML = html;
+      document.getElementById('crBack').addEventListener('click', goBack);
+      cr.querySelectorAll('.cr-recap__edit').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var id = b.getAttribute('data-id');
+          idx = STEPS.findIndex(function (s) { return s.id === id; });
+          renderStep();
+        });
+      });
+      document.getElementById('crSubmit').addEventListener('click', submitReview);
+      focusStep();
+      announce('Last step. Add your name and number to start the case review.');
+    }
+
+    function recapLabel(id) {
+      return { worksite:'Worksite', role:'Role', employer:'Employer', years:'Years', illness:'Illness', history:'Prior claim', who:'You are' }[id] || id;
+    }
+
+    function submitReview() {
+      var name = document.getElementById('crName');
+      var phone = document.getElementById('crPhone');
+      var email = document.getElementById('crEmail');
+      var ok = true;
+      if (!name.value.trim()) { name.setAttribute('aria-invalid','true'); document.getElementById('crNameErr').removeAttribute('hidden'); ok = false; }
+      else { name.removeAttribute('aria-invalid'); document.getElementById('crNameErr').setAttribute('hidden',''); }
+      if (phone.value.replace(/\D/g,'').length < 10) { phone.setAttribute('aria-invalid','true'); document.getElementById('crPhoneErr').removeAttribute('hidden'); ok = false; }
+      else { phone.removeAttribute('aria-invalid'); document.getElementById('crPhoneErr').setAttribute('hidden',''); }
+      if (!ok) { name.value.trim() ? phone.focus() : name.focus(); return; }
+
+      var lines = ['White Card case review request', '', 'Name: ' + name.value.trim(), 'Phone: ' + phone.value.trim()];
+      if (email.value.trim()) lines.push('Email: ' + email.value.trim());
+      lines.push('');
+      STEPS.forEach(function (s) { if (answers[s.id]) lines.push(recapLabel(s.id) + ': ' + answers[s.id]); });
+      lines.push('', 'Sent from the Alara case-review tool. Please review and call this family back.');
+      var subject = 'White Card case review — ' + name.value.trim();
+      var href = 'mailto:' + REVIEW_EMAIL + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(lines.join('\n'));
+      // Open the pre-filled email, then show confirmation regardless.
+      window.location.href = href;
+      renderDone(name.value.trim());
+    }
+
+    function renderDone(name) {
+      mode = 'done';
+      var html = '<div class="cr-in cr-panel">' +
+        '<svg class="cr-panel__mark" viewBox="0 0 100 92" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/></svg>' +
+        '<h2 tabindex="-1" id="crFocus">Your case review is on its way.</h2>' +
+        '<p>We just opened a pre-filled email to our nurse team. Press send in your email app and we will take it from there. If nothing opened, email <a href="mailto:' + REVIEW_EMAIL + '">' + REVIEW_EMAIL + '</a> or call <a href="tel:+17028149630">(702) 814-9630</a>.</p>' +
+        '<div class="cr-next"><span class="eyebrow">What happens next</span><ol>' +
+        '<li><div><b>A nurse reads your case</b><span>Usually within one business hour. We look at the worksite, the work, and the illness together.</span></div></li>' +
+        '<li><div><b>We call you back</b><span>To confirm the details privately and explain, in plain language, what the White Card can open for you.</span></div></li>' +
+        '<li><div><b>We handle the paperwork</b><span>If it is worth pursuing, we point you to the free Resource Center for the claim and provide the home health it covers, at no cost to you.</span></div></li>' +
+        '</ol></div></div>';
+      cr.innerHTML = html;
+      focusStep();
+      announce('Your case review request is ready to send from your email app.');
+    }
+
+    renderStep();
+  </script>
+  <script src="site-nav.js" defer></script>
+</body>
+</html>
