@@ -11,7 +11,8 @@
   --greige:   #DBD3C8;   /* surfaces, arch fills (warm greige) */
   --mist:     #EBE4DA;   /* alternate section tint (warm taupe) */
   --paper:    #FCFAF6;   /* page background — warm off-white, never pure white */
-  --hairline: #E6DFD4;   /* soft warm taupe hairline */
+  --hairline: #DED5C7;   /* warm taupe hairline — visible enough to read as a line */
+  --rule:     #C6BBA7;   /* stronger structural rule: tops of grouped lists/sections */
   --on-dark:  #FBFBFB;
   --on-dark-soft: #C9C4C1;
 
@@ -66,6 +67,17 @@ img, svg { display: block; }
   text-transform: uppercase;
   color: var(--bronze);
 }
+/* Bronze accent rule — marks the start of a group so the eye can categorize. */
+.eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 28px;
+  height: 2px;
+  background: currentColor;
+  vertical-align: middle;
+  margin-right: 12px;
+  transform: translateY(-1px);
+}
 
 /* Headings: Inter, restrained weight. Authority from space, not from a serif. */
 h1, h2, h3 { font-family: var(--text); font-weight: 500; line-height: 1.18; letter-spacing: -0.01em; color: var(--espresso); }
@@ -100,11 +112,11 @@ h1, h2, h3 { font-family: var(--text); font-weight: 500; line-height: 1.18; lett
   display: inline-flex; align-items: center; gap: 10px;
   font-family: var(--text); font-size: 0.9375rem; font-weight: 500;
   padding: 15px 26px; border-radius: 2px;
-  border: 1px solid var(--bronze); background: var(--bronze); color: var(--on-dark);
+  border: 1px solid var(--espresso); background: var(--espresso); color: var(--on-dark);
   text-decoration: none; cursor: pointer;
   transition: background var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
-.btn:hover { background: var(--bronze-d); border-color: var(--bronze-d); }
+.btn:hover { background: #443D3C; border-color: #443D3C; }
 .btn .arrow { transition: transform var(--dur) var(--ease); }
 .btn:hover .arrow { transform: translateX(3px); }
 .btn--on-dark { background: var(--paper); color: var(--espresso); border-color: var(--paper); }
@@ -145,7 +157,7 @@ h1, h2, h3 { font-family: var(--text); font-weight: 500; line-height: 1.18; lett
 .moments__head { margin-bottom: clamp(40px, 5vw, 72px); }
 .moments__head .eyebrow { display: block; margin-bottom: 18px; }
 .moments__head h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 500; max-width: 20ch; }
-.moments__list { border-top: 1px solid var(--hairline); max-width: 880px; }
+.moments__list { border-top: 1px solid var(--rule); max-width: 880px; }
 .moment { border-bottom: 1px solid var(--hairline); padding-block: clamp(22px, 2.6vw, 34px); font-size: clamp(1.25rem, 2.1vw, 1.625rem); font-weight: 400; line-height: 1.45; color: var(--espresso); letter-spacing: -0.01em; }
 .moment .q { color: var(--taupe); }
 .moments__seal { margin-top: clamp(48px, 6vw, 88px); text-align: center; }
@@ -228,7 +240,7 @@ h1, h2, h3 { font-family: var(--text); font-weight: 500; line-height: 1.18; lett
    ===================================================================== */
 .lib { padding-block: clamp(48px, 6vw, 88px); }
 .lib__intro { max-width: 60ch; margin-bottom: clamp(32px, 4vw, 56px); font-size: 1.1875rem; line-height: 1.6; color: var(--taupe-ink); }
-.lib__list { border-top: 1px solid var(--hairline); }
+.lib__list { border-top: 1px solid var(--rule); }
 .term { border-bottom: 1px solid var(--hairline); padding-block: clamp(28px, 3.5vw, 44px); display: grid; grid-template-columns: minmax(0,1fr); gap: 14px; }
 .term__name { font-family: var(--display); font-size: 0.75rem; letter-spacing: var(--ls-eyebrow); text-transform: uppercase; color: var(--taupe); }
 .term__def { font-size: clamp(1.1875rem, 1.9vw, 1.4375rem); font-weight: 400; line-height: 1.4; letter-spacing: -0.01em; color: var(--espresso); max-width: 46ch; }
@@ -476,7 +488,7 @@ a.trust-strip__item:hover, a.trust-strip__item:focus-visible { border-bottom-col
    ========================================================================= */
 
 /* (a) Hairline editorial rows — the default, most-restrained presentation. */
-.editorial-rows { border-top: 1px solid var(--hairline); }
+.editorial-rows { border-top: 1px solid var(--rule); }
 .editorial-row {
   display: grid; grid-template-columns: 4rem minmax(0, 22ch) 1fr;
   gap: clamp(16px, 3vw, 48px); align-items: baseline;
@@ -509,7 +521,7 @@ a.trust-strip__item:hover, a.trust-strip__item:focus-visible { border-bottom-col
 /* ============================================================================
    SERVICES LIST — a clean two-column hairline list of clinical services.
    ========================================================================= */
-.services { border-top: 1px solid var(--hairline); display: grid; grid-template-columns: 1fr 1fr; column-gap: clamp(32px, 5vw, 72px); }
+.services { border-top: 1px solid var(--rule); display: grid; grid-template-columns: 1fr 1fr; column-gap: clamp(32px, 5vw, 72px); }
 .service {
   border-bottom: 1px solid var(--hairline);
   padding-block: clamp(20px, 2.4vw, 30px);
@@ -522,7 +534,7 @@ a.trust-strip__item:hover, a.trust-strip__item:focus-visible { border-bottom-col
    PROGRAMS / BENEFIT ROWS — a definition-led row pattern (program → who → link).
    Pairs with data/glossary.json + navigator answer cards.
    ========================================================================= */
-.programs { border-top: 1px solid var(--hairline); }
+.programs { border-top: 1px solid var(--rule); }
 .program-row {
   display: grid; grid-template-columns: minmax(0, 1fr) auto;
   gap: 16px clamp(24px, 4vw, 56px); align-items: start;
@@ -543,14 +555,14 @@ a.trust-strip__item:hover, a.trust-strip__item:focus-visible { border-bottom-col
    ========================================================================= */
 .proof { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(28px, 3.4vw, 48px); }
 .proof--two { grid-template-columns: repeat(2, 1fr); }
-.proof-point { padding-top: 24px; border-top: 1px solid var(--hairline); }
+.proof-point { padding-top: 24px; border-top: 2px solid var(--rule); }
 .proof-point__title { font-size: 1.1875rem; font-weight: 500; letter-spacing: -0.012em; line-height: 1.28; color: var(--espresso); }
 .proof-point__body { margin-top: 12px; font-size: 1rem; line-height: 1.62; color: var(--taupe-ink); max-width: 42ch; }
 
 /* A quiet stat band — large figure + caption, hairline-separated. */
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(24px, 3vw, 48px); }
 .stats--two { grid-template-columns: repeat(2, 1fr); }
-.stat { padding-top: 24px; border-top: 1px solid var(--hairline); }
+.stat { padding-top: 24px; border-top: 2px solid var(--rule); }
 .stat__figure { font-family: var(--display); font-weight: 300; font-size: clamp(2.25rem, 5vw, 3.25rem); letter-spacing: -0.01em; line-height: 1; color: var(--espresso); }
 .stat__caption { margin-top: 14px; font-size: 0.9375rem; line-height: 1.55; color: var(--taupe-ink); max-width: 28ch; }
 
@@ -571,7 +583,7 @@ a.trust-strip__item:hover, a.trust-strip__item:focus-visible { border-bottom-col
 /* ============================================================================
    CREDENTIAL / PROOF BAND — legitimacy as a quiet typographic rule, not badges.
    ========================================================================= */
-.creds { border-top: 1px solid var(--hairline); padding-top: clamp(26px, 3vw, 36px); }
+.creds { border-top: 2px solid var(--rule); padding-top: clamp(26px, 3vw, 36px); }
 .creds__lead { font-size: 1.0625rem; line-height: 1.65; color: var(--taupe-ink); max-width: 60ch; }
 .creds__lead strong { color: var(--espresso); font-weight: 500; }
 .creds__marks {
