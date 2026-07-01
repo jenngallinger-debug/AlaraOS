@@ -298,6 +298,17 @@
         { key:'aide', label:'Home health aide' }
       ],
       source: { label:'U.S. Department of Veterans Affairs, Community Care', url:'https://www.va.gov/communitycare/' }
+    },
+    survivor: {
+      name: 'Survivor benefits', tag: 'EEOICPA & RECA', guide: 'survivor-benefits.html',
+      covered: [
+        { key:'other', label:'Lump-sum compensation' },
+        { key:'other', label:'Part B: $150,000' },
+        { key:'other', label:'Part E: up to $125,000' },
+        { key:'other', label:'Free filing help (Resource Center)' }
+      ],
+      cost: 'Compensation is paid directly by the Department of Labor. Filing help is free at the Resource Center — you never pay anyone a percentage of an award.',
+      source: { label:'U.S. Department of Labor, EEOICP', url:'https://www.dol.gov/agencies/owcp/energy' }
     }
   };
 
@@ -310,6 +321,31 @@
 
     var unsure = (sig.situation === 'unsure');
     var openProgram = (!sig.program || sig.program === 'none');
+
+    // Already-approved card holder — eligibility is settled; the job is delivery.
+    if (sig.situation === 'holder') {
+      push('eeoicpa', 'strong',
+        'You already <b>have the White Card</b> — eligibility is settled. The question now is getting the care it covers delivered at home, or getting your hours to match your needs.',
+        'What starts it: a physician order documenting medical necessity. Preparing that documentation is our work, not yours.');
+      return out;
+    }
+
+    // Survivor — the benefit is compensation, and the worker never needed to file.
+    if (sig.situation === 'survivor') {
+      push('survivor', 'strong',
+        'When a covered worker has passed, the <b>surviving spouse and children</b> may be owed compensation of their own — even if the worker never filed a claim.',
+        'What confirms it: where they worked, the illness, and your relationship. The Resource Center helps you file at no charge.');
+      return out;
+    }
+
+    // Switching agencies — the authorization belongs to the patient, not the agency.
+    if (sig.situation === 'switching') {
+      var swId = (sig.program === 'owcp') ? 'owcp' : (sig.program === 'va') ? 'va' : 'eeoicpa';
+      push(swId, 'strong',
+        'Provider choice belongs to the patient — <b>you can change agencies</b> without restarting your authorization and without losing a day of care.',
+        'What moves it: a referral to the new agency. Coordinating the transition is the new agency’s job, not yours — and your hours can be re-documented at the next renewal.');
+      return out;
+    }
 
     // EEOICPA / White Card
     if (sig.situation === 'energy' || sig.program === 'whitecard') {
@@ -337,7 +373,7 @@
     if (sig.situation === 'veteran' || sig.program === 'va') {
       push('va', 'strong',
         'You are a <b>veteran</b>, and the VA can bring home health through Community Care.',
-        'What confirms it: VA enrollment and a community-care authorization for your area.');
+        'What confirms it: VA enrollment and a community-care authorization for your area. One honest note: Alara is completing its own VA enrollment and cannot bill the VA yet — the veterans guide explains exactly what to ask your VA care team now.');
     } else if (unsure && openProgram) {
       push('va', 'possible',
         'If you served and are enrolled with the VA, Community Care may bring home health to you.',
@@ -347,8 +383,11 @@
     return out;
   }
 
-  // The one next step, chosen from the strongest program present.
+  // The one next step, chosen from the situation first, then the strongest program.
   function nextStep(results, sig) {
+    if (sig.situation === 'holder') return 'Have a nurse call you and start the care your card already covers. The physician order and the authorization are our work, at ' + COST + '.';
+    if (sig.situation === 'survivor') return 'Start a case review. A nurse reads where they worked and the illness together, and points you to the free Resource Center for the claim itself. You never pay anyone a percentage.';
+    if (sig.situation === 'switching') return 'Start a case review. A nurse looks at your current hours and authorization, confirms the transition plan, and coordinates the change so there is no gap in care.';
     var strong = results.filter(function(r){ return r.tier === 'strong'; });
     var top = strong[0];
     if (top && top.id === 'eeoicpa') return 'Start a case review. A nurse reads where you worked, the work you did, and your illness together, and tells you whether the White Card can be opened, at ' + COST + '.';
@@ -359,6 +398,9 @@
 
   // Program-aware primary action — routes to the aligned self-serve close.
   function nextAction(results) {
+    if (sig.situation === 'holder') return { href: 'begin.html', label: 'Start your care' };
+    if (sig.situation === 'survivor') return { href: 'case-review.html', label: 'Start a case review' };
+    if (sig.situation === 'switching') return { href: 'case-review.html', label: 'Start a case review' };
     var strong = results.filter(function(r){ return r.tier === 'strong'; });
     var top = strong[0];
     if (top && top.id === 'eeoicpa') return { href: 'case-review.html', label: 'Start a case review' };
@@ -370,6 +412,16 @@
   function missed(results, sig) {
     var ids = results.map(function(r){ return r.id; });
     var items = [];
+    if (sig.situation === 'survivor') {
+      return [
+        'The worker never needed to file. <a href="survivor-benefits.html">Survivor claims stand on their own</a> — a denial or an unfiled claim while they lived does not close the door.',
+        'A <a href="articles/reca-deadline-december-2027.html">RECA claim</a> may apply too when radiation exposure caused the death — and its filing deadline is real.',
+        'Filing help is free: the <a href="articles/dol-las-vegas-resource-center.html">DOL Las Vegas Resource Center</a>, (702) 697-0841, assists survivors at no charge.'
+      ];
+    }
+    if (sig.situation === 'switching') {
+      items.push('Switching does not restart your authorization — and <a href="care-hours.html">hours that were cut can be re-documented</a> at the next renewal.');
+    }
     if (ids.indexOf('eeoicpa') > -1) {
       items.push('A <a href="white-card.html#consequential">consequential condition</a>: a new problem caused by your accepted illness can be added and covered.');
     }
@@ -395,7 +447,15 @@
   var stack = [];        // question ids answered, for Back
 
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
-  function track(){ /* In production: POST anonymous, no-PII counts to /api/navigator/events for the guidance loop. */ }
+  // Anonymous demand signal: which situations and needs the Navigator serves.
+  // No PII — only the option keys chosen (see privacy.html).
+  function track(){
+    try {
+      var payload = JSON.stringify({ type: 'nav_picture', nodeId: sig.situation || '', label: [sig.program || '', sig.care || ''].join('|') });
+      if (navigator.sendBeacon) navigator.sendBeacon('/api/event', new Blob([payload], { type: 'application/json' }));
+      else fetch('/api/event', { method: 'POST', body: payload, keepalive: true });
+    } catch (e) {}
+  }
 
   // Question definitions. `when` decides if a question is still needed (adaptive).
   var QUESTIONS = [
@@ -404,18 +464,25 @@
       title: 'Which of these sounds most like you?',
       when: function(){ return true; },
       options: [
+        { label: 'I already have a White Card and need care started, or more hours', set:{ situation:'holder', program:'whitecard' } },
         { label: 'I worked at the Nevada Test Site, DOE, or an atomic-weapons plant', set:{ situation:'energy' } },
+        { label: 'I lost a spouse or parent who worked at one of those sites', set:{ situation:'survivor' } },
         { label: 'I was injured working for the federal government or Postal Service', set:{ situation:'fedpostal' } },
         { label: 'I’m a veteran', set:{ situation:'veteran' } },
         { label: 'I’m caring for a family member', set:{ situation:'caregiver' } },
+        { label: 'We have home health now and want to change agencies', set:{ situation:'switching' } },
         { label: 'I’m not sure yet', set:{ situation:'unsure' } }
       ]
     },
     {
       id: 'program',
       // Only needed when we can't infer the program from the situation.
-      when: function(){ return sig.situation === 'unsure' || sig.situation === 'caregiver'; },
-      title: function(){ return sig.situation === 'caregiver' ? 'Which program is the person you care for under?' : 'Do you already have any of these?'; },
+      when: function(){ return sig.situation === 'unsure' || sig.situation === 'caregiver' || sig.situation === 'switching'; },
+      title: function(){
+        if (sig.situation === 'caregiver') return 'Which program is the person you care for under?';
+        if (sig.situation === 'switching') return 'Which program is the care under today?';
+        return 'Do you already have any of these?';
+      },
       options: [
         { label: 'White Card (EEOICPA)', set:{ program:'whitecard' } },
         { label: 'OWCP / FECA', set:{ program:'owcp' } },
@@ -425,7 +492,8 @@
     },
     {
       id: 'care',
-      when: function(){ return true; },
+      // A survivor's benefit is compensation, not care — skip the care question.
+      when: function(){ return sig.situation !== 'survivor'; },
       title: 'What kind of care is needed?',
       options: [
         { label: 'Skilled nursing', set:{ care:'nursing' } },
@@ -493,6 +561,9 @@
   function goBack(){
     var lastId = stack.pop();
     if (lastId && sig.hasOwnProperty(mapSignal(lastId))) delete sig[mapSignal(lastId)];
+    // A situation option can set `program` as a side effect (e.g. card holder).
+    // If the program question itself was never answered, clear it too.
+    if (lastId === 'situation' && stack.indexOf('program') === -1) delete sig.program;
     // Re-derive where we are and render that question again.
     var qs = activeQuestions();
     var idx = Math.max(0, qs.length - 1);
@@ -536,7 +607,7 @@
     window.setTimeout(renderPicture, delay);
   }
 
-  function situationChip(s){ return { energy:'Energy / Test Site worker', fedpostal:'Federal or postal worker', veteran:'Veteran', caregiver:'Family caregiver', unsure:'Still sorting it out' }[s]; }
+  function situationChip(s){ return { holder:'White Card holder', energy:'Energy / Test Site worker', survivor:'Survivor', fedpostal:'Federal or postal worker', veteran:'Veteran', caregiver:'Family caregiver', switching:'Changing agencies', unsure:'Still sorting it out' }[s]; }
   function programChip(p){ return { whitecard:'Has a White Card', owcp:'Under OWCP', va:'With the VA' }[p]; }
   function careChip(c){ return { nursing:'Skilled nursing', wound:'Wound care', therapy:'Therapy', aide:'Help at home' }[c]; }
 
@@ -615,7 +686,7 @@
              '<div class="prog__body">' +
                '<p class="prog__because">' + r.because + '</p>' +
                '<div class="prog__covered">' + chips + '</div>' +
-               '<p class="prog__cost">Covered care tied to your accepted condition is at ' + COST + '.</p>' +
+               '<p class="prog__cost">' + esc(p.cost || ('Covered care tied to your accepted condition is at ' + COST + '.')) + '</p>' +
                '<p class="prog__clarify">' + esc(r.clarify) + '</p>' +
                '<div class="prog__foot">' +
                  '<a href="' + p.guide + '">See the full ' + esc(p.name) + ' guide <span class="arrow" aria-hidden="true">&rarr;</span></a>' +

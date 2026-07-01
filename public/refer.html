@@ -138,7 +138,8 @@
       <div class="container">
         <span class="eyebrow">Refer a patient</span>
         <h1>Send the referral. We take it from there.</h1>
-        <p class="page-hero__lead">For physicians, case managers, discharge planners, and families sending a referral on a patient&rsquo;s behalf. We complete the in-home clinical assessment, document the medical necessity, and manage the authorization. We respond to every referral within one business hour.</p>
+        <p class="page-hero__lead">For physicians, case managers, discharge planners, and families sending a referral on a patient&rsquo;s behalf. Yes &mdash; we accept White Card (EEOICPA), OWCP, and Medicare patients. We complete the in-home clinical assessment, document the medical necessity, and manage the authorization. We respond to every referral within one business hour.</p>
+        <p class="page-hero__lead" style="margin-top:10px; font-size:0.9375rem;">Are you the patient? <a href="begin.html">Have a nurse call you instead <span class="arrow" aria-hidden="true">&rarr;</span></a></p>
       </div>
     </section>
 
@@ -146,11 +147,18 @@
       <div class="container rf-grid">
         <div class="rf-form">
           <span class="eyebrow">The referral</span>
+          <p class="rf-trust" style="margin:6px 0 16px;">Refer before the order is finalized &mdash; getting the physician documentation done is our work, not a requirement to start.</p>
           <div class="rf-fields">
-            <div class="rf-field">
-              <label for="rfPatient">Patient name</label>
-              <input id="rfPatient" type="text" autocomplete="off" placeholder="First and last" />
-              <p class="rf-err" id="rfPatientErr" hidden>Please add the patient&rsquo;s name.</p>
+            <div class="rf-two">
+              <div class="rf-field">
+                <label for="rfPatient">Patient name</label>
+                <input id="rfPatient" type="text" autocomplete="off" placeholder="First and last" />
+                <p class="rf-err" id="rfPatientErr" hidden>Please add the patient&rsquo;s name.</p>
+              </div>
+              <div class="rf-field">
+                <label for="rfCity">Patient city or ZIP <span class="hint">(helps us confirm coverage)</span></label>
+                <input id="rfCity" type="text" autocomplete="off" placeholder="Las Vegas, Henderson, Pahrump&hellip;" />
+              </div>
             </div>
             <div class="rf-two">
               <div class="rf-field">
@@ -196,7 +204,7 @@
           </div>
           <div class="rf-actions">
             <button class="btn btn--lg" type="button" id="rfSubmit">Send the referral <span class="arrow" aria-hidden="true">&rarr;</span></button>
-            <span class="rf-alt">or email <a href="mailto:referrals@alarahomecare.com">referrals@alarahomecare.com</a></span>
+            <span class="rf-alt">or fax <strong style="color:var(--espresso); font-weight:500;">(725) 210-8285</strong> &middot; email <a href="mailto:referrals@alarahomecare.com">referrals@alarahomecare.com</a></span>
           </div>
           <p class="rf-trust" id="rfTrust">Sending opens a pre-filled email to our nurse team at referrals@alarahomecare.com from your own email, so you keep a copy. Please do not include clinical records in this form; we will arrange secure transfer when we confirm.</p>
 
@@ -204,7 +212,7 @@
           <div class="rf-done" id="rfDone" hidden tabindex="-1" role="status">
             <svg class="rf-done__mark" viewBox="0 0 100 92" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/></svg>
             <h2>Referral received.</h2>
-            <p id="rfDoneBody">Your referral is with our nurse team. A clinician calls the number you gave within one business hour to confirm receipt and what we need next.</p>
+            <p id="rfDoneBody">Your referral is with our nurse team. A clinician calls the number you gave within one business hour to confirm receipt and what we need next &mdash; and we keep you updated on your patient from there.</p>
             <p class="rf-trust" style="margin-top:14px;">Need us sooner? Call <a href="tel:+17028149630">(702) 814-9630</a> or email <a href="mailto:referrals@alarahomecare.com">referrals@alarahomecare.com</a>.</p>
           </div>
         </div>
@@ -215,7 +223,7 @@
           <ol class="rf-steps">
             <li><div><h3>We confirm receipt</h3><p>A clinician calls you back within one business hour to confirm the referral and what we need.</p></div></li>
             <li><div><h3>We contact the patient</h3><p>Within four business hours. We verify the benefit and the authorization &mdash; that work is ours, not yours.</p></div></li>
-            <li><div><h3>Care starts</h3><p>In-home assessment scheduled, medical necessity documented, start of care typically within 48 to 72 hours of authorization.</p></div></li>
+            <li><div><h3>Care starts &mdash; and you stay informed</h3><p>In-home assessment scheduled, medical necessity documented, start of care typically within 48 to 72 hours of authorization. We keep you updated on your patient.</p></div></li>
           </ol>
           <p class="rf-aside__note">Complex case? Our clinical director is available to consult before you refer: <a href="tel:+17028149630">(702) 814-9630</a>.</p>
         </aside>
@@ -241,6 +249,17 @@
             </ol>
             <p class="lmn__src">Forms and process: <a href="https://owcpmed.dol.gov/portal/deeoic-initial-home-health-care-nursing-home-or-assisted-living-request-forms-ee-17a-and-ee-17b" target="_blank" rel="noopener">U.S. Department of Labor, EE-17A / EE-17B</a>. See also <a href="care-hours.html">how your care hours are set &rarr;</a></p>
           </div>
+        </div>
+
+        <!-- The physician's two real questions: time and liability. -->
+        <div class="lmn__card" style="margin-top: clamp(24px, 3vw, 36px);">
+          <h3>For the referring physician&rsquo;s office</h3>
+          <ol>
+            <li><strong>Your time:</strong> we draft the EE-17B / Letter of Medical Necessity documentation and the supporting record. Your office reviews and the physician signs &mdash; no unpaid paperwork project lands on your staff.</li>
+            <li><strong>Your signature:</strong> the documentation is built from recorded clinical data in the care record, so the physician signs evidence, not recollection &mdash; a document that stands up to review. <a href="care-hours.html" style="color:var(--espresso);">How the hours documentation works &rarr;</a></li>
+            <li><strong>Your questions:</strong> our clinical director consults before you refer: <a href="tel:+17028149630" style="color:var(--espresso);">(702) 814-9630</a>. Orders by fax: <strong>(725) 210-8285</strong>.</li>
+          </ol>
+          <p class="lmn__src">How the record works: <a href="inside-alaraos.html">inside AlaraOS &rarr;</a></p>
         </div>
       </div>
     </section>
@@ -287,10 +306,14 @@
         'Sending delivers the referral directly to our nurse team. Please do not include clinical records in this form; we will arrange secure transfer when we confirm.';
     });
 
-    function rfShowDone() {
+    function rfShowDone(delivered) {
       document.querySelector('.rf-fields').setAttribute('hidden', '');
       document.querySelector('.rf-actions').setAttribute('hidden', '');
       document.getElementById('rfTrust').setAttribute('hidden', '');
+      if (!delivered) {
+        document.getElementById('rfDoneBody').innerHTML =
+          'Your referral is logged with us, and a pre-filled email just opened so you keep a copy &mdash; press send if it did. A clinician calls the number you gave within one business hour to confirm receipt, and we keep you updated on your patient. Prefer another channel? Fax the order to <strong style="color:var(--espresso); font-weight:500;">(725) 210-8285</strong>.';
+      }
       var done = document.getElementById('rfDone');
       done.removeAttribute('hidden');
       done.focus();
@@ -318,6 +341,8 @@
         'Program: ' + document.getElementById('rfProgram').value,
         'Order status: ' + document.getElementById('rfStatus').value
       ];
+      var city = document.getElementById('rfCity').value.trim();
+      if (city) lines.splice(3, 0, 'Patient city/ZIP: ' + city);
       var cond = document.getElementById('rfConditions').value.trim();
       if (cond) lines.push('Conditions / diagnosis: ' + cond);
       lines.push('Referred by: ' + name.value.trim(), 'Callback: ' + phone.value.trim());
@@ -333,15 +358,20 @@
         btn.disabled = true;
         btn.textContent = 'Sending…';
         AlaraForms.post('referral', subject, body).then(function (sent) {
-          if (sent) return rfShowDone();
+          if (sent) return rfShowDone(true);
           // Server unreachable — fall back to the pre-filled email.
           btn.disabled = false;
           btn.innerHTML = 'Send the referral <span class="arrow" aria-hidden="true">&rarr;</span>';
           window.location.href = 'mailto:referrals@alarahomecare.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+          rfShowDone(false);
         });
       } else {
+        // The referral is recorded server-side either way; the pre-filled email
+        // is the delivery channel. Always confirm in-page — a clinic desktop
+        // with no mail client must never see "nothing happened".
         AlaraForms.logOnly('referral', subject, body);
         window.location.href = 'mailto:referrals@alarahomecare.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+        rfShowDone(false);
       }
     });
   </script>

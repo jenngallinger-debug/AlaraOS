@@ -232,6 +232,7 @@
           { label:'Yes — the Nevada Test Site', value:'Nevada Test Site' },
           { label:'Yes — another DOE or weapons site', value:'Another DOE / weapons site' },
           { label:'I think so, but I am not sure', value:'Possible site — unsure' },
+          { label:'I already have a White Card', value:'Has a White Card already', off:'holder' },
           { label:'No', value:'No', off:'nosite' }
         ] },
       { id:'role', eyebrow:'Step 2', q:'What kind of work did they do there?',
@@ -328,6 +329,7 @@
         btn.addEventListener('click', function () {
           var o = s.opts[+btn.getAttribute('data-i')];
           answers[s.id] = o.value;
+          crEvt('cr_step', s.id);
           if (o.off) { renderOfframp(o.off); return; }
           idx++;
           if (idx >= STEPS.length) renderSummary(); else renderStep();
@@ -351,7 +353,13 @@
       mode = 'offramp';
       var html = topBar(true, 'A quick note');
       html += '<div class="cr-in cr-panel" style="text-align:left">';
-      if (kind === 'nosite') {
+      if (kind === 'holder') {
+        html += '<h2 class="cr-q" tabindex="-1" id="crFocus">Your card is already open. Let&rsquo;s put it to work.</h2>' +
+          '<p class="cr-help" style="margin-inline:0">Eligibility is settled &mdash; no review needed to prove it. What matters now is delivery: starting the home health your card covers, or getting your hours to match your needs. A nurse reads your care needs and your current authorization together and tells you what the documentation supports.</p>' +
+          '<div class="cr-actions"><a class="btn" href="begin.html">Start your care &mdash; have a nurse call you <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
+          '<span class="cr-alt"><a href="care-hours.html">How your hours are set</a> &middot; <a href="articles/switching-home-health-agencies.html">Switching agencies</a></span></div>' +
+          '<p class="cr-help" style="margin-inline:0; margin-top:18px;">Was a claim denied, or has a new condition appeared since approval? <button type="button" class="cr-recap__edit" id="crContinue" style="font-size:inherit">Continue the full review</button> &mdash; consequential conditions can be added and covered.</p>';
+      } else if (kind === 'nosite') {
         html += '<h2 class="cr-q" tabindex="-1" id="crFocus">The White Card may not be your path &mdash; but you may still have one.</h2>' +
           '<p class="cr-help" style="margin-inline:0">The White Card is for people who worked at the Nevada Test Site, a DOE site, or an atomic-weapons plant. If that is not you, other programs may still cover home health &mdash; OWCP for federal and postal workers, or VA Community Care for veterans.</p>' +
           '<div class="cr-actions"><a class="btn" href="qualify.html">See what you qualify for <span class="arrow" aria-hidden="true">&rarr;</span></a>' +
@@ -364,6 +372,8 @@
       html += '</div>';
       cr.innerHTML = html;
       var back = document.getElementById('crBack'); if (back) back.addEventListener('click', goBack);
+      var cont = document.getElementById('crContinue');
+      if (cont) cont.addEventListener('click', function(){ idx++; renderStep(); });
       focusStep();
     }
 
@@ -374,7 +384,16 @@
       html += '<div class="cr-in">';
       html += '<span class="eyebrow cr-eyebrow">Your case, at a glance</span>';
       html += '<h2 class="cr-q" tabindex="-1" id="crFocus">This looks worth a review.</h2>';
-      html += '<div class="cr-affirm"><p>Based on what you shared, a nurse should look at whether the White Card and its lifetime home health can be opened for you. The review is free, and you never pay anyone a percentage of an award.</p></div>';
+      // The affirm speaks to the case that was actually described.
+      var affirm;
+      if (answers.who === 'Survivor') {
+        affirm = 'Based on what you shared, a nurse should look at what may be owed to you as a survivor — the worker never needed to have filed. The review is free, and you never pay anyone a percentage of an award.';
+      } else if (answers.history === 'Filed — approved') {
+        affirm = 'The White Card is already open — so this review is about delivery: the home health it covers, the hours that match the need, and anything new that should be added to the claim. The review is free.';
+      } else {
+        affirm = 'Based on what you shared, a nurse should look at whether the White Card and its lifetime home health can be opened for you. The review is free, and you never pay anyone a percentage of an award.';
+      }
+      html += '<div class="cr-affirm"><p>' + affirm + '</p></div>';
       html += '<div class="cr-recap">';
       STEPS.forEach(function (s) {
         if (!answers[s.id]) return;
@@ -458,20 +477,46 @@
       var lede = delivered
         ? '<p>Your request is with our nurse team. Nothing else to send &mdash; a nurse calls the number you gave.</p>'
         : '<p>We just opened a pre-filled email to our nurse team. Press send in your email app and we will take it from there. If nothing opened, email <a href="mailto:' + REVIEW_EMAIL + '">' + REVIEW_EMAIL + '</a> or call <a href="tel:+17028149630">(702) 814-9630</a>.</p>';
+      // Next steps match the case: survivor compensation, an already-open card,
+      // or a first claim. One wrong promise here undoes seven right screens.
+      var steps;
+      if (answers.who === 'Survivor') {
+        steps =
+          '<li><div><b>A nurse reads your case</b><span>Usually within one business hour. We look at the worksite, the work, and the illness together.</span></div></li>' +
+          '<li><div><b>We call you back</b><span>To confirm the details privately and explain what may be owed to the family.</span></div></li>' +
+          '<li><div><b>We connect you to the free claim help</b><span>The DOL Resource Center files survivor claims at no charge &mdash; you never pay anyone a percentage of an award.</span></div></li>';
+      } else if (answers.history === 'Filed — approved') {
+        steps =
+          '<li><div><b>A nurse reads your case</b><span>Usually within one business hour. We look at your care needs and your current authorization together.</span></div></li>' +
+          '<li><div><b>We call you back</b><span>To confirm the details privately and lay out what the card already covers for you at home.</span></div></li>' +
+          '<li><div><b>We prepare the documentation</b><span>The physician order and the authorization are our work. Once care begins, so are the renewals, travel reimbursement, and paid family caregiving many families miss.</span></div></li>';
+      } else {
+        steps =
+          '<li><div><b>A nurse reads your case</b><span>Usually within one business hour. We look at the worksite, the work, and the illness together.</span></div></li>' +
+          '<li><div><b>We call you back</b><span>To confirm the details privately and explain what the White Card can open for you.</span></div></li>' +
+          '<li><div><b>We handle the paperwork</b><span>If it is worth pursuing, we point you to the free Resource Center for the claim and provide the home health it covers, at no cost to you.</span></div></li>';
+      }
       var html = '<div class="cr-in cr-panel">' +
         '<svg class="cr-panel__mark" viewBox="0 0 100 92" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/></svg>' +
         '<h2 tabindex="-1" id="crFocus">Your case review is on its way.</h2>' +
         lede +
-        '<div class="cr-next"><span class="eyebrow">What happens next</span><ol>' +
-        '<li><div><b>A nurse reads your case</b><span>Usually within one business hour. We look at the worksite, the work, and the illness together.</span></div></li>' +
-        '<li><div><b>We call you back</b><span>To confirm the details privately and explain what the White Card can open for you.</span></div></li>' +
-        '<li><div><b>We handle the paperwork</b><span>If it is worth pursuing, we point you to the free Resource Center for the claim and provide the home health it covers, at no cost to you.</span></div></li>' +
-        '</ol></div></div>';
+        '<div class="cr-next"><span class="eyebrow">What happens next</span><ol>' + steps + '</ol></div></div>';
       cr.innerHTML = html;
+      crEvt('cr_done', answers.who || '');
       focusStep();
       announce(delivered
         ? 'Your case review request is with our nurse team.'
         : 'Your case review request is ready to send from your email app.');
+    }
+
+    // Anonymous step signal — which screen people reach and where they stop.
+    // Option keys only, no PII (see privacy.html).
+    function crEvt(type, label) {
+      try {
+        var payload = JSON.stringify({ type: type, nodeId: (mode === 'step' ? 'step-' + (idx + 1) : mode), label: String(label || '').slice(0, 60) });
+        if (navigator.sendBeacon) navigator.sendBeacon('/api/event', new Blob([payload], { type: 'application/json' }));
+        else fetch('/api/event', { method: 'POST', body: payload, keepalive: true });
+      } catch (e) {}
     }
 
     renderStep();

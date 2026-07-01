@@ -373,6 +373,16 @@
       }
       slider.addEventListener('input', update);
       update();
+      // One anonymous "the estimator was used" signal per visit. No values sent.
+      var sent = false;
+      slider.addEventListener('input', function(){
+        if (sent) return; sent = true;
+        try {
+          var payload = JSON.stringify({ type: 'estimator_used', nodeId: 'impairment', label: '' });
+          if (navigator.sendBeacon) navigator.sendBeacon('/api/event', new Blob([payload], { type: 'application/json' }));
+          else fetch('/api/event', { method: 'POST', body: payload, keepalive: true });
+        } catch (e) {}
+      });
     })();
   </script>
   <script src="site-nav.js" defer></script>
