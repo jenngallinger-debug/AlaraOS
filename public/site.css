@@ -667,6 +667,7 @@ a.trust-strip__item:hover, a.trust-strip__item:focus-visible { border-bottom-col
 .nav-dd__link--sub { padding-left: 28px; font-size: 0.875rem; color: var(--taupe-ink); position: relative; }
 .nav-dd__link--sub::before { content: "\21B3"; position: absolute; left: 13px; top: 9px; color: var(--taupe); font-size: 0.8rem; }
 .nav-dd__sep { height: 1px; background: var(--hairline); margin: 7px 6px; }
+.nav-dd__head { padding: 6px 12px 8px; font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--taupe); }
 .nav-dd__link--cta { color: var(--espresso); font-weight: 500; }
 .nav-dd__link--cta .arrow { color: var(--taupe); }
 .mobile-menu__link--sub { padding-left: 28px; font-size: 0.9375rem; color: var(--taupe-ink); }
