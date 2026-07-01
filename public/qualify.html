@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Benefit Navigator &middot; See what your benefits cover at home &middot; Alara Home Care</title>
-  <meta name="description" content="Tell the Navigator a little about you and it explains, in plain language, what White Card (EEOICPA), OWCP, and VA home-health benefits generally cover for someone like you, and the one next step to take. General information, not a coverage determination. Nothing you enter is saved." />
+  <meta name="description" content="Tell the Navigator a little about you and it explains what White Card (EEOICPA), OWCP, and VA home-health benefits generally cover for someone like you, and the one next step to take. General information, not a coverage determination. Nothing you enter is saved." />
   <link rel="icon" href="logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -224,7 +224,7 @@
     <div class="container">
       <div class="nav-shell">
         <div class="nav-orient" id="navOrient">
-          <p class="nav-orient__lead">This is a guide, not a decision. It reads a few plain things about you and explains what White Card, OWCP, and VA home health generally cover, <strong>including the coverage that is easy to miss.</strong> You can change direction or go back at any point.</p>
+          <p class="nav-orient__lead">This is a guide, not a decision. It reads a few things about you and explains what White Card, OWCP, and VA home health generally cover, <strong>including the coverage that is easy to miss.</strong> You can change direction or go back at any point.</p>
           <p class="nav-orient__note">General information only, never a coverage determination, and it asks for nothing private, no diagnosis and no claim number. Your Resource Center, physician, and the VA confirm what applies to you.</p>
         </div>
         <p class="sr-only" id="navStatus" role="status" aria-live="polite"></p>
@@ -347,7 +347,7 @@
   function nextStep(results, sig) {
     var strong = results.filter(function(r){ return r.tier === 'strong'; });
     var top = strong[0];
-    if (top && top.id === 'eeoicpa') return 'Start a case review. A nurse reads where you worked, the work you did, and your illness together, and tells you plainly whether the White Card can be opened, at ' + COST + '.';
+    if (top && top.id === 'eeoicpa') return 'Start a case review. A nurse reads where you worked, the work you did, and your illness together, and tells you whether the White Card can be opened, at ' + COST + '.';
     if (top && top.id === 'owcp') return 'Confirm your accepted injury and get your physician’s order. A nurse can track the OWCP authorization and start care, at ' + COST + '.';
     if (top && top.id === 'va') return 'Ask your VA care team for a community-care referral. A nurse can begin once it is authorized, at ' + COST + '.';
     return 'Tell us what is going on and a nurse will point you to the right path, or your DOL Resource Center can confirm which program fits. No cost, and no commitment.';
