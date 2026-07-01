@@ -53,6 +53,21 @@
     .worth__desc { margin-top: 8px; font-size:1rem; line-height:1.55; color: var(--taupe-ink); max-width: 62ch; }
     .worth__note { margin-top: 18px; font-size:0.9375rem; line-height:1.6; color: var(--taupe); }
 
+    /* Illustrative impairment estimator. General education, never a determination. */
+    .estim { margin-top: 24px; border:1px solid var(--hairline); border-radius:12px; padding: clamp(22px,3vw,32px); background: var(--paper); }
+    .estim__label { font-family: var(--display); font-size:0.6875rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--taupe); }
+    .estim__intro { margin-top:8px; font-size:1rem; line-height:1.55; color:var(--taupe-ink); max-width:60ch; }
+    .estim__control { margin-top:22px; }
+    .estim__row { display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
+    .estim__k { font-size:0.9375rem; color:var(--espresso); }
+    .estim__pct { font-family: var(--display); font-size:1.375rem; font-weight:500; color:var(--espresso); }
+    .estim__slider { width:100%; margin-top:14px; accent-color: var(--espresso); height:26px; cursor:pointer; }
+    .estim__result { margin-top:22px; padding-top:20px; border-top:1px solid var(--hairline); }
+    .estim__result-k { font-family: var(--display); font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--taupe); display:block; }
+    .estim__fig { font-family: var(--display); font-size: clamp(2rem, 5vw, 3rem); font-weight:500; letter-spacing:-0.02em; color:var(--espresso); display:block; margin-top:6px; }
+    .estim__cap { color: var(--taupe); font-size:0.9375rem; margin-left:8px; }
+    .estim__note { margin-top:18px; font-size:0.875rem; line-height:1.6; color:var(--taupe); max-width:66ch; }
+
     /* Closing CTA. */
     .nts-cta { margin-top: clamp(44px, 6vw, 72px); background: var(--espresso); color: var(--on-dark); border-radius:14px; padding: clamp(30px, 4vw, 48px); }
     .nts-cta h2 { font-family: var(--display); font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight:500; letter-spacing:-0.02em; color: var(--on-dark); }
@@ -219,6 +234,23 @@
             </div>
           </div>
           <p class="worth__note">A White Card can also grow. A new problem caused by an accepted condition, called a consequential condition, can be added, which can open more care and, under Part E, more impairment compensation.</p>
+
+          <div class="estim" aria-label="Illustrative impairment compensation">
+            <p class="estim__label">See how it is figured</p>
+            <p class="estim__intro">Move the slider to see how Part E impairment compensation is calculated. This is a general illustration, not a determination.</p>
+            <div class="estim__control">
+              <div class="estim__row">
+                <label class="estim__k" for="impPct">Whole-body impairment</label>
+                <output class="estim__pct" id="impPctVal" for="impPct">10%</output>
+              </div>
+              <input class="estim__slider" type="range" id="impPct" min="0" max="100" step="1" value="10" aria-describedby="estimNote" />
+            </div>
+            <div class="estim__result">
+              <span class="estim__result-k">Illustrative impairment compensation</span>
+              <span class="estim__fig" id="impDollars" aria-live="polite">$25,000</span>
+            </div>
+            <p class="estim__note" id="estimNote">Figured at $2,500 for each 1% of whole-body impairment, capped at $250,000 (impairment and wage loss combined). A physician rates your impairment, and the Department of Labor decides every award. Alara does not file or decide claims, and nothing here is saved.</p>
+          </div>
         </section>
 
         <div class="nts-cta">
@@ -272,6 +304,24 @@
       toggle.setAttribute('aria-expanded', String(!open));
       toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
       menu.setAttribute('data-open', String(!open)); }); }
+  </script>
+  <script>
+    // Illustrative impairment estimator: $2,500 per 1% of whole-body impairment,
+    // capped at $250,000. Education only, no PHI, nothing stored.
+    (function(){
+      var slider = document.getElementById('impPct');
+      if (!slider) return;
+      var pctOut = document.getElementById('impPctVal');
+      var dollarsOut = document.getElementById('impDollars');
+      function update(){
+        var pct = parseInt(slider.value, 10) || 0;
+        var dollars = Math.min(pct * 2500, 250000);
+        pctOut.textContent = pct + '%';
+        dollarsOut.textContent = '$' + dollars.toLocaleString('en-US') + (dollars === 250000 ? ' (Part E maximum)' : '');
+      }
+      slider.addEventListener('input', update);
+      update();
+    })();
   </script>
   <script src="site-nav.js" defer></script>
 </body>
