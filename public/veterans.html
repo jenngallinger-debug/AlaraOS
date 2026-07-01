@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>VA home health care for veterans in Las Vegas &middot; Alara Home Care</title>
-  <meta name="description" content="VA Community Care home health for veterans in Southern Nevada: what the VA covers at home at no cost to you, and how VA providers refer to Alara. We contact the veteran within 4 business hours and typically start care within 48 to 72 hours." />
+  <meta name="description" content="VA Community Care home health for veterans in Southern Nevada: what the VA covers at home, how the VA decides who qualifies, what to ask your VA care team, and where Alara stands on Community Care Network enrollment for Region 4." />
   <link rel="icon" href="logo.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -51,6 +51,15 @@
     .refer__need li { position: relative; padding-left: 26px; font-size: 1rem; line-height: 1.5; color: var(--taupe-ink); }
     .refer__need li::before { content: ""; position: absolute; left: 4px; top: 10px; width: 6px; height: 6px; border: 1px solid var(--taupe); border-radius: 50%; }
     @media (max-width: 760px) { .refer__inner { grid-template-columns: 1fr; } .refer__media { order: -1; max-width: 480px; } }
+
+    /* Honest status callout — warm panel, bronze edge. */
+    .vstatus { background: var(--greige); border-left: 3px solid var(--bronze); border-radius: 0 10px 10px 0; padding: clamp(22px, 3vw, 32px); margin-top: 26px; max-width: 64ch; }
+    .vstatus h3 { font-family: var(--display); font-size: 1.1875rem; font-weight: 500; letter-spacing: -0.01em; color: var(--espresso); }
+    .vstatus p { margin-top: 12px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); }
+    .vstatus p strong { color: var(--espresso); font-weight: 500; }
+    .vsec__src { margin-top: 18px; font-size: 0.9375rem; color: var(--taupe); }
+    .vsec__src a { color: var(--espresso); }
+    .vsec--tint { background: var(--mist); border-block: 1px solid var(--hairline); }
 
     .vcta { padding-block: clamp(56px, 7vw, 96px); text-align: center; }
     .vcta h2 { font-family: var(--display); font-size: clamp(1.75rem, 3.6vw, 2.5rem); font-weight: 500; letter-spacing: -0.02em; color: var(--espresso); max-width: 22ch; margin-inline: auto; }
@@ -137,22 +146,22 @@
               <a href="programs.html">Benefits</a><span aria-hidden="true" style="margin:0 8px;">/</span><span style="color:var(--on-dark-soft);">Veterans</span>
             </nav>
             <span class="eyebrow">Veterans &middot; VA Community Care</span>
-            <h1>VA home health care for veterans in Las Vegas.</h1>
-            <p class="phero__lead">Alara is enrolling as a VA Community Care Network provider for Region 4. If you are a veteran in Southern Nevada who needs skilled care at home, here is how it works and how to start.</p>
+            <h1>VA home health for veterans in Southern Nevada.</h1>
+            <p class="phero__lead">The VA can pay for skilled care in your home through its Community Care program. Here is how it works, how the VA decides who qualifies, and exactly where Alara stands today, so you know what you can act on now.</p>
             <div class="phero__actions">
-              <a class="btn btn--on-dark btn--lg" href="qualify.html">See if you qualify <span class="arrow" aria-hidden="true">&rarr;</span></a>
-              <a class="btn btn--ghost" href="begin.html">Talk to a nurse</a>
+              <a class="btn btn--on-dark btn--lg" href="#qualify">Do you qualify? <span class="arrow" aria-hidden="true">&rarr;</span></a>
+              <a class="btn btn--ghost" href="#status">Where Alara stands</a>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="vsec" aria-label="What the VA covers at home">
+    <section class="vsec" id="how" aria-label="What VA Community Care covers at home">
       <div class="container">
         <div class="vwrap">
-          <h2 class="vsec__h">What the VA covers at home.</h2>
-          <p class="vsec__intro">When the VA authorizes home health through Community Care, your covered skilled care comes at no cost to you. For an authorized plan of care, that can include:</p>
+          <h2 class="vsec__h">What VA Community Care covers at home.</h2>
+          <p class="vsec__intro">Community Care is how the VA pays an approved provider in the community to deliver care it cannot readily provide at a VA facility, including skilled home health. When the VA authorizes it, your covered care comes at no cost to you, and can include:</p>
           <ul class="vlist">
             <li><strong>Skilled nursing:</strong> assessment, wound care, medication management, and disease management at home.</li>
             <li><strong>Physical and occupational therapy:</strong> strength, mobility, balance, and returning to daily activities safely.</li>
@@ -163,42 +172,79 @@
       </div>
     </section>
 
-    <section class="refer" aria-label="For VA providers: how to refer">
+    <section class="vsec vsec--tint" id="qualify" aria-label="Do you qualify for Community Care">
+      <div class="container">
+        <div class="vwrap">
+          <h2 class="vsec__h">Do you qualify for Community Care?</h2>
+          <p class="vsec__intro">Community Care is not automatic, and Alara does not decide it, the VA does, case by case. In general, it can apply when:</p>
+          <ul class="vlist">
+            <li>You are <strong>enrolled in VA health care</strong>, or eligible to enroll.</li>
+            <li>The VA <strong>cannot provide the service</strong> you need at a VA facility near you.</li>
+            <li>A VA facility is <strong>too far away or the wait is too long</strong>, under the VA&rsquo;s drive-time and wait-time access standards.</li>
+            <li>You and your VA provider <strong>agree</strong> that care in the community is in your best interest.</li>
+          </ul>
+          <p class="vsec__src">The exact eligibility rules and current access standards are set by the VA at <a href="https://www.va.gov/communitycare/" target="_blank" rel="noopener">va.gov/communitycare</a>. If you are not enrolled in VA health care yet, enrolling is the first step.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="vsec" id="ask" aria-label="What to ask your VA care team">
+      <div class="container">
+        <div class="vwrap">
+          <h2 class="vsec__h">What to ask your VA care team.</h2>
+          <p class="vsec__intro">Home health through Community Care starts with your VA care team, not with an agency. When you talk to them, ask:</p>
+          <ul class="vlist">
+            <li>Whether you <strong>qualify for Community Care</strong> for home health.</li>
+            <li>For a <strong>referral and authorization</strong> for skilled home health at home.</li>
+            <li>Which <strong>community providers</strong> serve your area, and how to request one.</li>
+            <li>Your <strong>authorization number</strong>, and which services and frequency it covers.</li>
+          </ul>
+          <p class="vsec__src">In Region&nbsp;4, which includes Nevada, the VA&rsquo;s Community Care Network is administered by <strong>TriWest</strong>. Your referral and authorization run through it.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="vsec vsec--tint" id="status" aria-label="Where Alara stands today">
+      <div class="container">
+        <div class="vwrap">
+          <h2 class="vsec__h">Where Alara stands today.</h2>
+          <p class="vsec__intro">We are being direct about this: Alara is <strong>completing enrollment</strong> as a VA Community Care Network provider for Region&nbsp;4. Until that enrollment is active, we <strong>cannot bill the VA for your care yet</strong>. Two honest things you can do now:</p>
+          <div class="vstatus">
+            <h3>1. Get the VA process moving</h3>
+            <p>Ask your VA care team about Community Care and a home-health referral now, so an authorization is ready the moment our enrollment is active. The steps above are exactly what to raise.</p>
+          </div>
+          <div class="vstatus">
+            <h3>2. Need skilled care sooner?</h3>
+            <p>If another program already covers you, we can start now. The <strong>White Card</strong> covers Nevada Test Site and DOE workers, and <strong>Medicare</strong> covers many home-health needs. A one-minute check will tell you which fits.</p>
+            <p style="margin-top:16px;"><a class="btn" href="qualify.html">See what you qualify for <span class="arrow" aria-hidden="true">&rarr;</span></a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="refer" aria-label="For VA providers">
       <div class="container">
         <div class="vwrap refer__inner">
           <div class="refer__text">
-            <h2 class="refer__h">For VA providers: how to refer to Alara.</h2>
-            <p>Referring to Alara is straightforward, and we move fast. Call us at <strong>(702) 814-9630</strong>, or submit through your standard VA Community Care process.</p>
-            <p class="refer__sub">Once we receive the referral</p>
+            <h2 class="refer__h">For VA care teams and providers.</h2>
+            <p>We are completing our VA Community Care Network enrollment for Region&nbsp;4. Once it is active, this is how referrals will work, and you are welcome to reach us now to plan a complex case or be notified when we go live.</p>
+            <p class="refer__sub">Once a referral reaches us</p>
             <ol class="refer__steps">
               <li>We contact the veteran within <strong>4 business hours</strong>.</li>
               <li>We verify the authorization.</li>
               <li>We schedule start of care, <strong>typically within 48 to 72 hours</strong>.</li>
             </ol>
-            <p class="refer__sub">What we need</p>
+            <p class="refer__sub">What a referral includes</p>
             <ul class="refer__need">
               <li>Veteran name and contact information</li>
               <li>VA authorization number</li>
               <li>Physician order (services and frequency)</li>
               <li>Medication list, if available</li>
             </ul>
-            <p>We handle everything else, including coordination, scheduling, and follow-up. For complex cases, our clinical director is available to consult before referral.</p>
+            <p>For a complex case or to be notified when our enrollment is active, reach our clinical director at <strong>(702) 814-9630</strong>.</p>
           </div>
           <div class="refer__media">
             <img src="veteran-portrait.webp" alt="A military veteran at home in conversation" onerror="this.onerror=null;this.src='hero-arches.webp';" />
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="vcta" aria-label="Get started">
-      <div class="container">
-        <div class="vwrap">
-          <h2>Care for those who served, at home.</h2>
-          <p>One call and we take it from there. Reach Alara at <a href="tel:+17028149630" style="color:var(--espresso);">(702) 814-9630</a>, or have a nurse call you.</p>
-          <div class="vcta__actions">
-            <a class="btn" href="begin.html">Have a nurse call you <span class="arrow" aria-hidden="true">&rarr;</span></a>
-            <span class="vcta__call">Or call <a href="tel:+17028149630">(702) 814-9630</a></span>
           </div>
         </div>
       </div>
