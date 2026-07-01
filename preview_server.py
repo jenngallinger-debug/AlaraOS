@@ -240,7 +240,7 @@ def view_home(site):
         '<div class="care">'
           '<h2 class="sec-h sec-h--light">The kind of care most people don&rsquo;t realize can come home.</h2>'
           '<p class="care__body">Skilled nursing, wound care, infusion, and therapy &mdash; every plan of care reviewed by our Director of Nursing before the first visit.</p>'
-          '<p class="care__note">One thing most families are never told: the person already caring for them at home can often be paid to do it.</p>'
+          '<p class="care__note">One thing most families miss: the person already caring for them at home can often be paid to do it.</p>'
         '</div>'
       '</section>'
 
@@ -334,7 +334,7 @@ PILLARS = {
     "misunderstandings": [
       ("&ldquo;I have Medicare, so I can&rsquo;t use the White Card.&rdquo;", "You can have both. The White Card and Medicare operate independently &mdash; neither cancels the other, and the White Card pays for your accepted condition."),
       ("&ldquo;It only covers my original diagnosis.&rdquo;", "A <em>consequential condition</em> &mdash; a new problem caused by your accepted condition or its treatment &mdash; can also be covered once the Department of Labor accepts it."),
-      ("&ldquo;Home health isn&rsquo;t covered, only doctor visits.&rdquo;", "Skilled home health is covered. Many White Card holders are never told the full scope of what they are entitled to."),
+      ("&ldquo;Home health isn&rsquo;t covered, only doctor visits.&rdquo;", "Skilled home health is covered. Many White Card holders never claim the full scope of what they are entitled to."),
       ("&ldquo;There will be bills.&rdquo;", "For covered care tied to an accepted condition, there is no out-of-pocket cost.")],
     "faqs": [
       ("Does the White Card cover home health care?", "Yes. Physician-ordered home health &mdash; skilled nursing, wound care, therapy, and home health aide services &mdash; is covered at no out-of-pocket cost for approved beneficiaries."),

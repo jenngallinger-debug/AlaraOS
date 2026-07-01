@@ -38,13 +38,19 @@ const BANNED_VOICE = [
   'no one told',
   'nobody told',
   'anyone told',
-  'never told you',
+  'never told',
+  'been told about',
   'never knew you had',
   'were never told',
   'hard part',
   'hardest part',
   'fell through',
   'fall through',
+  // Surveillance framing — Alara is a team that acts, not an eye that watches.
+  'close watching',
+  'watched without',
+  'never looks away',
+  'around the clock',
 ];
 
 // Allowed phone numbers = every number declared in the source of truth.
