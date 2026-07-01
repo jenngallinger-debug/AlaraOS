@@ -48,18 +48,39 @@
     .phero .btn--ghost { color: var(--on-dark); border-color: rgba(251,251,251,.5); }
     .phero .btn--ghost:hover { border-color: var(--on-dark); background: rgba(251,251,251,.08); }
 
-    .prose { max-width: 720px; }
-    .prose section { padding-top: clamp(40px, 4.5vw, 64px); }
-    .prose section:first-child { padding-top: 0; }
+    /* Editorial breakup: numbered bronze rail + strong rules segment the long column. */
+    .prose { max-width: 780px; counter-reset: psec; }
+    .prose > section {
+      display: grid;
+      grid-template-columns: 3rem minmax(0, 1fr);
+      column-gap: clamp(16px, 2.4vw, 36px);
+      border-top: 2px solid var(--rule);
+      padding-top: clamp(30px, 3.6vw, 50px);
+      margin-top: clamp(36px, 4.2vw, 58px);
+      counter-increment: psec;
+    }
+    .prose > section:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+    .prose > section::before {
+      content: counter(psec, decimal-leading-zero);
+      grid-column: 1; grid-row: 1 / 40;
+      font-family: var(--display); font-weight: 300; font-size: 1.5rem;
+      color: var(--bronze); letter-spacing: 0.04em; line-height: 1.2;
+    }
+    .prose > section > * { grid-column: 2; min-width: 0; }
     .prose h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 500; letter-spacing: -0.018em; line-height: 1.16; max-width: 26ch; }
     .prose h3 { margin-top: 28px; font-size: 1.1875rem; font-weight: 500; letter-spacing: -0.01em; }
     .prose p { margin-top: 16px; font-size: 1.0625rem; line-height: 1.7; color: var(--taupe-ink); }
     .prose p strong, .prose li strong { color: var(--espresso); font-weight: 500; }
-    .prose .lede { font-size: 1.25rem; line-height: 1.5; color: var(--espresso); max-width: 32ch; margin-top: 18px; }
+    .prose .lede { margin-top: 18px; padding: 18px 22px; background: var(--mist); border-left: 3px solid var(--bronze); border-radius: 0 8px 8px 0; font-size: 1.1875rem; line-height: 1.5; color: var(--espresso); max-width: none; }
     .prose .section-intro { font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); margin-top: 14px; max-width: 60ch; }
     .prose ul { margin-top: 16px; padding-left: 0; list-style: none; display: grid; gap: 10px; }
     .prose ul li { position: relative; padding-left: 26px; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); }
-    .prose ul li::before { content: ""; position: absolute; left: 4px; top: 11px; width: 7px; height: 7px; border: 1px solid var(--taupe); border-radius: 50%; }
+    .prose ul li::before { content: ""; position: absolute; left: 4px; top: 11px; width: 7px; height: 7px; border: 1.5px solid var(--bronze); border-radius: 50%; }
+    @media (max-width: 620px) {
+      .prose > section { grid-template-columns: 1fr; }
+      .prose > section::before { grid-row: auto; margin-bottom: 4px; font-size: 1.25rem; }
+      .prose > section > * { grid-column: 1; }
+    }
 
     .defs { margin-top: 22px; border-top: 1px solid var(--hairline); }
     .defs__row { display: grid; grid-template-columns: 16ch 1fr; gap: 20px; padding-block: 16px; border-bottom: 1px solid var(--hairline); align-items: baseline; }
@@ -69,11 +90,13 @@
 
     .steps { margin-top: 24px; list-style: none; padding: 0; counter-reset: s; border-top: 1px solid var(--hairline); }
     .steps li { counter-increment: s; border-bottom: 1px solid var(--hairline); padding: 18px 0 18px 56px; position: relative; font-size: 1.0625rem; line-height: 1.6; color: var(--taupe-ink); }
-    .steps li::before { content: counter(s, decimal-leading-zero); position: absolute; left: 0; top: 18px; font-family: var(--display); font-size: 0.875rem; color: var(--taupe); letter-spacing: 0.08em; }
+    .steps li::before { content: counter(s, decimal-leading-zero); position: absolute; left: 0; top: 18px; font-family: var(--display); font-size: 0.875rem; color: var(--bronze); letter-spacing: 0.08em; }
     .steps li strong { color: var(--espresso); font-weight: 500; }
 
-    .do { margin-top: 14px; padding: 14px 18px; background: var(--mist); border-radius: 4px; font-size: 1rem; line-height: 1.55; color: var(--espresso); }
-    .do b { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--taupe); display: block; margin-bottom: 6px; }
+    /* The "where it breaks / what Alara owns" boxes become dark panels — recurring contrast. */
+    .do { margin-top: 18px; padding: 22px 24px; background: var(--espresso); border-radius: 10px; font-size: 1rem; line-height: 1.6; color: var(--on-dark-soft); }
+    .do b { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bronze-l); display: block; margin-bottom: 8px; }
+    .do strong { color: var(--on-dark); font-weight: 500; }
 
     .callout { margin-top: 24px; background: var(--greige); border: none; border-left: 3px solid var(--bronze); border-radius: 0 8px 8px 0; padding: 22px 24px; }
     .callout h3 { margin-top: 0; }
