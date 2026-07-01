@@ -57,7 +57,7 @@ Every serious competitor does all of these. Alara must too:
 2. **Clean benefits math:** Part B $150k · Part E up to $250k · $2,500 per 1% impairment · survivor ~$125k. ⚠️ build a crisp breakdown/estimator.
 3. **RECA page.** ✅
 4. **Consequential-conditions education.** ✅ (White Card page)
-5. **Family caregiver = W-2 direct employee, paid.** ✅ state as fact (not as the lead — it's Trusted Ally/CNS's line).
+5. **Family members who help can be paid** through the program. ⚠️ mention lightly and in the patient's benefit terms ("a family member who already helps can be paid"). Do NOT use the "W-2 / direct employee / above industry rates" framing — too on-the-nose, and it's the rivals' exact line.
 6. **Patient testimonials.** ❌ gap — need real ones.
 7. **Local/state landing pages for SEO.** ✅ (Nevada Test Site, Other DOE) — go deeper.
 8. **Resource/blog hub + FAQs.** ⚠️ Learn hub is thin — build it.
@@ -75,7 +75,7 @@ Every serious competitor does all of these. Alara must too:
 
 ### B. Match the trends (table stakes — section 3)
 Money hero ✅ · benefits breakdown ⚠️ · RECA ✅ · consequential conditions ✅ ·
-caregiver W-2 ✅ · testimonials ❌ · local pages ✅ · Learn hub ⚠️ · free-review offer ⚠️.
+caregiver pay (light touch) ✅ · testimonials ❌ · local pages ✅ · Learn hub ⚠️ · free-review offer ⚠️.
 
 ### C. Ruthlessly exploit the gaps (what NONE of them have)
 1. **NURSE-OWNED, TODAY — the master wedge.** Two are PE-owned; the third has non-clinician owners. Alara is the only agency where *the owner is the nurse who is accountable for your care.* Lead the "Why Alara" story with this, in Alara's own words.
@@ -107,8 +107,8 @@ three at once**:
 
 Support with: nurse-owned + DON-led · AlaraOS stays ahead of your care · the
 Navigator you can use yourself · genuinely Las Vegas-local · one named Care Guide.
-State the W-2 employees / caregiver pay / independence as *facts in the list*, not
-as the headline — so we're not echoing Trusted Ally's song.
+State caregiver pay / independence as *quiet facts*, never the headline — and skip
+the W-2/employee-model framing entirely (too on-the-nose, and it's the rivals' line).
 
 (If the owner genuinely shares the nuclear-worker heritage, keep it as a quiet
 authenticity note lower on the About page — never as the headline, because the
