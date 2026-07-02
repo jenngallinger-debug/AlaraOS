@@ -81,8 +81,18 @@ function homeView(view) {
     `<tr><td><a class="case" href="/os/case/${esc(c.id)}"><b>${esc(c.prompt.title)}</b><br/><span class="note">${esc(c.id)} · ${esc(c.kind)}${c.fields.patient ? ' · ' + esc(c.fields.patient) : ''}</span></a></td>
      <td><span class="tag">${esc(c.prompt.role)}</span></td><td>${fmtDue(clock)}</td></tr>`).join('');
   body += `<h1>Work queue — ${q.length} waiting on a human</h1>
-  <table><tr><th>Prompt</th><th>Role</th><th>Clock</th></tr>${rows || '<tr><td colspan=3>Queue is empty. The engine is running everything else.</td></tr>'}</table>
-  <p class="note">Everything not in this queue is being handled by the engine: drafts, clocks, renewals, routing, records.</p>`;
+  <table><tr><th>Prompt</th><th>Role</th><th>Clock</th></tr>${rows || '<tr><td colspan=3>Queue is empty. The engine is running everything else.</td></tr>'}</table>`;
+
+  const sleeping = core.listCases().filter(c => c.state === 'sleeping')
+    .sort((a, b) => (a.wakeAt || '').localeCompare(b.wakeAt || ''));
+  if (sleeping.length) {
+    const srows = sleeping.map(c =>
+      `<tr><td><a class="case" href="/os/case/${esc(c.id)}">${esc(c.id)}</a> <span class="note">${esc(c.kind)}${c.fields.patient ? ' · ' + esc(c.fields.patient) : ''}${c.fields.claimStage ? ' · ' + esc(c.fields.claimStage) : ''}</span></td>
+       <td class="note">wakes ${esc((c.wakeAt || '').slice(0, 10))}</td></tr>`).join('');
+    body += `<h2>Scheduled — ${sleeping.length} sleeping (claim companions, re-prompts)</h2>
+    <table><tr><th>Case</th><th>Wakes</th></tr>${srows}</table>`;
+  }
+  body += `<p class="note">Everything not on this screen is being handled by the engine: drafts, clocks, renewals, routing, records.</p>`;
   return page('Work queue', body);
 }
 
@@ -99,7 +109,7 @@ function caseView(id) {
     <form class="prompt" method="POST" action="/os/complete">
       <input type="hidden" name="caseId" value="${esc(c.id)}"/>`;
     for (const spec of c.prompt.inputs) {
-      body += `<label>${esc(spec.name)}${spec.required === false ? ' <span class="note">(optional)</span>' : ''}</label>`;
+      body += `<label>${esc(spec.name)}${spec.required === false ? ' <span class="note">(optional)</span>' : ''}${spec.hint ? ' <span class="note">— ' + esc(spec.hint) + '</span>' : ''}</label>`;
       if (spec.type === 'choice') {
         body += `<select name="${esc(spec.name)}">` + spec.options.map(o => `<option>${esc(o)}</option>`).join('') + `</select>`;
       } else if ((spec.max || 0) > 500) {
@@ -153,16 +163,25 @@ function handle(req, res, url) {
   if (p === '/os/complete' && req.method === 'POST') {
     let raw = '';
     req.on('data', ch => { raw += ch; if (raw.length > 65536) req.destroy(); });
+    req.on('error', () => {});
     req.on('end', () => {
-      const input = {};
-      for (const pair of raw.split('&')) {
-        const i = pair.indexOf('=');
-        if (i > 0) input[decodeURIComponent(pair.slice(0, i))] = decodeURIComponent(pair.slice(i + 1).replace(/\+/g, ' '));
+      // This callback runs after server.js's try/catch has returned — anything
+      // that throws here would kill the whole process. Contain everything.
+      try {
+        const input = {};
+        const dec = s => { try { return decodeURIComponent(s); } catch (e) { return s; } };
+        for (const pair of raw.split('&')) {
+          const i = pair.indexOf('=');
+          if (i > 0) input[dec(pair.slice(0, i))] = dec(pair.slice(i + 1).replace(/\+/g, ' '));
+        }
+        const out = core.completePrompt(input.caseId, input, 'console');
+        if (!out.ok) { res.writeHead(400, headers); res.end(page('Error', '<h1>' + esc(out.error) + '</h1><p><a href="/os/case/' + esc(input.caseId || '') + '">Back</a></p>')); return; }
+        res.writeHead(303, Object.assign({}, headers, { Location: '/os/case/' + out.case.id }));
+        res.end();
+      } catch (e) {
+        console.error('[os] complete failed:', e.message);
+        try { res.writeHead(500, headers); res.end(page('Error', '<h1>Something went wrong.</h1><p>' + esc(e.message) + '</p><p><a href="/os">Back to the queue</a></p>')); } catch (e2) {}
       }
-      const out = core.completePrompt(input.caseId, input, 'console');
-      if (!out.ok) { res.writeHead(400, headers); res.end(page('Error', '<h1>' + esc(out.error) + '</h1><p><a href="/os/case/' + esc(input.caseId || '') + '">Back</a></p>')); return; }
-      res.writeHead(303, Object.assign({}, headers, { Location: '/os/case/' + out.case.id }));
-      res.end();
     });
     return true;
   }
@@ -177,4 +196,19 @@ function intakeFromSubmission(kind, subject, text) {
   } catch (e) { return null; }
 }
 
-module.exports = { handle, intakeFromSubmission, ENGINE_KEY };
+// The heartbeat: tick() must not depend on someone opening the console.
+// Sleeping claim companions, 3-day re-prompts, and T-45 renewals wake on
+// this schedule even through a quiet week. Called once from server.js.
+function startSchedule() {
+  if (!ENGINE_KEY) return null;
+  const t = setInterval(() => {
+    try {
+      const actions = flows.tick();
+      if (actions.length) console.log('[engine] tick:', JSON.stringify(actions).slice(0, 400));
+    } catch (e) { console.error('[engine] tick failed:', e.message); }
+  }, 15 * 60 * 1000);
+  t.unref(); // never keep the process alive on our account
+  return t;
+}
+
+module.exports = { handle, intakeFromSubmission, startSchedule, ENGINE_KEY };

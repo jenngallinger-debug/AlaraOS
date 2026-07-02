@@ -71,7 +71,41 @@ function readJournal(caseId) {
 
 // ---------------------------------------------------------------------------
 // Clocks — every published SLA is a measured clock, breach = visible.
+// Every promise on the website is a BUSINESS-hours promise, so the clocks are
+// business-hour clocks: Mon–Fri, 08:00–18:00 America/Los_Angeles (the site's
+// own "after 6 PM, first thing the next business day"). A Friday-evening
+// submission is due Monday morning, not breached by Saturday.
 // ---------------------------------------------------------------------------
+const BIZ = { tz: 'America/Los_Angeles', open: 8, close: 18 };
+const bizFmt = new Intl.DateTimeFormat('en-US', { timeZone: BIZ.tz, hour12: false, weekday: 'short', hour: 'numeric' });
+
+function bizParts(d) {
+  const parts = {};
+  for (const p of bizFmt.formatToParts(d)) parts[p.type] = p.value;
+  const hour = parseInt(parts.hour, 10) % 24; // '24' at midnight in some ICU versions
+  return { weekday: parts.weekday, hour };
+}
+
+function inBizWindow(d) {
+  const { weekday, hour } = bizParts(d);
+  if (weekday === 'Sat' || weekday === 'Sun') return false;
+  return hour >= BIZ.open && hour < BIZ.close;
+}
+
+// Advance `bizHours` of business time from `from`, stepping in 15-minute
+// increments (bounded: even a 100-business-hour clock is < 2000 steps).
+function addBusinessHours(from, bizHours) {
+  const STEP = 15 * 60 * 1000;
+  let t = new Date(from).getTime();
+  let remaining = bizHours * 4; // 15-min units
+  let guard = 0;
+  while (remaining > 0 && ++guard < 20000) {
+    t += STEP;
+    if (inBizWindow(new Date(t))) remaining--;
+  }
+  return new Date(t).toISOString();
+}
+
 function hoursBetween(a, b) { return (new Date(b) - new Date(a)) / 36e5; }
 
 function clockStatus(c) {
@@ -107,18 +141,40 @@ function createCase(workflowName, kind, fields) {
   return loadCase(c.id);
 }
 
-// Run engine steps until: a human step (create prompt, stop), the end (done),
-// or an engine error (state=error, humans see it in the console).
+// Workflows can jump: a step's run()/apply() sets c.fields._goto = '<stepId>'
+// and the runner moves there instead of to the next step. This is how loops
+// work (re-prompt, check-in cadences) — always explicit, always journaled.
+function resolveGoto(c, steps) {
+  if (!c.fields._goto) return false;
+  const target = steps.findIndex(s => s.id === c.fields._goto);
+  if (target === -1) throw new Error('goto to unknown step: ' + c.fields._goto);
+  journal(c.id, 'goto', { from: steps[c.stepIndex] && steps[c.stepIndex].id, to: c.fields._goto });
+  c.stepIndex = target;
+  delete c.fields._goto;
+  return true;
+}
+
+// Run engine steps until: a human step (create prompt, stop), a wait step
+// (sleep until wakeAt, tick() wakes it), the end (done), or an engine error.
 function advance(caseId) {
   const c = loadCase(caseId);
   if (!c || c.state === 'done' || c.state === 'error') return c;
   const steps = registry[c.workflow] || [];
+  let guard = 0; // a goto cycle with no human/wait step is a bug, not a feature
 
   while (c.stepIndex < steps.length) {
+    if (++guard > 100) {
+      c.state = 'error';
+      c.error = { stepId: steps[c.stepIndex] && steps[c.stepIndex].id, message: 'goto cycle without a human/wait step' };
+      journal(c.id, 'engine_error', c.error);
+      saveCase(c);
+      return c;
+    }
     const step = steps[c.stepIndex];
 
     if (step.type === 'human') {
       const p = step.prompt(c);
+      const sla = typeof step.slaHours === 'function' ? step.slaHours(c) : step.slaHours;
       c.prompt = {
         stepId: step.id,
         role: step.role,
@@ -126,7 +182,8 @@ function advance(caseId) {
         brief: p.brief,             // everything the engine prepared — no blank pages
         inputs: p.inputs,           // the exact schema the engine needs back
         createdAt: new Date().toISOString(),
-        dueAt: step.slaHours ? new Date(Date.now() + step.slaHours * 36e5).toISOString() : null
+        // Business-hours clock: the published promises are business promises.
+        dueAt: sla ? addBusinessHours(new Date(), sla) : null
       };
       c.state = 'waiting_human';
       c.updatedAt = new Date().toISOString();
@@ -135,10 +192,23 @@ function advance(caseId) {
       return c;
     }
 
-    // engine step
+    if (step.type === 'wait') {
+      const days = typeof step.days === 'function' ? step.days(c) : step.days;
+      c.state = 'sleeping';
+      c.wakeAt = new Date(Date.now() + days * 864e5).toISOString();
+      c.sleepStepId = step.id; // identity check at wake — deploys may reorder steps
+      c.updatedAt = new Date().toISOString();
+      journal(c.id, 'sleeping', { stepId: step.id, days, wakeAt: c.wakeAt });
+      saveCase(c);
+      return c;
+    }
+
+    // engine step — the goto resolution lives INSIDE the try: a bad jump is an
+    // engine error the console can see, never a stranded 'running' case.
     try {
       const note = step.run(c) || {};
       journal(c.id, 'engine_step', { stepId: step.id, note });
+      if (!resolveGoto(c, steps)) c.stepIndex++;
     } catch (e) {
       c.state = 'error';
       c.error = { stepId: step.id, message: e.message };
@@ -147,7 +217,6 @@ function advance(caseId) {
       saveCase(c);
       return c;
     }
-    c.stepIndex++;
     c.updatedAt = new Date().toISOString();
     saveCase(c);
   }
@@ -158,6 +227,37 @@ function advance(caseId) {
   journal(c.id, 'case_done', {});
   saveCase(c);
   return c;
+}
+
+// Wake a sleeping case whose time has come (called by tick()).
+// Identity-checked: the persisted stepIndex must still point at the wait step
+// the case fell asleep on. If a deploy reordered the workflow, re-locate the
+// step by id; if it no longer exists, surface an error — never misroute.
+function wake(caseId) {
+  const c = loadCase(caseId);
+  if (!c || c.state !== 'sleeping') return c;
+  if (c.wakeAt && c.wakeAt > new Date().toISOString()) return c;
+  const steps = registry[c.workflow] || [];
+  const at = steps[c.stepIndex];
+  if (c.sleepStepId && (!at || at.id !== c.sleepStepId)) {
+    const relocated = steps.findIndex(s => s.id === c.sleepStepId);
+    if (relocated === -1) {
+      c.state = 'error';
+      c.error = { stepId: c.sleepStepId, message: 'wait step no longer exists in workflow definition' };
+      journal(c.id, 'engine_error', c.error);
+      saveCase(c);
+      return c;
+    }
+    journal(c.id, 'wake_relocated', { from: c.stepIndex, to: relocated, stepId: c.sleepStepId });
+    c.stepIndex = relocated;
+  }
+  journal(c.id, 'woke', { stepId: c.sleepStepId || (at && at.id) });
+  delete c.wakeAt;
+  delete c.sleepStepId;
+  c.state = 'running';
+  c.stepIndex++;
+  saveCase(c);
+  return advance(c.id);
 }
 
 // A human answered the prompt: validate, apply, journal, continue the engine.
@@ -195,7 +295,15 @@ function completePrompt(caseId, input, who) {
   }
   c.prompt = null;
   c.state = 'running';
-  c.stepIndex++;
+  try {
+    if (!resolveGoto(c, steps)) c.stepIndex++;
+  } catch (e) {
+    c.state = 'error';
+    c.error = { stepId: step.id, message: e.message };
+    journal(c.id, 'engine_error', c.error);
+    saveCase(c);
+    return { ok: false, error: e.message };
+  }
   saveCase(c);
   advance(c.id);
   return { ok: true, case: loadCase(c.id) };
@@ -214,6 +322,7 @@ function workQueue() {
 }
 
 module.exports = {
-  defineWorkflow, createCase, advance, completePrompt,
-  loadCase, saveCase, listCases, journal, readJournal, workQueue, clockStatus
+  defineWorkflow, createCase, advance, completePrompt, wake,
+  loadCase, saveCase, listCases, journal, readJournal, workQueue, clockStatus,
+  addBusinessHours, inBizWindow
 };
