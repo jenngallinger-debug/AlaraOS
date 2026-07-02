@@ -23,8 +23,8 @@
     .rf-form .eyebrow { display: block; margin-bottom: 16px; }
     .rf-fields { display: grid; gap: 18px; }
     /* Explicit display values would otherwise defeat the hidden attribute
-       the confirmation flow relies on — cover the whole grid. */
-    .rf-grid [hidden] { display: none !important; }
+       the confirmation flow relies on — cover the whole grid and the hero. */
+    .rf-grid [hidden], #rfHero[hidden] { display: none !important; }
     .rf-field label { display: block; font-size: 0.9375rem; font-weight: 500; color: var(--espresso); margin-bottom: 8px; }
     /* Hints live on their own quiet line so labels never wrap mid-thought. */
     .rf-field .hint { display: block; margin-top: 2px; font-size: 0.8125rem; font-weight: 400; color: var(--taupe); }
@@ -162,7 +162,7 @@
   </header>
 
   <main>
-    <section class="page-hero">
+    <section class="page-hero" id="rfHero">
       <div class="container">
         <span class="eyebrow">Refer a patient</span>
         <h1>Send the referral. We take it from there.</h1>
@@ -363,7 +363,8 @@
         ? 'It is with our nurse team now. Here is your referral as we received it, and exactly what happens next.'
         : 'It is logged with us, and a pre-filled email just opened so you keep a copy &mdash; press send if it did. Here is your referral as we received it, and exactly what happens next.';
 
-      ['rfEyebrow', 'rfPre', 'rfTrust'].forEach(function (id) { document.getElementById(id).setAttribute('hidden', ''); });
+      // The pitch has done its job — once the referral is sent, the receipt IS the page.
+      ['rfHero', 'rfEyebrow', 'rfPre', 'rfTrust'].forEach(function (id) { document.getElementById(id).setAttribute('hidden', ''); });
       document.querySelector('.rf-fields').setAttribute('hidden', '');
       document.querySelector('.rf-actions').setAttribute('hidden', '');
       // The aside would repeat these steps word for word — give the receipt the full stage.
@@ -381,7 +382,7 @@
       document.getElementById('rfProgram').selectedIndex = 0;
       document.getElementById('rfStatus').selectedIndex = 0;
       document.getElementById('rfDone').setAttribute('hidden', '');
-      ['rfEyebrow', 'rfPre', 'rfTrust'].forEach(function (id) { document.getElementById(id).removeAttribute('hidden'); });
+      ['rfHero', 'rfEyebrow', 'rfPre', 'rfTrust'].forEach(function (id) { document.getElementById(id).removeAttribute('hidden'); });
       document.querySelector('.rf-fields').removeAttribute('hidden');
       document.querySelector('.rf-actions').removeAttribute('hidden');
       document.querySelector('.rf-aside').removeAttribute('hidden');
