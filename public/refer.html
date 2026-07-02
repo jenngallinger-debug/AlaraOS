@@ -22,11 +22,12 @@
     .rf-form { background: var(--paper); border: 1px solid var(--hairline); border-radius: 14px; padding: clamp(26px, 3.4vw, 44px); }
     .rf-form .eyebrow { display: block; margin-bottom: 16px; }
     .rf-fields { display: grid; gap: 18px; }
-    /* Explicit display values above would otherwise defeat the hidden attribute
-       the confirmation flow relies on. */
-    .rf-form [hidden] { display: none !important; }
-    .rf-field label { display: block; font-size: 0.9375rem; color: var(--espresso); margin-bottom: 8px; }
-    .rf-field .hint { color: var(--taupe); }
+    /* Explicit display values would otherwise defeat the hidden attribute
+       the confirmation flow relies on — cover the whole grid. */
+    .rf-grid [hidden] { display: none !important; }
+    .rf-field label { display: block; font-size: 0.9375rem; font-weight: 500; color: var(--espresso); margin-bottom: 8px; }
+    /* Hints live on their own quiet line so labels never wrap mid-thought. */
+    .rf-field .hint { display: block; margin-top: 2px; font-size: 0.8125rem; font-weight: 400; color: var(--taupe); }
     .rf-field input, .rf-field select, .rf-field textarea {
       width: 100%; font-family: var(--text); font-size: 1.0625rem; color: var(--espresso);
       background: var(--paper); border: 1px solid var(--hairline); border-radius: 8px; padding: 14px 16px;
@@ -36,17 +37,41 @@
     .rf-field textarea { min-height: 88px; resize: vertical; line-height: 1.6; }
     .rf-field input[aria-invalid="true"] { border-color: var(--espresso); }
     .rf-err { margin-top: 8px; font-size: 0.9375rem; color: var(--espresso); font-weight: 500; padding-left: 12px; border-left: 2px solid var(--espresso); }
-    .rf-two { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    /* Pairs share a row only when both fields get a comfortable width;
+       otherwise they stack. No more squeezed selects or truncated text. */
+    .rf-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
     .rf-actions { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 14px 20px; align-items: center; }
     .rf-alt { font-size: 0.9375rem; color: var(--taupe); }
     .rf-alt a { color: var(--espresso); }
     .rf-trust { margin-top: 20px; font-size: 0.8125rem; line-height: 1.6; color: var(--taupe); }
+
+    /* Confirmation — a complete moment: receipt, the record, the plan, the door back in. */
     .rf-done { text-align: left; }
-    .rf-done__mark { width: 44px; height: 40px; color: var(--espresso); margin-bottom: 14px; }
-    .rf-done h2 { font-size: clamp(1.5rem, 2.4vw, 1.875rem); font-weight: 500; letter-spacing: -0.018em; color: var(--espresso); }
-    .rf-done p { margin-top: 12px; font-size: 1.0625rem; line-height: 1.65; color: var(--taupe-ink); }
+    .rf-done__mark { width: 48px; height: 44px; color: var(--espresso); margin-bottom: 16px; }
+    .rf-done h2 { font-family: var(--display); font-size: clamp(1.6rem, 2.8vw, 2.125rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.14; color: var(--espresso); }
+    .rf-done > p { margin-top: 12px; font-size: 1.0625rem; line-height: 1.65; color: var(--taupe-ink); max-width: 58ch; }
     .rf-done a { color: var(--espresso); }
     .rf-done:focus { outline: none; }
+    .rf-recap { margin-top: 22px; border-top: 2px solid var(--rule); }
+    .rf-recap__row { display: grid; grid-template-columns: 11ch 1fr; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--hairline); align-items: baseline; }
+    .rf-recap__k { font-family: var(--display); font-size: 0.6875rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--taupe); }
+    .rf-recap__v { font-size: 1rem; color: var(--espresso); overflow-wrap: anywhere; }
+    .rf-done__steps { margin-top: 24px; list-style: none; counter-reset: rd; padding: clamp(20px, 3vw, 28px); background: var(--espresso); border-radius: 12px; }
+    .rf-done__steps li { counter-increment: rd; display: grid; grid-template-columns: 2.2rem 1fr; gap: 12px; padding-block: 13px; border-top: 1px solid rgba(201,196,193,.18); }
+    .rf-done__steps li:first-child { border-top: none; padding-top: 0; }
+    .rf-done__steps li::before { content: counter(rd, decimal-leading-zero); font-family: var(--display); font-size: 0.875rem; letter-spacing: 0.08em; color: var(--bronze-l); padding-top: 2px; }
+    .rf-done__steps b { display: block; font-weight: 500; font-size: 1.0625rem; color: var(--on-dark); }
+    .rf-done__steps span { display: block; margin-top: 4px; font-size: 0.9375rem; line-height: 1.55; color: var(--on-dark-soft); }
+    .rf-done__steps strong { color: var(--on-dark); font-weight: 500; }
+    .rf-done__contact { margin-top: 20px; font-size: 0.9375rem; line-height: 1.7; color: var(--taupe-ink); }
+    .rf-done__contact strong { color: var(--espresso); font-weight: 500; }
+    .rf-again { margin-top: 24px; display: inline-flex; align-items: center; gap: 10px; cursor: pointer;
+      font-family: var(--text); font-size: 1rem; color: var(--espresso); background: var(--paper);
+      border: 1px solid var(--rule); border-radius: 8px; padding: 13px 20px; transition: border-color var(--dur) var(--ease); }
+    .rf-again:hover { border-color: var(--espresso); }
+    /* When the confirmation takes over, it IS the page: the aside steps would
+       repeat it word for word, so the card gets the full stage. */
+    .rf-grid.is-done { grid-template-columns: 1fr; max-width: 780px; margin-inline: auto; }
 
     .rf-aside { background: var(--espresso); color: var(--on-dark); border-radius: 14px; padding: clamp(28px, 3.4vw, 40px); position: sticky; top: 100px; }
     .rf-aside .eyebrow { display: block; margin-bottom: 16px; color: var(--bronze-l); }
@@ -149,8 +174,8 @@
     <section class="rf-band">
       <div class="container rf-grid">
         <div class="rf-form">
-          <span class="eyebrow">The referral</span>
-          <p class="rf-trust" style="margin:6px 0 16px;">Refer before the order is finalized &mdash; getting the physician documentation done is our work, not a requirement to start.</p>
+          <span class="eyebrow" id="rfEyebrow">The referral</span>
+          <p class="rf-trust" id="rfPre" style="margin:6px 0 16px;">Refer before the order is finalized &mdash; getting the physician documentation done is our work, not a requirement to start.</p>
           <div class="rf-fields">
             <div class="rf-two">
               <div class="rf-field">
@@ -159,7 +184,7 @@
                 <p class="rf-err" id="rfPatientErr" hidden>Please add the patient&rsquo;s name.</p>
               </div>
               <div class="rf-field">
-                <label for="rfCity">Patient city or ZIP <span class="hint">(helps us confirm coverage)</span></label>
+                <label for="rfCity">Patient city or ZIP <span class="hint">So we confirm coverage on the first call</span></label>
                 <input id="rfCity" type="text" autocomplete="off" placeholder="Las Vegas, Henderson, Pahrump&hellip;" />
               </div>
             </div>
@@ -185,23 +210,23 @@
               </div>
             </div>
             <div class="rf-field">
-              <label for="rfConditions">Accepted conditions or diagnosis <span class="hint">(optional)</span></label>
-              <input id="rfConditions" type="text" placeholder="What the care is for" />
+              <label for="rfConditions">Accepted conditions or diagnosis <span class="hint">Optional &mdash; what the care is for</span></label>
+              <input id="rfConditions" type="text" placeholder="Wound care, COPD, post-surgical&hellip;" />
             </div>
             <div class="rf-two">
               <div class="rf-field">
-                <label for="rfName">Your name</label>
-                <input id="rfName" type="text" autocomplete="name" placeholder="Referring physician, office, or family member" />
+                <label for="rfName">Your name <span class="hint">Physician, office, case manager, or family</span></label>
+                <input id="rfName" type="text" autocomplete="name" placeholder="First and last" />
                 <p class="rf-err" id="rfNameErr" hidden>Please add your name so we know who to confirm with.</p>
               </div>
               <div class="rf-field">
-                <label for="rfPhone">Callback number</label>
-                <input id="rfPhone" type="tel" inputmode="tel" placeholder="Where we confirm receipt" />
+                <label for="rfPhone">Callback number <span class="hint">We confirm receipt within one business hour</span></label>
+                <input id="rfPhone" type="tel" inputmode="tel" placeholder="Best number for you" />
                 <p class="rf-err" id="rfPhoneErr" hidden>Please add a number with at least 10 digits.</p>
               </div>
             </div>
             <div class="rf-field">
-              <label for="rfNotes">Anything else we should know <span class="hint">(optional &mdash; no clinical records here, please)</span></label>
+              <label for="rfNotes">Anything else we should know <span class="hint">Optional &mdash; no clinical records here, please</span></label>
               <textarea id="rfNotes" placeholder="Timing, mobility, family contact, preferred visit windows&hellip;"></textarea>
             </div>
           </div>
@@ -211,12 +236,19 @@
           </div>
           <p class="rf-trust" id="rfTrust">Sending opens a pre-filled email to our nurse team at referrals@alarahomecare.com from your own email, so you keep a copy. Please do not include clinical records in this form; we will arrange secure transfer when we confirm.</p>
 
-          <!-- Confirmation (replaces the fields once the referral is delivered) -->
+          <!-- Confirmation (takes over the card once the referral is sent) -->
           <div class="rf-done" id="rfDone" hidden tabindex="-1" role="status">
             <svg class="rf-done__mark" viewBox="0 0 100 92" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M22,88 V34 L50,8 L78,34 V88 Z M37,88 V66 A13,13 0 0 1 63,66 V88 Z M52.4,27 A2.4,2.4 0 1 0 47.6,27 A2.4,2.4 0 1 0 52.4,27 Z"/></svg>
             <h2>Referral received.</h2>
-            <p id="rfDoneBody">Your referral is with our nurse team. A clinician calls the number you gave within one business hour to confirm receipt and what we need next &mdash; and we keep you updated on your patient from there.</p>
-            <p class="rf-trust" style="margin-top:14px;">Need us sooner? Call <a href="tel:+17028149630">(702) 814-9630</a> or email <a href="mailto:referrals@alarahomecare.com">referrals@alarahomecare.com</a>.</p>
+            <p id="rfDoneBody">It is with our nurse team now. Here is your referral as we received it, and exactly what happens next.</p>
+            <div class="rf-recap" id="rfRecap" aria-label="Your referral, as sent"></div>
+            <ol class="rf-done__steps">
+              <li><div><b>Within one business hour</b><span>A clinician calls <strong id="rfDonePhone">your callback number</strong> to confirm receipt and what we need.</span></div></li>
+              <li><div><b>Within four business hours</b><span>We contact the patient and verify the benefit and the authorization &mdash; that work is ours, not yours.</span></div></li>
+              <li><div><b>48 to 72 hours after authorization</b><span>Start of care, typically &mdash; in-home assessment scheduled, medical necessity documented. We keep you updated on your patient throughout.</span></div></li>
+            </ol>
+            <p class="rf-done__contact">Need us sooner? Call <strong><a href="tel:+17028149630">(702) 814-9630</a></strong> &middot; fax orders to <strong>(725) 210-8285</strong> &middot; email <a href="mailto:referrals@alarahomecare.com">referrals@alarahomecare.com</a>.</p>
+            <button type="button" class="rf-again" id="rfAgain">Refer another patient <span class="arrow" aria-hidden="true">&rarr;</span></button>
           </div>
         </div>
 
@@ -309,18 +341,56 @@
         'Sending delivers the referral directly to our nurse team. Please do not include clinical records in this form; we will arrange secure transfer when we confirm.';
     });
 
+    function rfEsc(s) { return String(s).replace(/[<>&]/g, function (c) { return { '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]; }); }
+
     function rfShowDone(delivered) {
+      // The record: show them exactly what we received.
+      var recap = [
+        ['Patient', document.getElementById('rfPatient').value.trim()],
+        ['City / ZIP', document.getElementById('rfCity').value.trim()],
+        ['Program', document.getElementById('rfProgram').value],
+        ['Status', document.getElementById('rfStatus').value],
+        ['Conditions', document.getElementById('rfConditions').value.trim()],
+        ['Sent by', document.getElementById('rfName').value.trim()],
+        ['Callback', document.getElementById('rfPhone').value.trim()]
+      ].filter(function (r) { return r[1]; });
+      document.getElementById('rfRecap').innerHTML = recap.map(function (r) {
+        return '<div class="rf-recap__row"><span class="rf-recap__k">' + r[0] + '</span><span class="rf-recap__v">' + rfEsc(r[1]) + '</span></div>';
+      }).join('');
+      document.getElementById('rfDonePhone').textContent = document.getElementById('rfPhone').value.trim() || 'your callback number';
+
+      document.getElementById('rfDoneBody').innerHTML = delivered
+        ? 'It is with our nurse team now. Here is your referral as we received it, and exactly what happens next.'
+        : 'It is logged with us, and a pre-filled email just opened so you keep a copy &mdash; press send if it did. Here is your referral as we received it, and exactly what happens next.';
+
+      ['rfEyebrow', 'rfPre', 'rfTrust'].forEach(function (id) { document.getElementById(id).setAttribute('hidden', ''); });
       document.querySelector('.rf-fields').setAttribute('hidden', '');
       document.querySelector('.rf-actions').setAttribute('hidden', '');
-      document.getElementById('rfTrust').setAttribute('hidden', '');
-      if (!delivered) {
-        document.getElementById('rfDoneBody').innerHTML =
-          'Your referral is logged with us, and a pre-filled email just opened so you keep a copy &mdash; press send if it did. A clinician calls the number you gave within one business hour to confirm receipt, and we keep you updated on your patient. Prefer another channel? Fax the order to <strong style="color:var(--espresso); font-weight:500;">(725) 210-8285</strong>.';
-      }
+      // The aside would repeat these steps word for word — give the receipt the full stage.
+      document.querySelector('.rf-aside').setAttribute('hidden', '');
+      document.querySelector('.rf-grid').classList.add('is-done');
       var done = document.getElementById('rfDone');
       done.removeAttribute('hidden');
-      done.focus();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      done.focus({ preventScroll: true });
     }
+
+    // Discharge planners send more than one: reset everything, back to a clean form.
+    document.getElementById('rfAgain').addEventListener('click', function () {
+      ['rfPatient', 'rfCity', 'rfConditions', 'rfNotes'].forEach(function (id) { document.getElementById(id).value = ''; });
+      document.getElementById('rfProgram').selectedIndex = 0;
+      document.getElementById('rfStatus').selectedIndex = 0;
+      document.getElementById('rfDone').setAttribute('hidden', '');
+      ['rfEyebrow', 'rfPre', 'rfTrust'].forEach(function (id) { document.getElementById(id).removeAttribute('hidden'); });
+      document.querySelector('.rf-fields').removeAttribute('hidden');
+      document.querySelector('.rf-actions').removeAttribute('hidden');
+      document.querySelector('.rf-aside').removeAttribute('hidden');
+      document.querySelector('.rf-grid').classList.remove('is-done');
+      var btn = document.getElementById('rfSubmit');
+      btn.disabled = false;
+      btn.innerHTML = 'Send the referral <span class="arrow" aria-hidden="true">&rarr;</span>';
+      document.getElementById('rfPatient').focus();
+    });
 
     document.getElementById('rfSubmit').addEventListener('click', function () {
       var patient = document.getElementById('rfPatient');
