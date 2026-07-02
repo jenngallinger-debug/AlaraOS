@@ -185,3 +185,6 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => console.log(`AlaraOS serving public/ on http://localhost:${PORT} (${IS_PRODUCTION ? 'production' : 'staging'})`));
+// Engine heartbeat: wakes sleeping cases and spawns due renewals every 15
+// minutes — the claim-companion pipeline never depends on a console visit.
+engineWeb.startSchedule();

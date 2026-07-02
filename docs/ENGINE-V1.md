@@ -22,6 +22,63 @@ engine prepares  →  human acts  →  engine records and follows up
 | Staff console | `engine/web.js` | `/os` work queue · `/os/case/ID` case view with the prompt form and journal · `POST /os/complete` |
 | Wiring | `server.js` | `/os` routes mounted; **every `/api/submit` conversion becomes an engine case** |
 
+## V1.1 additions (owner decision, July 2026): tiered clocks + the claim companion
+
+**Tiered intake clocks** — the callback promise matches distance to revenue,
+not a blanket hour. The pre-read sets the tier; the tier sets the SLA clock:
+
+All clocks are **true business-hour clocks** (Mon–Fri 08:00–18:00 America/
+Los_Angeles — the site's own "after 6 PM, first thing the next business day").
+A Friday-evening submission is due Monday morning, never breached on Saturday.
+The tier matcher reads the intake text with precise patterns (the published
+referral/call-back promise always outranks inference; bare words like
+"passed" or "hours" never move a clock; "cancer survivor" is not a survivor):
+
+| Tier | Who | Clock | Why |
+|---|---|---|---|
+| 1 | Referrals & call-backs (published promise); existing card / hours cut / switching | **1 business hour** | Speed converts here — these become starts of care in days |
+| 2 | New claim (default) | **4 business hours (same day)** | The job is filing fast and earning trust, not a sprint |
+| 3 | Survivor (precise phrasings) | **10 business hours (next business day)** | Warm and unhurried; the prompt carries the tone instruction |
+
+**The claim companion (`claim` workflow)** — the fix for the biggest break:
+"refer-resource-center" used to close the case, killing the two-year pipeline.
+Now it opens a companion case that walks the whole claim journey:
+
+1. E: init (stage = referred), **sleep 7 days**
+2. **H (nurse): filing check-in** — "did the filing happen?" `filed` → milestone
+   cadence · `not-yet`/`unreachable` → another 7-day loop · `withdrew` → close
+3. E: **sleep 30 days** → **H (coordinator): milestone check-in** — record the
+   stage (awaiting DOL / NIOSH dose reconstruction / decision pending /
+   approved / denied-appealing / withdrew / deceased), explain the stage to the
+   family in plain terms; every non-terminal stage loops another 30 days
+4. **The payoff:** `approved-card-issued` → the engine **spawns the LMN case
+   itself**, prefilled and carrying the full companion history — care planning
+   starts the day the card lands. Whoever accompanies the claim owns the
+   start of care at the end of it.
+
+The companion has real exits: `unreachable` retries on a 7-day cycle and
+**three strikes closes as lost-contact**; `denied-final`, `withdrew`, and
+`deceased` are terminals; contact resets the strike counter. The program
+(EEOICPA/OWCP) rides the companion into the auto-spawned LMN.
+
+Engine mechanics added for this: `wait` steps (cases sleep with a `wakeAt`
+**and the step's identity** — wakes relocate by step id after deploys, and a
+vanished step surfaces as a visible error, never a silent misroute), explicit
+`_goto` jumps (journaled, cycle-guarded, error-contained), business-hour SLA
+clocks, and a "Scheduled" console section showing every sleeping companion.
+The `need-more-info` disposition sleeps 3 days and re-prompts instead of
+parking forever.
+
+**Hardening (from the adversarial review — 16 confirmed findings, all fixed):**
+authorization dates are validated at entry (`YYYY-MM-DD` or the human is told
+immediately — an unparseable end date can no longer silently kill the renewal
+countdown); renewal spawning is idempotent from the child side (a crash
+between child creation and the parent's marker cannot duplicate a renewal);
+the console's POST handler is exception-contained (a malformed request body
+returns 400 instead of killing the public site's process); and a **15-minute
+heartbeat in server.js** wakes sleeping cases and spawns due renewals even if
+nobody opens the console for a week.
+
 ## The three workflows
 
 **`intake`** — a website conversion (case review / referral / call-back) arrives:
