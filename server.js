@@ -12,6 +12,9 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
+// AlaraOS Engine V1 (internal): workflow engine + staff console, active only
+// when ENGINE_KEY is set. See docs/ENGINE-V1.md.
+const engineWeb = require('./engine/web');
 
 const PORT = process.env.PORT || 3000;
 const PUBLIC_DIR = path.join(__dirname, 'public');
@@ -145,6 +148,10 @@ function handleSubmit(req, res) {
     const rec = { ts: new Date().toISOString(), kind, subject, text };
     try { fs.appendFileSync(SUBMISSIONS_LOG, JSON.stringify(rec) + '\n'); } catch (e) {}
 
+    // Every website conversion becomes an engine case: pre-read runs, the
+    // nurse prompt lands in the /os work queue with its 1-hour clock started.
+    if (engineWeb.ENGINE_KEY) engineWeb.intakeFromSubmission(kind, subject, text);
+
     let delivered = 'log';
     if (EMAIL_DELIVERY && await sendEmail(subject, text)) delivered = 'email';
     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -162,6 +169,7 @@ const server = http.createServer((req, res) => {
   const p = u.pathname;
   try {
     if (p === '/healthz') return send(res, 200, 'text/plain', 'ok');
+    if (p.startsWith('/os') && engineWeb.handle(req, res, u)) return;
     if (p === '/robots.txt') return send(res, 200, MIME['.txt'], robotsTxt());
     if (p === '/api/event' && req.method === 'POST') return logEvent(req, res);
     if (p === '/api/submit' && req.method === 'POST') return handleSubmit(req, res);

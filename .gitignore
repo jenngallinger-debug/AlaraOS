@@ -37,3 +37,4 @@ coverage/
 
 # TypeScript cache
 *.tsbuildinfo
+data/engine/
