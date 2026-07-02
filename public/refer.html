@@ -22,6 +22,9 @@
     .rf-form { background: var(--paper); border: 1px solid var(--hairline); border-radius: 14px; padding: clamp(26px, 3.4vw, 44px); }
     .rf-form .eyebrow { display: block; margin-bottom: 16px; }
     .rf-fields { display: grid; gap: 18px; }
+    /* Explicit display values above would otherwise defeat the hidden attribute
+       the confirmation flow relies on. */
+    .rf-form [hidden] { display: none !important; }
     .rf-field label { display: block; font-size: 0.9375rem; color: var(--espresso); margin-bottom: 8px; }
     .rf-field .hint { color: var(--taupe); }
     .rf-field input, .rf-field select, .rf-field textarea {
